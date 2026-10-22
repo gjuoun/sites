@@ -1,0 +1,32 @@
+{
+  "name": "bigface-theme",
+  "displayName": "Bigface",
+  "description": "A dark color theme. Works in VS Code and Cursor.",
+  "version": "0.1.0",
+  "publisher": "gjuoun",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gjuoun/bigface-theme"
+  },
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Themes"
+  ],
+  "keywords": [
+    "theme",
+    "dark",
+    "bigface"
+  ],
+  "contributes": {
+    "themes": [
+      {
+        "label": "Bigface",
+        "uiTheme": "vs-dark",
+        "path": "./themes/bigface-color-theme.json"
+      }
+    ]
+  }
+}

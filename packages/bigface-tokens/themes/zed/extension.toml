@@ -1,0 +1,7 @@
+id = "bigface"
+name = "Bigface"
+schema_version = 1
+version = "0.1.0"
+authors = ["Jun Guo <gjuoun@gmail.com>"]
+description = "A dark color theme."
+repository = "https://github.com/gjuoun/bigface-theme"

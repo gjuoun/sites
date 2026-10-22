@@ -1,0 +1,122 @@
+// Bigface — https://github.com/gjuoun/bigface-theme
+// Put this block in ~/.config/zellij/config.kdl and set: theme "bigface"
+themes {
+    bigface {
+        text_unselected {
+            base "#d9d9d4"
+            background "#252925"
+            emphasis_0 "#fc5d23"
+            emphasis_1 "#00b0ff"
+            emphasis_2 "#00c853"
+            emphasis_3 "#c6ff00"
+        }
+        text_selected {
+            base "#d9d9d4"
+            background "#3b3c32"
+            emphasis_0 "#fc5d23"
+            emphasis_1 "#00b0ff"
+            emphasis_2 "#00c853"
+            emphasis_3 "#c6ff00"
+        }
+        ribbon_selected {
+            base "#252925"
+            background "#00b0ff"
+            emphasis_0 "#fc5d23"
+            emphasis_1 "#fc5d23"
+            emphasis_2 "#c6ff00"
+            emphasis_3 "#00c853"
+        }
+        ribbon_unselected {
+            base "#d9d9d4"
+            background "#494848"
+            emphasis_0 "#fc5d23"
+            emphasis_1 "#d9d9d4"
+            emphasis_2 "#00b0ff"
+            emphasis_3 "#c6ff00"
+        }
+        table_title {
+            base "#00b0ff"
+            background "#252925"
+            emphasis_0 "#fc5d23"
+            emphasis_1 "#00b0ff"
+            emphasis_2 "#00c853"
+            emphasis_3 "#c6ff00"
+        }
+        table_cell_selected {
+            base "#d9d9d4"
+            background "#3b3c32"
+            emphasis_0 "#fc5d23"
+            emphasis_1 "#00b0ff"
+            emphasis_2 "#00c853"
+            emphasis_3 "#c6ff00"
+        }
+        table_cell_unselected {
+            base "#d9d9d4"
+            background "#252925"
+            emphasis_0 "#fc5d23"
+            emphasis_1 "#00b0ff"
+            emphasis_2 "#00c853"
+            emphasis_3 "#c6ff00"
+        }
+        list_selected {
+            base "#d9d9d4"
+            background "#3b3c32"
+            emphasis_0 "#fc5d23"
+            emphasis_1 "#00b0ff"
+            emphasis_2 "#00c853"
+            emphasis_3 "#c6ff00"
+        }
+        list_unselected {
+            base "#d9d9d4"
+            background "#252925"
+            emphasis_0 "#fc5d23"
+            emphasis_1 "#00b0ff"
+            emphasis_2 "#00c853"
+            emphasis_3 "#c6ff00"
+        }
+        frame_selected {
+            base "#00b0ff"
+            background "#252925"
+            emphasis_0 "#fc5d23"
+            emphasis_1 "#00b0ff"
+            emphasis_2 "#00c853"
+            emphasis_3 "#c6ff00"
+        }
+        frame_highlight {
+            base "#fc5d23"
+            background "#252925"
+            emphasis_0 "#fc5d23"
+            emphasis_1 "#fc5d23"
+            emphasis_2 "#fc5d23"
+            emphasis_3 "#fc5d23"
+        }
+        exit_code_success {
+            base "#00c853"
+            background "#252925"
+            emphasis_0 "#00b0ff"
+            emphasis_1 "#252925"
+            emphasis_2 "#c6ff00"
+            emphasis_3 "#00b0ff"
+        }
+        exit_code_error {
+            base "#fc5d23"
+            background "#252925"
+            emphasis_0 "#fc5d23"
+            emphasis_1 "#252925"
+            emphasis_2 "#252925"
+            emphasis_3 "#252925"
+        }
+        multiplayer_user_colors {
+            player_1 "#c6ff00"
+            player_2 "#00b0ff"
+            player_3 "#ae81ff"
+            player_4 "#fc5d23"
+            player_5 "#00c853"
+            player_6 "#66d9ef"
+            player_7 "#fc5d23"
+            player_8 "#e5e500"
+            player_9 "#40c4ff"
+            player_10 "#ffeb3b"
+        }
+    }
+}

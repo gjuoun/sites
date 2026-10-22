@@ -1,0 +1,15 @@
+{
+  "name": "@gjuoun/bigface-tokens",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Synced copies of bigface's palette, generated themes, contrast math and installer — what the bigface site cannot build without, kept here so this repo builds on its own.",
+  "license": "MIT",
+  "exports": {
+    "./palette.json": "./palette/bigface.json",
+    "./contrast-math": "./src/contrast-math.ts",
+    "./installer": "./src/installer.ts",
+    "./themes/*": "./themes/*",
+    "./package.json": "./package.json"
+  }
+}
