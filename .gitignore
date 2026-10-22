@@ -1,0 +1,17 @@
+node_modules/
+
+# turbo writes this into every package it runs; it must be ignored before the first run
+**/.turbo/
+
+# build output
+**/dist/
+**/.next/
+**/.astro/
+**/.wrangler/
+
+# bigface's site generates these from packages/bigface-tokens before every build
+apps/bigface/public/themes/
+apps/bigface/public/downloads/
+apps/bigface/public/install.sh
+
+.DS_Store
