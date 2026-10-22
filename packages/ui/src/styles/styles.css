@@ -1,0 +1,4 @@
+/* Bigface as-is: the structural theme plus Bigface's default palette values.
+   For your own palette, import ./theme.css instead and set --bf-* yourself. */
+@import "./theme.css";
+@import "./tokens.css";

@@ -1,0 +1,149 @@
+/* Tailwind's structural side of the Bigface theme: token names and mapping, no colour values.
+   Import this and set --bf-* to your own palette, or import styles.css to get Bigface's default
+   values too. The shadcn semantic tokens (--background, --primary, …) are mapped onto --bf-*, so a
+   component never names a colour: swap the variables and the whole library re-skins. */
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-heading: var(--font-sans);
+  --font-sans: "Recursive", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Recursive", ui-monospace, "SF Mono", Menlo, monospace;
+  --font-display: "Recursive", "Helvetica Neue", system-ui, sans-serif;
+
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Bigface names: every palette colour and ANSI alias as a Tailwind colour (bg-bf-lime, …). */
+  --color-ink-on-bright: var(--ink-on-bright);
+  --color-bf-bg: var(--bf-bg);
+  --color-bf-fg: var(--bf-fg);
+  --color-bf-fg-dim: var(--bf-fg-dim);
+  --color-bf-border: var(--bf-border);
+  --color-bf-border-muted: var(--bf-border-muted);
+  --color-bf-selection: var(--bf-selection);
+  --color-bf-cursor-line: var(--bf-cursor-line);
+  --color-bf-brace-match: var(--bf-brace-match);
+  --color-bf-blue: var(--bf-blue);
+  --color-bf-light-blue: var(--bf-light-blue);
+  --color-bf-pale-blue: var(--bf-pale-blue);
+  --color-bf-cyan: var(--bf-cyan);
+  --color-bf-green: var(--bf-green);
+  --color-bf-lime: var(--bf-lime);
+  --color-bf-yellow: var(--bf-yellow);
+  --color-bf-bright-yellow: var(--bf-bright-yellow);
+  --color-bf-burnt-orange: var(--bf-burnt-orange);
+  --color-bf-purple: var(--bf-purple);
+  --color-bf-comment: var(--bf-comment);
+  --color-bf-caret: var(--bf-caret);
+  --color-bf-fg-muted: var(--fg-muted);
+  --color-bf-dim: var(--dim);
+
+  /* Shadows: Tailwind's defaults are black at 10% — derive from the palette's darkest surface. */
+  --shadow: 0 1px 3px 0 var(--bf-shadow), 0 1px 2px -1px var(--bf-shadow);
+  --shadow-2xs: 0 1px var(--bf-shadow);
+  --shadow-xs: 0 1px 2px 0 var(--bf-shadow);
+  --shadow-sm: 0 1px 3px 0 var(--bf-shadow), 0 1px 2px -1px var(--bf-shadow);
+  --shadow-md: 0 4px 6px -1px var(--bf-shadow), 0 2px 4px -2px var(--bf-shadow);
+  --shadow-lg: 0 10px 15px -3px var(--bf-shadow), 0 4px 6px -4px var(--bf-shadow);
+  --shadow-xl: 0 20px 25px -5px var(--bf-shadow), 0 8px 10px -6px var(--bf-shadow);
+  --shadow-2xl: 0 25px 50px -12px var(--bf-shadow);
+}
+
+/* shadcn's semantic tokens, mapped onto the palette. Dark-only by design: no .dark override —
+   `<html class="dark">` switches on the components' own dark: variants. */
+:root {
+  --bf-shadow: color-mix(in srgb, var(--bf-bg) 70%, transparent);
+  --fg-muted: color-mix(in srgb, var(--bf-fg) 75%, var(--bf-bg));
+  --dim: color-mix(in srgb, var(--bf-fg) 55%, var(--bf-bg));
+  --background: var(--bf-bg);
+  --foreground: var(--bf-fg);
+  --card: var(--bf-cursor-line);
+  --card-foreground: var(--bf-fg);
+  --popover: var(--bf-cursor-line);
+  --popover-foreground: var(--bf-fg);
+  --primary: var(--bf-blue);
+  --primary-foreground: var(--ink-on-bright);
+  --secondary: var(--bf-border-muted);
+  --secondary-foreground: var(--bf-fg);
+  --muted: var(--bf-border-muted);
+  --muted-foreground: var(--bf-fg-dim);
+  --accent: var(--bf-border-muted);
+  --accent-foreground: var(--bf-fg);
+  --destructive: var(--bf-burnt-orange);
+  --border: var(--bf-border);
+  --input: var(--bf-border);
+  --ring: var(--bf-blue);
+  --chart-1: var(--bf-blue);
+  --chart-2: var(--bf-lime);
+  --chart-3: var(--bf-yellow);
+  --chart-4: var(--bf-burnt-orange);
+  --chart-5: var(--bf-purple);
+  --radius: 0.625rem;
+  --sidebar: var(--bf-cursor-line);
+  --sidebar-foreground: var(--bf-fg);
+  --sidebar-primary: var(--bf-blue);
+  --sidebar-primary-foreground: var(--ink-on-bright);
+  --sidebar-accent: var(--bf-border-muted);
+  --sidebar-accent-foreground: var(--bf-fg);
+  --sidebar-border: var(--bf-border);
+  --sidebar-ring: var(--bf-blue);
+}
+
+/* Recursive with the MONO axis on: the library's code face. */
+@utility font-code {
+  font-family: var(--font-mono);
+  font-variation-settings:
+    "MONO" 1,
+    "CASL" 0,
+    "CRSV" 0.5;
+  font-variant-ligatures: none;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
