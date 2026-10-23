@@ -212,6 +212,13 @@
     padding: 2.5rem 0 6rem;
   }
 
+  /* A chrome-less page (the /ui/ workspace) drops the marketing column and its gutters. */
+  html[data-bleed] main {
+    width: 100%;
+    max-width: none;
+    padding: 0;
+  }
+
   h1,
   h2,
   h3 {
