@@ -1,0 +1,50 @@
+---
+import { BGBadge } from "@gjuoun/bigface-ui/components/bg/badge";
+import { bgCardVariants } from "@gjuoun/bigface-ui/components/bg/card";
+import { cn } from "@gjuoun/bigface-ui/lib/utils";
+import { inline } from "../../data/inline.ts";
+import type { Target } from "../../data/targets.ts";
+
+// One app in the home grid. .spotlight is the hook for Base.astro's pointer glow (--mx/--my).
+interface Props {
+  target: Target;
+  index: number;
+  base: string;
+}
+const { target: t, index, base } = Astro.props;
+const levelLabel: Record<string, string> = {
+  tool: "Checked with the tool",
+  schema: "Checked against its schema",
+  format: "Format-checked only",
+};
+const dot: Record<string, string> = {
+  tool: "bg-bf-green shadow-[0_0_8px_color-mix(in_srgb,var(--bf-green)_70%,transparent)]",
+  schema:
+    "bg-bf-cyan text-ink-on-bright shadow-[0_0_8px_color-mix(in_srgb,var(--bf-cyan)_70%,transparent)]",
+  format:
+    "bg-bf-burnt-orange shadow-[0_0_8px_color-mix(in_srgb,var(--bf-burnt-orange)_70%,transparent)]",
+};
+const label = levelLabel[t.check.level] ?? t.check.level;
+---
+
+<a
+  class={cn(
+    bgCardVariants({ tone: "plate" }),
+    "spotlight group/card grid grid-rows-[auto_auto_1fr_auto] gap-[0.3rem] overflow-hidden rounded-[16px] px-[1.15rem] pt-[1.1rem] pb-4 text-foreground no-underline transition-[transform,border-color,box-shadow] duration-350 ease-bf hover:-translate-y-1 hover:border-bf-blue/45 hover:text-foreground hover:shadow-[0_26px_50px_-28px_color-mix(in_srgb,var(--bf-blue)_65%,transparent)]",
+    "after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] after:bg-[radial-gradient(260px_circle_at_var(--mx,50%)_var(--my,0%),color-mix(in_srgb,var(--bf-blue)_16%,transparent),transparent_68%)] after:opacity-0 after:transition-opacity after:duration-350 after:content-[''] hover:after:opacity-100",
+  )}
+  data-card-kind={t.kind}
+  data-reveal
+  href={`${base}/apps/${t.id}/`}
+>
+  <span class="font-code text-[0.68rem] text-bf-dim">{String(index + 1).padStart(2, "0")}</span>
+  <span class="font-display text-[1.22rem] font-semibold tracking-[-0.02em]">{t.name}</span>
+  <span class="text-[0.88rem] leading-[1.45] text-bf-fg-muted" set:html={inline(t.tagline)} />
+  <span class="mt-[0.55rem] flex items-center justify-between gap-[0.6rem]">
+    <BGBadge tone="pill">{t.kind}</BGBadge>
+    <span class="inline-flex items-center gap-[0.6rem]">
+      <span class:list={["inline-block size-[7px] rounded-full", dot[t.check.level]]} role="img" aria-label={label} title={label}></span>
+      <span class="text-bf-blue transition-transform duration-300 ease-bf group-hover/card:translate-x-1" aria-hidden="true">→</span>
+    </span>
+  </span>
+</a>

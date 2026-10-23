@@ -1,0 +1,207 @@
+---
+import "../styles/tailwind.css";
+import BGSiteFooter from "../components/bg/site-footer.astro";
+import BGSiteHeader from "../components/bg/site-header.astro";
+import BGToast from "../components/bg/toast.astro";
+import { hex, palette } from "../data/palette.ts";
+import { REPO, targets } from "../data/targets.ts";
+
+interface Props {
+  title: string;
+  description?: string;
+}
+const { title, description = "Bigface — one dark palette, ported to the tools you use." } =
+  Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+// Set by `site` in astro.config.mjs, so the og:image is right on both deployments.
+const origin = Astro.site ? new URL(Astro.site).origin : "";
+
+// Every colour on this site comes from palette/bigface.json: the chrome is the theme's own
+// surface ladder, the accents are its accents, and translucent steps are those same colours with
+// alpha. Gradients interpolate between palette stops; nothing else is invented.
+const kebab = (name: string) => name.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
+const vars: Record<string, string> = {
+  // the palette itself, under our own names: --bf-<colour> and --bf-ansi-<name>. tailwind.css maps
+  // shadcn's semantic tokens and the bg-bf-* utilities onto these and nothing else.
+  ...Object.fromEntries(
+    Object.entries(palette.colors).map(([k, c]) => [`--bf-${kebab(k)}`, c.hex]),
+  ),
+  ...Object.fromEntries(
+    Object.entries(palette.ansi).map(([k, c]) => [`--bf-ansi-${kebab(k)}`, c.hex]),
+  ),
+  // bright plates (buttons, selected tabs and chips) take the background colour as ink
+  "--ink-on-bright": "var(--bf-bg)",
+  // the two text greys: palette fg blended toward bg (translucent steps of palette colours)
+  "--fg-muted": "color-mix(in srgb, var(--bf-fg) 75%, var(--bf-bg))",
+  "--dim": "color-mix(in srgb, var(--bf-fg) 55%, var(--bf-bg))",
+};
+const style = Object.entries(vars)
+  .map(([k, v]) => `${k}:${v}`)
+  .join(";");
+---
+
+<!doctype html>
+<html lang="en" class="dark" style={style}>
+  <head>
+    <meta charset="utf-8" />
+    <script is:inline>
+      document.documentElement.classList.add("js");
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content={hex("bg")} />
+    <title>{title}</title>
+
+    <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
+    <link rel="icon" href={`${base}/favicon-32.png`} sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href={`${base}/apple-touch-icon.png`} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={`${origin}${base}/img/og.png`} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={`${origin}${base}/img/og.png`} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Recursive:slnt,wght,CASL,CRSV,MONO@-15..0,300..1000,0..1,0..1,0..1&display=swap"
+    />
+  </head>
+  <body>
+    <BGSiteHeader base={base} repo={REPO} />
+    <main id="main"><slot /></main>
+    <BGSiteFooter base={base} repo={REPO} ports={targets.length} />
+    <BGToast />
+
+    <script>
+      const toast = document.getElementById("toast");
+      let toastTimer: number | undefined;
+
+      const say = (message: string) => {
+        if (!toast) return;
+        toast.textContent = message;
+        toast.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = window.setTimeout(() => toast.classList.remove("show"), 1900);
+      };
+
+      // Copy anything carrying data-copy; buttons without data-swap keep their own label.
+      document.addEventListener("click", async (event) => {
+        const target = event.target as HTMLElement | null;
+        const trigger = target?.closest?.<HTMLElement>("[data-copy]");
+        if (!trigger) return;
+        event.preventDefault();
+        const value = trigger.getAttribute("data-copy") ?? "";
+        try {
+          await navigator.clipboard.writeText(value);
+        } catch {
+          const box = document.createElement("textarea");
+          box.value = value;
+          document.body.append(box);
+          box.select();
+          document.execCommand("copy");
+          box.remove();
+        }
+        const label = trigger.getAttribute("data-label") ?? "";
+        trigger.classList.add("done");
+        if (trigger.dataset.swap !== "off" && label) trigger.textContent = "copied";
+        const shown = value.length > 44 ? `${value.slice(0, 44)}…` : value;
+        say(`copied ${shown}`);
+        window.setTimeout(() => {
+          trigger.classList.remove("done");
+          if (trigger.dataset.swap !== "off" && label) trigger.textContent = label;
+        }, 1500);
+      });
+
+      // Header gains its hairline only once the page has moved.
+      const header = document.getElementById("site-header");
+      const onScroll = () => header?.classList.toggle("scrolled", window.scrollY > 8);
+      onScroll();
+      addEventListener("scroll", onScroll, { passive: true });
+
+      // Reveal on scroll.
+      const revealables = document.querySelectorAll("[data-reveal]");
+      if ("IntersectionObserver" in window) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (!entry.isIntersecting) continue;
+              entry.target.classList.add("in");
+              io.unobserve(entry.target);
+            }
+          },
+          { rootMargin: "0px 0px -8% 0px", threshold: 0.08 },
+        );
+        for (const el of revealables) io.observe(el);
+      } else {
+        for (const el of revealables) el.classList.add("in");
+      }
+
+      // Cursor spotlight on cards, plus a gentle parallax for the hero stage.
+      if (matchMedia("(pointer: fine)").matches) {
+        for (const card of document.querySelectorAll<HTMLElement>(".spotlight")) {
+          card.addEventListener("pointermove", (event) => {
+            const rect = card.getBoundingClientRect();
+            card.style.setProperty("--mx", `${event.clientX - rect.left}px`);
+            card.style.setProperty("--my", `${event.clientY - rect.top}px`);
+          });
+        }
+        const stage = document.querySelector<HTMLElement>("[data-parallax]");
+        if (stage) {
+          const layers = [...stage.querySelectorAll<HTMLElement>("[data-depth]")];
+          stage.addEventListener("pointermove", (event) => {
+            const rect = stage.getBoundingClientRect();
+            const x = (event.clientX - rect.left) / rect.width - 0.5;
+            const y = (event.clientY - rect.top) / rect.height - 0.5;
+            for (const layer of layers) {
+              const depth = Number(layer.dataset.depth ?? 0);
+              layer.style.transform = `translate3d(${x * depth * 26}px, ${y * depth * 26}px, 0)`;
+            }
+          });
+          stage.addEventListener("pointerleave", () => {
+            for (const layer of layers) layer.style.transform = "";
+          });
+        }
+      }
+
+      // Tab groups: buttons carry data-tab + aria-controls, panels carry ids.
+      for (const group of document.querySelectorAll<HTMLElement>("[data-tabs]")) {
+        const buttons = [...group.querySelectorAll<HTMLButtonElement>("[data-tab]")];
+        const select = (button: HTMLButtonElement) => {
+          for (const other of buttons) {
+            const on = other === button;
+            other.setAttribute("aria-selected", String(on));
+            const panel = document.getElementById(other.getAttribute("aria-controls") ?? "");
+            if (panel) panel.hidden = !on;
+          }
+        };
+        for (const button of buttons) button.addEventListener("click", () => select(button));
+        const initial = buttons.find((b) => b.getAttribute("aria-selected") === "true") ?? buttons[0];
+        if (initial) select(initial);
+      }
+
+      // App grid filter.
+      for (const filter of document.querySelectorAll<HTMLElement>("[data-filter]")) {
+        const chips = [...filter.querySelectorAll<HTMLButtonElement>("[data-kind]")];
+        const grid = document.querySelector<HTMLElement>("[data-cards]");
+        if (!grid) continue;
+        for (const chip of chips) {
+          chip.addEventListener("click", () => {
+            const kind = chip.dataset.kind ?? "all";
+            for (const other of chips) {
+              other.setAttribute("aria-pressed", String(other === chip));
+            }
+            for (const card of grid.querySelectorAll<HTMLElement>("[data-card-kind]")) {
+              card.hidden = kind !== "all" && card.dataset.cardKind !== kind;
+            }
+          });
+        }
+      }
+    </script>
+  </body>
+</html>

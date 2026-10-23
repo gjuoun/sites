@@ -1,0 +1,16 @@
+---
+// Bigface / Apps / <name> trail above an app page.
+interface Props {
+  base: string;
+  name: string;
+}
+const { base, name } = Astro.props;
+---
+
+<nav class="flex gap-[0.45rem] pt-2 font-code text-[0.8rem] text-bf-dim" aria-label="Breadcrumb">
+  <a href={`${base}/`}>Bigface</a>
+  <span>/</span>
+  <a href={`${base}/#apps`}>Apps</a>
+  <span>/</span>
+  <span class="text-foreground">{name}</span>
+</nav>

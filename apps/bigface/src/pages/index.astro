@@ -1,0 +1,129 @@
+---
+import { BGCard } from "@gjuoun/bigface-ui/components/bg/card";
+import { BGInstallTabs } from "@gjuoun/bigface-ui/components/bg/install-tabs";
+import BGAppCard from "../components/bg/app-card.astro";
+import BGDivider from "../components/bg/divider.astro";
+import BGFilterChips from "../components/bg/filter-chips.astro";
+import BGHero from "../components/bg/hero.astro";
+import BGMarquee from "../components/bg/marquee.astro";
+import BGSectionHead from "../components/bg/section-head.astro";
+import BGStat from "../components/bg/stat.astro";
+import BGSwatchChip from "../components/bg/swatch-chip.astro";
+import { hex, palette } from "../data/palette.ts";
+import { installCommand, REPO, targets } from "../data/targets.ts";
+import Base from "../layouts/Base.astro";
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const strip = ["blue", "cyan", "lime", "green", "yellow", "burntOrange", "brightYellow", "purple"];
+const kinds = [...new Set(targets.map((t) => t.kind))];
+const marquee = [
+  ...targets.map((t) => t.name),
+  "one palette",
+  `${targets.length} ports`,
+  "since 2018",
+];
+const colourCount = Object.keys(palette.colors).length;
+const quick = installCommand();
+const levelLabel = {
+  tool: "Checked with the tool",
+  schema: "Checked against its schema",
+  format: "Format-checked only",
+};
+const isLevel = (level: string): level is keyof typeof levelLabel => level in levelLabel;
+const oneApp = installCommand("ghostty zed vim");
+const everything = installCommand("all");
+const removeAll = installCommand("--uninstall all");
+const installTabs = [
+  {
+    id: "interactive",
+    label: "Interactive",
+    bar: "sh — install",
+    command: quick,
+    note: "Asks install or uninstall, then which apps. Enter picks every detected app.",
+  },
+  {
+    id: "one",
+    label: "One app",
+    bar: "sh — install ghostty zed vim",
+    command: oneApp,
+    note: "Pass any app ids; unknown ones are reported and skipped.",
+  },
+  {
+    id: "all",
+    label: "Everything",
+    bar: "sh — install all",
+    command: everything,
+    note: "Every supported app it finds on this machine.",
+  },
+  {
+    id: "off",
+    label: "Uninstall",
+    bar: "sh — uninstall all",
+    command: removeAll,
+    note: "Removes Bigface's files and prints the lines to drop from your config.",
+  },
+];
+---
+
+<Base title="Bigface — a dark color theme for your tools">
+  <BGHero base={base} repo={REPO} ports={targets.length} command={quick} />
+
+  <BGMarquee items={marquee} />
+
+  <section class="mt-[2.2rem]" data-reveal>
+    <div class="group/strip flex h-24 gap-[0.3rem] max-[620px]:h-[72px]" aria-label="Palette">
+      {strip.map((n) => <BGSwatchChip name={n} hex={hex(n)} />)}
+    </div>
+    <p class="mt-[0.7rem] mb-0 text-[0.87rem] text-bf-dim">
+      {colourCount} colours in the palette. This page runs on the theme's own background
+      <code>{hex("bg")}</code> — every colour here comes from
+      <code>palette/bigface.json</code>. Click a swatch to copy its hex.
+    </p>
+  </section>
+
+  <section
+    class="mt-10 grid grid-cols-4 gap-px overflow-hidden rounded-[16px] border border-bf-border bg-bf-border max-[900px]:grid-cols-2"
+    data-reveal
+  >
+    <BGStat value={targets.length} label="ports, one source" />
+    <BGStat value={colourCount} label="colours, no variants" />
+    <BGStat value={0} label="per-tool adjustments" />
+    <BGStat value={2018} label="first JetBrains release" />
+  </section>
+
+  <BGDivider />
+
+  <section id="install">
+    <BGSectionHead eyebrow="01 — install" title="One command, then it asks.">
+      The installer shows every app marked <code>installed</code> or <code>detected</code> and lets
+      you pick. It writes Bigface's own files only, never edits your config, and prints the one line
+      you still need to add.
+    </BGSectionHead>
+
+    <BGCard tone="plate" glow className="overflow-hidden p-[0.9rem]" data-reveal>
+      <BGInstallTabs client:load items={installTabs} />
+    </BGCard>
+
+    <p class="text-bf-dim" data-reveal>
+      Add <code>--dry-run</code> to see what it would do, or <a href={`${base}/install.sh`}>read the
+      script</a> first — it is generated from
+      <a href={`${REPO}/blob/main/src/installer.ts`}>src/installer.ts</a>.
+    </p>
+  </section>
+
+  <BGDivider />
+
+  <section id="apps">
+    <BGSectionHead eyebrow="02 — apps" title={`${targets.length} ports, one source of truth.`}>
+      Each page says exactly how far its theme was checked — loaded by the tool, validated against
+      its schema, or format-checked only. Nothing is claimed stronger than the proof.
+    </BGSectionHead>
+
+    <BGFilterChips kinds={kinds} />
+
+    <div class="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-[0.9rem]" data-cards>
+      {targets.map((t, i) => <BGAppCard target={t} index={i} base={base} />)}
+    </div>
+  </section>
+</Base>
+

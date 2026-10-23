@@ -1,0 +1,41 @@
+---
+import { contrastReport } from "../../data/contrast.ts";
+import { palette } from "../../data/palette.ts";
+
+// Every palette colour's contrast on the background, with its WCAG band. Informational only.
+const rows = contrastReport(palette as never);
+const label = (r: number) => (r >= 7 ? "AAA" : r >= 4.5 ? "AA" : r >= 3 ? "large text" : "below 3");
+const cell = "border-b border-bf-border-muted px-[0.6rem] py-[0.4rem]";
+---
+
+<table class="w-full border-collapse text-[0.9rem]">
+  <thead>
+    <tr>
+      {
+        ["Colour", "Hex", "Ratio on background", "WCAG"].map((h) => (
+          <th class:list={[cell, "font-semibold text-bf-fg-muted"]}>{h}</th>
+        ))
+      }
+    </tr>
+  </thead>
+  <tbody>
+    {
+      rows.map((r) => (
+        <tr>
+          <td class={cell}>
+            <i
+              class="inline-block size-[0.8em] rounded-[3px] bg-(--c) align-[-0.05em]"
+              style={`--c:${r.hex}`}
+            />{" "}
+            {r.name}
+          </td>
+          <td class={cell}>
+            <code>{r.hex}</code>
+          </td>
+          <td class={cell}>{r.ratio.toFixed(1)} : 1</td>
+          <td class:list={[cell, { "text-bf-burnt-orange": r.ratio < 4.5 }]}>{label(r.ratio)}</td>
+        </tr>
+      ))
+    }
+  </tbody>
+</table>

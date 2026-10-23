@@ -1,0 +1,70 @@
+---
+// One BG component on /ui/: name, kind, purpose, a "props not finalised" note where it applies, the
+// props straight from source, and the live example passed in the default slot. Page-private.
+import { BGBadge } from "@gjuoun/bigface-ui/components/bg/badge";
+import { BGCard } from "@gjuoun/bigface-ui/components/bg/card";
+import BGCodeCard from "../../components/bg/code-card.astro";
+import { type BGEntry, propsOf } from "../../data/ui-catalog.ts";
+
+interface Props {
+  entry: BGEntry;
+  source: string;
+  base: string;
+}
+const { entry, source, base } = Astro.props;
+const kind =
+  entry.kind === "wrapper"
+    ? `wrapper · over ${entry.wraps}`
+    : entry.kind === "helper"
+      ? "helper · not a component"
+      : "composite block";
+const where =
+  entry.live === "here"
+    ? null
+    : entry.live === "chrome"
+      ? "Rendered once per page by Base.astro: the live one is this page's own."
+      : `Page-level block, shown live in place on ${entry.live}`;
+---
+
+<BGCard tone="plate" className="mt-[1.4rem] min-w-0 p-5 md:p-6" id={`bg-${entry.name}`}>
+  <div class="flex flex-wrap items-baseline justify-between gap-2">
+    <h3 class="m-0 font-code text-[1.1rem]">{entry.name}</h3>
+    <span class="flex flex-wrap gap-2">
+      <BGBadge tone="pill">{kind}</BGBadge>
+      {!entry.finalised && <BGBadge tone="format">props not finalised</BGBadge>}
+    </span>
+  </div>
+  <p class="mt-2 mb-0 text-bf-fg-muted">{entry.purpose}</p>
+  {
+    !entry.finalised && (
+      <p class="mt-1 mb-0 text-[0.82rem] text-bf-burnt-orange">Not final: {entry.why}.</p>
+    )
+  }
+  <div class="mt-4 min-w-0">
+    {
+      where ? (
+        <p class="m-0 text-[0.88rem] text-bf-dim">
+          {entry.live === "chrome" ? (
+            where
+          ) : (
+            <>
+              {where.replace(entry.live, "")}
+              <a href={`${base}${entry.live}`}>{entry.live}</a>.
+            </>
+          )}
+        </p>
+      ) : (
+        <div class="max-w-full min-w-0 overflow-x-auto rounded-[14px] border border-bf-border-muted p-4">
+          <slot />
+        </div>
+      )
+    }
+  </div>
+  <div class="mt-4 min-w-0">
+    <BGCodeCard
+      path={`components/bg/${entry.file}`}
+      code={entry.kind === "helper" ? source.trim() : propsOf(entry.file, source)}
+      truncated={false}
+    />
+  </div>
+</BGCard>

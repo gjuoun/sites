@@ -1,0 +1,133 @@
+---
+import BGContrastTable from "../components/bg/contrast-table.astro";
+import BGEyebrow from "../components/bg/eyebrow.astro";
+import BGPaletteGroup from "../components/bg/palette-group.astro";
+import BGSwatch from "../components/bg/swatch.astro";
+import BGSyntaxPreview from "../components/bg/syntax-preview.astro";
+import { hex, palette } from "../data/palette.ts";
+import { REPO } from "../data/targets.ts";
+import Base from "../layouts/Base.astro";
+
+// Groups show only what the 2018 scheme actually defines; the blends get their own block below so
+// nobody mistakes them for original colours.
+const groups: [string, string, string[]][] = [
+  [
+    "surfaces",
+    "Surfaces",
+    ["bg", "cursorLine", "braceMatch", "selection", "border", "borderMuted"],
+  ],
+  ["text", "Text", ["fg", "comment", "fgDim", "caret"]],
+  [
+    "accents",
+    "Accents",
+    [
+      "blue",
+      "lightBlue",
+      "paleBlue",
+      "cyan",
+      "green",
+      "lime",
+      "yellow",
+      "brightYellow",
+      "burntOrange",
+      "purple",
+    ],
+  ],
+];
+const syntaxRows = Object.entries(palette.syntax);
+const ansiRows = Object.entries(palette.ansi);
+const colourCount = Object.keys(palette.colors).length;
+const count =
+  "inline-flex items-baseline gap-[0.35rem] rounded-full border border-bf-border bg-bf-border/4 px-[0.75rem] py-[0.35rem] text-[0.78rem] text-bf-fg-muted";
+const subLink =
+  "rounded-full px-[0.7rem] py-[0.3rem] text-bf-fg-muted hover:bg-bf-border/10 hover:text-foreground";
+const swatches = "grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-[0.7rem]";
+---
+
+<Base title="Bigface palette" description="Every colour in the Bigface theme, with the original JetBrains source for each one.">
+  <section class="pt-[clamp(0.5rem,3vw,2rem)]" data-reveal>
+    <BGEyebrow>the source of truth</BGEyebrow>
+    <h1 class="text-[clamp(2.6rem,6vw,4.4rem)] leading-[1.02] font-extrabold">
+      One palette.<br /><span class="bf-grad">Nothing else.</span>
+    </h1>
+    <p class="bf-lead">
+      Every theme in the repo is generated from <code>palette/bigface.json</code>, and every colour
+      in it is <strong>byte-for-byte from the 2018 JetBrains scheme</strong> — each labelled with the
+      exact <code>OPTION#FIELD</code> it came from and checked against the original XML by a test.
+      Nothing is blended or invented: when a tool needs a surface the scheme never defined, it gets
+      one of the scheme's own surfaces (the caret-row background, the matched-brace block, a border
+      grey) instead of a new colour.
+    </p>
+    <div class="mt-[1.4rem] mb-0 flex flex-wrap gap-2">
+      <span class={count}><strong class="font-code text-foreground">{Object.keys(palette.colors).length}</strong> colours</span>
+      <span class={count}><strong class="font-code text-foreground">{ansiRows.length}</strong> ANSI slots, all aliases</span>
+      <span class={count}><strong class="font-code text-foreground">{syntaxRows.length}</strong> syntax roles</span>
+      <span class={count}><strong class="font-code text-foreground">{colourCount}</strong> distinct colours, total</span>
+    </div>
+  </section>
+
+  <div class="mt-8 max-w-[640px]" data-reveal>
+    <BGSyntaxPreview terminal />
+  </div>
+
+  <nav
+    class="sticky top-[3.9rem] z-20 mt-[2.2rem] flex flex-wrap gap-[0.35rem] rounded-full border border-bf-border bg-bf-border-muted/82 p-[0.55rem] text-[0.8rem] backdrop-blur-[14px] max-[700px]:static max-[700px]:rounded-[16px]"
+    aria-label="Palette sections"
+  >
+    {groups.map(([id, title]) => <a class={subLink} href={`#${id}`}>{title}</a>)}
+    <a class={subLink} href="#ansi">Terminal</a>
+    <a class={subLink} href="#syntax">Syntax</a>
+    <a class={subLink} href="#contrast">Contrast</a>
+  </nav>
+
+  {groups.map(([id, title, names]) => (
+    <BGPaletteGroup id={id} title={title} count={names.length}>
+      <div class={swatches}>
+        {names.map((n) => <BGSwatch name={n} color={palette.colors[n]!} />)}
+      </div>
+    </BGPaletteGroup>
+  ))}
+
+  <BGPaletteGroup id="ansi" title="Terminal (ANSI)" count={ansiRows.length}>
+    <div class={swatches}>
+      {ansiRows.map(([n, c]) => <BGSwatch name={n} color={c} />)}
+    </div>
+  </BGPaletteGroup>
+
+  <BGPaletteGroup id="syntax" title="Syntax roles" count={syntaxRows.length}>
+    <table class="max-w-[640px]">
+      <thead>
+        <tr><th>Role</th><th>Colour</th><th>Hex</th></tr>
+      </thead>
+      <tbody>
+        {syntaxRows.map(([role, name]) => (
+          <tr>
+            <td class="font-code text-[0.8rem] text-bf-fg-muted">{role}</td>
+            <td>
+              <i
+                class="mr-[0.3rem] inline-block size-[0.8em] rounded-[3px] bg-(--c) align-[-0.06em]"
+                style={`--c:${hex(name)}`}
+              /> {name}
+            </td>
+            <td><code>{hex(name)}</code></td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </BGPaletteGroup>
+
+  <BGPaletteGroup id="contrast" title="Contrast">
+    <p class="text-bf-fg-muted">
+      Informational only. The colours are kept as designed, so a few roles (<code>fgDim</code>,
+      <code>comment</code>) sit below the WCAG 4.5:1 body-text guideline by intent.
+    </p>
+    <BGContrastTable />
+  </BGPaletteGroup>
+
+  <p class="mt-12 text-[0.85rem] text-bf-dim" data-reveal>
+    Raw file:
+    <a href={`${REPO}/blob/main/palette/bigface.json`}>palette/bigface.json</a> ·
+    <a href={`${REPO}/blob/main/src/targets.ts`}>generator targets</a> · Click any swatch to copy its
+    hex.
+  </p>
+</Base>

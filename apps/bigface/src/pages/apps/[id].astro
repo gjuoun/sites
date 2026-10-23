@@ -1,0 +1,137 @@
+---
+import { BGBadge } from "@gjuoun/bigface-ui/components/bg/badge";
+import { BGInstallTabs } from "@gjuoun/bigface-ui/components/bg/install-tabs";
+import BGAppHero from "../../components/bg/app-hero.astro";
+import BGBreadcrumbs from "../../components/bg/breadcrumbs.astro";
+import BGCodeCard from "../../components/bg/code-card.astro";
+import BGDownloadCard from "../../components/bg/download-card.astro";
+import BGManualSteps from "../../components/bg/manual-steps.astro";
+import BGMarketCard from "../../components/bg/market-card.astro";
+import BGNextCard from "../../components/bg/next-card.astro";
+import BGSplit from "../../components/bg/split.astro";
+import BGSyntaxPreview from "../../components/bg/syntax-preview.astro";
+import { installCommand, REPO, rawUrl, type Target, targets } from "../../data/targets.ts";
+import { themeFile } from "../../data/themes.ts";
+import Base from "../../layouts/Base.astro";
+
+export function getStaticPaths() {
+  return targets.map((t) => ({ params: { id: t.id }, props: { target: t } }));
+}
+const { target } = Astro.props as { target: Target };
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const main = target.files[0]!;
+const source = themeFile(target.id, main.path);
+const shown = source.split("\n").slice(0, 40).join("\n");
+const truncated = source.split("\n").length > 40;
+const install = installCommand(target.id);
+const uninstall = installCommand(`--uninstall ${target.id}`);
+const levelLabel = {
+  tool: "Checked with the tool",
+  schema: "Checked against its schema",
+  format: "Format-checked only",
+}[target.check.level];
+const index = targets.findIndex((t) => t.id === target.id);
+const next = targets[(index + 1) % targets.length]!;
+const installTabs = [
+  {
+    id: "install",
+    label: "Install",
+    command: install,
+    note: "Writes Bigface's own file, prints the one line to add.",
+  },
+  {
+    id: "uninstall",
+    label: "Uninstall",
+    command: uninstall,
+    note: "Removes the file and prints the line to drop.",
+  },
+];
+---
+
+<Base title={`Bigface for ${target.name}`} description={`${target.name}: ${target.tagline}`}>
+  <BGBreadcrumbs base={base} name={target.name} />
+
+  <BGAppHero target={target} index={index} total={targets.length} levelLabel={levelLabel} />
+
+  <BGSplit split={Boolean(target.screenshot)}>
+    <section slot="media" class="mt-[1.8rem]" data-reveal>
+      {target.screenshot ? (
+        <figure class="m-0">
+          <img
+            src={`${base}/${target.screenshot.file}`}
+            alt={target.screenshot.alt}
+            width={target.screenshot.width}
+            height={target.screenshot.height}
+            loading="lazy"
+            class="block h-auto w-full rounded-[14px] border border-bf-border"
+          />
+          <figcaption class="mt-2 text-[0.82rem] text-bf-dim">
+            {target.screenshot.caption ?? `A real screenshot: ${target.name}, Bigface applied.`}
+          </figcaption>
+        </figure>
+      ) : (
+        <BGSyntaxPreview terminal={target.terminalPreview} />
+      )}
+    </section>
+
+    {target.market && <BGMarketCard label={target.market.label} url={target.market.url} name={target.name} />}
+
+    <section id="install" data-reveal>
+      <h2>Install</h2>
+      <div class="mt-[0.6rem]">
+        <BGInstallTabs client:load items={installTabs} />
+      </div>
+      <p class="text-bf-dim">
+        It never edits your config; it prints the one line you still need to add (or remove).{" "}
+        <a href={`${base}/install.sh`}>Read the script</a> first, or add <code>--dry-run</code>.
+      </p>
+
+      <BGManualSteps steps={target.steps} />
+    </section>
+
+    <section data-reveal>
+      <h2>Download</h2>
+      <ul class="grid max-w-[560px] list-none gap-[0.6rem] p-0">
+        {target.download && (
+          <li>
+            <BGDownloadCard
+              href={`${base}/${target.download.href}`}
+              label={target.download.label}
+              detail="packaged extension"
+            />
+          </li>
+        )}
+        {target.files.map((f) => (
+          <li class="flex items-center gap-[0.8rem]">
+            <BGDownloadCard
+              href={`${base}/themes/${target.id}/${f.path}`}
+              label={f.label}
+              detail="download the file"
+              class="flex-1"
+            />
+            <a class="text-[0.75rem] whitespace-nowrap text-bf-dim hover:text-bf-blue" href={rawUrl(target.id, f.path)}>raw on GitHub</a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </BGSplit>
+
+  <section data-reveal>
+    <h2>What was checked</h2>
+    <p class="flex max-w-[68ch] flex-wrap items-baseline gap-[0.7rem]">
+      <BGBadge tone={target.check.level}>{levelLabel}</BGBadge>
+      <span class="text-bf-fg-muted">{target.check.text}</span>
+    </p>
+  </section>
+
+  <section data-reveal>
+    <h2>{main.label}</h2>
+    <BGCodeCard path={`themes/${target.id}/${main.path}`} code={shown} truncated={truncated} />
+    <p class="text-bf-dim">
+      Generated from the <a href={`${base}/palette/`}>palette</a>. Source:
+      <a href={`${REPO}/tree/main/themes/${target.id}`}>themes/{target.id}</a>.
+    </p>
+  </section>
+
+  <BGNextCard href={`${base}/apps/${next.id}/`} name={next.name} />
+</Base>

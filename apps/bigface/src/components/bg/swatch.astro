@@ -1,0 +1,39 @@
+---
+import { type Color, inkOn, sourceLabel } from "../../data/palette.ts";
+
+// A palette card: the colour plate (hex, the contrast its ink reaches, a "copy" hint) over the name
+// and where it comes from. Click copies the hex (data-copy → Base.astro's handler).
+interface Props {
+  name: string;
+  color: Color;
+}
+const { name, color } = Astro.props;
+// Whichever palette ink actually contrasts on this chip, and how much.
+const { ink, ratio } = inkOn(color.hex);
+---
+
+<button
+  type="button"
+  class="group/sw flex h-full w-full cursor-pointer flex-col overflow-hidden rounded-[14px] border border-bf-border bg-bf-border-muted/72 p-0 text-left leading-[inherit] text-inherit transition-[transform,border-color,box-shadow] duration-300 ease-bf hover:-translate-y-[3px] hover:border-bf-blue/40 hover:shadow-[0_22px_40px_-30px_color-mix(in_srgb,var(--bf-blue)_90%,transparent)]"
+  data-copy={color.hex}
+  data-swap="off"
+  aria-label={`Copy ${name} ${color.hex}`}
+>
+  <span
+    class="relative flex h-[82px] flex-[0_0_82px] items-end justify-between bg-(--c) px-[0.65rem] py-2 font-code text-[0.72rem] font-semibold text-(--ink)"
+    style={`--c:${color.hex};--ink:${ink}`}
+  >
+    <span>{color.hex}</span>
+    <span class="ml-auto font-medium tracking-[0.02em] opacity-78">{ratio}:1</span>
+    <span
+      class="text-[0.6rem] font-normal tracking-[0.08em] uppercase opacity-0 transition-opacity duration-200 group-hover/sw:opacity-70"
+      >copy</span
+    >
+  </span>
+  <span
+    class="flex flex-[1_1_auto] flex-col justify-center gap-[0.1rem] px-[0.65rem] pt-[0.55rem] pb-[0.6rem] text-[0.85rem]"
+  >
+    <strong class="font-semibold tracking-[-0.01em]">{name}</strong>
+    <span class="font-code text-[0.64rem] leading-[1.4] break-all text-bf-fg-muted">{sourceLabel(color)}</span>
+  </span>
+</button>

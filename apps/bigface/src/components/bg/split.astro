@@ -1,0 +1,33 @@
+---
+// Media beside its instructions on wide screens, stacked below 1024px. Desktop puts the instructions
+// on the left (45%) and the media on the right (55%, free to grow) — Jun picked that from the /ui/ mocks: the reader
+// meets "how to install" first, and the screenshot keeps the wider column. The media slot still comes
+// first in the DOM, so the stacked order below 1024px stays media → instructions; only the desktop
+// column order is swapped with order utilities. The instructions column never gets narrower than
+// 340px, and below lg the grid is off, so text never shrinks. split={false} renders the same order
+// with no grid at all (no empty column).
+interface Props {
+  split?: boolean;
+  class?: string;
+}
+const { split = true, class: extra = "" } = Astro.props;
+---
+
+<div
+  data-layout={split ? "split" : "stack"}
+  class:list={[
+    split && "lg:grid lg:grid-cols-[minmax(340px,45fr)_minmax(0,55fr)] lg:items-start lg:gap-8",
+    extra,
+  ]}
+>
+  <div class:list={["min-w-0", split && "lg:order-2"]} data-split="media"><slot name="media" /></div>
+  <div
+    class:list={[
+      "min-w-0",
+      split && "lg:order-1 lg:[&>:first-child]:mt-[1.8rem] lg:[&>:first-child>h2:first-child]:mt-0",
+    ]}
+    data-split="aside"
+  >
+    <slot />
+  </div>
+</div>

@@ -1,0 +1,5 @@
+/* Tailwind's own colour scale is cleared, so only the palette-backed names below can be generated.
+   Imported before the library's theme so the theme's names survive the reset. */
+@theme {
+  --color-*: initial;
+}

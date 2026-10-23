@@ -1,0 +1,16 @@
+---
+// One section of the palette page: a heading with a count, then its content.
+interface Props {
+  id: string;
+  title: string;
+  count?: number;
+}
+const { id, title, count } = Astro.props;
+---
+
+<section id={id} class="mt-[2.8rem]" data-reveal>
+  <h2 class="mb-4 flex items-baseline gap-[0.6rem] text-[clamp(1.35rem,2.4vw,1.8rem)]">
+    {title}{" "}{count !== undefined && <span class="font-code text-[0.7rem] tracking-[0.08em] text-bf-dim">{count}</span>}
+  </h2>
+  <slot />
+</section>

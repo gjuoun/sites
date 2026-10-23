@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Bigface polar bear mark</title>
+  <desc id="desc">A calm polar bear face in cream on a deep blue field, with a pale ice glow behind the head and a few snow sparkles.</desc>
+  <defs>
+    <linearGradient id="field" gradientUnits="userSpaceOnUse" x1="40" y1="0" x2="470" y2="512">
+      <stop offset="0" stop-color="#2E7BE6"/>
+      <stop offset="0.48" stop-color="#1A54B4"/>
+      <stop offset="1" stop-color="#08265C"/>
+    </linearGradient>
+    <radialGradient id="ice" gradientUnits="userSpaceOnUse" cx="250" cy="210" r="300">
+      <stop offset="0" stop-color="#8FD4FF" stop-opacity="0.55"/>
+      <stop offset="0.62" stop-color="#4FA8F0" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#0A2A62" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="fur" gradientUnits="userSpaceOnUse" x1="180" y1="150" x2="330" y2="480">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="0.55" stop-color="#F3F8FF"/>
+      <stop offset="1" stop-color="#D6E6FA"/>
+    </linearGradient>
+    <linearGradient id="muzzle" gradientUnits="userSpaceOnUse" x1="180" y1="300" x2="330" y2="450">
+      <stop offset="0" stop-color="#F1F8FF"/>
+      <stop offset="1" stop-color="#CDE1F7"/>
+    </linearGradient>
+    <clipPath id="frame">
+      <rect width="512" height="512"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#frame)">
+    <!-- Deep blue field -->
+    <rect width="512" height="512" fill="url(#field)"/>
+    <rect width="512" height="512" fill="url(#ice)"/>
+
+    <!-- Aurora sweep -->
+    <path d="M -40 372 C 120 296, 232 400, 372 322 C 452 278, 502 232, 552 236 L 552 512 L -40 512 Z"
+          fill="#00B0FF" opacity="0.10"/>
+
+    <!-- Snow sparkles -->
+    <g fill="#B6E2FF">
+      <path d="M 74 74 C 79 92, 84 97, 102 102 C 84 107, 79 112, 74 130 C 69 112, 64 107, 46 102 C 64 97, 69 92, 74 74 Z" opacity="0.85"/>
+      <path d="M 442 138 C 446 151, 450 155, 463 159 C 450 163, 446 167, 442 180 C 438 167, 434 163, 421 159 C 434 155, 438 151, 442 138 Z" opacity="0.7"/>
+      <path d="M 452 372 C 455 382, 458 385, 468 388 C 458 391, 455 394, 452 404 C 449 394, 446 391, 436 388 C 446 385, 449 382, 452 372 Z" opacity="0.6"/>
+      <path d="M 56 300 C 59 310, 62 313, 72 316 C 62 319, 59 322, 56 332 C 53 322, 50 319, 40 316 C 50 313, 53 310, 56 300 Z" opacity="0.55"/>
+    </g>
+
+    <!-- Ears, behind the head -->
+    <circle cx="146" cy="182" r="60" fill="url(#fur)"/>
+    <circle cx="366" cy="182" r="60" fill="url(#fur)"/>
+    <circle cx="146" cy="182" r="30" fill="#BFD8F2"/>
+    <circle cx="366" cy="182" r="30" fill="#BFD8F2"/>
+
+    <!-- Broad polar bear head -->
+    <path fill="url(#fur)" d="
+      M 92 306
+      C 92 218, 168 160, 256 160
+      C 344 160, 420 218, 420 306
+      L 420 356
+      C 420 428, 356 472, 256 472
+      C 156 472, 92 428, 92 356
+      Z"/>
+
+    <!-- Muzzle -->
+    <ellipse cx="256" cy="376" rx="110" ry="82" fill="url(#muzzle)"/>
+
+    <!-- Eyes -->
+    <ellipse cx="198" cy="278" rx="21" ry="25" fill="#08192E"/>
+    <ellipse cx="314" cy="278" rx="21" ry="25" fill="#08192E"/>
+    <circle cx="191" cy="269" r="7" fill="#FFFFFF" opacity="0.92"/>
+    <circle cx="307" cy="269" r="7" fill="#FFFFFF" opacity="0.92"/>
+
+    <!-- Nose -->
+    <path fill="#08192E" d="
+      M 222 326
+      C 232 313, 280 313, 290 326
+      C 297 335, 292 349, 282 360
+      C 272 371, 240 371, 230 360
+      C 220 349, 215 335, 222 326
+      Z"/>
+
+    <!-- Mouth -->
+    <path d="M 256 370 L 256 386" stroke="#08192E" stroke-width="10" stroke-linecap="round"/>
+    <path d="M 256 386 C 256 406, 234 414, 214 402" fill="none" stroke="#08192E" stroke-width="10" stroke-linecap="round"/>
+    <path d="M 256 386 C 256 406, 278 414, 298 402" fill="none" stroke="#08192E" stroke-width="10" stroke-linecap="round"/>
+  </g>
+</svg>

@@ -1,0 +1,21 @@
+---
+// The endless strip of tool names under the hero. Pauses on hover.
+interface Props {
+  items: string[];
+}
+const { items } = Astro.props;
+const item =
+  "inline-flex items-center gap-[2.2rem] whitespace-nowrap after:text-bf-blue after:opacity-50 after:content-['✦']";
+---
+
+<div
+  class="group/marquee mt-6 overflow-hidden border-y border-bf-border py-[0.9rem] [mask-image:linear-gradient(to_right,transparent,#000_8%,#000_92%,transparent)]"
+  aria-hidden="true"
+>
+  <div
+    class="flex w-max animate-marquee gap-[2.2rem] font-code text-[0.84rem] tracking-[0.14em] text-bf-fg/72 uppercase group-hover/marquee:[animation-play-state:paused]"
+  >
+    {items.map((name) => <span class={item}>{name}</span>)}
+    {items.map((name) => <span class={item}>{name}</span>)}
+  </div>
+</div>

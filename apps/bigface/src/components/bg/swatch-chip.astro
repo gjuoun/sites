@@ -1,0 +1,25 @@
+---
+import { inkOn } from "../../data/palette.ts";
+
+// One colour of the home strip: grows on hover, shows its name and hex in the ink that contrasts
+// best (inkOn), and copies the hex on click (data-copy → Base.astro's handler).
+interface Props {
+  name: string;
+  hex: string;
+}
+const { name, hex } = Astro.props;
+const label =
+  "absolute left-[0.6rem] font-code text-[0.66rem] tracking-[0.04em] text-(--ink) opacity-0 transition-opacity duration-300 group-hover/sw:opacity-92 max-[620px]:hidden";
+---
+
+<button
+  type="button"
+  class="group/sw relative min-w-0 flex-1 cursor-pointer overflow-hidden rounded-[12px] border-0 bg-(--c) p-0 leading-[1.65] will-change-[flex-grow] [transition:flex-grow_0.5s_var(--ease-bf),transform_0.35s_var(--ease-bf),box-shadow_0.3s_var(--ease-bf),filter_0.3s_var(--ease-bf)] group-hover/strip:not-hover:brightness-90 group-hover/strip:not-hover:saturate-[0.72] hover:grow-[2.6] hover:-translate-y-1 hover:shadow-[0_18px_34px_-26px_color-mix(in_srgb,var(--bf-fg)_60%,transparent)]"
+  style={`--c:${hex};--ink:${inkOn(hex).ink}`}
+  data-copy={hex}
+  data-swap="off"
+  aria-label={`Copy ${name} ${hex}`}
+>
+  <span class:list={[label, "bottom-6 font-semibold"]}>{name}</span>
+  <span class:list={[label, "bottom-[0.55rem]"]}>{hex}</span>
+</button>
