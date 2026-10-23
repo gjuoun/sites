@@ -1,6 +1,5 @@
 "use client";
 
-import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { anchor, makeSelector, type QuoteSelector, type TextRange } from "@/lib/anchor";
@@ -27,6 +26,8 @@ const highlights = () => (typeof CSS !== "undefined" && "highlights" in CSS ? CS
 export function DocView({ session, title, path, html, initialComments, header, toc }: { session: string; title: string; path: string; html: string; initialComments: Comment[]; header: ReactNode; toc: ReactNode }) {
   const bodyRef = useRef<HTMLElement>(null);
   const mainRef = useRef<HTMLElement>(null);
+  const tocRef = useRef<HTMLDetailsElement>(null);
+  const commentsRef = useRef<HTMLElement>(null);
   const [author, setAuthor] = useState("jun");
   useEffect(() => {
     const saved = localStorage.getItem(AUTHOR_KEY);
@@ -52,6 +53,20 @@ export function DocView({ session, title, path, html, initialComments, header, t
   const showResolved = chrome.showResolved;
   const setShowResolved = (v: boolean) => setChrome({ showResolved: v });
   const [anchors, setAnchors] = useState<Record<string, TextRange | null>>({});
+
+  // Below md the panels are part of the page: Contents is a disclosure above the doc, Comments sit
+  // under it. The top-bar buttons therefore scroll to one and open it — no sheet, and nothing that
+  // depends on hydration to be usable.
+  useEffect(() => {
+    if (!chrome.sheet) return;
+    if (chrome.sheet === "toc") {
+      if (tocRef.current) tocRef.current.open = true;
+      tocRef.current?.scrollIntoView({ block: "start" });
+    } else {
+      commentsRef.current?.scrollIntoView({ block: "start", behavior: "smooth" });
+    }
+    setChrome({ sheet: null });
+  }, [chrome.sheet]);
 
   // Anchor every comment against the current text and draw the highlights.
   useEffect(() => {
@@ -242,63 +257,65 @@ export function DocView({ session, title, path, html, initialComments, header, t
     />
   );
 
-  // Desktop: Contents | doc | Comments, each side column collapsing (Comments to a thin rail).
-  // Phone: the doc alone, with Contents and Comments as bottom sheets opened from the top bar.
-  const cols = desktop ? `${chrome.tocOpen && toc ? "240px" : "0px"} minmax(0,1fr) ${chrome.cmOpen ? "340px" : "0px"}` : "minmax(0,1fr)";
+  // Layout is CSS-first and phone-first: one column, TOC as a disclosure above the doc, comments
+  // under it. From md up the same nodes become the three-column reading layout. This used to be
+  // decided in JS from a media query, so the server painted the 240px/1fr/340px split on phones and
+  // the content column collapsed to 0 px wide — an h1 that wrapped one letter per line — until
+  // hydration replaced it.
+  const vars = { "--toc-w": chrome.tocOpen && toc ? "240px" : "0px", "--cm-w": chrome.cmOpen ? "340px" : "0px" } as React.CSSProperties;
   return (
-    <div className="grid min-h-[calc(100vh-var(--bar-h))] transition-[grid-template-columns] duration-200" style={{ gridTemplateColumns: cols }}>
-      {desktop ? (
-        <aside className={cn("border-border overflow-x-clip border-r", chrome.tocOpen && toc ? "" : "invisible border-0")} aria-hidden={!chrome.tocOpen}>
-          <div className="sticky top-[var(--bar-h)] max-h-[calc(100vh-var(--bar-h))] overflow-y-auto p-3">{toc}</div>
-        </aside>
+    <div>
+      {toc ? (
+        <details
+          ref={tocRef}
+          data-testid="toc-disclosure"
+          className="border-border bg-card/50 mx-4 mt-4 rounded-xl border px-3 py-2 md:hidden"
+        >
+          <summary className="cursor-pointer text-[13px] font-semibold marker:text-muted-foreground">Contents</summary>
+          <div className="pt-2">{toc}</div>
+        </details>
       ) : null}
-      <main className="relative min-w-0 px-4 pt-6 pb-24 md:px-10 md:pt-8" ref={mainRef}>
-        <div className="mx-auto min-w-0 max-w-[760px]">
-          {header}
-          <DocBody html={html} ref={bodyRef} onClick={onDocClick} onMouseMove={onDocMove} onMouseLeave={onDocLeave} />
-        </div>
-        {draft ? (
-          <Button
-            size="sm"
-            data-testid="comment-button"
-            className="absolute z-5 shadow-md"
-            style={{ top: draft.top, left: draft.left }}
-            onMouseDown={(e) => e.preventDefault()}
-            onClick={startComment}
+      <div
+        className="grid min-h-[calc(100vh-var(--bar-h))] grid-cols-1 transition-[grid-template-columns] duration-200 md:grid-cols-[var(--toc-w)_minmax(0,1fr)_var(--cm-w)]"
+        style={vars}
+      >
+        {toc ? (
+          <aside
+            className={cn("border-border hidden overflow-x-clip border-r md:block", !chrome.tocOpen && "md:invisible")}
+            aria-hidden={!chrome.tocOpen}
+            data-testid="toc-panel"
           >
-            Comment
-          </Button>
-        ) : null}
-      </main>
-      {desktop ? (
-        chrome.cmOpen ? (
-          <aside className="border-border bg-background border-l">
-            <div className="sticky top-[var(--bar-h)] max-h-[calc(100vh-var(--bar-h))] overflow-y-auto p-3.5">{panel}</div>
+            <div className="sticky top-[var(--bar-h)] max-h-[calc(100vh-var(--bar-h))] overflow-y-auto p-3">{toc}</div>
           </aside>
-        ) : (
-          // Collapsed means gone: the Comments button in the top bar brings it back.
-          <aside aria-hidden className="invisible" />
-        )
-      ) : (
-        <>
-          <Sheet open={chrome.sheet === "toc"} onOpenChange={(o) => setChrome({ sheet: o ? "toc" : null })}>
-            <SheetContent side="bottom" showCloseButton={false} className="bg-background max-h-[75vh] overflow-y-auto rounded-t-2xl px-4 pt-2 pb-8">
-              <div className="bg-border mx-auto mb-3 h-1 w-10 shrink-0 rounded-full" aria-hidden />
-              <SheetTitle className="sr-only">Contents</SheetTitle>
-              <SheetDescription className="sr-only">Jump to a section</SheetDescription>
-              <div onClick={(e) => (e.target as HTMLElement).closest("a") && setChrome({ sheet: null })}>{toc}</div>
-            </SheetContent>
-          </Sheet>
-          <Sheet open={chrome.sheet === "cm"} onOpenChange={(o) => setChrome({ sheet: o ? "cm" : null })}>
-            <SheetContent side="bottom" showCloseButton={false} className="bg-background max-h-[80vh] overflow-y-auto rounded-t-2xl px-4 pt-2 pb-8">
-              <div className="bg-border mx-auto mb-3 h-1 w-10 shrink-0 rounded-full" aria-hidden />
-              <SheetTitle className="sr-only">Comments</SheetTitle>
-              <SheetDescription className="sr-only">Comments on this document</SheetDescription>
-              {panel}
-            </SheetContent>
-          </Sheet>
-        </>
-      )}
+        ) : null}
+        <main className="relative min-w-0 px-4 pt-6 pb-24 md:px-10 md:pt-8" ref={mainRef}>
+          <div className="mx-auto min-w-0 max-w-[760px]">
+            {header}
+            <DocBody html={html} ref={bodyRef} onClick={onDocClick} onMouseMove={onDocMove} onMouseLeave={onDocLeave} />
+          </div>
+          {draft ? (
+            <Button
+              size="sm"
+              data-testid="comment-button"
+              className="absolute z-5 shadow-md"
+              style={{ top: draft.top, left: draft.left }}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={startComment}
+            >
+              Comment
+            </Button>
+          ) : null}
+        </main>
+        <aside
+          ref={commentsRef}
+          data-testid="comments-panel"
+          className={cn("border-border bg-background scroll-mt-[var(--bar-h)] border-t md:border-t-0 md:border-l", !chrome.cmOpen && "md:invisible")}
+        >
+          <div className="p-3.5 md:sticky md:top-[var(--bar-h)] md:max-h-[calc(100vh-var(--bar-h))] md:overflow-y-auto">
+            {panel}
+          </div>
+        </aside>
+      </div>
     </div>
   );
 }

@@ -62,15 +62,22 @@ const subscribeMq = (l: () => void) => {
   mq.addEventListener("change", l);
   return () => mq.removeEventListener("change", l);
 };
-/** Side panels sit beside the doc from 768px up; below that they open as bottom sheets. */
+/**
+ * Side panels sit beside the doc from 768px up; below that they are part of the page.
+ *
+ * The server snapshot is `false` on purpose: the layout itself is CSS-first (one column, then three
+ * at md), so this hook only decides which affordance a top-bar button drives. Painting the desktop
+ * assumption server-side is what made a phone show a 240px/0px/340px split until hydration.
+ */
 export const useIsDesktop = () =>
   useSyncExternalStore(
     subscribeMq,
     () => matchMedia(DESKTOP).matches,
-    () => true,
+    () => false,
   );
 
-/** The top bar's Contents / Comments buttons: a side panel on desktop, a sheet on a phone. */
+/** The top bar's Contents / Comments buttons: toggle the side panel on desktop, jump to the
+ *  inline section on a phone (the doc page clears `sheet` once it has scrolled there). */
 export function togglePanel(which: "toc" | "cm", desktop: boolean) {
   const c = read();
   if (desktop) setChrome(which === "toc" ? { tocOpen: !c.tocOpen } : { cmOpen: !c.cmOpen });
