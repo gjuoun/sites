@@ -21,7 +21,7 @@ if [ "$#" -gt 0 ]; then
   dirs=("$@")
 else
   dirs=()
-  for d in apps/*/dist apps/blackboard/site; do [ -d "$d" ] && dirs+=("$d"); done
+  for d in apps/*/dist apps/blackboard-site; do [ -d "$d" ] && dirs+=("$d"); done
 fi
 
 [ "${#dirs[@]}" -gt 0 ] || { echo "ASSET-PREFIX error=no-built-dirs (build first)"; exit 2; }
