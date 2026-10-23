@@ -27,6 +27,12 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
+      # Astro's CLI refuses to run on an unsupported Node: qublack's astro 7.4.2 needs >=22.23.4
+      # while the runner image ships 22.23.3, and it fails as 'Node.js v22.23.3 is not supported'.
+      # Pinning 24 here makes every workflow use one supported runtime, whatever astro's floor is.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
       - run: bun install --frozen-lockfile
       - run: bun run --cwd apps/jun-hermes build
       - uses: cloudflare/wrangler-action@v3
