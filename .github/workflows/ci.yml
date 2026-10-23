@@ -1,0 +1,56 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      # Every package's own task, sharded by the runner: typecheck, lint, the whole test suite and
+      # each app's build. blackboard's build is a real next build; bigface's packs a vsix.
+      - run: bunx turbo run typecheck lint test build
+
+  generated:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      # tokens.css is generated from the vendored palette. A palette edit must arrive with the
+      # regenerated file; this is the same gate bigface-theme runs on its own themes/.
+      - name: packages/ui tokens.css is up to date
+        run: |
+          bun run --cwd packages/ui theme:sync
+          git diff --exit-code packages/ui/src/styles/tokens.css
+
+  vendored-bigface:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Vendored copies match the revision in SYNCED_FROM
+        run: |
+          set -euo pipefail
+          rev=$(cat packages/bigface-tokens/SYNCED_FROM)
+          echo "bigface-theme @ $rev"
+          git clone --quiet https://github.com/gjuoun/bigface-theme "$RUNNER_TEMP/bigface-theme"
+          git -C "$RUNNER_TEMP/bigface-theme" checkout --quiet "$rev"
+          src="$RUNNER_TEMP/bigface-theme"
+          dst=packages/bigface-tokens
+          cmp "$src/palette/bigface.json" "$dst/palette/bigface.json"
+          cmp "$src/src/contrast-math.ts" "$dst/src/contrast-math.ts"
+          cmp "$src/src/installer.ts" "$dst/src/installer.ts"
+          diff -r "$src/themes" "$dst/themes"
+          echo "vendored copies match $rev"

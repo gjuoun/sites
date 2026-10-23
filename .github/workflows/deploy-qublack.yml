@@ -1,0 +1,44 @@
+name: Deploy qublack to Cloudflare Pages
+
+# qublack.qqntt.com. The woff2 shards are not committed: they are cut from the v1.0.4 release
+# asset on every deploy by apps/qublack/scripts/fetch-fonts.sh, which also rewrites the committed
+# qublack-fonts.css from the same cut (so a stale css shows up as a git diff, not as a broken page).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/qublack/**'
+      - 'packages/**'
+      - '.github/workflows/deploy-qublack.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-qublack
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r apps/qublack/tools/requirements.txt
+      - run: bun install --frozen-lockfile
+      - run: bun run --cwd apps/qublack fonts:web
+      - run: bunx turbo run build --filter=@sites/qublack...
+      - name: The committed shard css still matches this cut
+        run: git diff --exit-code apps/qublack/src/styles/qublack-fonts.css
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy apps/qublack/dist --project-name qublack --branch main

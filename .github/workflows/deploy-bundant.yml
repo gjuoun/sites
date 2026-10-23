@@ -1,0 +1,39 @@
+name: Deploy bundant docs to Cloudflare Pages
+
+# bundant.qqntt.com, served from the ROOT base (SITE_BASE=/). This replaces the cross-repo
+# stopgap that lived in bigface-theme purely because the Cloudflare token was in that repo's
+# secrets — the monorepo holds the token now, so the site can deploy from its own source.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/bundant/**'
+      - 'packages/**'
+      - '.github/workflows/deploy-bundant.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-bundant
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - run: bunx turbo run build --filter=@sites/bundant...
+        env:
+          SITE_BASE: /
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy apps/bundant/dist --project-name bundant --branch main

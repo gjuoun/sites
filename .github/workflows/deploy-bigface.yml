@@ -1,0 +1,36 @@
+name: Deploy bigface to Cloudflare Pages
+
+# bigface.qqntt.com. The site build packs the VS Code extension and copies the vendored themes
+# into public/, so it needs the workspace (packages/bigface-tokens) but nothing from bigface-theme.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/bigface/**'
+      - 'packages/**'
+      - '.github/workflows/deploy-bigface.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-bigface
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - run: bunx turbo run build --filter=@sites/bigface...
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy apps/bigface/dist --project-name bigface-theme --branch main

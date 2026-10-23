@@ -1,0 +1,36 @@
+name: Deploy jun-hermes to Cloudflare Pages
+
+# jun-hermes.qqntt.com — the Google OAuth verification site. This is the deploy surface the OAuth
+# review points at (/privacy, /terms, /oauth2/callback), so nothing but the explicit file list in
+# apps/jun-hermes/scripts/build.mjs is published. Cloudflare Pages resolves /privacy to privacy.html.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/jun-hermes/**'
+      - '.github/workflows/deploy-jun-hermes.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-jun-hermes
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - run: bun run --cwd apps/jun-hermes build
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy apps/jun-hermes/dist --project-name jun-hermes --branch main
