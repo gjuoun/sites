@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Authorization — jun-hermes</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="../assets/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="../"><img src="../assets/logo.svg" alt="">jun-hermes</a>
+    <nav class="site" aria-label="Main">
+      <a href="../">Home</a>
+      <a href="../privacy.html">Privacy</a>
+      <a href="../terms.html">Terms</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap status">
+  <div class="icon" id="icon">⏳</div>
+  <h1 id="title">Completing authorization…</h1>
+  <p id="detail">Waiting for the authorization result from Google.</p>
+  <p><a class="btn" href="../">Return to home</a></p>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <span>© 2026 jun-hermes</span>
+    <span><a href="../privacy.html">Privacy</a> · <a href="../terms.html">Terms</a></span>
+  </div>
+</footer>
+
+<script>
+/*
+  OAuth 2.0 redirect endpoint.
+
+  This page only reports the outcome of the authorization request. The authorization
+  code is never stored, logged or forwarded by this page — it is read from the URL by the
+  app that initiated the request (desktop loopback) and immediately exchanged over TLS.
+  Any query parameters echoed below are shown to the user only for confirmation.
+*/
+(function () {
+  var params = new URLSearchParams(window.location.search);
+  var error = params.get("error");
+  var code = params.get("code");
+  var state = params.get("state");
+  var icon = document.getElementById("icon");
+  var title = document.getElementById("title");
+  var detail = document.getElementById("detail");
+
+  if (error) {
+    icon.textContent = "⚠️";
+    title.textContent = "Authorization was not completed";
+    detail.textContent = "Google returned: " + error +
+      (params.get("error_description") ? " — " + params.get("error_description") : "") +
+      ". You can close this window and try again from the app.";
+  } else if (code) {
+    icon.textContent = "✅";
+    title.textContent = "Authorization complete";
+    detail.textContent = "Google approved the request" +
+      (state ? " (request id " + state + ")" : "") +
+      ". You can close this window and return to the app. No token or code is stored on this page.";
+  } else {
+    icon.textContent = "ℹ️";
+    title.textContent = "Nothing to complete";
+    detail.textContent = "This is the OAuth 2.0 redirect endpoint for jun-hermes. " +
+      "Authorizations are started from the app on your device, not from this page.";
+  }
+})();
+</script>
+</body>
+</html>

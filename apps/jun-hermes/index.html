@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>jun-hermes — connect your own Google account to your AI agent</title>
+<meta name="description" content="jun-hermes lets a self-hosted AI agent read and act on the Google Workspace account of the person who installs it — Gmail, Calendar, Tasks and Drive — using OAuth 2.0 with tokens stored only on the user's own device.">
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="./"><img src="assets/logo.svg" alt="">jun-hermes</a>
+    <nav class="site" aria-label="Main">
+      <a href="./" aria-current="page">Home</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Terms</a>
+      <a href="mailto:gjuoun@gmail.com">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <span class="eyebrow">Personal agent integration</span>
+    <h1>Your AI agent, connected to <em>your own</em> Google account.</h1>
+    <p class="lede">jun-hermes is an OAuth 2.0 integration for a self-hosted personal AI assistant. It
+      lets the person running the assistant read mail, manage tasks and calendar events, and open documents
+      in <strong>their own</strong> Google Workspace account — with explicit consent, and with credentials
+      that never leave their machine.</p>
+    <div class="cta">
+      <a class="btn primary" href="privacy.html">Read the privacy policy</a>
+      <a class="btn" href="terms.html">Terms of service</a>
+    </div>
+  </section>
+
+  <section>
+    <h2>What the app does</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Gmail</h3>
+        <p>Reads and searches the user's own mailbox so the assistant can summarise what arrived, find a
+          specific message, or draft and send a reply the user asks for.</p>
+      </div>
+      <div class="card">
+        <h3>Calendar</h3>
+        <p>Lists upcoming events and creates, moves or cancels the events the user requests.</p>
+      </div>
+      <div class="card">
+        <h3>Tasks</h3>
+        <p>Adds reminders and checklist items, and marks them complete when the user says so.</p>
+      </div>
+      <div class="card">
+        <h3>Drive &amp; Docs</h3>
+        <p>Opens, exports and files the documents the user points it at — for example archiving a receipt PDF
+          into the right folder.</p>
+      </div>
+    </div>
+    <p>Every action is initiated by the account owner in conversation with their assistant. There is no
+      background crawling, no mailbox mining, and no data sent anywhere the user did not ask for.</p>
+  </section>
+
+  <section>
+    <h2>How it works</h2>
+    <ol>
+      <li><strong>Authorization.</strong> The user starts the sign-in from their own machine. The browser opens
+        Google's OAuth 2.0 consent screen, which lists exactly the scopes requested and the Google account
+        that will be connected.</li>
+      <li><strong>Consent.</strong> Google returns an authorization code to the app's redirect endpoint
+        (<code>/oauth2/callback</code>) or to the loopback address of the desktop app. The code is exchanged
+        once for a refresh token over TLS.</li>
+      <li><strong>Local storage.</strong> The refresh token is stored encrypted on the user's own device —
+        in the operating-system keychain or a local password manager. It is never uploaded to a third-party
+        server, and no copy of it is kept by the developer.</li>
+      <li><strong>On-demand use.</strong> When the user asks the assistant to do something in Google, the app
+        exchanges the refresh token for a short-lived access token and calls the Google API for that one
+        action.</li>
+      <li><strong>Revocation.</strong> The user can revoke access at any time from
+        <a href="https://myaccount.google.com/permissions">Google Account permissions</a> or by deleting the
+        local token.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>How Google user data is handled</h2>
+    <table>
+      <thead>
+        <tr><th>Question</th><th>Answer</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Who can use the app?</td><td>The single person who installed and configured it on their own machine. There is no multi-tenant service and no public sign-up.</td></tr>
+        <tr><td>Where does data go?</td><td>Google API responses are processed in memory on the user's device to answer the user's request. Message and file contents are not stored on developer-operated servers.</td></tr>
+        <tr><td>Is data shared or sold?</td><td>No. Google user data is not sold, rented, transferred or shared with third parties, and is not used for advertising.</td></tr>
+        <tr><td>Is data used to train models?</td><td>No. Google user data is not used to train, fine-tune or improve any machine-learning model.</td></tr>
+        <tr><td>How long is it kept?</td><td>Only for as long as needed to perform the requested action. OAuth credentials persist until the user revokes access or deletes them.</td></tr>
+      </tbody>
+    </table>
+    <p>These practices follow the
+      <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data
+      Policy</a>, including its Limited Use requirements. The full details are in the
+      <a href="privacy.html">privacy policy</a>.</p>
+  </section>
+
+  <section>
+    <h2>Scopes requested</h2>
+    <table>
+      <thead><tr><th>Scope</th><th>Why the app needs it</th></tr></thead>
+      <tbody>
+        <tr><td><code>gmail.readonly</code> / <code>gmail.modify</code></td><td>Find and read the message the user asks about, and apply labels or mark read when asked.</td></tr>
+        <tr><td><code>gmail.send</code></td><td>Send a reply only after the user has reviewed and approved its text.</td></tr>
+        <tr><td><code>calendar</code></td><td>List, create and update the user's own events.</td></tr>
+        <tr><td><code>tasks</code></td><td>Create, complete and list the user's reminders.</td></tr>
+        <tr><td><code>drive.file</code></td><td>Create and open documents and files the user explicitly selects.</td></tr>
+      </tbody>
+    </table>
+    <p>Narrower scopes are used wherever they are sufficient; write access is requested only for the
+      operations described above.</p>
+  </section>
+
+  <section>
+    <h2>Contact</h2>
+    <p>Questions about the app, privacy or a data-deletion request:
+      <a href="mailto:gjuoun@gmail.com">gjuoun@gmail.com</a>.</p>
+  </section>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <span>© 2026 jun-hermes</span>
+    <span>
+      <a href="privacy.html">Privacy</a> ·
+      <a href="terms.html">Terms</a> ·
+      <a href="mailto:gjuoun@gmail.com">Contact</a>
+    </span>
+  </div>
+</footer>
+</body>
+</html>

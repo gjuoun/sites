@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy — jun-hermes</title>
+<meta name="description" content="How jun-hermes accesses, uses, stores and shares Google user data, and how to revoke access or delete it.">
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="./"><img src="assets/logo.svg" alt="">jun-hermes</a>
+    <nav class="site" aria-label="Main">
+      <a href="./">Home</a>
+      <a href="privacy.html" aria-current="page">Privacy</a>
+      <a href="terms.html">Terms</a>
+      <a href="mailto:gjuoun@gmail.com">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap doc">
+  <h1>Privacy Policy</h1>
+  <p class="meta">jun-hermes · Last updated 19 October 2026</p>
+
+  <p>This policy explains how jun-hermes (“the app”, “we”) accesses, uses, stores and shares
+    information obtained from Google APIs when you connect your Google Account. The app is a personal,
+    self-hosted integration for an AI assistant: it runs on the device of the person who installed it and
+    acts only on that person's own Google Account.</p>
+
+  <div class="callout">
+    <p>Short version: Google user data is used only to carry out the actions you request in the assistant.
+      It is processed on your own machine, is not stored on servers we operate, and is never sold, shared
+      with third parties, or used to train models.</p>
+  </div>
+
+  <h2>1. Information the app accesses</h2>
+  <p>After you grant consent on Google's OAuth screen, the app may access the following data in the account
+    you selected:</p>
+  <ul>
+    <li><strong>Gmail</strong> — message metadata, subjects, senders and message bodies, plus the ability to
+      apply labels or mark messages read (<code>gmail.readonly</code>, <code>gmail.modify</code>) and to send
+      a message you have reviewed (<code>gmail.send</code>).</li>
+    <li><strong>Google Calendar</strong> — your calendars, events, titles, times and descriptions, with the
+      ability to create and modify events you ask for (<code>calendar</code>).</li>
+    <li><strong>Google Tasks</strong> — your task lists and tasks, with the ability to add, complete or edit
+      them (<code>tasks</code>).</li>
+    <li><strong>Google Drive</strong> — the documents and files you open or create through the app
+      (<code>drive.file</code>).</li>
+    <li><strong>Basic account information</strong> — the email address of the account you connect, used only
+      to show which account is linked.</li>
+  </ul>
+  <p>The app does not access Google data that is not covered by the scopes you approve, and it does not
+    request scopes beyond what the features you use require.</p>
+
+  <h2>2. How the information is used</h2>
+  <p>Google user data is used solely to perform the actions you request of your assistant, for example:</p>
+  <ul>
+    <li>summarising new mail or finding a specific message;</li>
+    <li>drafting a reply and sending it after you approve the text;</li>
+    <li>listing, creating or moving a calendar event;</li>
+    <li>adding or completing a task;</li>
+    <li>exporting or filing a document you point the assistant at.</li>
+  </ul>
+  <p>We do not use Google user data for advertising, profiling, credit assessment, or any purpose unrelated
+    to the request you made. We do not use it to develop, train or improve machine-learning models.</p>
+
+  <h2>3. Storage and retention</h2>
+  <ul>
+    <li><strong>Credentials.</strong> The OAuth refresh token is stored <em>on your device only</em>, encrypted
+      at rest using the operating-system keychain, a local password manager, or an equivalent local
+      encrypted store. It is not uploaded to, or retained by, the developer.</li>
+    <li><strong>Mail, calendar and file content.</strong> Processed in memory on your device to answer your
+      request. It is not written to any server we operate.</li>
+    <li><strong>Local caches or logs.</strong> If the assistant keeps a local transcript of a conversation, it
+      stays on your device and is under your control; it can be deleted at any time.</li>
+    <li><strong>Retention.</strong> Data is kept only as long as needed for the requested action. OAuth
+      credentials persist until you revoke them or delete them.</li>
+  </ul>
+
+  <h2>4. Sharing and disclosure</h2>
+  <p>We do not sell, rent, trade or transfer Google user data. We do not share it with third parties except:</p>
+  <ul>
+    <li>with the AI model provider you have configured for your assistant, and only to the extent needed to
+      generate the response you asked for, under that provider's own terms; or</li>
+    <li>where required by law, or to protect against fraud or abuse.</li>
+  </ul>
+  <p>No human reads your Google data through this app.</p>
+
+  <h2>5. Google API Services User Data Policy — Limited Use</h2>
+  <p>jun-hermes's use and transfer of information received from Google APIs adheres to the
+    <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data
+    Policy</a>, including the Limited Use requirements. In particular:</p>
+  <ul>
+    <li>Google user data is used only to provide or improve user-facing features that are prominent in the
+      app's interface;</li>
+    <li>it is not transferred to others except as necessary to provide those features, to comply with
+      applicable law, or as part of a merger or acquisition with notice;</li>
+    <li>it is not used for serving advertising, including retargeting or personalised advertising;</li>
+    <li>it is not used to determine creditworthiness or for lending purposes;</li>
+    <li>no humans read the data, except with your explicit consent, for security purposes, or to comply with law.</li>
+  </ul>
+
+  <h2>6. Your controls</h2>
+  <ul>
+    <li><strong>Revoke access</strong> at any time from
+      <a href="https://myaccount.google.com/permissions">Google Account → Data &amp; privacy → Third-party apps
+      &amp; services</a>. Revocation invalidates the token immediately.</li>
+    <li><strong>Delete local credentials</strong> by removing the stored token from your keychain or password
+      manager, or by uninstalling the app.</li>
+    <li><strong>Request deletion</strong> of anything we hold — in practice only correspondence you have sent us
+      — by emailing the address below; we respond within 30 days.</li>
+    <li><strong>Disconnect an account</strong> without revoking it globally by deleting the token stored for that
+      account on your device.</li>
+  </ul>
+
+  <h2>7. Security</h2>
+  <p>All communication with Google APIs uses HTTPS. Tokens are stored encrypted at rest on the user's device.
+    The app requests short-lived access tokens and does not log their contents. Because the app runs on your
+    own machine, the security of the device — disk encryption, screen lock, OS updates — is the primary
+    safeguard for the stored credential.</p>
+
+  <h2>8. Children</h2>
+  <p>The app is not directed at children under 13 and does not knowingly collect data from them.</p>
+
+  <h2>9. International users</h2>
+  <p>The app runs on the user's own device, so data is processed wherever that device is. No transfer to a
+    developer-operated server takes place.</p>
+
+  <h2>10. Changes to this policy</h2>
+  <p>Material changes will be published on this page with a new “last updated” date. Continued use after a
+    change means you accept the updated policy.</p>
+
+  <h2>11. Contact</h2>
+  <p>Privacy questions and data requests:
+    <a href="mailto:gjuoun@gmail.com">gjuoun@gmail.com</a>.</p>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <span>© 2026 jun-hermes</span>
+    <span>
+      <a href="./">Home</a> ·
+      <a href="terms.html">Terms</a> ·
+      <a href="mailto:gjuoun@gmail.com">Contact</a>
+    </span>
+  </div>
+</footer>
+</body>
+</html>
