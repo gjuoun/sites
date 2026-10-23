@@ -24,7 +24,7 @@ jobs:
           node-version: 24
       - run: bun install --frozen-lockfile
       # Every package's own task, sharded by the runner: typecheck, lint, the whole test suite and
-      # each app's build. blackboard's build is a real next build; bigface's packs a vsix.
+      # each app's build. bigface's packs a vsix.
       - run: bunx turbo run typecheck lint test build
       # A base mismatch is invisible in review and fatal in the browser: fail before deploy if
       # any built page references its own assets through a subpath (see scripts/check-asset-prefixes.sh).

@@ -12,7 +12,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'apps/blackboard/site/**'
+      - 'apps/blackboard-site/**'
       - '.github/workflows/deploy-blackboard.yml'
   workflow_dispatch:
 
@@ -45,9 +45,9 @@ jobs:
         run: npx --yes wrangler@4 pages project create blackboard --production-branch main || true
       # A base mismatch is invisible in review and fatal in the browser: fail before deploy if
       # any built page references its own assets through a subpath (see scripts/check-asset-prefixes.sh).
-      - run: ./scripts/check-asset-prefixes.sh apps/blackboard/site
+      - run: ./scripts/check-asset-prefixes.sh apps/blackboard-site
       - uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy apps/blackboard/site --project-name blackboard --branch main
+          command: pages deploy apps/blackboard-site --project-name blackboard --branch main
