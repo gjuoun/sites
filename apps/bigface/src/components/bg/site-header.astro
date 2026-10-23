@@ -3,7 +3,7 @@ import { BGButton } from "@gjuoun/bigface-ui/components/bg/button";
 
 // Site header: skip link, brand, main nav. Sits on the page background at rest; the scroll script in
 // Base.astro adds .scrolled once the page moves, which gives it a hairline and a surface. Below 520px
-// the brand keeps only its mark (the name stays for screen readers) and the links tighten, so all five
+// the brand keeps only its mark (the name stays for screen readers) and the links tighten, so all four
 // fit a 390px screen.
 interface Props {
   base: string;
@@ -39,7 +39,6 @@ const link =
     <nav aria-label="Main" class="flex items-center gap-[0.4rem] text-[0.9rem] max-[520px]:gap-[0.15rem]">
       <a class={link} href={`${base}/#apps`}>Apps</a>
       <a class={link} href={`${base}/palette/`}>Palette</a>
-      <a class={link} href={`${base}/ui/`}>UI</a>
       <a class={link} href={`${base}/#install`}>Install</a>
       <BGButton tone="nav" href={repo} className="max-[520px]:px-2">GitHub</BGButton>
     </nav>
