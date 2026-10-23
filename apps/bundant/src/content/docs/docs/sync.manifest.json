@@ -1,0 +1,142 @@
+{
+  "generatedFrom": "docs/{tutorial,reference}/**/*.{md,mdx}",
+  "tutorial": 5,
+  "reference": 10,
+  "docs": [
+    {
+      "slug": "tutorial/01-quickstart",
+      "route": "/docs/tutorial/01-quickstart/",
+      "source": "docs/tutorial/01-quickstart.mdx",
+      "title": "Quick start",
+      "label": "01 · Quick start",
+      "group": "Tutorial",
+      "order": 1
+    },
+    {
+      "slug": "tutorial/02-first-service",
+      "route": "/docs/tutorial/02-first-service/",
+      "source": "docs/tutorial/02-first-service.mdx",
+      "title": "Your first service",
+      "label": "02 · Your first service",
+      "group": "Tutorial",
+      "order": 2
+    },
+    {
+      "slug": "tutorial/03-operate",
+      "route": "/docs/tutorial/03-operate/",
+      "source": "docs/tutorial/03-operate.mdx",
+      "title": "Operate",
+      "label": "03 · Operate",
+      "group": "Tutorial",
+      "order": 3
+    },
+    {
+      "slug": "tutorial/04-scale-and-groups",
+      "route": "/docs/tutorial/04-scale-and-groups/",
+      "source": "docs/tutorial/04-scale-and-groups.mdx",
+      "title": "Scale and groups",
+      "label": "04 · Scale and groups",
+      "group": "Tutorial",
+      "order": 4
+    },
+    {
+      "slug": "tutorial/05-observe",
+      "route": "/docs/tutorial/05-observe/",
+      "source": "docs/tutorial/05-observe.mdx",
+      "title": "Observe and debug",
+      "label": "05 · Observe and debug",
+      "group": "Tutorial",
+      "order": 5
+    },
+    {
+      "slug": "architecture",
+      "route": "/docs/architecture/",
+      "source": "docs/reference/architecture.md",
+      "title": "Architecture (internals)",
+      "label": "Architecture (internals)",
+      "group": "Reference",
+      "order": 9
+    },
+    {
+      "slug": "cli",
+      "route": "/docs/cli/",
+      "source": "docs/reference/cli.md",
+      "title": "CLI reference",
+      "label": "CLI reference",
+      "group": "Reference",
+      "order": 2
+    },
+    {
+      "slug": "deploy-yml",
+      "route": "/docs/deploy-yml/",
+      "source": "docs/reference/deploy-yml.md",
+      "title": "deploy.yml reference",
+      "label": "deploy.yml reference",
+      "group": "Reference",
+      "order": 1
+    },
+    {
+      "slug": "monitoring",
+      "route": "/docs/monitoring/",
+      "source": "docs/reference/monitoring.md",
+      "title": "Monitoring",
+      "label": "Monitoring",
+      "group": "Reference",
+      "order": 8
+    },
+    {
+      "slug": "naming",
+      "route": "/docs/naming/",
+      "source": "docs/reference/naming.md",
+      "title": "Naming",
+      "label": "Naming",
+      "group": "Reference",
+      "order": 3
+    },
+    {
+      "slug": "podman",
+      "route": "/docs/podman/",
+      "source": "docs/reference/podman.md",
+      "title": "podman",
+      "label": "podman",
+      "group": "Reference",
+      "order": 6
+    },
+    {
+      "slug": "schema",
+      "route": "/docs/schema/",
+      "source": "docs/reference/schema.md",
+      "title": "Editor schema",
+      "label": "Editor schema",
+      "group": "Reference",
+      "order": 4
+    },
+    {
+      "slug": "transfer",
+      "route": "/docs/transfer/",
+      "source": "docs/reference/transfer.md",
+      "title": "Image transfer",
+      "label": "Image transfer",
+      "group": "Reference",
+      "order": 5
+    },
+    {
+      "slug": "troubleshooting",
+      "route": "/docs/troubleshooting/",
+      "source": "docs/reference/troubleshooting.md",
+      "title": "Troubleshooting",
+      "label": "Troubleshooting",
+      "group": "Reference",
+      "order": 10
+    },
+    {
+      "slug": "validation",
+      "route": "/docs/validation/",
+      "source": "docs/reference/validation.md",
+      "title": "Validation",
+      "label": "Validation",
+      "group": "Reference",
+      "order": 7
+    }
+  ]
+}

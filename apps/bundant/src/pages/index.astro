@@ -1,0 +1,25 @@
+---
+import Base from '@/layouts/Base.astro';
+import Nav from '@/components/Nav.astro';
+import Hero from '@/components/Hero.astro';
+import WhyAndHow from '@/components/WhyAndHow.astro';
+import Features from '@/components/Features.astro';
+import Commands from '@/components/Commands.astro';
+import Faq from '@/components/Faq.astro';
+import Footer from '@/components/Footer.astro';
+---
+
+<Base
+  title="bundant — zero-downtime releases over SSH"
+  description="Ship containers to any SSH host with docker or podman. Health-gated, zero-downtime swaps through kamal-proxy. No Kubernetes, no registry required."
+>
+  <Nav />
+  <main>
+    <Hero />
+    <WhyAndHow />
+    <Features />
+    <Commands />
+    <Faq />
+  </main>
+  <Footer />
+</Base>
