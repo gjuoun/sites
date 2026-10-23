@@ -5,7 +5,8 @@ Cloudflare Pages deploy per site.
 
 ```
 apps/
-  bigface/      # bigface.qqntt.com   — the theme specimen site (Astro)
+  bigface/      # bigface.qqntt.com   — the theme specimen site (Astro); also hosts the
+                #                        unlisted /ui/ component workspace
   bundant/      # bundant.qqntt.com   — the bundant docs site (Astro + Starlight)
   qublack/      # qublack.qqntt.com   — the QuBlack font specimen (Astro)
   jun-hermes/   # jun-hermes.qqntt.com — the OAuth verification site (static)
