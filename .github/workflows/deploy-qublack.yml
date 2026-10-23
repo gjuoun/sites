@@ -43,6 +43,9 @@ jobs:
       - run: bunx turbo run build --filter=@sites/qublack...
       - name: The committed shard css still matches this cut
         run: git diff --exit-code apps/qublack/src/styles/qublack-fonts.css
+      # A base mismatch is invisible in review and fatal in the browser: fail before deploy if
+      # any built page references its own assets through a subpath (see scripts/check-asset-prefixes.sh).
+      - run: ./scripts/check-asset-prefixes.sh apps/qublack/dist
       - uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}

@@ -1,8 +1,13 @@
 name: Deploy bundant docs to Cloudflare Pages
 
-# bundant.qqntt.com, served from the ROOT base (SITE_BASE=/). This replaces the cross-repo
-# stopgap that lived in bigface-theme purely because the Cloudflare token was in that repo's
-# secrets — the monorepo holds the token now, so the site can deploy from its own source.
+# bundant.qqntt.com, served from the ROOT of the domain. This replaces the cross-repo stopgap that
+# lived in bigface-theme purely because the Cloudflare token was in that repo's secrets — the
+# monorepo holds the token now, so the site can deploy from its own source.
+#
+# No SITE_BASE here on purpose: the base is '/' in astro.config.mjs. It used to be passed as an env
+# var for the GitHub Pages subpath, and turbo filters the task environment, so the variable never
+# reached astro — the deploy then published HTML pointing at /bundant/_astro/*, which 404s at the
+# root. The base is a property of the site, not of the runner.
 
 on:
   push:
@@ -36,8 +41,9 @@ jobs:
           node-version: 24
       - run: bun install --frozen-lockfile
       - run: bunx turbo run build --filter=@sites/bundant...
-        env:
-          SITE_BASE: /
+      # A base mismatch is invisible in review and fatal in the browser: fail before deploy if
+      # any built page references its own assets through a subpath (see scripts/check-asset-prefixes.sh).
+      - run: ./scripts/check-asset-prefixes.sh apps/bundant/dist
       - uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}

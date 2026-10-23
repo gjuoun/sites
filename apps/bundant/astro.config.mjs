@@ -7,9 +7,11 @@ import starlight from '@astrojs/starlight';
 import tailwindcss from '@tailwindcss/vite';
 import rehypeMermaid from 'rehype-mermaid';
 
-// Root-domain builds (Cloudflare Pages at bundant.qqntt.com) need base '/';
-// the GitHub Pages deploy keeps the /bundant prefix.
-const BASE = process.env.SITE_BASE ?? '/bundant';
+// Every site here deploys to the ROOT of its own Cloudflare Pages domain. The /bundant subpath
+// existed only for the GitHub Pages project page, which is gone — and a non-root base is not a
+// cosmetic difference: it rewrites every /_astro/* reference to /bundant/_astro/*, which 404s on
+// bundant.qqntt.com. There is deliberately no env override any more: turbo filters the task
+// environment, so a SITE_BASE exported by the workflow never reached this file anyway.
 
 // scripts/sync-docs.mjs writes the sidebar from the docs manifest: Starlight's
 // autogenerate skips entries that override `slug`, and every reference page does.
@@ -44,7 +46,7 @@ const bigfaceTheme = {
   ],
 };
 
-/** Rewrite relative `*.md` links so they resolve to generated `/bundant/docs/...` pages. */
+/** Rewrite relative `*.md` links so they resolve to the generated `/docs/...` pages. */
 function rehypeDocLinks() {
   return (tree) => {
     const visit = (node) => {
@@ -54,7 +56,7 @@ function rehypeDocLinks() {
           const [path, hash] = href.split('#');
           if (path.endsWith('.md')) {
             const slug = path.replace(/^\.\//, '').replace(/\.md$/, '');
-            node.properties.href = `${BASE}/docs/${slug}/${hash ? `#${hash}` : ''}`;
+            node.properties.href = `/docs/${slug}/${hash ? `#${hash}` : ''}`;
           }
         }
       }
@@ -64,10 +66,9 @@ function rehypeDocLinks() {
   };
 }
 
-// GitHub Pages project page: https://gjuoun.github.io/bundant/
 export default defineConfig({
-  site: 'https://gjuoun.github.io',
-  base: BASE,
+  site: 'https://bundant.qqntt.com',
+  base: '/',
   trailingSlash: 'ignore',
   integrations: [
     react(),

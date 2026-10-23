@@ -35,6 +35,9 @@ jobs:
           node-version: 24
       - run: bun install --frozen-lockfile
       - run: bun run --cwd apps/jun-hermes build
+      # A base mismatch is invisible in review and fatal in the browser: fail before deploy if
+      # any built page references its own assets through a subpath (see scripts/check-asset-prefixes.sh).
+      - run: ./scripts/check-asset-prefixes.sh apps/jun-hermes/dist
       - uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}

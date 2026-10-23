@@ -3,7 +3,7 @@
 The product page for [bundant](https://github.com/gjuoun/bundant), built with
 **Astro 5 + @astrojs/react + Tailwind v4 + shadcn/ui + lucide**.
 
-- **Live (after Pages is enabled):** <https://gjuoun.github.io/bundant/>
+- **Live:** <https://bundant.qqntt.com/>
 - **Base:** `/bundant` — GitHub Pages project-page paths.
 - **Content source of truth:** the CLI. Every command and flag on the page comes from
   `bun run src/cli.ts --help` and the subcommand helps; unshipped features are not listed.
