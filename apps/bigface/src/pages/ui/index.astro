@@ -154,22 +154,26 @@ const cellLabel = "font-code text-[0.7rem] text-bf-dim";
 ---
 
 <Base
-  title="Bigface UI — the component library"
-  description="Every colour, font and component the Bigface site is built from, rendered live."
+  chrome={false}
+  bleed
+  noindex
+  title="Bigface UI — component workspace"
+  description="The internal Bigface component workspace: every colour, font and component, rendered live."
 >
-  <section class="pt-[clamp(0.5rem,3vw,2rem)]" data-reveal>
+  <div class="px-[clamp(1rem,4vw,2.5rem)] pt-[clamp(0.75rem,3vw,1.5rem)] pb-20">
+  <section data-reveal>
     <BGEyebrow>component library · work in progress</BGEyebrow>
     <h1 class="text-[clamp(2.6rem,6vw,4.4rem)] leading-[1.02] font-extrabold">
       Bigface <span class="bf-grad">UI</span>
     </h1>
     <p class="bf-lead">
-      This page is the library the site itself is built from: every colour, font and component below
-      is the production one, rendered live.
+      The internal workspace where this library is built and iterated: every colour, font and
+      component below is the production one, rendered live. Unlisted — reachable by URL only.
     </p>
   </section>
 
   <nav
-    class="sticky top-[3.9rem] z-20 mt-[2.2rem] flex flex-wrap gap-[0.35rem] rounded-[16px] border border-bf-border bg-bf-border-muted/82 p-[0.55rem] text-[0.8rem] backdrop-blur-[14px] max-[700px]:static"
+    class="sticky top-0 z-20 mt-[1.6rem] flex flex-wrap gap-[0.35rem] rounded-[16px] border border-bf-border bg-bf-border-muted/82 p-[0.55rem] text-[0.8rem] backdrop-blur-[14px] max-[700px]:static"
     aria-label="Library sections"
   >
     {sections.map(([id, title]) => <a class={subLink} href={`#${id}`}>{title}</a>)}
@@ -614,4 +618,5 @@ const cellLabel = "font-code text-[0.7rem] text-bf-dim";
       </ul>
     </BGCard>
   </section>
+  </div>
 </Base>
