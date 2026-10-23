@@ -288,6 +288,25 @@ test("the /ui page registers every shadcn native component in the directory", ()
   for (const f of files) expect(html, f).toContain(`data-native="${f.replace(/\.tsx$/, "")}"`);
 });
 
+// The showcase is an internal workspace, not a product page: no marketing chrome, no index, and
+// still the whole catalogue. The header assertion is the one that fails if the page ever goes back
+// to the site layout.
+test("the showcase is an unlisted, chrome-less workspace", () => {
+  const html = page("ui");
+  expect(html, "site header").not.toContain('id="site-header"');
+  expect(html, "site footer").not.toContain('aria-label="Footer"');
+  expect(html, "noindex").toContain('name="robots" content="noindex"');
+  expect(html, "bleed").toContain("data-bleed");
+  expect(html, "section nav").toContain('aria-label="Library sections"');
+  expect(html, "copy feedback").toContain('id="toast"');
+  expect(html.match(/data-native="/g)?.length, "registrations").toBe(63);
+
+  const home = page("");
+  expect(home, "home header").toContain('id="site-header"');
+  expect(home, "home footer").toContain('aria-label="Footer"');
+  expect(home, "no nav link to the workspace").not.toContain('href="/ui/"');
+});
+
 test("app pages with a screenshot put it beside the instructions on desktop, stacked in DOM order", () => {
   for (const t of targets) {
     const html = page(`apps/${t.id}`);
