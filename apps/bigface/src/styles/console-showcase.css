@@ -1,0 +1,16 @@
+/* Tailwind entry for the console showcase page only (/ui/console/). Its own entry, so no other theme's
+   variables reach this page: one theme per page. It imports the console theme from @gjuoun/bigface-ui,
+   which stays the site's library and is not changed by this page. */
+@import "tailwindcss" source(none);
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "./reset-palette.css";
+@import "@gjuoun/bigface-ui/theme.css";
+@import "@gjuoun/bigface-ui/themes/_reset.css";
+@import "@gjuoun/bigface-ui/themes/_light.css";
+@import "@gjuoun/bigface-ui/themes/console.css";
+
+@source "../../../../packages/ui/src";
+@source "../pages/ui/console";
+@source not "../**/*.test.ts";
+@source not "../**/*.test.tsx";
