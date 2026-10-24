@@ -44,7 +44,7 @@ These are asserted by `src/themes/themes.test.ts`:
 
 - light surfaces are paper (`#f8f8f0`) and the dark canvas is `#252925`; pure white is never used
 - the primary **fill** is bigface's native blue `#00b0ff` in both modes, with the dark ink `#252925` on top (6.08:1)
-- the primary **ink** (rings and text) is the readable blue `#007aa6` in light and `#00b0ff` in dark
+- the primary **ink** (rings and text) follows the accent blue: `#00b0ff` in both modes (ruling 2026-10-24). It measures 2.27:1 on paper, below AA; a readable light ink is parked for Jun
 - the scrim (`bg-black/10`) and the slider thumb (`bg-white`) resolve through the palette's own black and white
 - shadows keep Tailwind's geometry; only their colour is the palette's
 - two browser system colours that a stock component uses (`Canvas`, `CanvasText`) resolve to the business canvas

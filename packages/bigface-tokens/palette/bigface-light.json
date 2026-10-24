@@ -35,44 +35,44 @@
       "source": "derived:braceMatch"
     },
     "blue": {
-      "hex": "#007aa6",
-      "source": "derived:blue"
+      "hex": "#00b0ff",
+      "source": "dark:blue"
     },
     "lightBlue": {
-      "hex": "#007b9f",
-      "source": "derived:lightBlue"
+      "hex": "#40c4ff",
+      "source": "dark:lightBlue"
     },
     "paleBlue": {
-      "hex": "#47788b",
-      "source": "derived:paleBlue"
+      "hex": "#b3e5fc",
+      "source": "dark:paleBlue"
     },
     "cyan": {
-      "hex": "#007c8e",
-      "source": "derived:cyan"
+      "hex": "#66d9ef",
+      "source": "dark:cyan"
     },
     "green": {
-      "hex": "#008434",
-      "source": "derived:green"
+      "hex": "#00c853",
+      "source": "dark:green"
     },
     "lime": {
-      "hex": "#5f7c00",
-      "source": "derived:lime"
+      "hex": "#c6ff00",
+      "source": "dark:lime"
     },
     "yellow": {
-      "hex": "#767600",
-      "source": "derived:yellow"
+      "hex": "#e5e500",
+      "source": "dark:yellow"
     },
     "brightYellow": {
-      "hex": "#7e7300",
-      "source": "derived:brightYellow"
+      "hex": "#ffeb3b",
+      "source": "dark:brightYellow"
     },
     "burntOrange": {
-      "hex": "#cc4000",
-      "source": "derived:burntOrange"
+      "hex": "#fc5d23",
+      "source": "dark:burntOrange"
     },
     "purple": {
-      "hex": "#8658d2",
-      "source": "derived:purple"
+      "hex": "#ae81ff",
+      "source": "dark:purple"
     },
     "comment": {
       "hex": "#75715e",
@@ -89,27 +89,27 @@
       "source": "alias:border"
     },
     "red": {
-      "hex": "#cc4000",
+      "hex": "#fc5d23",
       "source": "alias:burntOrange"
     },
     "green": {
-      "hex": "#008434",
+      "hex": "#00c853",
       "source": "alias:green"
     },
     "yellow": {
-      "hex": "#767600",
+      "hex": "#e5e500",
       "source": "alias:yellow"
     },
     "blue": {
-      "hex": "#007aa6",
+      "hex": "#00b0ff",
       "source": "alias:blue"
     },
     "magenta": {
-      "hex": "#8658d2",
+      "hex": "#ae81ff",
       "source": "alias:purple"
     },
     "cyan": {
-      "hex": "#007c8e",
+      "hex": "#66d9ef",
       "source": "alias:cyan"
     },
     "white": {
@@ -121,27 +121,27 @@
       "source": "alias:fgDim"
     },
     "brightRed": {
-      "hex": "#cc4000",
+      "hex": "#fc5d23",
       "source": "alias:burntOrange"
     },
     "brightGreen": {
-      "hex": "#5f7c00",
+      "hex": "#c6ff00",
       "source": "alias:lime"
     },
     "brightYellow": {
-      "hex": "#7e7300",
+      "hex": "#ffeb3b",
       "source": "alias:brightYellow"
     },
     "brightBlue": {
-      "hex": "#007b9f",
+      "hex": "#40c4ff",
       "source": "alias:lightBlue"
     },
     "brightMagenta": {
-      "hex": "#8658d2",
+      "hex": "#ae81ff",
       "source": "alias:purple"
     },
     "brightCyan": {
-      "hex": "#47788b",
+      "hex": "#b3e5fc",
       "source": "alias:paleBlue"
     },
     "brightWhite": {

@@ -102,18 +102,21 @@ describe("bigface-business-ui: colour only", () => {
 		expect(everything).not.toContain("255, 255, 255");
 	});
 
-	test("standing colour decision: the two-tier primary. Native blue fill with dark ink; readable blue ink in light", () => {
+	test("the primary: native blue fill with dark ink; the light blue is the native blue by ruling (2026-10-24)", () => {
 		const b = blocks();
 		const nativeBlue = dark.colors.blue?.hex.toLowerCase();
-		const readableBlue = light.colors.blue?.hex.toLowerCase();
+		// Jun's ruling: the accent family borrows the dark palette exactly, so the light blue IS the native blue.
+		// The readable-ink tier this test used to pin (#007aa6) is now a PARKED question for Jun (sites evidence,
+		// round 7: keep a derived readable ink for text and links, or let link text follow the accent). Until he
+		// decides, primary-ink follows blue, and this test records that rather than pinning the old value.
 		expect(nativeBlue).toBe("#00b0ff");
-		expect(readableBlue).toBe("#007aa6");
+		expect(light.colors.blue?.hex.toLowerCase()).toBe(nativeBlue);
 		for (const mode of [b.light, b.dark]) {
 			expect(mode["--theme-primary"]).toBe(nativeBlue);
 			expect(mode["--theme-primary-fill"]).toBe(nativeBlue);
 			expect(mode["--theme-on-primary"]).toBe("#252925");
 		}
-		expect(b.light["--theme-primary-ink"]).toBe(readableBlue);
+		expect(b.light["--theme-primary-ink"]).toBe(nativeBlue);
 		expect(b.dark["--theme-primary-ink"]).toBe(nativeBlue);
 	});
 
@@ -152,9 +155,10 @@ describe("bigface-business-ui: colour only", () => {
 			expect(contrastRatio(read("ink"), read("canvas")), mode + " ink").toBeGreaterThanOrEqual(4.5);
 			expect(contrastRatio(read("on-frame"), read("frame")), mode + " on-frame").toBeGreaterThanOrEqual(4.5);
 		}
-		expect(
-			contrastRatio(evaluate(b.light["--theme-primary-ink"] as string), evaluate(b.light["--theme-canvas"] as string)),
-		).toBeGreaterThanOrEqual(4.5);
+		// The link and ring ink on paper follows the accent (ruling 2026-10-24) and measures below AA: recorded here,
+		// not hidden. Parked as a question; see the primary test above.
+		const linkInk = Math.round(contrastRatio(evaluate(b.light["--theme-primary-ink"] as string), evaluate(b.light["--theme-canvas"] as string)) * 100) / 100;
+		expect(linkInk, "primary-ink on paper (accepted tradeoff, parked)").toBe(2.27);
 	});
 
 	test("the reset resets exactly the optional roles", () => {
@@ -162,6 +166,19 @@ describe("bigface-business-ui: colour only", () => {
 		const keys = [...reset.matchAll(/--theme-([\w-]+): initial;/g)].map((m) => "--theme-" + m[1]);
 		expect(keys.sort()).toEqual(OPTIONAL.map((k) => "--theme-" + k).sort());
 	});
+});
+
+// Recorded fact (ruling 2026-10-24): the light accents ARE the native palette now, so the derived foreground set the
+// Toned/Native comparison was built to contrast no longer exists for these roles. Every foreground role's light value
+// equals its native value; the comparison is a no-op in light until Jun decides what it should show (parked question).
+test("in light, the toned and native foregrounds are identical (the comparison is a no-op after the ruling)", () => {
+	const b = blocks();
+	const native = strip(css("_foreground.css"));
+	const nativeOf = (k: string) => (native.match(new RegExp("--theme-" + k + ":\\s*(#[0-9a-f]{6})", "i")) ?? [])[1]?.toLowerCase();
+	for (const k of FOREGROUND) {
+		expect(nativeOf(k), k).toBeDefined();
+		expect(String(b.light["--theme-" + k]).toLowerCase(), k).toBe(nativeOf(k));
+	}
 });
 
 // The foreground comparison (data-fg="native") is a light-only, page-level affordance: every selector in its file
