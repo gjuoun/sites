@@ -14,7 +14,10 @@
 //   { color: "<palette colour>" }      a colour name from palette/bigface.json or bigface-light.json
 //   { mix: [a, pct, b] }               color-mix(in oklab, a pct%, b) of two palette colours
 //   "0.5rem" / "0 1px 2px …" / a font stack   a literal, for the keys that are not colours
-export type Value = string | { color: string } | { mix: [string, number, string] };
+export type Value =
+	| string
+	| { color: string }
+	| { mix: [string, number, string] };
 
 export type ThemeRoles = Record<string, Value>;
 
@@ -30,8 +33,10 @@ export interface Theme {
 	roles: ThemeRoles;
 }
 
-export const FONT_SANS = '"Recursive", system-ui, -apple-system, "Segoe UI", sans-serif';
-export const FONT_MONO = '"Recursive", ui-monospace, "SF Mono", Menlo, monospace';
+export const FONT_SANS =
+	'"Recursive", system-ui, -apple-system, "Segoe UI", sans-serif';
+export const FONT_MONO =
+	'"Recursive", ui-monospace, "SF Mono", Menlo, monospace';
 
 /** Keys every theme must set, straight from contract.json (kept in the same order). */
 export const REQUIRED = [
@@ -149,7 +154,8 @@ export const THEMES: Theme[] = [
 		id: "business",
 		label: "Business",
 		feel: "airy · crisp · calm",
-		purpose: "Quiet marketing and product surfaces: room to breathe, crisp corners, slow confidence.",
+		purpose:
+			"Quiet marketing and product surfaces: room to breathe, crisp corners, slow confidence.",
 		roles: {
 			...COLOURS,
 			...feel({
@@ -160,8 +166,10 @@ export const THEMES: Theme[] = [
 				"text-sm": "0.94rem",
 				"text-base": "1.06rem",
 				"text-lg": "1.28rem",
-				"shadow-sm": "0 1px 2px color-mix(in srgb, var(--theme-canvas) 8%, transparent)",
-				"shadow-md": "0 12px 32px -20px color-mix(in srgb, var(--theme-canvas) 30%, transparent)",
+				"shadow-sm":
+					"0 1px 2px color-mix(in srgb, var(--theme-canvas) 8%, transparent)",
+				"shadow-md":
+					"0 12px 32px -20px color-mix(in srgb, var(--theme-canvas) 30%, transparent)",
 				duration: "240ms",
 				ease: "cubic-bezier(0.22, 1, 0.36, 1)",
 				hover: "1",
@@ -175,7 +183,8 @@ export const THEMES: Theme[] = [
 		label: "Console",
 		isDefault: true,
 		feel: "dense · compact · flat",
-		purpose: "A developer workspace: tight spacing, small type, small radius, no ornament.",
+		purpose:
+			"A developer workspace: tight spacing, small type, small radius, no ornament.",
 		roles: {
 			...COLOURS,
 			...feel({
@@ -201,7 +210,8 @@ export const THEMES: Theme[] = [
 		id: "game",
 		label: "Play",
 		feel: "bold · round · springy",
-		purpose: "Reward-forward game communities: big type, pillowy radius, a chunky shadow, a squishy press.",
+		purpose:
+			"Reward-forward game communities: big type, pillowy radius, a chunky shadow, a squishy press.",
 		roles: {
 			...COLOURS,
 			...feel({
@@ -212,8 +222,10 @@ export const THEMES: Theme[] = [
 				"text-sm": "1.05rem",
 				"text-base": "1.2rem",
 				"text-lg": "1.55rem",
-				"shadow-sm": "0 3px 0 color-mix(in srgb, var(--theme-canvas) 60%, transparent)",
-				"shadow-md": "0 6px 0 color-mix(in srgb, var(--theme-canvas) 60%, transparent)",
+				"shadow-sm":
+					"0 3px 0 color-mix(in srgb, var(--theme-canvas) 60%, transparent)",
+				"shadow-md":
+					"0 6px 0 color-mix(in srgb, var(--theme-canvas) 60%, transparent)",
 				duration: "180ms",
 				ease: "cubic-bezier(0.34, 1.56, 0.64, 1)",
 				hover: "1.04",

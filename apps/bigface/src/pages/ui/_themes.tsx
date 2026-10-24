@@ -1,9 +1,15 @@
+import { BGButton } from "@gjuoun/bigface-ui/components/bg/button";
 import { BGModeSwitcher } from "@gjuoun/bigface-ui/components/bg/mode-switcher";
 import { BGThemeScope } from "@gjuoun/bigface-ui/components/bg/theme-scope";
 import { BGThemeSwitcher } from "@gjuoun/bigface-ui/components/bg/theme-switcher";
-import { BGButton } from "@gjuoun/bigface-ui/components/bg/button";
 import { Badge } from "@gjuoun/bigface-ui/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@gjuoun/bigface-ui/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@gjuoun/bigface-ui/components/ui/card";
 import { Input } from "@gjuoun/bigface-ui/components/ui/input";
 import { Switch } from "@gjuoun/bigface-ui/components/ui/switch";
 import { MODES, THEMES } from "@gjuoun/bigface-ui/lib/themes";
@@ -24,7 +30,9 @@ function Panel({
 	return (
 		<Card className="min-w-0 flex-1 gap-3 rounded-lg p-4 shadow-sm">
 			<CardHeader className="gap-1 p-0">
-				<CardTitle className="text-lg font-[var(--theme-weight,600)]">Rewards</CardTitle>
+				<CardTitle className="text-lg font-[var(--theme-weight,600)]">
+					Rewards
+				</CardTitle>
 				<CardDescription className="text-sm">
 					Claim 250 coins for today&rsquo;s streak.
 				</CardDescription>
@@ -58,8 +66,8 @@ function Panel({
 						Press me
 					</BGButton>
 					<span className="font-code text-xs text-bf-fg-muted">
-						radius <span className="text-foreground">{feel.radius}</span> · space{" "}
-						<span className="text-foreground">{feel.space}</span> · hover{" "}
+						radius <span className="text-foreground">{feel.radius}</span> ·
+						space <span className="text-foreground">{feel.space}</span> · hover{" "}
 						<span className="text-foreground">{feel.hover}</span> × press{" "}
 						<span className="text-foreground">{feel.press}</span>
 					</span>
@@ -87,7 +95,9 @@ export function ThemeMatrix() {
 							</p>
 							<p className="m-0 font-code text-xs text-bf-dim">{theme.feel}</p>
 						</div>
-						<p className="m-0 text-sm leading-snug text-bf-fg-muted">{theme.purpose}</p>
+						<p className="m-0 text-sm leading-snug text-bf-fg-muted">
+							{theme.purpose}
+						</p>
 						<Panel
 							feel={{
 								radius: String(theme.roles.radius),

@@ -63,11 +63,22 @@ test.skipIf(!findChrome())(
 			Math.max(...heights) - Math.min(...heights),
 			"card height spread " + heights.join("/"),
 		).toBeGreaterThanOrEqual(40);
-		expect(new Set(dark.map((p) => p.cardPadding)).size, "card padding").toBe(3);
-		expect(new Set(dark.map((p) => p.titleSize)).size, "title font size").toBe(3);
+		expect(new Set(dark.map((p) => p.cardPadding)).size, "card padding").toBe(
+			3,
+		);
+		expect(new Set(dark.map((p) => p.titleSize)).size, "title font size").toBe(
+			3,
+		);
 
 		// every feel token the page demonstrates differs three ways
-		for (const key of ["radius", "space", "duration", "ease", "press", "weight"] as const) {
+		for (const key of [
+			"radius",
+			"space",
+			"duration",
+			"ease",
+			"press",
+			"weight",
+		] as const) {
 			expect(
 				new Set(dark.map((p) => p[key])).size,
 				key + " " + dark.map((p) => p[key]).join("/"),
@@ -75,13 +86,23 @@ test.skipIf(!findChrome())(
 		}
 
 		// the art direction, in pixels: console near-square, business a small rounded rect, game near pill
-		const at = (theme: string) => dark.find((p) => p.theme === theme) as (typeof dark)[number];
-		const cardRadius = (theme: string) => Number.parseFloat(at(theme).cardRadius);
-		expect(cardRadius("console"), "console is near-square").toBeLessThanOrEqual(4);
-		expect(cardRadius("business"), "business is a small rounded rect").toBeGreaterThan(cardRadius("console"));
+		const at = (theme: string) =>
+			dark.find((p) => p.theme === theme) as (typeof dark)[number];
+		const cardRadius = (theme: string) =>
+			Number.parseFloat(at(theme).cardRadius);
+		expect(cardRadius("console"), "console is near-square").toBeLessThanOrEqual(
+			4,
+		);
+		expect(
+			cardRadius("business"),
+			"business is a small rounded rect",
+		).toBeGreaterThan(cardRadius("console"));
 		expect(cardRadius("business")).toBeLessThanOrEqual(10);
 		expect(cardRadius("game"), "game is near pill").toBeGreaterThanOrEqual(32);
-		expect(cardRadius("game") - cardRadius("console"), "the spread is unmistakable").toBeGreaterThanOrEqual(32);
+		expect(
+			cardRadius("game") - cardRadius("console"),
+			"the spread is unmistakable",
+		).toBeGreaterThanOrEqual(32);
 
 		// console is visibly tighter than business, and game is the roomiest
 		expect(at("console").cardPadding).toBeLessThan(at("business").cardPadding);
@@ -93,8 +114,9 @@ test.skipIf(!findChrome())(
 		// the press is demonstrable: game overshoots on hover and squishes on press
 		expect(Number(at("game").hover), "game hover").toBeGreaterThan(1);
 		expect(Number(at("game").press), "game press").toBeLessThanOrEqual(0.92);
-		expect(Number(at("console").press), "console press").toBeGreaterThan(Number(at("game").press));
+		expect(Number(at("console").press), "console press").toBeGreaterThan(
+			Number(at("game").press),
+		);
 	},
 	120_000,
 );
-

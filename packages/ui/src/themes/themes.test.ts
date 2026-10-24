@@ -3,10 +3,10 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import darkJson from "../../../bigface-tokens/palette/bigface.json";
 import lightJson from "../../../bigface-tokens/palette/bigface-light.json";
+import { contrastRatio } from "../../../bigface-tokens/src/contrast-math.ts";
+import { renderAll, themesDir } from "../../scripts/gen-tokens.ts";
 import contract from "./contract.json";
 import { COLOURS, MODES, OPTIONAL, REQUIRED, THEMES } from "./roles.ts";
-import { renderAll, themesDir } from "../../scripts/gen-tokens.ts";
-import { contrastRatio } from "../../../bigface-tokens/src/contrast-math.ts";
 
 const dark = darkJson as unknown as Parameters<typeof renderAll>[0];
 const light = lightJson as unknown as Parameters<typeof renderAll>[0];
@@ -55,7 +55,10 @@ const themeBlocks = (id: string) => {
 
 /** Evaluate a generated value: a hex as-is, a color-mix(in oklab, a p%, b) by mixing. */
 const evaluate = (value: string): string => {
-	const m = /^color-mix\(\s*in oklab,\s*(#[0-9a-f]{6})\s+([\d.]+)%,\s*(#[0-9a-f]{6})\s*\)$/.exec(value);
+	const m =
+		/^color-mix\(\s*in oklab,\s*(#[0-9a-f]{6})\s+([\d.]+)%,\s*(#[0-9a-f]{6})\s*\)$/.exec(
+			value,
+		);
 	if (!m) return value;
 	const lab = (h: string) => {
 		const v = [1, 3, 5].map((i) => Number.parseInt(h.slice(i, i + 2), 16));
@@ -65,7 +68,9 @@ const evaluate = (value: string): string => {
 		};
 		const [r, g, b] = v.map(lin) as [number, number, number];
 		const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
-		const mm = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+		const mm = Math.cbrt(
+			0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b,
+		);
 		const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
 		return [
 			0.2104542553 * l + 0.793617785 * mm - 0.0040720468 * s,
@@ -141,8 +146,13 @@ describe("generated theme files", () => {
 	});
 
 	test("both blocks set exactly the contract keys — no typos, nothing extra", () => {
-		const known = new Set([...REQUIRED, ...OPTIONAL].map((k) => "--theme-" + k));
-		const declared = new Set([...Object.keys(contract.required), ...Object.keys(contract.optional)]);
+		const known = new Set(
+			[...REQUIRED, ...OPTIONAL].map((k) => "--theme-" + k),
+		);
+		const declared = new Set([
+			...Object.keys(contract.required),
+			...Object.keys(contract.optional),
+		]);
 		expect([...declared].sort()).toEqual([...known].sort());
 		for (const theme of THEMES) {
 			for (const mode of Object.values(themeBlocks(theme.id))) {
@@ -154,13 +164,16 @@ describe("generated theme files", () => {
 	});
 
 	test("_reset.css resets exactly the optional keys", () => {
-		const reset = blocks(readFileSync(join(themesDir, "_reset.css"), "utf8"))[0] as {
+		const reset = blocks(
+			readFileSync(join(themesDir, "_reset.css"), "utf8"),
+		)[0] as {
 			decls: Record<string, string>;
 		};
 		expect(Object.keys(reset.decls).sort()).toEqual(
 			OPTIONAL.map((k) => "--theme-" + k).sort(),
 		);
-		for (const value of Object.values(reset.decls)) expect(value).toBe("initial");
+		for (const value of Object.values(reset.decls))
+			expect(value).toBe("initial");
 	});
 
 	test("the three themes share ONE colour system, in both modes", () => {
@@ -170,7 +183,9 @@ describe("generated theme files", () => {
 			const [first, ...rest] = THEMES.map((t) => themeBlocks(t.id)[mode]);
 			for (const other of rest) {
 				for (const key of colourKeys) {
-					expect(other[key], mode + " " + key).toBe((first as Record<string, string>)[key]);
+					expect(other[key], mode + " " + key).toBe(
+						(first as Record<string, string>)[key],
+					);
 				}
 			}
 		}
@@ -202,29 +217,56 @@ describe("generated theme files", () => {
 							(palette.colors[b] as { hex: string }).hex.toLowerCase() +
 							")",
 					);
-					expect(got, theme.id + "/" + mode + " " + key + " (" + value.mix.join(",") + ")").toBe(want);
+					expect(
+						got,
+						theme.id +
+							"/" +
+							mode +
+							" " +
+							key +
+							" (" +
+							value.mix.join(",") +
+							")",
+					).toBe(want);
 				}
 			}
 		}
 	});
 
 	test("the FEEL is what differs: density, type, radius, elevation and motion", () => {
-		const at = (id: string, key: string) => (themeBlocks(id).dark as Record<string, string>)["--theme-" + key];
-		for (const key of ["space", "radius", "text-sm", "text-base", "duration", "ease", "press", "weight", "shadow-sm"]) {
+		const at = (id: string, key: string) =>
+			(themeBlocks(id).dark as Record<string, string>)["--theme-" + key];
+		for (const key of [
+			"space",
+			"radius",
+			"text-sm",
+			"text-base",
+			"duration",
+			"ease",
+			"press",
+			"weight",
+			"shadow-sm",
+		]) {
 			const values = THEMES.map((t) => at(t.id, key));
-			expect(new Set(values).size, key + " must differ across themes: " + values.join(" / ")).toBe(3);
+			expect(
+				new Set(values).size,
+				key + " must differ across themes: " + values.join(" / "),
+			).toBe(3);
 		}
 		// hover only moves in the playful feel: a bounce is not a house style
 		expect(at("game", "hover")).not.toBe("1");
-		expect([at("business", "hover"), at("console", "hover")]).toEqual(["1", "1"]);
+		expect([at("business", "hover"), at("console", "hover")]).toEqual([
+			"1",
+			"1",
+		]);
 
 		// density really moves the same way in both modes
 		expect(Number.parseFloat(at("game", "space") as string)).toBeGreaterThan(
 			Number.parseFloat(at("console", "space") as string),
 		);
-		expect(Number.parseFloat(at("business", "space") as string)).toBeGreaterThan(
-			Number.parseFloat(at("console", "space") as string),
-		);
+		expect(
+			Number.parseFloat(at("business", "space") as string),
+		).toBeGreaterThan(Number.parseFloat(at("console", "space") as string));
 	});
 
 	test("text pairs clear WCAG AA in every theme × mode (dark muted ink is the one exemption)", () => {
@@ -236,7 +278,8 @@ describe("generated theme files", () => {
 				["light", l],
 				["dark", d],
 			] as const) {
-				const read = (k: string) => evaluate((decls as Record<string, string>)["--theme-" + k] as string);
+				const read = (k: string) =>
+					evaluate((decls as Record<string, string>)["--theme-" + k] as string);
 				for (const [fg, bg, name] of [
 					["on-primary", "primary", "on-primary"],
 					["ink", "canvas", "ink"],
@@ -244,9 +287,10 @@ describe("generated theme files", () => {
 					["muted-ink", "canvas", "muted-ink"],
 				] as const) {
 					if (exemptions.has(theme.id + "/" + mode + "/" + name)) continue;
-					expect(contrastRatio(read(fg), read(bg)), theme.id + "/" + mode + "/" + name).toBeGreaterThanOrEqual(
-						4.5,
-					);
+					expect(
+						contrastRatio(read(fg), read(bg)),
+						theme.id + "/" + mode + "/" + name,
+					).toBeGreaterThanOrEqual(4.5);
 				}
 			}
 		}
@@ -269,9 +313,9 @@ describe("generated theme files", () => {
 		expect(css).toContain(":root:not([data-theme])");
 		expect(css).toContain(':root:not([data-theme])[data-mode="dark"]');
 		for (const other of THEMES.filter((t) => !t.isDefault)) {
-			expect(readFileSync(join(themesDir, other.id + ".css"), "utf8")).not.toContain(
-				":root:not([data-theme])",
-			);
+			expect(
+				readFileSync(join(themesDir, other.id + ".css"), "utf8"),
+			).not.toContain(":root:not([data-theme])");
 		}
 	});
 
