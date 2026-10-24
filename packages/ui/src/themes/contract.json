@@ -65,7 +65,8 @@
     "--theme-shadow-sm": "Tailwind shadow-sm. Default: 0 1px 2px color-mix(canvas 35%, transparent)",
     "--theme-shadow-md": "Tailwind shadow-md. Default: 0 4px 10px -6px color-mix(canvas 45%, transparent)",
     "--theme-primary-fill": "The brand plate: primary's FILL, always the native palette blue with on-primary ink on top. Default: primary",
-    "--theme-primary-ink": "Primary as text/links and the focus ring: the readable blue for this mode. Default: primary"
+    "--theme-primary-ink": "Primary as text/links and the focus ring: the readable blue for this mode. Default: primary",
+    "--theme-primary-shadow": "Elevation of the primary plate. Business light: none; elsewhere bigface's glow. Default: the bigface glow"
   },
   "$feel": "The three themes share one colour system: every colour role resolves the native Bigface palette, and a theme chooses only the feel — density (space), type scale, radius, elevation, motion, press."
 }

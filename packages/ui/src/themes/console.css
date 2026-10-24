@@ -48,6 +48,7 @@
   --theme-chart-5: #8658d2;
   --theme-primary-fill: #00b0ff;
   --theme-primary-ink: #007aa6;
+  --theme-primary-shadow: 0 8px 26px color-mix(in srgb, var(--bf-blue) 30%, transparent), inset 0 1px 0 color-mix(in srgb, var(--bf-caret) 50%, transparent);
   --theme-overlay: #bebfb8;
   --theme-solid: #ecece5;
   --theme-on-solid: #252925;
@@ -115,6 +116,7 @@
   --theme-chart-5: #ae81ff;
   --theme-primary-fill: #00b0ff;
   --theme-primary-ink: #00b0ff;
+  --theme-primary-shadow: 0 8px 26px color-mix(in srgb, var(--bf-blue) 30%, transparent), inset 0 1px 0 color-mix(in srgb, var(--bf-caret) 50%, transparent);
   --theme-overlay: #535752;
   --theme-solid: #3b3c32;
   --theme-on-solid: #d9d9d4;

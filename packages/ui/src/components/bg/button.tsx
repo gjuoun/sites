@@ -19,7 +19,7 @@ export const bgButtonVariants = cva(
 			tone: {
 				none: "",
 				// the bright call to action: blue gradient plate, dark ink
-				glow: "h-auto rounded-[var(--theme-radius,0.625rem)] bg-transparent hover:bg-transparent px-[1.15rem] py-[0.7rem] text-[0.94rem] font-semibold no-underline bg-linear-135/srgb from-[var(--theme-primary)] to-[var(--theme-primary-edge)] text-[var(--theme-on-primary)] shadow-[0_8px_26px_color-mix(in_srgb,var(--bf-blue)_30%,transparent),inset_0_1px_0_color-mix(in_srgb,var(--bf-caret)_50%,transparent)] hover:-translate-y-0.5 hover:from-[var(--theme-primary)] hover:to-[var(--theme-primary)] hover:text-[var(--theme-on-primary)] hover:shadow-[0_14px_34px_color-mix(in_srgb,var(--bf-blue)_40%,transparent),inset_0_1px_0_color-mix(in_srgb,var(--bf-caret)_60%,transparent)]",
+				glow: "h-auto rounded-[var(--theme-radius,0.625rem)] bg-transparent hover:bg-transparent px-[1.15rem] py-[0.7rem] text-[0.94rem] font-semibold no-underline bg-linear-135/srgb from-[var(--theme-primary)] to-[var(--theme-primary-edge)] text-[var(--theme-on-primary)] shadow-[var(--theme-primary-shadow,none)] hover:-translate-y-0.5 hover:from-[var(--theme-primary)] hover:to-[var(--theme-primary)] hover:text-[var(--theme-on-primary)] hover:shadow-[var(--theme-primary-shadow,none)]",
 				// quiet outline pill next to the glow button
 				ghost:
 					"h-auto rounded-[var(--theme-radius,0.625rem)] border-bf-selection bg-bf-border/6 px-[1.15rem] py-[0.7rem] text-[0.94rem] font-semibold text-foreground no-underline hover:border-bf-blue hover:bg-bf-blue/8 hover:text-bf-blue",

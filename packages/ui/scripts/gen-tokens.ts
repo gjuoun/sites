@@ -120,8 +120,10 @@ export function cssValue(
 	v: Value,
 	palette: PaletteLike,
 	dark?: PaletteLike,
+	mode: "light" | "dark" = "dark",
 ): string {
 	if (typeof v === "string") return v;
+	if ("light" in v) return cssValue(mode === "light" ? v.light : v.dark, palette, dark, mode);
 	if ("color" in v) {
 		const chosen = v.palette === "dark" && dark ? dark : palette;
 		return hexOf(chosen, v.color);
@@ -131,7 +133,12 @@ export function cssValue(
 }
 
 /** A theme's block for one mode, in contract order: every required key, then every optional key. */
-export function renderBlock(theme: Theme, palette: PaletteLike, dark?: PaletteLike): string {
+export function renderBlock(
+	theme: Theme,
+	palette: PaletteLike,
+	dark?: PaletteLike,
+	mode: "light" | "dark" = "dark",
+): string {
 	const keys = [...REQUIRED, ...OPTIONAL] as string[];
 	const missing = keys.filter((k) => !(k in theme.roles));
 	const extra = Object.keys(theme.roles).filter((k) => !keys.includes(k));
@@ -145,7 +152,7 @@ export function renderBlock(theme: Theme, palette: PaletteLike, dark?: PaletteLi
 				"  --theme-" +
 				k +
 				": " +
-				cssValue(theme.roles[k] as Value, palette, dark) +
+				cssValue(theme.roles[k] as Value, palette, dark, mode) +
 				";",
 		)
 		.join("\n");
@@ -169,11 +176,11 @@ export function renderThemeFile(
 		"   Do not edit: change the role map, then run theme:sync again. */",
 		"",
 		lightSel + " {",
-		renderBlock(theme, light, dark),
+		renderBlock(theme, light, dark, "light"),
 		"}",
 		"",
 		darkSel + " {",
-		renderBlock(theme, dark),
+		renderBlock(theme, dark, dark, "dark"),
 		"}",
 		"",
 	].join("\n");

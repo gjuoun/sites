@@ -19,7 +19,8 @@
 export type Value =
 	| string
 	| { color: string; palette?: "dark" | "light" }
-	| { mix: [string, number, string] };
+	| { mix: [string, number, string] }
+	| { light: Value; dark: Value };
 
 export type ThemeRoles = Record<string, Value>;
 
@@ -143,6 +144,8 @@ export interface Feel {
 	press: string;
 	/** Weight of a demo heading, so a feel can be heavier or flatter in its type. */
 	weight: string;
+	/** The primary plate's elevation — business drops it in light mode; a plain string applies to both. */
+	"primary-shadow": string | { light: string; dark: string };
 }
 
 const feel = (f: Feel): ThemeRoles => ({
@@ -182,6 +185,8 @@ export const THEMES: Theme[] = [
 				hover: "1",
 				press: "0.99",
 				weight: "600",
+				// Business light: the blue plate carries no dark drop at all; dark keeps bigface's glow.
+				"primary-shadow": { light: "none", dark: "0 8px 26px color-mix(in srgb, var(--bf-blue) 30%, transparent), inset 0 1px 0 color-mix(in srgb, var(--bf-caret) 50%, transparent)" },
 			}),
 		},
 	},
@@ -210,6 +215,7 @@ export const THEMES: Theme[] = [
 				hover: "1",
 				press: "0.975",
 				weight: "500",
+				"primary-shadow": "0 8px 26px color-mix(in srgb, var(--bf-blue) 30%, transparent), inset 0 1px 0 color-mix(in srgb, var(--bf-caret) 50%, transparent)",
 			}),
 		},
 	},
@@ -238,6 +244,7 @@ export const THEMES: Theme[] = [
 				hover: "1.04",
 				press: "0.9",
 				weight: "800",
+				"primary-shadow": "0 8px 26px color-mix(in srgb, var(--bf-blue) 30%, transparent), inset 0 1px 0 color-mix(in srgb, var(--bf-caret) 50%, transparent)",
 			}),
 		},
 	},
@@ -268,6 +275,7 @@ export const OPTIONAL = [
 	"chart-5",
 	"primary-fill",
 	"primary-ink",
+	"primary-shadow",
 	"overlay",
 	"solid",
 	"on-solid",

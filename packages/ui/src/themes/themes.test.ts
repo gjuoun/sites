@@ -202,6 +202,8 @@ describe("generated theme files", () => {
 				for (const [key, value] of Object.entries(COLOURS)) {
 					const got = decls["--theme-" + key] as string;
 					if (typeof value === "string") continue;
+					// a per-mode value (the primary plate's elevation) is asserted on its own below
+					if ("light" in value) continue;
 					if ("color" in value) {
 						// a role can pin itself to the native dark palette (the brand fill does)
 						const source =
@@ -349,6 +351,22 @@ describe("generated theme files", () => {
 				expect(decls["--theme-primary-ink"], theme.id + "/" + mode).toBe(
 					mode === "light" ? readableBlue : nativeBlue,
 				);
+			}
+		}
+	});
+
+	test("business's blue plate carries no dark shadow in light mode, and keeps its glow in dark", () => {
+		const business = themeBlocks("business") as unknown as Record<
+			"light" | "dark",
+			Record<string, string>
+		>;
+		expect(business.light["--theme-primary-shadow"]).toBe("none");
+		expect(business.dark["--theme-primary-shadow"]).toContain("color-mix");
+		// console and game are untouched: the same glow in both modes
+		for (const id of ["console", "game"]) {
+			const blocks = themeBlocks(id) as unknown as Record<"light" | "dark", Record<string, string>>;
+			for (const mode of ["light", "dark"] as const) {
+				expect(blocks[mode]["--theme-primary-shadow"], id + "/" + mode).toContain("0 8px 26px");
 			}
 		}
 	});
