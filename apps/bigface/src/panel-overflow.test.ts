@@ -111,6 +111,27 @@ test.skipIf(!findChrome())(
 		// hover only moves in the playful feel; the other two hold still
 		expect([at("business").hover, at("console").hover]).toEqual(["1", "1"]);
 
+
+		// The radius has to reach the CONTROLS, not just the card: before this, every button measured a
+		// hardcoded pill (1.67772e+07px) in all three themes, and the badges were proportional pills.
+		const claim = (theme: string) => at(theme).claimRadius;
+		const claimIsPill = (theme: string) => claim(theme) >= at(theme).claimHeight / 2 - 0.5;
+
+		expect(claim("business"), "business button radius").toBeGreaterThanOrEqual(5);
+		expect(claim("business")).toBeLessThanOrEqual(8);
+		expect(claimIsPill("business"), "business must not be a pill").toBe(false);
+		expect(claim("console"), "console button radius").toBeLessThanOrEqual(3);
+		expect(claim("game"), "game button radius").toBeGreaterThanOrEqual(32);
+		expect(claimIsPill("game"), "game stays a pill").toBe(true);
+
+		// badges and chips follow the same token, so a panel cannot mix a 6px card with a pill badge
+		for (const theme of ["business", "console", "game"]) {
+			expect(at(theme).badgeRadius, theme + " badge follows the theme").toBe(claim(theme));
+		}
+		expect(at("business").badgeRadius, "business badge is not a pill").toBeLessThan(
+			at("business").badgeHeight / 2,
+		);
+
 		// the press is demonstrable: game overshoots on hover and squishes on press
 		expect(Number(at("game").hover), "game hover").toBeGreaterThan(1);
 		expect(Number(at("game").press), "game press").toBeLessThanOrEqual(0.92);

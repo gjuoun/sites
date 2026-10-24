@@ -35,6 +35,12 @@ export interface PanelMetrics {
 	hover: string;
 	press: string;
 	weight: string;
+	/** Controls, as computed pixels: the theme radius has to reach these, not just the card. */
+	claimRadius: number;
+	claimHeight: number;
+	badgeRadius: number;
+	badgeHeight: number;
+	chipRadius: number;
 }
 
 export interface Measurement {
@@ -94,6 +100,17 @@ const PROBE = `(() => {
       });
     }
   }
+  const px = (panel, match, which, selector) => {
+    const el = selector
+      ? panel.querySelector(selector)
+      : [...panel.querySelectorAll("button")].find((b) => match(b));
+    if (!el) return 0;
+    const cs = getComputedStyle(el);
+    const r = el.getBoundingClientRect();
+    return which === "radius"
+      ? Math.round(Number.parseFloat(cs.borderTopLeftRadius))
+      : Math.round(r.height);
+  };
   const metrics = panels.map((panel) => {
     const card = panel.querySelector('[data-slot="card"]');
     const title = panel.querySelector('[data-slot="card-title"]');
@@ -113,6 +130,11 @@ const PROBE = `(() => {
       hover: ps.getPropertyValue("--theme-hover").trim(),
       press: ps.getPropertyValue("--theme-press").trim(),
       weight: ps.getPropertyValue("--theme-weight").trim(),
+      claimRadius: px(panel, (b) => b.textContent?.trim() === "Claim", "radius"),
+      claimHeight: px(panel, (b) => b.textContent?.trim() === "Claim", "height"),
+      badgeRadius: px(panel, null, "radius", "[data-slot=badge]"),
+      badgeHeight: px(panel, null, "height", "[data-slot=badge]"),
+      chipRadius: px(panel, null, "radius", "[data-slot=card] span"),
     };
   });
   return { panels: panels.length, offenders, clipped, metrics };

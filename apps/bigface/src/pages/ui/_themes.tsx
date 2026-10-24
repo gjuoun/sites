@@ -41,7 +41,7 @@ function Panel({
 				<div className="flex flex-wrap items-center gap-2">
 					<BGButton tone="glow">Claim</BGButton>
 					<BGButton tone="ghost">Later</BGButton>
-					<Badge variant="secondary" className="text-xs">
+					<Badge variant="secondary" className="rounded-[var(--theme-radius,0.625rem)] text-xs">
 						Live
 					</Badge>
 				</div>
@@ -51,18 +51,18 @@ function Panel({
 				</label>
 				{/* Tints, pills and the press beat: the playful vocabulary, built from native roles only. */}
 				<div className="flex flex-wrap items-center gap-2">
-					<span className="rounded-full bg-primary-tint px-3 py-1 text-xs text-primary">
+					<span className="rounded-[var(--theme-radius,0.625rem)] bg-primary-tint px-3 py-1 text-xs text-primary">
 						+40 coins
 					</span>
-					<span className="rounded-full bg-success-tint px-3 py-1 text-xs text-success">
+					<span className="rounded-[var(--theme-radius,0.625rem)] bg-success-tint px-3 py-1 text-xs text-success">
 						streak 3
 					</span>
-					<span className="rounded-full bg-highlight-tint px-3 py-1 text-xs text-highlight">
+					<span className="rounded-[var(--theme-radius,0.625rem)] bg-highlight-tint px-3 py-1 text-xs text-highlight">
 						booster
 					</span>
 				</div>
 				<div className="flex flex-wrap items-center gap-3">
-					<BGButton tone="chip" className="rounded-full px-4">
+					<BGButton tone="chip" className="px-4">
 						Press me
 					</BGButton>
 					<span className="font-code text-xs text-bf-fg-muted">
