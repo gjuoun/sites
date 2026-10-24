@@ -324,7 +324,13 @@ export interface ColourAudit {
 
 const COLOUR_PROBE = `(() => {
   const PALETTES = __PALETTE__; // { dark: [...], light: [...] }
+  // Memoised: a catalogue has thousands of elements but only a few dozen distinct colours.
+  const keyCache = new Map();
   const rgbKey = (value) => {
+    if (!keyCache.has(value)) keyCache.set(value, rgbKeyUncached(value));
+    return keyCache.get(value);
+  };
+  const rgbKeyUncached = (value) => {
     const probe = document.createElement("span");
     probe.style.color = value;
     document.body.appendChild(probe);

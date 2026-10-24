@@ -242,6 +242,11 @@ test("the business catalogue is one business theme with 63 components; console k
 	expect(scopeAt.every((i) => i > colourAt && i < firstComponent), "scopes only inside the colour section").toBe(true);
 	const typoAt = business.indexOf('id="typography"');
 	expect(typoAt > colourAt && typoAt < firstComponent, "typography follows colour, before the components").toBe(true);
+	// every component card carries the same three blocks; the eight categories wrap the 63 cards
+	expect(business.split(">Variants<").length - 1, "a Variants block on every card").toBe(63);
+	expect(business.split(">States<").length - 1, "a States block on every card").toBe(63);
+	expect(business.split(">Examples<").length - 1, "an Examples block on every card").toBe(63);
+	expect(business.split('id="cat-').length - 1, "eight categories").toBe(8);
 	expect([...business.matchAll(/data-demo="/g)], "63 demos").toHaveLength(63);
 	const cons = page("ui/console");
 	expect([...cons.matchAll(/data-slot="theme-scope"/g)]).toHaveLength(MODES.length);

@@ -1,5 +1,7 @@
 import * as React from "react";
 import { ColourSection } from "./_colour.tsx";
+import { VARIANTS, STATES } from "./_variants.tsx";
+import { PARTS } from "./_parts.ts";
 import { TypographySection } from "./_typography.tsx";
 import { cn } from "@gjuoun/bigface-business-ui/lib/utils";
 import { toast } from "sonner";
@@ -76,19 +78,50 @@ export const STATIC_DEMOS = ["alert", "aspect-ratio", "avatar", "badge", "breadc
 
 function Section({ id, title, source, children }: { id: string; title: string; source: string; children: React.ReactNode }) {
 	return (
-		<section id={id} className="flex scroll-mt-6 flex-col gap-4 border-t border-border pt-8">
+		<section id={id} className="flex scroll-mt-6 flex-col gap-5 rounded-xl border bg-card p-5 text-card-foreground">
 			<header className="flex flex-col gap-1">
-				<h2 className="text-xl font-semibold text-foreground">{title}</h2>
+				<h3 className="text-lg font-semibold text-foreground">{title}</h3>
 				<code className="font-mono text-xs text-muted-foreground">{source}</code>
 			</header>
-			{children}
+			<Group label="Variants">{VARIANTS[id] ?? <Note>No variant axis is declared in the source; the examples show its one form.</Note>}</Group>
+			<Group label="States">{STATES[id] ?? <Note>No stateful props. Hover and focus are live in the examples.</Note>}</Group>
+			<Group label="Examples">{children}</Group>
+			<details className="text-sm">
+				<summary className="cursor-pointer font-mono text-xs text-muted-foreground">Exports</summary>
+				<p className="mt-2 font-mono text-xs break-words text-muted-foreground">{PARTS[id] ?? ""}</p>
+			</details>
 		</section>
+	);
+}
+
+function Group({ label, children }: { label: string; children: React.ReactNode }) {
+	return (
+		<div className="flex flex-col gap-1">
+			<h4 className="text-xs font-medium tracking-[0.06em] text-muted-foreground uppercase">{label}</h4>
+			{children}
+		</div>
+	);
+}
+
+function Note({ children }: { children: React.ReactNode }) {
+	return <p className="py-2 text-sm text-muted-foreground">{children}</p>;
+}
+
+function Category({ id, title, count, children }: { id: string; title: string; count: number; children: React.ReactNode }) {
+	return (
+		<div id={id} className="flex scroll-mt-6 flex-col gap-6">
+			<header className="flex flex-col gap-1 border-t border-border pt-8">
+				<p className="font-mono text-xs tracking-[0.06em] text-muted-foreground uppercase">{count} components</p>
+				<h2 className="text-2xl font-semibold text-foreground">{title}</h2>
+			</header>
+			{children}
+		</div>
 	);
 }
 
 function Demo({ name, className, children }: { name: string; className?: string; children: React.ReactNode }) {
 	return (
-		<div data-demo={name} className={cn("flex min-h-32 flex-wrap items-start gap-3 rounded-lg border border-dashed border-border p-4", className)}>
+		<div data-demo={name} className={cn("flex min-h-24 flex-wrap items-start gap-3 rounded-md border p-4", className)}>
 			{children}
 		</div>
 	);
@@ -132,119 +165,7 @@ export function Catalog() {
 				<div className="flex flex-wrap items-center gap-3"><ModeSwitch /><span className="font-mono text-xs text-muted-foreground">every colour follows this switch; the components are unchanged</span></div>
 				<ColourSection />
 				<TypographySection />
-				<Section id="accordion" title="Accordion" source="@gjuoun/bigface-business-ui/components/ui/accordion">
-					<Demo name="accordion" className="block">
-						<Accordion type="single" collapsible className="w-full max-w-md">
-							<AccordionItem value="a">
-								<AccordionTrigger data-trigger="click">What is it?</AccordionTrigger>
-								<AccordionContent>The stock shadcn accordion, with the business colours.</AccordionContent>
-							</AccordionItem>
-							<AccordionItem value="b">
-								<AccordionTrigger>Is the look changed?</AccordionTrigger>
-								<AccordionContent>No. Only the colour is the theme's; the component is unchanged.</AccordionContent>
-							</AccordionItem>
-						</Accordion>
-					</Demo>
-				</Section>
-
-				<Section id="alert-dialog" title="Alert dialog" source="components/ui/alert-dialog">
-					<Demo name="alert-dialog">
-						<AlertDialog>
-							<AlertDialogTrigger asChild>
-								<Button variant="outline" data-trigger="click">Delete project</Button>
-							</AlertDialogTrigger>
-							<AlertDialogContent>
-								<AlertDialogHeader>
-									<AlertDialogTitle>Are you sure?</AlertDialogTitle>
-									<AlertDialogDescription>This cannot be undone.</AlertDialogDescription>
-								</AlertDialogHeader>
-								<AlertDialogFooter>
-									<AlertDialogCancel>Cancel</AlertDialogCancel>
-									<AlertDialogAction>Delete</AlertDialogAction>
-								</AlertDialogFooter>
-							</AlertDialogContent>
-						</AlertDialog>
-					</Demo>
-				</Section>
-
-				<Section id="alert" title="Alert" source="components/ui/alert">
-					<Demo name="alert" className="block">
-						<Alert>
-							<AlertTitle>Heads up</AlertTitle>
-							<AlertDescription>A static message: an alert has nothing to act on.</AlertDescription>
-						</Alert>
-					</Demo>
-				</Section>
-
-				<Section id="aspect-ratio" title="Aspect ratio" source="components/ui/aspect-ratio">
-					<Demo name="aspect-ratio" className="block">
-						<div className="w-64">
-							<AspectRatio ratio={16 / 9} className="flex items-center justify-center rounded-md bg-muted text-sm text-muted-foreground">
-								16 : 9
-							</AspectRatio>
-						</div>
-					</Demo>
-				</Section>
-
-				<Section id="attachment" title="Attachment" source="components/ui/attachment">
-					<Demo name="attachment" className="block">
-						<AttachmentGroup className="max-w-md">
-							<Attachment className="relative">
-								<AttachmentMedia>PDF</AttachmentMedia>
-								<AttachmentContent>
-									<AttachmentTitle>quarterly-report.pdf</AttachmentTitle>
-									<AttachmentDescription>2.4 MB</AttachmentDescription>
-								</AttachmentContent>
-								<AttachmentActions>
-									<AttachmentAction>Remove</AttachmentAction>
-								</AttachmentActions>
-								<AttachmentTrigger data-trigger="click" aria-label="Preview quarterly-report.pdf" onClick={() => setPreview(preview ? null : "quarterly-report.pdf")} />
-							</Attachment>
-						</AttachmentGroup>
-						<p className="text-sm text-muted-foreground">Preview: {preview ?? "closed"}</p>
-					</Demo>
-				</Section>
-
-				<Section id="avatar" title="Avatar" source="components/ui/avatar">
-					<Demo name="avatar">
-						<AvatarGroup>
-							<Avatar><AvatarImage alt="" src="" /><AvatarFallback>JG</AvatarFallback></Avatar>
-							<Avatar><AvatarFallback>AB</AvatarFallback></Avatar>
-							<AvatarGroupCount>+3</AvatarGroupCount>
-						</AvatarGroup>
-					</Demo>
-				</Section>
-
-				<Section id="badge" title="Badge" source="components/ui/badge">
-					<Demo name="badge">
-						<Badge>Default</Badge>
-						<Badge variant="secondary">Secondary</Badge>
-						<Badge variant="outline">Outline</Badge>
-						<Badge variant="destructive">Destructive</Badge>
-					</Demo>
-				</Section>
-
-				<Section id="breadcrumb" title="Breadcrumb" source="components/ui/breadcrumb">
-					<Demo name="breadcrumb">
-						<Breadcrumb>
-							<BreadcrumbList>
-								<BreadcrumbItem><BreadcrumbLink href="#ui">Components</BreadcrumbLink></BreadcrumbItem>
-								<BreadcrumbSeparator />
-								<BreadcrumbItem><BreadcrumbPage>Breadcrumb</BreadcrumbPage></BreadcrumbItem>
-							</BreadcrumbList>
-						</Breadcrumb>
-					</Demo>
-				</Section>
-
-				<Section id="bubble" title="Bubble" source="components/ui/bubble">
-					<Demo name="bubble" className="block">
-						<BubbleGroup className="max-w-md">
-							<Bubble align="start"><BubbleContent>Shall we ship the business package?</BubbleContent></Bubble>
-							<Bubble align="end"><BubbleContent>Yes, once the gates are green.</BubbleContent><BubbleReactions>+1</BubbleReactions></Bubble>
-						</BubbleGroup>
-					</Demo>
-				</Section>
-
+				<Category id="cat-actions" title="Actions" count={4}>
 				<Section id="button" title="Button" source="components/ui/button">
 					<Demo name="button">
 						<Button data-trigger="click" onClick={() => setClicks((n) => n + 1)}>Clicked {clicks}×</Button>
@@ -268,56 +189,28 @@ export function Catalog() {
 					</Demo>
 				</Section>
 
+				<Section id="toggle" title="Toggle" source="components/ui/toggle">
+					<Demo name="toggle">
+						<Toggle variant="outline" aria-label="Bold" data-trigger="click">B</Toggle>
+					</Demo>
+				</Section>
+
+				<Section id="toggle-group" title="Toggle group" source="components/ui/toggle-group">
+					<Demo name="toggle-group">
+						<ToggleGroup type="single" defaultValue="left" variant="outline">
+							<ToggleGroupItem value="left" aria-label="Align left">L</ToggleGroupItem>
+							<ToggleGroupItem value="center" aria-label="Align centre" data-trigger="click">C</ToggleGroupItem>
+							<ToggleGroupItem value="right" aria-label="Align right">R</ToggleGroupItem>
+						</ToggleGroup>
+					</Demo>
+				</Section>
+				</Category>
+
+				<Category id="cat-forms" title="Forms" count={14}>
 				<Section id="calendar" title="Calendar" source="components/ui/calendar">
 					<Demo name="calendar">
 						<Calendar mode="single" selected={date} onSelect={setDate} className="rounded-md border" data-trigger="click" />
 						<p className="text-sm text-muted-foreground">Selected: {date ? date.toDateString() : "none"}</p>
-					</Demo>
-				</Section>
-
-				<Section id="card" title="Card" source="components/ui/card">
-					<Demo name="card">
-						<Card className="w-full max-w-sm">
-							<CardHeader>
-								<CardTitle>Workspace</CardTitle>
-								<CardDescription>Stock card, colour only.</CardDescription>
-								<CardAction><Button variant="ghost" size="sm">Edit</Button></CardAction>
-							</CardHeader>
-							<CardContent>Content goes here.</CardContent>
-							<CardFooter><Button size="sm">Save</Button></CardFooter>
-						</Card>
-					</Demo>
-				</Section>
-
-				<Section id="carousel" title="Carousel" source="components/ui/carousel">
-					<Demo name="carousel">
-						<Carousel className="mx-12 w-[calc(100%-6rem)] max-w-xs">
-							<CarouselContent>
-								{["One", "Two", "Three", "Four"].map((label) => (
-									<CarouselItem key={label}>
-										<div className="flex h-40 items-center justify-center rounded-md border text-2xl font-semibold">{label}</div>
-									</CarouselItem>
-								))}
-							</CarouselContent>
-							<CarouselPrevious />
-							<CarouselNext data-trigger="click" />
-						</Carousel>
-					</Demo>
-				</Section>
-
-
-				<Section id="chart" title="Chart" source="components/ui/chart">
-					<Demo name="chart" className="block">
-						<div data-trigger="hover" className="w-full max-w-lg">
-							<ChartContainer config={chartConfig} className="h-48 w-full">
-								<BarChart data={chartData}>
-									<CartesianGrid vertical={false} />
-									<XAxis dataKey="month" tickLine={false} axisLine={false} tickMargin={8} />
-									<ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-									<Bar dataKey="visitors" fill="var(--color-visitors)" radius={6} />
-								</BarChart>
-							</ChartContainer>
-						</div>
 					</Demo>
 				</Section>
 
@@ -326,34 +219,6 @@ export function Catalog() {
 						<label className="flex items-center gap-2 text-sm">
 							<Checkbox data-trigger="click" /> Accept the terms
 						</label>
-					</Demo>
-				</Section>
-
-				<Section id="collapsible" title="Collapsible" source="components/ui/collapsible">
-					<Demo name="collapsible">
-						<Collapsible className="w-full max-w-sm">
-							<CollapsibleTrigger asChild>
-								<Button variant="outline" data-trigger="click">Show details</Button>
-							</CollapsibleTrigger>
-							<CollapsibleContent className="pt-2 text-sm">Hidden until you open it.</CollapsibleContent>
-						</Collapsible>
-					</Demo>
-				</Section>
-
-				<Section id="code-block" title="Code block" source="components/ui/code-block">
-					<Demo name="code-block" className="block">
-						<CodeBlock className="max-w-lg">
-							<CodeBlockHeader>
-								<CodeBlockTitle>install.sh</CodeBlockTitle>
-								<CodeBlockActions>
-									<CodeBlockCopyButton value="bun add @gjuoun/bigface-business-ui" data-trigger="click" onClick={() => setCopied((c) => !c)}>{copied ? "Copied" : "Copy"}</CodeBlockCopyButton>
-								</CodeBlockActions>
-							</CodeBlockHeader>
-							<CodeBlockContent>
-								<CodeBlockLine>bun add @gjuoun/bigface-business-ui</CodeBlockLine>
-							</CodeBlockContent>
-							<CodeBlockFooter>bun</CodeBlockFooter>
-						</CodeBlock>
 					</Demo>
 				</Section>
 
@@ -373,6 +238,134 @@ export function Catalog() {
 					</Demo>
 				</Section>
 
+				<Section id="field" title="Field" source="components/ui/field">
+					<Demo name="field" className="block">
+						<FieldSet className="w-full max-w-sm">
+							<FieldLegend>Account</FieldLegend>
+							<FieldGroup>
+								<Field>
+									<FieldLabel htmlFor="field-email">Email</FieldLabel>
+									<Input id="field-email" type="email" placeholder="you@example.com" data-trigger="focus" />
+									<FieldDescription>We will never share it.</FieldDescription>
+									<FieldError>Enter a valid email.</FieldError>
+								</Field>
+							</FieldGroup>
+						</FieldSet>
+					</Demo>
+				</Section>
+
+				<Section id="input" title="Input" source="components/ui/input">
+					<Demo name="input">
+						<Input placeholder="Type here" className="w-64" data-trigger="focus" />
+						<Input disabled placeholder="Disabled" className="w-64" />
+					</Demo>
+				</Section>
+
+				<Section id="input-group" title="Input group" source="components/ui/input-group">
+					<Demo name="input-group">
+						<InputGroup className="w-full max-w-sm">
+							<InputGroupAddon><InputGroupText>https://</InputGroupText></InputGroupAddon>
+							<InputGroupInput placeholder="example.com" data-trigger="focus" />
+							<InputGroupAddon align="inline-end"><InputGroupButton>Go</InputGroupButton></InputGroupAddon>
+						</InputGroup>
+					</Demo>
+				</Section>
+
+				<Section id="input-otp" title="Input OTP" source="components/ui/input-otp">
+					<Demo name="input-otp">
+						<InputOTP maxLength={6} data-trigger="click">
+							<InputOTPGroup>
+								<InputOTPSlot index={0} />
+								<InputOTPSlot index={1} />
+								<InputOTPSlot index={2} />
+							</InputOTPGroup>
+							<InputOTPSeparator />
+							<InputOTPGroup>
+								<InputOTPSlot index={3} />
+								<InputOTPSlot index={4} />
+								<InputOTPSlot index={5} />
+							</InputOTPGroup>
+						</InputOTP>
+					</Demo>
+				</Section>
+
+				<Section id="label" title="Label" source="components/ui/label">
+					<Demo name="label">
+						<Label htmlFor="label-name" data-trigger="focus">Name</Label>
+						<Input id="label-name" placeholder="Ada" className="w-64" />
+					</Demo>
+				</Section>
+
+				<Section id="native-select" title="Native select" source="components/ui/native-select">
+					<Demo name="native-select">
+						<NativeSelect data-trigger="focus" defaultValue="a" className="w-48">
+							<NativeSelectOption value="a">Option A</NativeSelectOption>
+							<NativeSelectOption value="b">Option B</NativeSelectOption>
+						</NativeSelect>
+					</Demo>
+				</Section>
+
+				<Section id="radio-group" title="Radio group" source="components/ui/radio-group">
+					<Demo name="radio-group">
+						<RadioGroup defaultValue="comfortable">
+							<div className="flex items-center gap-2"><RadioGroupItem value="default" id="rg-default" /><Label htmlFor="rg-default">Default</Label></div>
+							<div className="flex items-center gap-2"><RadioGroupItem value="comfortable" id="rg-comfortable" /><Label htmlFor="rg-comfortable">Comfortable</Label></div>
+							<div className="flex items-center gap-2"><RadioGroupItem value="compact" id="rg-compact" data-trigger="click" /><Label htmlFor="rg-compact">Compact</Label></div>
+						</RadioGroup>
+					</Demo>
+				</Section>
+
+				<Section id="select" title="Select" source="components/ui/select">
+					<Demo name="select">
+						<Select defaultValue="light">
+							<SelectTrigger data-trigger="click" className="w-48">
+								<SelectValue placeholder="Mode" />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectGroup>
+									<SelectLabel>Mode</SelectLabel>
+									<SelectItem value="light">Light</SelectItem>
+									<SelectItem value="dark">Dark</SelectItem>
+								</SelectGroup>
+							</SelectContent>
+						</Select>
+					</Demo>
+				</Section>
+
+				<Section id="slider" title="Slider" source="components/ui/slider">
+					<Demo name="slider">
+						<Slider data-trigger="drag" defaultValue={[40]} max={100} step={1} className="w-64" />
+					</Demo>
+				</Section>
+
+				<Section id="switch" title="Switch" source="components/ui/switch">
+					<Demo name="switch">
+						<label className="flex items-center gap-2 text-sm">
+							<Switch data-trigger="click" /> Notifications
+						</label>
+					</Demo>
+				</Section>
+
+				<Section id="textarea" title="Textarea" source="components/ui/textarea">
+					<Demo name="textarea">
+						<Textarea placeholder="Write a note" className="w-64" data-trigger="focus" />
+					</Demo>
+				</Section>
+				</Category>
+
+				<Category id="cat-navigation" title="Navigation" count={7}>
+				<Section id="breadcrumb" title="Breadcrumb" source="components/ui/breadcrumb">
+					<Demo name="breadcrumb">
+						<Breadcrumb>
+							<BreadcrumbList>
+								<BreadcrumbItem><BreadcrumbLink href="#ui">Components</BreadcrumbLink></BreadcrumbItem>
+								<BreadcrumbSeparator />
+								<BreadcrumbItem><BreadcrumbPage>Breadcrumb</BreadcrumbPage></BreadcrumbItem>
+							</BreadcrumbList>
+						</Breadcrumb>
+					</Demo>
+				</Section>
+
 				<Section id="command" title="Command" source="components/ui/command">
 					<Demo name="command">
 						<Command className="w-full max-w-sm rounded-lg border">
@@ -388,6 +381,103 @@ export function Catalog() {
 							</CommandList>
 						</Command>
 						<p className="text-sm text-muted-foreground">Last command: {picked}</p>
+					</Demo>
+				</Section>
+
+				<Section id="menubar" title="Menubar" source="components/ui/menubar">
+					<Demo name="menubar">
+						<Menubar>
+							<MenubarMenu>
+								<MenubarTrigger data-trigger="click">File</MenubarTrigger>
+								<MenubarContent>
+									<MenubarItem>New tab</MenubarItem>
+									<MenubarSeparator />
+									<MenubarItem>Print</MenubarItem>
+								</MenubarContent>
+							</MenubarMenu>
+							<MenubarMenu>
+								<MenubarTrigger>Edit</MenubarTrigger>
+								<MenubarContent><MenubarItem>Undo</MenubarItem></MenubarContent>
+							</MenubarMenu>
+						</Menubar>
+					</Demo>
+				</Section>
+
+				<Section id="navigation-menu" title="Navigation menu" source="components/ui/navigation-menu">
+					<Demo name="navigation-menu">
+						<NavigationMenu>
+							<NavigationMenuList>
+								<NavigationMenuItem>
+									<NavigationMenuTrigger data-trigger="click">Getting started</NavigationMenuTrigger>
+									<NavigationMenuContent>
+										<NavigationMenuLink href="#" onClick={(e) => e.preventDefault()}>Introduction</NavigationMenuLink>
+									</NavigationMenuContent>
+								</NavigationMenuItem>
+							</NavigationMenuList>
+						</NavigationMenu>
+					</Demo>
+				</Section>
+
+				<Section id="pagination" title="Pagination" source="components/ui/pagination">
+					<Demo name="pagination">
+						<PagerDemo />
+					</Demo>
+				</Section>
+
+				<Section id="sidebar" title="Sidebar" source="components/ui/sidebar">
+					<Demo name="sidebar" className="block h-72 overflow-hidden p-0 [transform:translateZ(0)]">
+						<SidebarProvider className="h-full min-h-0">
+							<Sidebar collapsible="icon">
+								<SidebarContent>
+									<SidebarGroup>
+										<SidebarGroupLabel>Workspace</SidebarGroupLabel>
+										<SidebarMenu>
+											<SidebarMenuItem><SidebarMenuButton>Home</SidebarMenuButton></SidebarMenuItem>
+											<SidebarMenuItem><SidebarMenuButton>Projects</SidebarMenuButton></SidebarMenuItem>
+										</SidebarMenu>
+									</SidebarGroup>
+								</SidebarContent>
+							</Sidebar>
+							<SidebarInset className="p-4">
+								<SidebarTrigger data-trigger="click" />
+								<p className="mt-2 text-sm text-muted-foreground">Toggle the sidebar.</p>
+							</SidebarInset>
+						</SidebarProvider>
+					</Demo>
+				</Section>
+
+				<Section id="tabs" title="Tabs" source="components/ui/tabs">
+					<Demo name="tabs" className="block">
+						<Tabs defaultValue="account" className="w-full max-w-md">
+							<TabsList>
+								<TabsTrigger value="account">Account</TabsTrigger>
+								<TabsTrigger value="password" data-trigger="click">Password</TabsTrigger>
+							</TabsList>
+							<TabsContent value="account" className="text-sm">Make changes to your account.</TabsContent>
+							<TabsContent value="password" className="text-sm">Change your password.</TabsContent>
+						</Tabs>
+					</Demo>
+				</Section>
+				</Category>
+
+				<Category id="cat-overlays" title="Overlays" count={9}>
+				<Section id="alert-dialog" title="Alert dialog" source="components/ui/alert-dialog">
+					<Demo name="alert-dialog">
+						<AlertDialog>
+							<AlertDialogTrigger asChild>
+								<Button variant="outline" data-trigger="click">Delete project</Button>
+							</AlertDialogTrigger>
+							<AlertDialogContent>
+								<AlertDialogHeader>
+									<AlertDialogTitle>Are you sure?</AlertDialogTitle>
+									<AlertDialogDescription>This cannot be undone.</AlertDialogDescription>
+								</AlertDialogHeader>
+								<AlertDialogFooter>
+									<AlertDialogCancel>Cancel</AlertDialogCancel>
+									<AlertDialogAction>Delete</AlertDialogAction>
+								</AlertDialogFooter>
+							</AlertDialogContent>
+						</AlertDialog>
 					</Demo>
 				</Section>
 
@@ -422,17 +512,6 @@ export function Catalog() {
 								<DialogFooter><Button>Save</Button></DialogFooter>
 							</DialogContent>
 						</Dialog>
-					</Demo>
-				</Section>
-
-				<Section id="direction" title="Direction" source="components/ui/direction">
-					<Demo name="direction">
-						<DirectionProvider dir={dir}>
-							<div dir={dir} className="flex w-64 flex-col gap-2 rounded-md border p-3 text-sm">
-								<Button variant="outline" data-trigger="click" onClick={() => setDir((d) => (d === "ltr" ? "rtl" : "ltr"))}>Direction: {dir}</Button>
-								<p>Reading direction follows the provider.</p>
-							</div>
-						</DirectionProvider>
 					</Demo>
 				</Section>
 
@@ -471,35 +550,6 @@ export function Catalog() {
 					</Demo>
 				</Section>
 
-				<Section id="empty" title="Empty" source="components/ui/empty">
-					<Demo name="empty" className="block">
-						<Empty className="border">
-							<EmptyHeader>
-								<EmptyMedia variant="icon">∅</EmptyMedia>
-								<EmptyTitle>No projects yet</EmptyTitle>
-								<EmptyDescription>Create one to get started.</EmptyDescription>
-							</EmptyHeader>
-							<EmptyContent><Button size="sm">Create project</Button></EmptyContent>
-						</Empty>
-					</Demo>
-				</Section>
-
-				<Section id="field" title="Field" source="components/ui/field">
-					<Demo name="field" className="block">
-						<FieldSet className="w-full max-w-sm">
-							<FieldLegend>Account</FieldLegend>
-							<FieldGroup>
-								<Field>
-									<FieldLabel htmlFor="field-email">Email</FieldLabel>
-									<Input id="field-email" type="email" placeholder="you@example.com" data-trigger="focus" />
-									<FieldDescription>We will never share it.</FieldDescription>
-									<FieldError>Enter a valid email.</FieldError>
-								</Field>
-							</FieldGroup>
-						</FieldSet>
-					</Demo>
-				</Section>
-
 				<Section id="hover-card" title="Hover card" source="components/ui/hover-card">
 					<Demo name="hover-card">
 						<HoverCard>
@@ -508,154 +558,6 @@ export function Catalog() {
 							</HoverCardTrigger>
 							<HoverCardContent className="w-64 text-sm">Maintainer of the Bigface packages.</HoverCardContent>
 						</HoverCard>
-					</Demo>
-				</Section>
-
-				<Section id="input-group" title="Input group" source="components/ui/input-group">
-					<Demo name="input-group">
-						<InputGroup className="w-full max-w-sm">
-							<InputGroupAddon><InputGroupText>https://</InputGroupText></InputGroupAddon>
-							<InputGroupInput placeholder="example.com" data-trigger="focus" />
-							<InputGroupAddon align="inline-end"><InputGroupButton>Go</InputGroupButton></InputGroupAddon>
-						</InputGroup>
-					</Demo>
-				</Section>
-
-				<Section id="input-otp" title="Input OTP" source="components/ui/input-otp">
-					<Demo name="input-otp">
-						<InputOTP maxLength={6} data-trigger="click">
-							<InputOTPGroup>
-								<InputOTPSlot index={0} />
-								<InputOTPSlot index={1} />
-								<InputOTPSlot index={2} />
-							</InputOTPGroup>
-							<InputOTPSeparator />
-							<InputOTPGroup>
-								<InputOTPSlot index={3} />
-								<InputOTPSlot index={4} />
-								<InputOTPSlot index={5} />
-							</InputOTPGroup>
-						</InputOTP>
-					</Demo>
-				</Section>
-
-				<Section id="input" title="Input" source="components/ui/input">
-					<Demo name="input">
-						<Input placeholder="Type here" className="w-64" data-trigger="focus" />
-						<Input disabled placeholder="Disabled" className="w-64" />
-					</Demo>
-				</Section>
-
-				<Section id="item" title="Item" source="components/ui/item">
-					<Demo name="item" className="block">
-						<Item variant="outline" className="max-w-md">
-							<ItemContent>
-								<ItemTitle>Basic plan</ItemTitle>
-								<ItemDescription>For individuals and side projects.</ItemDescription>
-							</ItemContent>
-							<ItemActions><Button size="sm" variant="outline">Choose</Button></ItemActions>
-						</Item>
-					</Demo>
-				</Section>
-
-				<Section id="kbd" title="Keyboard key" source="components/ui/kbd">
-					<Demo name="kbd">
-						<KbdGroup><Kbd>⌘</Kbd><Kbd>K</Kbd></KbdGroup>
-					</Demo>
-				</Section>
-
-				<Section id="label" title="Label" source="components/ui/label">
-					<Demo name="label">
-						<Label htmlFor="label-name" data-trigger="focus">Name</Label>
-						<Input id="label-name" placeholder="Ada" className="w-64" />
-					</Demo>
-				</Section>
-
-				<Section id="marker" title="Marker" source="components/ui/marker">
-					<Demo name="marker">
-						<Marker variant="default"><MarkerIcon>●</MarkerIcon><MarkerContent>Live</MarkerContent></Marker>
-						<Marker variant="border"><MarkerIcon>○</MarkerIcon><MarkerContent>Draft</MarkerContent></Marker>
-					</Demo>
-				</Section>
-
-				<Section id="menubar" title="Menubar" source="components/ui/menubar">
-					<Demo name="menubar">
-						<Menubar>
-							<MenubarMenu>
-								<MenubarTrigger data-trigger="click">File</MenubarTrigger>
-								<MenubarContent>
-									<MenubarItem>New tab</MenubarItem>
-									<MenubarSeparator />
-									<MenubarItem>Print</MenubarItem>
-								</MenubarContent>
-							</MenubarMenu>
-							<MenubarMenu>
-								<MenubarTrigger>Edit</MenubarTrigger>
-								<MenubarContent><MenubarItem>Undo</MenubarItem></MenubarContent>
-							</MenubarMenu>
-						</Menubar>
-					</Demo>
-				</Section>
-
-				<Section id="message-scroller" title="Message scroller" source="components/ui/message-scroller">
-					<Demo name="message-scroller">
-						<MessageScrollerProvider>
-							<MessageScroller className="h-48 w-full max-w-md rounded-md border">
-								<MessageScrollerViewport data-trigger="wheel" className="h-full">
-									<MessageScrollerContent className="gap-2 p-3">
-										{feed.map((m) => (
-											<MessageScrollerItem key={m} className="rounded-md bg-muted px-3 py-2 text-sm">{m}</MessageScrollerItem>
-										))}
-									</MessageScrollerContent>
-								</MessageScrollerViewport>
-								<MessageScrollerButton>Jump to latest</MessageScrollerButton>
-							</MessageScroller>
-						</MessageScrollerProvider>
-					</Demo>
-				</Section>
-
-				<Section id="message" title="Message" source="components/ui/message">
-					<Demo name="message" className="block">
-						<MessageGroup className="max-w-md">
-							<Message>
-								<MessageAvatar>JG</MessageAvatar>
-								<MessageContent>
-									<MessageHeader>Jun</MessageHeader>
-									Ship the business package when the gates are green.
-									<MessageFooter>10:02</MessageFooter>
-								</MessageContent>
-							</Message>
-						</MessageGroup>
-					</Demo>
-				</Section>
-
-				<Section id="native-select" title="Native select" source="components/ui/native-select">
-					<Demo name="native-select">
-						<NativeSelect data-trigger="focus" defaultValue="a" className="w-48">
-							<NativeSelectOption value="a">Option A</NativeSelectOption>
-							<NativeSelectOption value="b">Option B</NativeSelectOption>
-						</NativeSelect>
-					</Demo>
-				</Section>
-
-				<Section id="navigation-menu" title="Navigation menu" source="components/ui/navigation-menu">
-					<Demo name="navigation-menu">
-						<NavigationMenu>
-							<NavigationMenuList>
-								<NavigationMenuItem>
-									<NavigationMenuTrigger data-trigger="click">Getting started</NavigationMenuTrigger>
-									<NavigationMenuContent>
-										<NavigationMenuLink href="#" onClick={(e) => e.preventDefault()}>Introduction</NavigationMenuLink>
-									</NavigationMenuContent>
-								</NavigationMenuItem>
-							</NavigationMenuList>
-						</NavigationMenu>
-					</Demo>
-				</Section>
-
-				<Section id="pagination" title="Pagination" source="components/ui/pagination">
-					<Demo name="pagination">
-						<PagerDemo />
 					</Demo>
 				</Section>
 
@@ -675,36 +577,110 @@ export function Catalog() {
 					</Demo>
 				</Section>
 
-				<Section id="progress" title="Progress" source="components/ui/progress">
-					<Demo name="progress">
-						<Progress value={progress} className="w-64" />
-						<Button variant="outline" size="sm" data-trigger="click" onClick={() => setProgress((p) => Math.min(100, p + 20))}>Advance</Button>
+				<Section id="sheet" title="Sheet" source="components/ui/sheet">
+					<Demo name="sheet">
+						<Sheet>
+							<SheetTrigger asChild>
+								<Button variant="outline" data-trigger="click">Open sheet</Button>
+							</SheetTrigger>
+							<SheetContent>
+								<SheetHeader>
+									<SheetTitle>Settings</SheetTitle>
+									<SheetDescription>Adjust the workspace.</SheetDescription>
+								</SheetHeader>
+								<SheetFooter><Button>Done</Button></SheetFooter>
+							</SheetContent>
+						</Sheet>
 					</Demo>
 				</Section>
 
-				<Section id="questionnaire" title="Questionnaire" source="components/ui/questionnaire">
-					<Demo name="questionnaire" className="block">
-						<Questionnaire className="max-w-md">
-							<QuestionnaireProgress />
-							<QuestionnaireItem name="stack">
-								<QuestionnaireTitle>Which stack do you use?</QuestionnaireTitle>
-								<QuestionnaireDescription>Pick the one closest to your work.</QuestionnaireDescription>
-								<QuestionnaireChoices>
-									<QuestionnaireChoice value="web" data-trigger="click">Web</QuestionnaireChoice>
-									<QuestionnaireChoice value="mobile">Mobile</QuestionnaireChoice>
-								</QuestionnaireChoices>
-							</QuestionnaireItem>
-						</Questionnaire>
+				<Section id="tooltip" title="Tooltip" source="components/ui/tooltip">
+					<Demo name="tooltip">
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<Button variant="outline" data-trigger="hover">Hover me</Button>
+							</TooltipTrigger>
+							<TooltipContent>Shown after a short delay.</TooltipContent>
+						</Tooltip>
+					</Demo>
+				</Section>
+				</Category>
+
+				<Category id="cat-layout" title="Layout and disclosure" count={9}>
+				<Section id="accordion" title="Accordion" source="@gjuoun/bigface-business-ui/components/ui/accordion">
+					<Demo name="accordion" className="block">
+						<Accordion type="single" collapsible className="w-full max-w-md">
+							<AccordionItem value="a">
+								<AccordionTrigger data-trigger="click">What is it?</AccordionTrigger>
+								<AccordionContent>The stock shadcn accordion, with the business colours.</AccordionContent>
+							</AccordionItem>
+							<AccordionItem value="b">
+								<AccordionTrigger>Is the look changed?</AccordionTrigger>
+								<AccordionContent>No. Only the colour is the theme's; the component is unchanged.</AccordionContent>
+							</AccordionItem>
+						</Accordion>
 					</Demo>
 				</Section>
 
-				<Section id="radio-group" title="Radio group" source="components/ui/radio-group">
-					<Demo name="radio-group">
-						<RadioGroup defaultValue="comfortable">
-							<div className="flex items-center gap-2"><RadioGroupItem value="default" id="rg-default" /><Label htmlFor="rg-default">Default</Label></div>
-							<div className="flex items-center gap-2"><RadioGroupItem value="comfortable" id="rg-comfortable" /><Label htmlFor="rg-comfortable">Comfortable</Label></div>
-							<div className="flex items-center gap-2"><RadioGroupItem value="compact" id="rg-compact" data-trigger="click" /><Label htmlFor="rg-compact">Compact</Label></div>
-						</RadioGroup>
+				<Section id="aspect-ratio" title="Aspect ratio" source="components/ui/aspect-ratio">
+					<Demo name="aspect-ratio" className="block">
+						<div className="w-64">
+							<AspectRatio ratio={16 / 9} className="flex items-center justify-center rounded-md bg-muted text-sm text-muted-foreground">
+								16 : 9
+							</AspectRatio>
+						</div>
+					</Demo>
+				</Section>
+
+				<Section id="carousel" title="Carousel" source="components/ui/carousel">
+					<Demo name="carousel">
+						<Carousel className="mx-12 w-[calc(100%-6rem)] max-w-xs">
+							<CarouselContent>
+								{["One", "Two", "Three", "Four"].map((label) => (
+									<CarouselItem key={label}>
+										<div className="flex h-40 items-center justify-center rounded-md border text-2xl font-semibold">{label}</div>
+									</CarouselItem>
+								))}
+							</CarouselContent>
+							<CarouselPrevious />
+							<CarouselNext data-trigger="click" />
+						</Carousel>
+					</Demo>
+				</Section>
+
+				<Section id="card" title="Card" source="components/ui/card">
+					<Demo name="card">
+						<Card className="w-full max-w-sm">
+							<CardHeader>
+								<CardTitle>Workspace</CardTitle>
+								<CardDescription>Stock card, colour only.</CardDescription>
+								<CardAction><Button variant="ghost" size="sm">Edit</Button></CardAction>
+							</CardHeader>
+							<CardContent>Content goes here.</CardContent>
+							<CardFooter><Button size="sm">Save</Button></CardFooter>
+						</Card>
+					</Demo>
+				</Section>
+
+				<Section id="collapsible" title="Collapsible" source="components/ui/collapsible">
+					<Demo name="collapsible">
+						<Collapsible className="w-full max-w-sm">
+							<CollapsibleTrigger asChild>
+								<Button variant="outline" data-trigger="click">Show details</Button>
+							</CollapsibleTrigger>
+							<CollapsibleContent className="pt-2 text-sm">Hidden until you open it.</CollapsibleContent>
+						</Collapsible>
+					</Demo>
+				</Section>
+
+				<Section id="direction" title="Direction" source="components/ui/direction">
+					<Demo name="direction">
+						<DirectionProvider dir={dir}>
+							<div dir={dir} className="flex w-64 flex-col gap-2 rounded-md border p-3 text-sm">
+								<Button variant="outline" data-trigger="click" onClick={() => setDir((d) => (d === "ltr" ? "rtl" : "ltr"))}>Direction: {dir}</Button>
+								<p>Reading direction follows the provider.</p>
+							</div>
+						</DirectionProvider>
 					</Demo>
 				</Section>
 
@@ -728,23 +704,6 @@ export function Catalog() {
 					</Demo>
 				</Section>
 
-				<Section id="select" title="Select" source="components/ui/select">
-					<Demo name="select">
-						<Select defaultValue="light">
-							<SelectTrigger data-trigger="click" className="w-48">
-								<SelectValue placeholder="Mode" />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectGroup>
-									<SelectLabel>Mode</SelectLabel>
-									<SelectItem value="light">Light</SelectItem>
-									<SelectItem value="dark">Dark</SelectItem>
-								</SelectGroup>
-							</SelectContent>
-						</Select>
-					</Demo>
-				</Section>
-
 				<Section id="separator" title="Separator" source="components/ui/separator">
 					<Demo name="separator" className="block">
 						<div className="w-64">
@@ -754,43 +713,42 @@ export function Catalog() {
 						</div>
 					</Demo>
 				</Section>
+				</Category>
 
-				<Section id="sheet" title="Sheet" source="components/ui/sheet">
-					<Demo name="sheet">
-						<Sheet>
-							<SheetTrigger asChild>
-								<Button variant="outline" data-trigger="click">Open sheet</Button>
-							</SheetTrigger>
-							<SheetContent>
-								<SheetHeader>
-									<SheetTitle>Settings</SheetTitle>
-									<SheetDescription>Adjust the workspace.</SheetDescription>
-								</SheetHeader>
-								<SheetFooter><Button>Done</Button></SheetFooter>
-							</SheetContent>
-						</Sheet>
+				<Category id="cat-feedback" title="Feedback" count={7}>
+				<Section id="alert" title="Alert" source="components/ui/alert">
+					<Demo name="alert" className="block">
+						<Alert>
+							<AlertTitle>Heads up</AlertTitle>
+							<AlertDescription>A static message: an alert has nothing to act on.</AlertDescription>
+						</Alert>
 					</Demo>
 				</Section>
 
-				<Section id="sidebar" title="Sidebar" source="components/ui/sidebar">
-					<Demo name="sidebar" className="block h-72 overflow-hidden p-0 [transform:translateZ(0)]">
-						<SidebarProvider className="h-full min-h-0">
-							<Sidebar collapsible="icon">
-								<SidebarContent>
-									<SidebarGroup>
-										<SidebarGroupLabel>Workspace</SidebarGroupLabel>
-										<SidebarMenu>
-											<SidebarMenuItem><SidebarMenuButton>Home</SidebarMenuButton></SidebarMenuItem>
-											<SidebarMenuItem><SidebarMenuButton>Projects</SidebarMenuButton></SidebarMenuItem>
-										</SidebarMenu>
-									</SidebarGroup>
-								</SidebarContent>
-							</Sidebar>
-							<SidebarInset className="p-4">
-								<SidebarTrigger data-trigger="click" />
-								<p className="mt-2 text-sm text-muted-foreground">Toggle the sidebar.</p>
-							</SidebarInset>
-						</SidebarProvider>
+				<Section id="empty" title="Empty" source="components/ui/empty">
+					<Demo name="empty" className="block">
+						<Empty className="border">
+							<EmptyHeader>
+								<EmptyMedia variant="icon">∅</EmptyMedia>
+								<EmptyTitle>No projects yet</EmptyTitle>
+								<EmptyDescription>Create one to get started.</EmptyDescription>
+							</EmptyHeader>
+							<EmptyContent><Button size="sm">Create project</Button></EmptyContent>
+						</Empty>
+					</Demo>
+				</Section>
+
+				<Section id="marker" title="Marker" source="components/ui/marker">
+					<Demo name="marker">
+						<Marker variant="default"><MarkerIcon>●</MarkerIcon><MarkerContent>Live</MarkerContent></Marker>
+						<Marker variant="border"><MarkerIcon>○</MarkerIcon><MarkerContent>Draft</MarkerContent></Marker>
+					</Demo>
+				</Section>
+
+				<Section id="progress" title="Progress" source="components/ui/progress">
+					<Demo name="progress">
+						<Progress value={progress} className="w-64" />
+						<Button variant="outline" size="sm" data-trigger="click" onClick={() => setProgress((p) => Math.min(100, p + 20))}>Advance</Button>
 					</Demo>
 				</Section>
 
@@ -800,12 +758,6 @@ export function Catalog() {
 							<Skeleton className="size-10 rounded-full" />
 							<div className="flex flex-1 flex-col gap-2"><Skeleton className="h-3 w-full" /><Skeleton className="h-3 w-2/3" /></div>
 						</div>
-					</Demo>
-				</Section>
-
-				<Section id="slider" title="Slider" source="components/ui/slider">
-					<Demo name="slider">
-						<Slider data-trigger="drag" defaultValue={[40]} max={100} step={1} className="w-64" />
 					</Demo>
 				</Section>
 
@@ -821,12 +773,58 @@ export function Catalog() {
 						<Spinner />
 					</Demo>
 				</Section>
+				</Category>
 
-				<Section id="switch" title="Switch" source="components/ui/switch">
-					<Demo name="switch">
-						<label className="flex items-center gap-2 text-sm">
-							<Switch data-trigger="click" /> Notifications
-						</label>
+				<Category id="cat-data" title="Data display" count={6}>
+				<Section id="avatar" title="Avatar" source="components/ui/avatar">
+					<Demo name="avatar">
+						<AvatarGroup>
+							<Avatar><AvatarImage alt="" src="" /><AvatarFallback>JG</AvatarFallback></Avatar>
+							<Avatar><AvatarFallback>AB</AvatarFallback></Avatar>
+							<AvatarGroupCount>+3</AvatarGroupCount>
+						</AvatarGroup>
+					</Demo>
+				</Section>
+
+				<Section id="badge" title="Badge" source="components/ui/badge">
+					<Demo name="badge">
+						<Badge>Default</Badge>
+						<Badge variant="secondary">Secondary</Badge>
+						<Badge variant="outline">Outline</Badge>
+						<Badge variant="destructive">Destructive</Badge>
+					</Demo>
+				</Section>
+
+				<Section id="chart" title="Chart" source="components/ui/chart">
+					<Demo name="chart" className="block">
+						<div data-trigger="hover" className="w-full max-w-lg">
+							<ChartContainer config={chartConfig} className="h-48 w-full">
+								<BarChart data={chartData}>
+									<CartesianGrid vertical={false} />
+									<XAxis dataKey="month" tickLine={false} axisLine={false} tickMargin={8} />
+									<ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+									<Bar dataKey="visitors" fill="var(--color-visitors)" radius={6} />
+								</BarChart>
+							</ChartContainer>
+						</div>
+					</Demo>
+				</Section>
+
+				<Section id="item" title="Item" source="components/ui/item">
+					<Demo name="item" className="block">
+						<Item variant="outline" className="max-w-md">
+							<ItemContent>
+								<ItemTitle>Basic plan</ItemTitle>
+								<ItemDescription>For individuals and side projects.</ItemDescription>
+							</ItemContent>
+							<ItemActions><Button size="sm" variant="outline">Choose</Button></ItemActions>
+						</Item>
+					</Demo>
+				</Section>
+
+				<Section id="kbd" title="Keyboard key" source="components/ui/kbd">
+					<Demo name="kbd">
+						<KbdGroup><Kbd>⌘</Kbd><Kbd>K</Kbd></KbdGroup>
 					</Demo>
 				</Section>
 
@@ -844,50 +842,99 @@ export function Catalog() {
 						</Table>
 					</Demo>
 				</Section>
+				</Category>
 
-				<Section id="tabs" title="Tabs" source="components/ui/tabs">
-					<Demo name="tabs" className="block">
-						<Tabs defaultValue="account" className="w-full max-w-md">
-							<TabsList>
-								<TabsTrigger value="account">Account</TabsTrigger>
-								<TabsTrigger value="password" data-trigger="click">Password</TabsTrigger>
-							</TabsList>
-							<TabsContent value="account" className="text-sm">Make changes to your account.</TabsContent>
-							<TabsContent value="password" className="text-sm">Change your password.</TabsContent>
-						</Tabs>
+				<Category id="cat-chat" title="Chat and content" count={7}>
+				<Section id="attachment" title="Attachment" source="components/ui/attachment">
+					<Demo name="attachment" className="block">
+						<AttachmentGroup className="max-w-md">
+							<Attachment className="relative">
+								<AttachmentMedia>PDF</AttachmentMedia>
+								<AttachmentContent>
+									<AttachmentTitle>quarterly-report.pdf</AttachmentTitle>
+									<AttachmentDescription>2.4 MB</AttachmentDescription>
+								</AttachmentContent>
+								<AttachmentActions>
+									<AttachmentAction>Remove</AttachmentAction>
+								</AttachmentActions>
+								<AttachmentTrigger data-trigger="click" aria-label="Preview quarterly-report.pdf" onClick={() => setPreview(preview ? null : "quarterly-report.pdf")} />
+							</Attachment>
+						</AttachmentGroup>
+						<p className="text-sm text-muted-foreground">Preview: {preview ?? "closed"}</p>
 					</Demo>
 				</Section>
 
-				<Section id="textarea" title="Textarea" source="components/ui/textarea">
-					<Demo name="textarea">
-						<Textarea placeholder="Write a note" className="w-64" data-trigger="focus" />
+				<Section id="bubble" title="Bubble" source="components/ui/bubble">
+					<Demo name="bubble" className="block">
+						<BubbleGroup className="max-w-md">
+							<Bubble align="start"><BubbleContent>Shall we ship the business package?</BubbleContent></Bubble>
+							<Bubble align="end"><BubbleContent>Yes, once the gates are green.</BubbleContent><BubbleReactions>+1</BubbleReactions></Bubble>
+						</BubbleGroup>
 					</Demo>
 				</Section>
 
-				<Section id="toggle-group" title="Toggle group" source="components/ui/toggle-group">
-					<Demo name="toggle-group">
-						<ToggleGroup type="single" defaultValue="left" variant="outline">
-							<ToggleGroupItem value="left" aria-label="Align left">L</ToggleGroupItem>
-							<ToggleGroupItem value="center" aria-label="Align centre" data-trigger="click">C</ToggleGroupItem>
-							<ToggleGroupItem value="right" aria-label="Align right">R</ToggleGroupItem>
-						</ToggleGroup>
+				<Section id="code-block" title="Code block" source="components/ui/code-block">
+					<Demo name="code-block" className="block">
+						<CodeBlock className="max-w-lg">
+							<CodeBlockHeader>
+								<CodeBlockTitle>install.sh</CodeBlockTitle>
+								<CodeBlockActions>
+									<CodeBlockCopyButton value="bun add @gjuoun/bigface-business-ui" data-trigger="click" onClick={() => setCopied((c) => !c)}>{copied ? "Copied" : "Copy"}</CodeBlockCopyButton>
+								</CodeBlockActions>
+							</CodeBlockHeader>
+							<CodeBlockContent>
+								<CodeBlockLine>bun add @gjuoun/bigface-business-ui</CodeBlockLine>
+							</CodeBlockContent>
+							<CodeBlockFooter>bun</CodeBlockFooter>
+						</CodeBlock>
 					</Demo>
 				</Section>
 
-				<Section id="toggle" title="Toggle" source="components/ui/toggle">
-					<Demo name="toggle">
-						<Toggle variant="outline" aria-label="Bold" data-trigger="click">B</Toggle>
+				<Section id="message" title="Message" source="components/ui/message">
+					<Demo name="message" className="block">
+						<MessageGroup className="max-w-md">
+							<Message>
+								<MessageAvatar>JG</MessageAvatar>
+								<MessageContent>
+									<MessageHeader>Jun</MessageHeader>
+									Ship the business package when the gates are green.
+									<MessageFooter>10:02</MessageFooter>
+								</MessageContent>
+							</Message>
+						</MessageGroup>
 					</Demo>
 				</Section>
 
-				<Section id="tooltip" title="Tooltip" source="components/ui/tooltip">
-					<Demo name="tooltip">
-						<Tooltip>
-							<TooltipTrigger asChild>
-								<Button variant="outline" data-trigger="hover">Hover me</Button>
-							</TooltipTrigger>
-							<TooltipContent>Shown after a short delay.</TooltipContent>
-						</Tooltip>
+				<Section id="message-scroller" title="Message scroller" source="components/ui/message-scroller">
+					<Demo name="message-scroller">
+						<MessageScrollerProvider>
+							<MessageScroller className="h-48 w-full max-w-md rounded-md border">
+								<MessageScrollerViewport data-trigger="wheel" className="h-full">
+									<MessageScrollerContent className="gap-2 p-3">
+										{feed.map((m) => (
+											<MessageScrollerItem key={m} className="rounded-md bg-muted px-3 py-2 text-sm">{m}</MessageScrollerItem>
+										))}
+									</MessageScrollerContent>
+								</MessageScrollerViewport>
+								<MessageScrollerButton>Jump to latest</MessageScrollerButton>
+							</MessageScroller>
+						</MessageScrollerProvider>
+					</Demo>
+				</Section>
+
+				<Section id="questionnaire" title="Questionnaire" source="components/ui/questionnaire">
+					<Demo name="questionnaire" className="block">
+						<Questionnaire className="max-w-md">
+							<QuestionnaireProgress />
+							<QuestionnaireItem name="stack">
+								<QuestionnaireTitle>Which stack do you use?</QuestionnaireTitle>
+								<QuestionnaireDescription>Pick the one closest to your work.</QuestionnaireDescription>
+								<QuestionnaireChoices>
+									<QuestionnaireChoice value="web" data-trigger="click">Web</QuestionnaireChoice>
+									<QuestionnaireChoice value="mobile">Mobile</QuestionnaireChoice>
+								</QuestionnaireChoices>
+							</QuestionnaireItem>
+						</Questionnaire>
 					</Demo>
 				</Section>
 
@@ -906,6 +953,7 @@ export function Catalog() {
 						</Trace>
 					</Demo>
 				</Section>
+				</Category>
 			</div>
 		</TooltipProvider>
 	);
