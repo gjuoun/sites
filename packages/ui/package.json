@@ -40,9 +40,10 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "ui:drift": "bun run scripts/ui-drift.ts",
+    "ui:theme": "bun run scripts/theme-check.ts",
     "theme:sync": "bun run scripts/gen-tokens.ts",
     "theme:check": "bun run scripts/gen-tokens.ts --check",
-    "test": "bun test src"
+    "test": "bun test src scripts"
   },
   "dependencies": {
     "cn": "^0.5.0"
