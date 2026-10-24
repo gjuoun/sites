@@ -38,74 +38,90 @@ import Base from "../../layouts/Base.astro";
 import tailwindCss from "../../styles/tailwind.css?raw";
 import BGEntry from "./_bg-entry.astro";
 import { CardDemo, TabsDemo } from "./_demos.tsx";
+import { ThemeControls, ThemeMatrix } from "./_themes.tsx";
 
 // The component library the site is built from, rendered live. Lists that can be read from source
 // are: the semantic tokens (tailwind.css :root), the font stacks (@theme), the text scale (every
 // font-size class used under src/).
 const sources = Object.values(
-  import.meta.glob(
-    [
-      "../../components/**/*.astro",
-      "../../../../../packages/ui/src/components/**/*.tsx",
-      "../**/*.astro",
-    ],
-    {
-      query: "?raw",
-      import: "default",
-      eager: true,
-    },
-  ),
+	import.meta.glob(
+		[
+			"../../components/**/*.astro",
+			"../../../../../packages/ui/src/components/**/*.tsx",
+			"../**/*.astro",
+		],
+		{
+			query: "?raw",
+			import: "default",
+			eager: true,
+		},
+	),
 ) as string[];
 const scale = textScale(sources);
 
 const rootBlock = /:root \{([\s\S]*?)\n\}/.exec(tailwindCss)?.[1] ?? "";
-const tokens = [...rootBlock.matchAll(/--([\w-]+):\s*var\(--([\w-]+)\);/g)].map((m) => ({
-  token: m[1] as string,
-  source: m[2] as string,
-}));
+const tokens = [...rootBlock.matchAll(/--([\w-]+):\s*var\(--([\w-]+)\);/g)].map(
+	(m) => ({
+		token: m[1] as string,
+		source: m[2] as string,
+	}),
+);
 const font = (name: string) =>
-  new RegExp(`--font-${name}:\\s*([^;]+);`).exec(tailwindCss)?.[1]?.trim() ?? "";
+	new RegExp(`--font-${name}:\\s*([^;]+);`).exec(tailwindCss)?.[1]?.trim() ??
+	"";
 const fonts = [
-  {
-    cls: "font-display",
-    label: "Display",
-    stack: font("display"),
-    use: "headings, the brand, stats",
-  },
-  { cls: "font-sans", label: "Sans", stack: font("sans"), use: "body copy and controls" },
-  {
-    cls: "font-code",
-    label: "Mono",
-    stack: `${font("mono")} + "MONO" 1 axis`,
-    use: "code, commands, kickers, chips",
-  },
+	{
+		cls: "font-display",
+		label: "Display",
+		stack: font("display"),
+		use: "headings, the brand, stats",
+	},
+	{
+		cls: "font-sans",
+		label: "Sans",
+		stack: font("sans"),
+		use: "body copy and controls",
+	},
+	{
+		cls: "font-code",
+		label: "Mono",
+		stack: `${font("mono")} + "MONO" 1 axis`,
+		use: "code, commands, kickers, chips",
+	},
 ];
 const ansiRows = Object.entries(palette.ansi);
-const swatches = "grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-[0.7rem]";
+const swatches =
+	"grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-[0.7rem]";
 const subLink =
-  "rounded-full px-[0.7rem] py-[0.3rem] text-bf-fg-muted hover:bg-bf-border/10 hover:text-foreground";
+	"rounded-full px-[0.7rem] py-[0.3rem] text-bf-fg-muted hover:bg-bf-border/10 hover:text-foreground";
 const sections = [
-  ["tokens", "Colour"],
-  ["type", "Type"],
-  ["native", "Native"],
-  ["bg", "BG"],
-  ["missing", "Not yet"],
+	["tokens", "Colour"],
+	["themes", "Themes"],
+	["type", "Type"],
+	["native", "Native"],
+	["bg", "BG"],
+	["missing", "Not yet"],
 ];
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 const bgSources = Object.fromEntries(
-  Object.entries(
-    import.meta.glob(
-      ["../../components/bg/*.{astro,ts}", "../../../../../packages/ui/src/components/bg/*.tsx"],
-      {
-        query: "?raw",
-        import: "default",
-        eager: true,
-      },
-    ),
-  ).map(([path, src]) => [path.split("/").pop() as string, src as string]),
+	Object.entries(
+		import.meta.glob(
+			[
+				"../../components/bg/*.{astro,ts}",
+				"../../../../../packages/ui/src/components/bg/*.tsx",
+			],
+			{
+				query: "?raw",
+				import: "default",
+				eager: true,
+			},
+		),
+	).map(([path, src]) => [path.split("/").pop() as string, src as string]),
 );
 const notFinal = bgCatalog.filter((e) => !e.finalised);
-const pi = targets.find((t) => t.id === "pi") ?? (targets[0] as (typeof targets)[number]);
+const pi =
+	targets.find((t) => t.id === "pi") ??
+	(targets[0] as (typeof targets)[number]);
 const market = targets.find((t) => t.market);
 const kinds = [...new Set(targets.map((t) => t.kind))];
 // Variant and size keys come from the shadcn sources, so a variant added upstream shows up here.
@@ -117,37 +133,40 @@ type ButtonVariant = NonNullable<Parameters<typeof Button>[0]["variant"]>;
 type ButtonSize = NonNullable<Parameters<typeof Button>[0]["size"]>;
 type BadgeVariant = NonNullable<Parameters<typeof Badge>[0]["variant"]>;
 const entry = "mt-[1.4rem] min-w-0 p-5 md:p-6";
-const matrix = "max-w-full overflow-x-auto rounded-[14px] border border-bf-border-muted p-3";
+const matrix =
+	"max-w-full overflow-x-auto rounded-[14px] border border-bf-border-muted p-3";
 
 // The whole native set, read from the directory itself: the list can never fall behind
 // components/ui. Exports come from each file's own export statement, variants from its cva.
 const nativeSet = Object.entries(
-  import.meta.glob("../../../../../packages/ui/src/components/ui/*.tsx", {
-    query: "?raw",
-    import: "default",
-    eager: true,
-  }),
+	import.meta.glob("../../../../../packages/ui/src/components/ui/*.tsx", {
+		query: "?raw",
+		import: "default",
+		eager: true,
+	}),
 )
-  .map(([path, raw]) => {
-    const name = (path.split("/").pop() as string).replace(/\.tsx$/, "");
-    const src = raw as string;
-    const block = /export\s*\{([\s\S]*?)\}/.exec(src)?.[1] ?? "";
-    const parts = block
-      ? block
-          .split(",")
-          .map((s) => s.trim())
-          .filter(Boolean)
-      : [...src.matchAll(/export\s+(?:function|const|class|type|interface)\s+(\w+)/g)].map(
-          (m) => m[1] as string,
-        );
-    return {
-      name,
-      parts,
-      variants: variantKeys(src, "variant"),
-      sizes: variantKeys(src, "size"),
-    };
-  })
-  .sort((a, b) => a.name.localeCompare(b.name));
+	.map(([path, raw]) => {
+		const name = (path.split("/").pop() as string).replace(/\.tsx$/, "");
+		const src = raw as string;
+		const block = /export\s*\{([\s\S]*?)\}/.exec(src)?.[1] ?? "";
+		const parts = block
+			? block
+					.split(",")
+					.map((s) => s.trim())
+					.filter(Boolean)
+			: [
+					...src.matchAll(
+						/export\s+(?:function|const|class|type|interface)\s+(\w+)/g,
+					),
+				].map((m) => m[1] as string);
+		return {
+			name,
+			parts,
+			variants: variantKeys(src, "variant"),
+			sizes: variantKeys(src, "size"),
+		};
+	})
+	.sort((a, b) => a.name.localeCompare(b.name));
 const nativeFeatured = new Set(["button", "badge", "card", "tabs"]);
 const nativeRest = nativeSet.filter((e) => !nativeFeatured.has(e.name));
 const cellLabel = "font-code text-[0.7rem] text-bf-dim";
@@ -157,6 +176,7 @@ const cellLabel = "font-code text-[0.7rem] text-bf-dim";
   chrome={false}
   bleed
   noindex
+  themable
   title="Bigface UI — component workspace"
   description="The internal Bigface component workspace: every colour, font and component, rendered live."
 >
@@ -268,6 +288,21 @@ const cellLabel = "font-code text-[0.7rem] text-bf-dim";
       }
     </BGCard>
   </section>
+  <BGDivider />
+
+  <section id="themes">
+    <BGSectionHead eyebrow="02 — themes" title="Three themes, two modes">
+      One component set, six looks. Every value is a role from <code>contract.json</code>, rendered by
+      the generator from the two palettes (<code>bigface.json</code> and <code>bigface-light.json</code>),
+      so a theme is data — never a forked component. <strong>Business</strong> is the light, quiet one for
+      marketing and product pages; <strong>console</strong> is this site's own dark workspace;
+      <strong>play</strong> is the reward-forward one for game communities. The panels below are static
+      markup, each in its own <code>BGThemeScope</code>; the switchers above them drive this page.
+    </BGSectionHead>
+    <div class="mb-[1.2rem]"><ThemeControls client:load /></div>
+    <ThemeMatrix />
+  </section>
+
   <BGDivider />
 
   <section id="native">

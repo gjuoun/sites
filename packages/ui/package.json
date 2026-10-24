@@ -30,6 +30,7 @@
     "./components/*": "./src/components/*.tsx",
     "./hooks/*": "./src/hooks/*.ts",
     "./lib/utils": "./src/lib/utils.ts",
+    "./lib/themes": "./src/lib/themes.ts",
     "./lib/highlighter": "./src/lib/highlighter.tsx",
     "./theme.css": "./src/styles/theme.css",
     "./themes/*": "./src/themes/*",

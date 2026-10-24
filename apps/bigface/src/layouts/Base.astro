@@ -1,5 +1,6 @@
 ---
 import "../styles/tailwind.css";
+import { themeInitScript } from "@gjuoun/bigface-ui/lib/themes";
 import BGSiteFooter from "../components/bg/site-footer.astro";
 import BGSiteHeader from "../components/bg/site-header.astro";
 import BGToast from "../components/bg/toast.astro";
@@ -7,21 +8,24 @@ import { hex, palette } from "../data/palette.ts";
 import { REPO, targets } from "../data/targets.ts";
 
 interface Props {
-  title: string;
-  description?: string;
-  /** Render the brand header and footer. The /ui/ workspace turns the chrome off. */
-  chrome?: boolean;
-  /** Drop the marketing column: full-width main, no padding (`html[data-bleed]`). */
-  bleed?: boolean;
-  /** Internal page: ask crawlers not to index it. */
-  noindex?: boolean;
+	title: string;
+	description?: string;
+	/** Render the brand header and footer. The /ui/ workspace turns the chrome off. */
+	chrome?: boolean;
+	/** Drop the marketing column: full-width main, no padding (`html[data-bleed]`). */
+	bleed?: boolean;
+	/** Internal page: ask crawlers not to index it. */
+	noindex?: boolean;
+	/** Emit the pre-paint theme script, so a stored theme/mode is applied before first paint. */
+	themable?: boolean;
 }
 const {
-  title,
-  description = "Bigface — one dark palette, ported to the tools you use.",
-  chrome = true,
-  bleed = false,
-  noindex = false,
+	title,
+	description = "Bigface — one dark palette, ported to the tools you use.",
+	chrome = true,
+	bleed = false,
+	noindex = false,
+	themable = false,
 } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 // Set by `site` in astro.config.mjs, so the og:image is right on both deployments.
@@ -30,25 +34,29 @@ const origin = Astro.site ? new URL(Astro.site).origin : "";
 // Every colour on this site comes from palette/bigface.json: the chrome is the theme's own
 // surface ladder, the accents are its accents, and translucent steps are those same colours with
 // alpha. Gradients interpolate between palette stops; nothing else is invented.
-const kebab = (name: string) => name.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
+const kebab = (name: string) =>
+	name.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
 const vars: Record<string, string> = {
-  // the palette itself, under our own names: --bf-<colour> and --bf-ansi-<name>. tailwind.css maps
-  // shadcn's semantic tokens and the bg-bf-* utilities onto these and nothing else.
-  ...Object.fromEntries(
-    Object.entries(palette.colors).map(([k, c]) => [`--bf-${kebab(k)}`, c.hex]),
-  ),
-  ...Object.fromEntries(
-    Object.entries(palette.ansi).map(([k, c]) => [`--bf-ansi-${kebab(k)}`, c.hex]),
-  ),
-  // bright plates (buttons, selected tabs and chips) take the background colour as ink
-  "--ink-on-bright": "var(--bf-bg)",
-  // the two text greys: palette fg blended toward bg (translucent steps of palette colours)
-  "--fg-muted": "color-mix(in srgb, var(--bf-fg) 75%, var(--bf-bg))",
-  "--dim": "color-mix(in srgb, var(--bf-fg) 55%, var(--bf-bg))",
+	// the palette itself, under our own names: --bf-<colour> and --bf-ansi-<name>. tailwind.css maps
+	// shadcn's semantic tokens and the bg-bf-* utilities onto these and nothing else.
+	...Object.fromEntries(
+		Object.entries(palette.colors).map(([k, c]) => [`--bf-${kebab(k)}`, c.hex]),
+	),
+	...Object.fromEntries(
+		Object.entries(palette.ansi).map(([k, c]) => [
+			`--bf-ansi-${kebab(k)}`,
+			c.hex,
+		]),
+	),
+	// bright plates (buttons, selected tabs and chips) take the background colour as ink
+	"--ink-on-bright": "var(--bf-bg)",
+	// the two text greys: palette fg blended toward bg (translucent steps of palette colours)
+	"--fg-muted": "color-mix(in srgb, var(--bf-fg) 75%, var(--bf-bg))",
+	"--dim": "color-mix(in srgb, var(--bf-fg) 55%, var(--bf-bg))",
 };
 const style = Object.entries(vars)
-  .map(([k, v]) => `${k}:${v}`)
-  .join(";");
+	.map(([k, v]) => `${k}:${v}`)
+	.join(";");
 ---
 
 <!doctype html>
@@ -61,6 +69,7 @@ const style = Object.entries(vars)
 >
   <head>
     <meta charset="utf-8" />
+    {themable && <script is:inline set:html={themeInitScript} />}
     <script is:inline>
       document.documentElement.classList.add("js");
     </script>
