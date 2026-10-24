@@ -332,11 +332,15 @@ const COLOUR_PROBE = `(() => {
   const darkOnly = new Set([...dark].filter((c) => !light.has(c)));
   const props = ["color", "backgroundColor", "borderTopColor", "borderRightColor", "borderBottomColor", "borderLeftColor", "outlineColor", "textDecorationColor", "caretColor"];
   const panels = [];
+  // The body is audited too, outside the theme scopes: a scope is the one place a palette value is painted on
+  // purpose (a mode-scoped swatch), and each scope is audited in its own mode. Nothing is skipped on the page.
   const scopes = [...document.querySelectorAll('[data-slot="theme-scope"]')];
-  for (const panel of (scopes.length ? scopes : [document.body])) {
-    const mode = (panel === document.body ? document.documentElement.dataset.mode : panel.dataset.mode) === "light" ? "light" : "dark";
+  for (const panel of [document.body, ...scopes]) {
+    const inBody = panel === document.body;
+    const mode = (inBody ? document.documentElement.dataset.mode : panel.dataset.mode) === "light" ? "light" : "dark";
     const leaks = new Map();
     for (const el of [panel, ...panel.querySelectorAll("*")]) {
+      if (inBody && el.closest('[data-slot="theme-scope"]')) continue;
       for (const prop of props) {
         const key = rgbKey(getComputedStyle(el)[prop]);
         if (!key || key === "0,0,0") continue;

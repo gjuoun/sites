@@ -230,11 +230,16 @@ test("the page root carries the default theme and mode", () => {
 });
 
 // The business page is the single-theme catalogue: one page root in the business theme and the default mode, all
-// 63 components, and no theme scope. The console page keeps its two scopes. The retired game theme is on neither.
+// 63 components. The colour section is the only place a theme scope appears on the catalogue: light and dark are
+// shown side by side there. The console page keeps its two scopes. The retired game theme is on neither.
 test("the business catalogue is one business theme with 63 components; console keeps its scopes; game is offline", () => {
 	const business = page("ui/business");
 	expect(business).toContain('data-theme="business" data-mode="light"');
-	expect([...business.matchAll(/data-slot="theme-scope"/g)], "no theme scope on the catalogue").toHaveLength(0);
+	const scopeAt = [...business.matchAll(/data-slot="theme-scope"/g)].map((m) => m.index ?? -1);
+	expect(scopeAt.length, "the colour section shows light and dark scopes").toBeGreaterThan(0);
+	const colourAt = business.indexOf('id="colour"');
+	const firstComponent = business.indexOf('id="accordion"');
+	expect(scopeAt.every((i) => i > colourAt && i < firstComponent), "scopes only inside the colour section").toBe(true);
 	expect([...business.matchAll(/data-demo="/g)], "63 demos").toHaveLength(63);
 	const cons = page("ui/console");
 	expect([...cons.matchAll(/data-slot="theme-scope"/g)]).toHaveLength(MODES.length);

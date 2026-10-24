@@ -7,7 +7,7 @@ import { runInteractions } from "./catalog-interact.ts";
 import { STATIC_DEMOS } from "./pages/ui/business/_catalog.tsx";
 
 // The business catalogue is stock shadcn in the business colours. So the tests hold the COLOUR contract and the
-// catalogue liveness. No radius, shadow, size or type is asserted: those are shadcn own, and a test that pins them
+// catalogue liveness. No radius, shadow, size or type is asserted: those are shadcn's own, and a test that pins them
 // would pin the CLI defaults, not the theme. The console page keeps its containment test, unchanged.
 const siteDir = join(import.meta.dir, "..");
 const dist = join(siteDir, "dist");
@@ -50,15 +50,14 @@ for (const mode of ["light", "dark"] as const) {
 		"business colours trace to the synced palettes in " + mode,
 		async () => {
 			const audit = await measurePanelColours(dist, "/ui/business/", 1440, mode);
-			const panel = audit.panels[0];
-			expect(panel, "the catalogue is audited").toBeDefined();
-			// The one dark-palette value a light page may carry is the native blue fill (primary fills are #00b0ff with
-			// dark ink). Stock text-primary links resolve to the same token: the open question on text contrast, listed
-			// in the evidence rather than hidden here.
+			// The page body and every mode scope are audited, each in its own mode. The one dark-palette value a light
+			// page may carry is the native blue fill (the ruling: primary fills are #00b0ff with dark ink).
+			expect(audit.panels.length, "body and scopes audited").toBeGreaterThan(1);
 			const NATIVE_FILL = "rgb(0,176,255)";
-			const leaks = (panel?.offenders ?? [])
-				.filter((o) => !(mode === "light" && o.color === NATIVE_FILL))
-				.map((o) => o.color + " " + o.prop + " <" + o.tag + "> x" + o.count);
+			const leaks = audit.panels
+				.flatMap((p) => p.offenders)
+				.filter((o) => !(o.mode === "light" && o.color === NATIVE_FILL))
+				.map((o) => o.mode + " " + o.color + " " + o.prop + " <" + o.tag + "> x" + o.count);
 			expect(leaks, "colours outside the synced palettes").toEqual([]);
 		},
 		120_000,
