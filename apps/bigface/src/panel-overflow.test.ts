@@ -47,3 +47,38 @@ test.skipIf(!findChrome())(
 	},
 	120_000,
 );
+
+// The correction that made the three themes different: one colour system, three feels. That is only true
+// if the same markup actually lays out differently, so this reads the demo card in each panel.
+test.skipIf(!findChrome())(
+	"the three themes look different in the same mode",
+	async () => {
+		const m = await measurePanelOverflow(dist, "/ui/theme/", 1440);
+		const dark = m.metrics.filter((p) => p.mode === "dark");
+		expect(dark).toHaveLength(3);
+
+		// density and type: the roomier theme's card is taller, its padding and title size move
+		const heights = dark.map((p) => p.cardHeight);
+		expect(
+			Math.max(...heights) - Math.min(...heights),
+			"card height spread " + heights.join("/"),
+		).toBeGreaterThanOrEqual(30);
+		expect(new Set(dark.map((p) => p.cardPadding)).size, "card padding").toBe(3);
+		expect(new Set(dark.map((p) => p.titleSize)).size, "title font size").toBe(3);
+
+		// radius, density, motion and press are the theme's own tokens, and all three differ
+		for (const key of ["radius", "space", "duration", "press"] as const) {
+			expect(
+				new Set(dark.map((p) => p[key])).size,
+				key + " " + dark.map((p) => p[key]).join("/"),
+			).toBe(3);
+		}
+		// and the shape order is the one each feel declares
+		const radius = (theme: string) =>
+			Number.parseFloat(dark.find((p) => p.theme === theme)?.radius as string);
+		expect(radius("game")).toBeGreaterThan(radius("console"));
+		expect(radius("business")).toBeLessThan(radius("console"));
+	},
+	120_000,
+);
+

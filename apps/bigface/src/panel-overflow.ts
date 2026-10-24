@@ -20,6 +20,20 @@ export interface Overflow {
 	bottom: number;
 }
 
+/** What one panel's demo card measures - the feel, as numbers. */
+export interface PanelMetrics {
+	theme: string;
+	mode: string;
+	cardHeight: number;
+	cardPadding: number;
+	cardRadius: string;
+	titleSize: string;
+	space: string;
+	radius: string;
+	duration: string;
+	press: string;
+}
+
 export interface Measurement {
 	path: string;
 	panels: number;
@@ -31,6 +45,7 @@ export interface Measurement {
 		scrollWidth: number;
 		clientWidth: number;
 	}[];
+	metrics: PanelMetrics[];
 }
 
 const CHROME_CANDIDATES = [
@@ -76,7 +91,25 @@ const PROBE = `(() => {
       });
     }
   }
-  return { panels: panels.length, offenders, clipped };
+  const metrics = panels.map((panel) => {
+    const card = panel.querySelector('[data-slot="card"]');
+    const title = panel.querySelector('[data-slot="card-title"]');
+    const cs = card ? getComputedStyle(card) : undefined;
+    const ps = getComputedStyle(panel);
+    return {
+      theme: panel.dataset.theme || "",
+      mode: panel.dataset.mode || "",
+      cardHeight: card ? Math.round(card.getBoundingClientRect().height) : 0,
+      cardPadding: cs ? Math.round(Number.parseFloat(cs.paddingTop)) : 0,
+      cardRadius: cs ? cs.borderRadius : "",
+      titleSize: title ? getComputedStyle(title).fontSize : "",
+      space: ps.getPropertyValue("--theme-space").trim(),
+      radius: ps.getPropertyValue("--theme-radius").trim(),
+      duration: ps.getPropertyValue("--theme-duration").trim(),
+      press: ps.getPropertyValue("--theme-press").trim(),
+    };
+  });
+  return { panels: panels.length, offenders, clipped, metrics };
 })()`;
 
 type Cdp = {
@@ -218,6 +251,7 @@ export async function measurePanelOverflow(
 					panels: number;
 					offenders: Overflow[];
 					clipped: Measurement["clipped"];
+					metrics: PanelMetrics[];
 				};
 			};
 		};
