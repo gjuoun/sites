@@ -13,7 +13,15 @@
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
-TAG=v1.0.4
+# Always the latest published release unless pinned explicitly (FONTS_TAG=v1.2.1 .../fetch-fonts.sh).
+if [ -n "${FONTS_TAG:-}" ]; then
+  TAG="$FONTS_TAG"
+elif command -v gh >/dev/null 2>&1; then
+  TAG=$(gh api repos/gjuoun/qublack/releases/latest --jq .tag_name)
+else
+  TAG=$(curl -fsSL https://api.github.com/repos/gjuoun/qublack/releases/latest | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p')
+fi
+[ -n "$TAG" ] || { echo "cannot resolve the latest font release tag" >&2; exit 1; }
 VER=${TAG#v}   # the tag carries the v, the release assets do not
 BASE="https://github.com/gjuoun/qublack/releases/download/$TAG"
 CHECK=""
