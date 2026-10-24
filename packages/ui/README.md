@@ -87,14 +87,60 @@ import { cn } from "@gjuoun/bigface-ui/lib/utils";
 |---|---|
 | `…/components/ui/<name>` | the 63 shadcn primitives |
 | `…/components/bg/<name>` | Bigface wrappers: `button`, `badge`, `card`, `install-tabs` |
-| `…/hooks/<name>` | `use-mobile`, `use-highlighted-code` |
-| `…/lib/utils`, `…/lib/highlighter` | `cn`, the shiki loader |
+| `…/hooks/<name>` | `use-mobile`, `use-highlighted-code`, `use-theme` |
+| `…/lib/utils`, `…/lib/highlighter`, `…/lib/themes` | `cn`, the shiki loader, the theme registry + pre-paint script |
+| `…/themes/<id>.css` | the three themes, a light and a dark block each (generated) |
+| `…/themes/_reset.css` | optional roles back to `initial` inside a theme scope (generated) |
 | `…/theme.css` | structural theme: token mapping, `@theme inline`, `font-code` |
 | `…/tokens.css` | generated Bigface default values |
-| `…/styles.css` | both of the above |
+| `…/styles.css` | all of the above |
 
 Site-specific page composites (the `.astro` components, `BGAppCard`, `BGHero`, …) are not shipped:
 they take page data, not design props.
+
+## Theming
+
+One component set, three themes, two modes. A theme is data: `src/themes/roles.ts` maps a role
+(`primary`, `frame`, `surface`, the `gray-100…700` ramp, …) to a **palette colour name**, and
+`scripts/gen-tokens.ts` renders both modes of it — the light block against `bigface-light.json`, the
+dark block against `bigface.json`. Components name roles (`bg-primary`, `text-heading`,
+`bg-success-tint`), never a hue or a hex, so no component is forked per theme.
+
+| Theme | For | `primary` |
+|---|---|---|
+| `business` | light, simple and elegant: landing pages, product surfaces | blue |
+| `console` (default) | minimalist dark workspace for dev tools — the library's original look | blue |
+| `game` | reward-forward: game communities, leaderboards | green |
+
+`src/themes/contract.json` is the surface: 22 required keys and the optional ones, each with the
+default the mapping falls back to (`color-mix` off a required role). `bun run --cwd packages/ui ui:theme`
+checks the five rules — only known keys, both blocks complete, `_reset.css` exactly the optional keys,
+and the registry matching `src/themes/<id>.css` one to one. Regenerate with `theme:sync`, verify with
+`theme:check` (CI runs it).
+
+### Switching at runtime
+
+Theme and mode are two attributes on `<html>` — `data-theme` and `data-mode`. CSS does the work:
+
+```tsx
+import { themeInitScript } from "@gjuoun/bigface-ui/lib/themes"; // inlines before first paint
+import { useTheme, useMode } from "@gjuoun/bigface-ui/hooks/use-theme";
+import { BGThemeScope } from "@gjuoun/bigface-ui/components/bg/theme-scope";
+```
+
+`useTheme()` / `useMode()` read the attributes with `useSyncExternalStore` over a `MutationObserver`,
+so every consumer updates whoever changed them (a switcher, the init script, devtools, another tab).
+`<BGThemeScope theme="game" mode="light">` gives a subtree its own pair; the mapping is re-declared on
+every `[data-theme]`, so a nested scope resolves against its own theme rather than inheriting the outer
+one's resolved colours.
+
+### Adding a theme
+
+1. Delete nothing, fork nothing: add an entry to `THEMES` in `src/themes/roles.ts` — a `shared(...)`
+   call with that theme's primary/success/danger/info/highlight/charts, radius and muted ink.
+2. `bun run --cwd packages/ui theme:sync` writes `src/themes/<id>.css`.
+3. `bun run --cwd packages/ui ui:theme` must print `theme-check: ok`; `test` proves contrast.
+   The switcher, the init script and `ThemeId` all derive from the registry, so nothing else changes.
 
 ## Upgrading components
 
