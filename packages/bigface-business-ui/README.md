@@ -15,6 +15,7 @@ Private for now: nothing is published, and the version is 0.1.0. It is one of th
 | `src/themes/roles.ts` | the colour role map: each shadcn role names a palette colour |
 | `src/themes/business.css` | the business colours: a light block and a dark block, generated from the two palettes |
 | `src/themes/_reset.css` | optional roles back to their defaults, per theme scope |
+| `src/themes/_foreground.css` | the comparison: in light, with `data-fg="native"`, the twelve foreground roles take the palette's own hues (`FOREGROUND` in roles.ts). Off by default; a demo affordance |
 | `src/themes/contract.json` | the colour contract: 19 required roles and the optional ones |
 | `src/styles/theme.css` | the colour mapping of shadcn's tokens, and the palette's black and white |
 | `src/styles/styles.css` | the one stylesheet a consumer imports |

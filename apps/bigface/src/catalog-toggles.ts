@@ -1,26 +1,32 @@
-// The business catalogue's mode toggle, driven in headless Chrome with real pointer events. It reads the page the way a
-// reader would: the canvas colour and the mode attribute, before and after each click, and after a reload.
+// The business catalogue's two toggles, driven in headless Chrome with real pointer events. It reads the page the way a
+// reader would: the canvas colour, the mode and foreground attributes, the foreground token, and the disabled state.
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { findChrome, freePort } from "./panel-overflow.ts";
 
-export interface ModeReading {
+export interface ToggleReading {
 	mode: string | undefined;
+	fg: string | undefined;
 	canvas: string;
+	primaryInk: string;
 }
 
-export interface ModeRun {
-	initial: ModeReading;
-	dark: ModeReading;
-	light: ModeReading;
-	afterReloadWithDark: ModeReading;
+export interface ToggleRun {
+	initial: ToggleReading;
+	dark: ToggleReading;
+	light: ToggleReading;
+	nativeLight: ToggleReading;
+	tonedAgain: ToggleReading;
+	foregroundsDisabledInDark: boolean;
+	nativeInDark: ToggleReading;
+	afterReloadWithDark: ToggleReading;
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-/** Runs the mode sequence on the built page at distDir + path, at the given width. */
-export async function runModeToggle(distDir: string, path: string, width: number): Promise<ModeRun> {
+/** Runs the sequence on the built page at distDir + path, at the given width. */
+export async function runToggles(distDir: string, path: string, width: number): Promise<ToggleRun> {
 	const chrome = findChrome();
 	if (!chrome) throw new Error("no Chrome found: set CHROME_PATH");
 	const server = Bun.serve({
@@ -33,7 +39,7 @@ export async function runModeToggle(distDir: string, path: string, width: number
 			return (await f.exists()) ? new Response(f) : new Response("not found", { status: 404 });
 		},
 	});
-	const profile = mkdtempSync(join(tmpdir(), "bf-mode-"));
+	const profile = mkdtempSync(join(tmpdir(), "bf-toggle-"));
 	const port = await freePort();
 	const proc = Bun.spawn(
 		[chrome, "--headless=new", "--disable-gpu", "--hide-scrollbars", "--window-size=" + width + ",1000", "--user-data-dir=" + profile, "--remote-debugging-port=" + port, "about:blank"],
@@ -68,8 +74,12 @@ export async function runModeToggle(distDir: string, path: string, width: number
 				ws!.send(JSON.stringify({ id: n, method, params }));
 			});
 		const evaluate = async (expression: string) => (await send("Runtime.evaluate", { expression, returnByValue: true, awaitPromise: true })).result.value;
-		const readState = async (): Promise<ModeReading> =>
-			JSON.parse(await evaluate("JSON.stringify({ mode: document.documentElement.dataset.mode, canvas: getComputedStyle(document.body).backgroundColor })"));
+		const readState = async (): Promise<ToggleReading> =>
+			JSON.parse(
+				await evaluate(
+					"JSON.stringify({ mode: document.documentElement.dataset.mode, fg: document.documentElement.dataset.fg, canvas: getComputedStyle(document.body).backgroundColor, primaryInk: getComputedStyle(document.documentElement).getPropertyValue('--theme-primary-ink').trim() })",
+				),
+			);
 		const waitReady = async () => {
 			for (let i = 0; i < 120; i++) {
 				await sleep(150);
@@ -77,12 +87,12 @@ export async function runModeToggle(distDir: string, path: string, width: number
 			}
 			await sleep(800);
 		};
-		const press = async (label: string) => {
-			await evaluate("document.querySelector('[aria-label=\"Colour mode\"]').scrollIntoView({ block: 'center', behavior: 'instant' })");
+		const press = async (group: string, label: string) => {
+			await evaluate("document.querySelector('[aria-label=\"" + group + "\"]').scrollIntoView({ block: 'center', behavior: 'instant' })");
 			await sleep(250);
 			const at = JSON.parse(
 				await evaluate(
-					"(() => { const b = [...document.querySelectorAll('[aria-label=\"Colour mode\"] [data-slot=\"toggle-group-item\"]')].find(x => x.textContent.trim() === '" + label + "'); const r = b.getBoundingClientRect(); return JSON.stringify({ x: r.left + r.width / 2, y: r.top + r.height / 2 }); })()",
+					"(() => { const b = [...document.querySelectorAll('[aria-label=\"" + group + "\"] [data-slot=\"toggle-group-item\"]')].find(x => x.textContent.trim() === '" + label + "'); const r = b.getBoundingClientRect(); return JSON.stringify({ x: r.left + r.width / 2, y: r.top + r.height / 2 }); })()",
 				),
 			);
 			await send("Input.dispatchMouseEvent", { type: "mouseMoved", x: at.x, y: at.y, buttons: 0 });
@@ -96,17 +106,25 @@ export async function runModeToggle(distDir: string, path: string, width: number
 		await send("Emulation.setDeviceMetricsOverride", { width, height: 1000, deviceScaleFactor: 1, mobile: false });
 		await send("Page.navigate", { url: "http://127.0.0.1:" + server.port + path });
 		await waitReady();
+
 		const initial = await readState();
-		await press("Dark");
+		await press("Colour mode", "Dark");
 		const dark = await readState();
-		await press("Light");
+		const foregroundsDisabledInDark = (await evaluate("[...document.querySelectorAll('[aria-label=\"Foregrounds\"] [data-slot=\"toggle-group-item\"]')].every(b => b.disabled)")) === true;
+		await press("Foregrounds", "Native");
+		const nativeInDark = await readState();
+		await press("Colour mode", "Light");
 		const light = await readState();
-		// a chosen mode survives a reload: the pre-paint script on this page applies the stored value
-		await press("Dark");
+		await press("Foregrounds", "Native");
+		const nativeLight = await readState();
+		await press("Foregrounds", "Toned");
+		const tonedAgain = await readState();
+		// the mode a reader chose survives a reload (the pre-paint script); the comparison resets to toned
+		await press("Colour mode", "Dark");
 		await send("Page.reload", { ignoreCache: true });
 		await waitReady();
 		const afterReloadWithDark = await readState();
-		return { initial, dark, light, afterReloadWithDark };
+		return { initial, dark, light, nativeLight, tonedAgain, foregroundsDisabledInDark, nativeInDark, afterReloadWithDark };
 	} finally {
 		ws?.close();
 		proc.kill();

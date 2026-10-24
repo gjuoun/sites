@@ -4,3 +4,4 @@
 @import "./theme.css";
 @import "../themes/_reset.css";
 @import "../themes/business.css";
+@import "../themes/_foreground.css";
