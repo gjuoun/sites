@@ -67,6 +67,15 @@ const CHROME_CANDIDATES = [
 	"/usr/bin/chromium-browser",
 ];
 
+/** A debugging port the OS has just confirmed free. A fixed or random range can answer from a stale listener. */
+export async function freePort(): Promise<number> {
+	const probe = Bun.serve({ port: 0, fetch: () => new Response("") });
+	const port = probe.port;
+	probe.stop(true);
+	if (port === undefined) throw new Error("no free port for headless Chrome");
+	return port;
+}
+
 export const findChrome = (): string | undefined =>
 	CHROME_CANDIDATES.find((p) => p && existsSync(p));
 
@@ -210,7 +219,7 @@ async function runProbe<T>(
 		},
 	});
 	const profile = mkdtempSync(join(tmpdir(), "bf-chrome-"));
-	const port = 9222 + Math.floor(Math.random() * 500);
+	const port = await freePort();
 	const proc = Bun.spawn(
 		[
 			chrome,

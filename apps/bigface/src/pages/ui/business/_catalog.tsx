@@ -1,5 +1,6 @@
 import * as React from "react";
 import { ColourSection } from "./_colour.tsx";
+import { TypographySection } from "./_typography.tsx";
 import { cn } from "@gjuoun/bigface-business-ui/lib/utils";
 import { toast } from "sonner";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@gjuoun/bigface-business-ui/components/ui/accordion";
@@ -130,6 +131,7 @@ export function Catalog() {
 			<div className="flex flex-col gap-10">
 				<div className="flex flex-wrap items-center gap-3"><ModeSwitch /><span className="font-mono text-xs text-muted-foreground">every colour follows this switch; the components are unchanged</span></div>
 				<ColourSection />
+				<TypographySection />
 				<Section id="accordion" title="Accordion" source="@gjuoun/bigface-business-ui/components/ui/accordion">
 					<Demo name="accordion" className="block">
 						<Accordion type="single" collapsible className="w-full max-w-md">

@@ -4,7 +4,7 @@
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { findChrome } from "./panel-overflow.ts";
+import { findChrome, freePort } from "./panel-overflow.ts";
 
 export interface InteractionResult {
 	name: string;
@@ -32,7 +32,7 @@ export async function runInteractions(distDir: string, path = "/ui/business/"): 
 		},
 	});
 	const profile = mkdtempSync(join(tmpdir(), "bf-interact-"));
-	const port = 9300 + Math.floor(Math.random() * 600);
+	const port = await freePort();
 	const proc = Bun.spawn(
 		[chrome, "--headless=new", "--disable-gpu", "--hide-scrollbars", "--window-size=1440,1000", "--user-data-dir=" + profile, "--remote-debugging-port=" + port, "about:blank"],
 		{ stdout: "ignore", stderr: "ignore" },

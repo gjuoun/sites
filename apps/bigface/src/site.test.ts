@@ -240,6 +240,8 @@ test("the business catalogue is one business theme with 63 components; console k
 	const colourAt = business.indexOf('id="colour"');
 	const firstComponent = business.indexOf('id="accordion"');
 	expect(scopeAt.every((i) => i > colourAt && i < firstComponent), "scopes only inside the colour section").toBe(true);
+	const typoAt = business.indexOf('id="typography"');
+	expect(typoAt > colourAt && typoAt < firstComponent, "typography follows colour, before the components").toBe(true);
 	expect([...business.matchAll(/data-demo="/g)], "63 demos").toHaveLength(63);
 	const cons = page("ui/console");
 	expect([...cons.matchAll(/data-slot="theme-scope"/g)]).toHaveLength(MODES.length);
