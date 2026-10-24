@@ -81,6 +81,10 @@
         "typescript": "5.9.3",
       },
     },
+    "apps/jun-hermes": {
+      "name": "@sites/jun-hermes",
+      "version": "0.1.0",
+    },
     "apps/qublack": {
       "name": "@sites/qublack",
       "version": "1.0.4",
@@ -821,6 +825,8 @@
     "@sites/bigface": ["@sites/bigface@workspace:apps/bigface"],
 
     "@sites/bundant": ["@sites/bundant@workspace:apps/bundant"],
+
+    "@sites/jun-hermes": ["@sites/jun-hermes@workspace:apps/jun-hermes"],
 
     "@sites/qublack": ["@sites/qublack@workspace:apps/qublack"],
 
