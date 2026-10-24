@@ -71,6 +71,7 @@
   --color-danger: var(--theme-danger);
   --color-info: var(--theme-info);
   --color-highlight: var(--theme-highlight);
+  --color-primary-ink: var(--theme-primary-ink, var(--theme-primary));
   --color-primary-tint: var(--theme-primary-tint, color-mix(in oklab, var(--theme-primary) 12%, var(--theme-canvas)));
   --color-success-tint: var(--theme-success-tint, color-mix(in oklab, var(--theme-success) 14%, var(--theme-canvas)));
   --color-danger-tint: var(--theme-danger-tint, color-mix(in oklab, var(--theme-danger) 14%, var(--theme-canvas)));
@@ -153,7 +154,7 @@
   --card-foreground: var(--theme-ink);
   --popover: var(--theme-surface, var(--theme-gray-100));
   --popover-foreground: var(--theme-ink);
-  --primary: var(--theme-primary);
+  --primary: var(--theme-primary-fill, var(--theme-primary));
   --primary-foreground: var(--theme-on-primary);
   --secondary: var(--theme-secondary, var(--theme-gray-300));
   --secondary-foreground: var(--theme-on-secondary, var(--theme-ink));
@@ -164,7 +165,7 @@
   --destructive: var(--theme-danger);
   --border: var(--theme-border, var(--theme-gray-300));
   --input: var(--theme-input, var(--theme-gray-300));
-  --ring: var(--theme-focus, var(--theme-info));
+  --ring: var(--theme-primary-ink, var(--theme-focus, var(--theme-info)));
   --chart-1: var(--theme-chart-1, var(--theme-primary));
   --chart-2: var(--theme-chart-2, var(--theme-success));
   --chart-3: var(--theme-chart-3, var(--theme-highlight));

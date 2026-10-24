@@ -38,5 +38,5 @@
   --bf-ansi-bright-magenta: #8658d2;
   --bf-ansi-bright-cyan: #47788b;
   --bf-ansi-bright-white: #252925;
-  --ink-on-bright: var(--bf-bg);
+  --ink-on-bright: #252925;
 }

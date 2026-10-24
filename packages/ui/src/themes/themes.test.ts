@@ -203,7 +203,10 @@ describe("generated theme files", () => {
 					const got = decls["--theme-" + key] as string;
 					if (typeof value === "string") continue;
 					if ("color" in value) {
-						const want = palette.colors[value.color]?.hex.toLowerCase();
+						// a role can pin itself to the native dark palette (the brand fill does)
+						const source =
+							value.palette === "dark" ? (dark as unknown as typeof palette) : palette;
+						const want = source.colors[value.color]?.hex.toLowerCase();
 						expect(got, theme.id + "/" + mode + " " + key).toBe(want);
 						continue;
 					}
@@ -329,11 +332,31 @@ describe("generated theme files", () => {
 		}
 	});
 
-	test("light mode's primary is the pulled-toward-cyan blue, not the raw palette blue", () => {
+	test("the primary is two-tier: native blue as the fill, the readable blue as text", () => {
 		type Pal = { colors: Record<string, { hex: string }> };
-		const decls = themeBlocks("business").light as Record<string, string>;
-		expect(decls["--theme-primary"]).toBe((light as unknown as Pal).colors.blue?.hex.toLowerCase());
-		expect(decls["--theme-primary"]).not.toBe((dark as unknown as Pal).colors.blue?.hex.toLowerCase());
+		const nativeBlue = (dark as unknown as Pal).colors.blue?.hex.toLowerCase() as string;
+		const readableBlue = (light as unknown as Pal).colors.blue?.hex.toLowerCase() as string;
+		expect(nativeBlue).toBe("#00b0ff");
+		expect(readableBlue).not.toBe(nativeBlue);
+		for (const theme of THEMES) {
+			for (const mode of ["light", "dark"] as const) {
+				const decls = themeBlocks(theme.id)[mode] as Record<string, string>;
+				// The fill is bigface's own blue in both modes; the ink on it is dark.
+				expect(decls["--theme-primary-fill"], theme.id + "/" + mode).toBe(nativeBlue);
+				expect(decls["--theme-primary"], theme.id + "/" + mode).toBe(nativeBlue);
+				expect(decls["--theme-on-primary"], theme.id + "/" + mode).toBe("#252925");
+				// Text and links take the readable blue in light mode; dark mode can carry the native one.
+				expect(decls["--theme-primary-ink"], theme.id + "/" + mode).toBe(
+					mode === "light" ? readableBlue : nativeBlue,
+				);
+			}
+		}
+	});
+
+	test("dark ink on the native blue plate clears AA as ink-on-fill", () => {
+		const ink = evaluate("#252925");
+		const plate = evaluate("#00b0ff");
+		expect(contrastRatio(ink, plate)).toBeGreaterThanOrEqual(4.5);
 	});
 
 	test("the default theme also answers with no data-theme set", () => {

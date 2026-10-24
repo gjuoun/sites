@@ -116,15 +116,22 @@ export function mixHex(a: string, pct: number, b: string): string {
  * minifier would precompute it anyway — as an oklab() literal the colour guard cannot recognise.
  * Computing it keeps every colour in the output a value the guard can check.
  */
-export function cssValue(v: Value, palette: PaletteLike): string {
+export function cssValue(
+	v: Value,
+	palette: PaletteLike,
+	dark?: PaletteLike,
+): string {
 	if (typeof v === "string") return v;
-	if ("color" in v) return hexOf(palette, v.color);
+	if ("color" in v) {
+		const chosen = v.palette === "dark" && dark ? dark : palette;
+		return hexOf(chosen, v.color);
+	}
 	const [a, pct, b] = v.mix;
 	return mixHex(hexOf(palette, a), pct, hexOf(palette, b));
 }
 
 /** A theme's block for one mode, in contract order: every required key, then every optional key. */
-export function renderBlock(theme: Theme, palette: PaletteLike): string {
+export function renderBlock(theme: Theme, palette: PaletteLike, dark?: PaletteLike): string {
 	const keys = [...REQUIRED, ...OPTIONAL] as string[];
 	const missing = keys.filter((k) => !(k in theme.roles));
 	const extra = Object.keys(theme.roles).filter((k) => !keys.includes(k));
@@ -138,7 +145,7 @@ export function renderBlock(theme: Theme, palette: PaletteLike): string {
 				"  --theme-" +
 				k +
 				": " +
-				cssValue(theme.roles[k] as Value, palette) +
+				cssValue(theme.roles[k] as Value, palette, dark) +
 				";",
 		)
 		.join("\n");
@@ -162,7 +169,7 @@ export function renderThemeFile(
 		"   Do not edit: change the role map, then run theme:sync again. */",
 		"",
 		lightSel + " {",
-		renderBlock(theme, light),
+		renderBlock(theme, light, dark),
 		"}",
 		"",
 		darkSel + " {",
@@ -191,7 +198,7 @@ export function renderReset(): string {
  * inline on <html>, so any bg-bf- or border-bf- utility inside a light theme scope would otherwise paint a
  * DARK palette colour on paper. This is the pipeline's answer: one generated block, both palettes.
  */
-export function renderLightAliases(light: PaletteLike): string {
+export function renderLightAliases(light: PaletteLike, dark: PaletteLike): string {
 	const colour = ([name, c]: [string, { hex: string }]) =>
 		"  --bf-" + kebab(name) + ": " + c.hex.toLowerCase() + ";";
 	const ansi = ([name, c]: [string, { hex: string }]) =>
@@ -203,7 +210,8 @@ export function renderLightAliases(light: PaletteLike): string {
 		'[data-mode="light"] {',
 		...Object.entries(light.colors).map(colour),
 		...Object.entries(light.ansi).map(ansi),
-		"  --ink-on-bright: var(--bf-bg);",
+		// A bright plate takes dark ink in BOTH modes; the light palette's own bg is the plate, not the ink.
+		"  --ink-on-bright: " + dark.colors.bg.hex.toLowerCase() + ";",
 		"}",
 		"",
 	].join("\n");
@@ -217,7 +225,7 @@ export function renderAll(
 	const files: Record<string, string> = {
 		[tokensPath]: renderTokens(dark),
 		[join(themesDir, "_reset.css")]: renderReset(),
-		[join(themesDir, "_light.css")]: renderLightAliases(light),
+		[join(themesDir, "_light.css")]: renderLightAliases(light, dark),
 	};
 	for (const theme of THEMES) {
 		files[join(themesDir, theme.id + ".css")] = renderThemeFile(

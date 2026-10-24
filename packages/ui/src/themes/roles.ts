@@ -11,12 +11,14 @@
 // component knowing which theme it is in.
 //
 // A value is one of:
-//   { color: "<palette colour>" }      a colour name from palette/bigface.json or bigface-light.json
+//   { color: "<palette colour>" }      a colour name from palette/bigface.json or bigface-light.json;
+//                                      `palette: "dark"` pins it to the native dark palette, which is how
+//                                      the light theme keeps bigface's own blue as its button fill.
 //   { mix: [a, pct, b] }               color-mix(in oklab, a pct%, b) of two palette colours
 //   "0.5rem" / "0 1px 2px …" / a font stack   a literal, for the keys that are not colours
 export type Value =
 	| string
-	| { color: string }
+	| { color: string; palette?: "dark" | "light" }
 	| { mix: [string, number, string] };
 
 export type ThemeRoles = Record<string, Value>;
@@ -72,8 +74,13 @@ export const COLOURS: ThemeRoles = {
 	canvas: { color: "bg" },
 	ink: { color: "fg" },
 	heading: { color: "caret" },
-	primary: { color: "blue" },
-	"on-primary": { color: "bg" },
+	// Two-tier primary, Jun's ruling: the FILL is bigface's native blue with dark ink on top (the same
+	// construction the dark theme's buttons already use, 6.08:1 as ink-on-fill); TEXT/links keep the
+	// readable derived blue. Both name the palette, never a hex.
+	primary: { color: "blue", palette: "dark" },
+	"primary-fill": { color: "blue", palette: "dark" },
+	"primary-ink": { color: "blue" },
+	"on-primary": { color: "bg", palette: "dark" },
 	"primary-edge": { mix: ["blue", 78, "bg"] },
 	frame: { color: "cursorLine" },
 	"on-frame": { color: "fg" },
@@ -97,7 +104,7 @@ export const COLOURS: ThemeRoles = {
 	"muted-ink": { color: "fgDim" },
 	border: { color: "border" },
 	input: { color: "border" },
-	focus: { color: "blue" },
+	focus: { color: "blue" }, // the readable blue: a ring is text-sized
 	"frame-accent": { mix: ["blue", 16, "cursorLine"] },
 	"on-frame-accent": { color: "blue" },
 	"frame-border": { mix: ["fg", 12, "cursorLine"] },
@@ -259,6 +266,8 @@ export const OPTIONAL = [
 	"chart-3",
 	"chart-4",
 	"chart-5",
+	"primary-fill",
+	"primary-ink",
 	"overlay",
 	"solid",
 	"on-solid",

@@ -5,8 +5,8 @@
   --theme-canvas: #f8f8f0;
   --theme-ink: #252925;
   --theme-heading: #252925;
-  --theme-primary: #007aa6;
-  --theme-on-primary: #f8f8f0;
+  --theme-primary: #00b0ff;
+  --theme-on-primary: #252925;
   --theme-primary-edge: #5196b7;
   --theme-frame: #ecece5;
   --theme-on-frame: #252925;
@@ -45,6 +45,8 @@
   --theme-chart-3: #767600;
   --theme-chart-4: #cc4000;
   --theme-chart-5: #8658d2;
+  --theme-primary-fill: #00b0ff;
+  --theme-primary-ink: #007aa6;
   --theme-overlay: #bebfb8;
   --theme-solid: #ecece5;
   --theme-on-solid: #252925;
@@ -109,6 +111,8 @@
   --theme-chart-3: #e5e500;
   --theme-chart-4: #fc5d23;
   --theme-chart-5: #ae81ff;
+  --theme-primary-fill: #00b0ff;
+  --theme-primary-ink: #00b0ff;
   --theme-overlay: #535752;
   --theme-solid: #3b3c32;
   --theme-on-solid: #d9d9d4;
