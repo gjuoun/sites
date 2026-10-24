@@ -25,6 +25,22 @@ const ROLES: Role[] = [
 	{ name: "Code", cls: "rounded bg-muted px-1.5 py-0.5 font-mono text-sm font-semibold", sample: "bun add" },
 ];
 
+// One template for every row, so the label, the specimen and the readout share columns and centre lines.
+const ROW = "grid gap-2 py-4 md:grid-cols-[12rem_minmax(0,1fr)_12rem] md:items-center md:gap-6";
+
+/** The class string as one chip per class: it wraps between classes, never inside one. */
+function ClassChips({ cls }: { cls: string }) {
+	return (
+		<div className="flex flex-wrap gap-1">
+			{cls.split(" ").map((token) => (
+				<code key={token} className="rounded bg-muted px-1 font-mono text-[0.7rem] whitespace-nowrap text-muted-foreground">
+					{token}
+				</code>
+			))}
+		</div>
+	);
+}
+
 function ScaleRow({ name, cls, sample }: Role) {
 	const ref = React.useRef<HTMLParagraphElement>(null);
 	const [readout, setReadout] = React.useState("");
@@ -35,10 +51,10 @@ function ScaleRow({ name, cls, sample }: Role) {
 		setReadout(cs.fontSize + " / " + cs.lineHeight + " / " + cs.fontWeight);
 	}, [cls]);
 	return (
-		<div className="grid gap-2 border-t py-4 md:grid-cols-[10rem_minmax(0,1fr)_12rem] md:items-baseline md:gap-6">
-			<div className="flex flex-col gap-0.5">
+		<div className={"border-t " + ROW}>
+			<div className="flex flex-col gap-1.5">
 				<span className="text-sm font-medium">{name}</span>
-				<code className="font-mono text-xs break-words text-muted-foreground">{cls}</code>
+				<ClassChips cls={cls} />
 			</div>
 			<p ref={ref} className={"w-fit max-w-full min-w-0 " + cls}>{sample}</p>
 			<span className="font-mono text-xs text-muted-foreground md:text-right">{readout}</span>
@@ -55,9 +71,12 @@ function FamilyRow({ name, cls, sample }: { name: string; cls: string; sample: s
 		setReadout(getComputedStyle(el).fontFamily.split(",")[0].replace(/"/g, "").trim());
 	}, [cls]);
 	return (
-		<div className="grid gap-2 border-t py-4 md:grid-cols-[10rem_minmax(0,1fr)_12rem] md:items-baseline md:gap-6">
-			<span className="text-sm font-medium">{name}</span>
-			<p ref={ref} className={"min-w-0 text-xl " + cls}>{sample}</p>
+		<div className={"border-t " + ROW}>
+			<div className="flex flex-col gap-1.5">
+				<span className="text-sm font-medium">{name}</span>
+				<ClassChips cls={cls} />
+			</div>
+			<p ref={ref} className={"w-fit max-w-full min-w-0 text-xl " + cls}>{sample}</p>
 			<span className="font-mono text-xs text-muted-foreground md:text-right">{readout}</span>
 		</div>
 	);
@@ -113,7 +132,7 @@ export function TypographySection() {
 				<FamilyRow name="Mono (font-mono)" cls="font-mono" sample="const build = 42;" />
 			</div>
 			<div className="flex flex-col">
-				<div className="grid gap-2 pb-2 md:grid-cols-[10rem_minmax(0,1fr)_12rem] md:gap-6">
+				<div className={"pb-2 " + ROW.replace("py-4 ", "")}>
 					<h3 className="text-base font-semibold">Scale</h3>
 					<span className="hidden text-xs text-muted-foreground md:block">specimen</span>
 					<span className="hidden font-mono text-xs text-muted-foreground md:block md:text-right">size / line / weight</span>
@@ -122,9 +141,14 @@ export function TypographySection() {
 					<ScaleRow key={role.name} {...role} />
 				))}
 			</div>
-			<div className="flex flex-col gap-3">
-				<h3 className="text-base font-semibold">Prose</h3>
-				<Prose />
+			<div className="flex flex-col gap-3 border-t pt-8">
+				<div className="flex flex-col gap-1">
+					<h3 className="text-base font-semibold">Prose</h3>
+					<p className="text-sm text-muted-foreground">The same scale on a docs page: a heading, a lead, body text, a list, a table.</p>
+				</div>
+				<div className="rounded-lg border bg-background p-6">
+					<Prose />
+				</div>
 			</div>
 		</Block>
 	);
