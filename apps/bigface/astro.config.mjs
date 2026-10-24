@@ -7,6 +7,8 @@ export default defineConfig({
   site: "https://bigface.qqntt.com",
   trailingSlash: "always",
   build: { format: "directory" },
+  // The floating dev toolbar overlapped page content in captures and browsing; QA runs on real pages.
+  devToolbar: { enabled: false },
   integrations: [react()],
 
   vite: {
