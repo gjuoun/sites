@@ -308,6 +308,34 @@ describe("generated theme files", () => {
 		}
 	});
 
+	test("_light.css re-declares every palette name from the light palette", () => {
+		const css = readFileSync(join(themesDir, "_light.css"), "utf8");
+		expect(css).toContain('[data-mode="light"]');
+		type Pal = { colors: Record<string, { hex: string }>; ansi: Record<string, { hex: string }> };
+		const lightPal = light as unknown as Pal;
+		const darkPal = dark as unknown as Pal;
+		const kebab = (name: string) => name.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
+		for (const [name, c] of Object.entries(lightPal.colors)) {
+			expect(css, name).toContain("--bf-" + kebab(name) + ": " + c.hex.toLowerCase() + ";");
+		}
+		for (const [name, c] of Object.entries(lightPal.ansi)) {
+			expect(css, name).toContain("--bf-ansi-" + kebab(name) + ": " + c.hex.toLowerCase() + ";");
+		}
+		// A dark value that is not also a light value must be absent: a light scope cannot paint it.
+		const lightHexes = new Set(Object.values(lightPal.colors).map((c) => c.hex.toLowerCase()));
+		for (const c of Object.values(darkPal.colors)) {
+			if (lightHexes.has(c.hex.toLowerCase())) continue;
+			expect(css.toLowerCase(), c.hex).not.toContain(": " + c.hex.toLowerCase() + ";");
+		}
+	});
+
+	test("light mode's primary is the pulled-toward-cyan blue, not the raw palette blue", () => {
+		type Pal = { colors: Record<string, { hex: string }> };
+		const decls = themeBlocks("business").light as Record<string, string>;
+		expect(decls["--theme-primary"]).toBe((light as unknown as Pal).colors.blue?.hex.toLowerCase());
+		expect(decls["--theme-primary"]).not.toBe((dark as unknown as Pal).colors.blue?.hex.toLowerCase());
+	});
+
 	test("the default theme also answers with no data-theme set", () => {
 		const css = readFileSync(join(themesDir, "console.css"), "utf8");
 		expect(css).toContain(":root:not([data-theme])");

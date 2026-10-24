@@ -5,6 +5,7 @@
 @import "./theme.css";
 @import "./tokens.css";
 @import "../themes/_reset.css";
+@import "../themes/_light.css";
 @import "../themes/business.css";
 @import "../themes/console.css";
 @import "../themes/game.css";

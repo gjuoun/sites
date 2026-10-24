@@ -65,7 +65,7 @@ function Panel({
 					<BGButton tone="chip" className="px-4">
 						Press me
 					</BGButton>
-					<span className="font-code text-xs text-bf-fg-muted">
+					<span className="font-code text-xs text-muted-foreground">
 						radius <span className="text-foreground">{feel.radius}</span> ·
 						space <span className="text-foreground">{feel.space}</span> · hover{" "}
 						<span className="text-foreground">{feel.hover}</span> × press{" "}
@@ -87,15 +87,15 @@ export function ThemeMatrix() {
 						key={theme.id + "-" + mode}
 						theme={theme.id}
 						mode={mode}
-						className="flex min-w-0 flex-col gap-3 rounded-[var(--theme-radius,0.625rem)] border border-bf-border p-[calc(var(--theme-space,0.25rem)*4)] text-foreground"
+						className="flex min-w-0 flex-col gap-3 rounded-[var(--theme-radius,0.625rem)] border border-border p-[calc(var(--theme-space,0.25rem)*4)] text-foreground"
 					>
 						<div className="flex min-w-0 flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-							<p className="m-0 font-code text-xs tracking-[0.06em] uppercase text-bf-fg-muted">
+							<p className="m-0 font-code text-xs tracking-[0.06em] uppercase text-muted-foreground">
 								{theme.id} · {mode}
 							</p>
-							<p className="m-0 font-code text-xs text-bf-dim">{theme.feel}</p>
+							<p className="m-0 font-code text-xs text-gray-500">{theme.feel}</p>
 						</div>
-						<p className="m-0 text-sm leading-snug text-bf-fg-muted">
+						<p className="m-0 text-sm leading-snug text-muted-foreground">
 							{theme.purpose}
 						</p>
 						<Panel
@@ -119,7 +119,7 @@ export function ThemeControls() {
 		<div className="flex flex-wrap items-center gap-3">
 			<BGThemeSwitcher />
 			<BGModeSwitcher />
-			<span className="font-code text-xs text-bf-fg-muted">
+			<span className="font-code text-xs text-muted-foreground">
 				the page itself switches; each panel above keeps its own pair
 			</span>
 		</div>

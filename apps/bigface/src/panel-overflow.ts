@@ -4,7 +4,7 @@
 // Why not a DOM library: happy-dom and jsdom have no layout engine, so getBoundingClientRect() is a
 // zero rectangle there and an overflow assertion against it would pass on any markup. This runs the
 // page the browser runs and reads real boxes.
-import { existsSync, mkdtempSync, rmSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -186,11 +186,12 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
  * Measure one built page. path is the URL path ("/ui/theme/"); distDir is served at the root, the way
  * the static deploy serves it. Throws when no Chrome is installed.
  */
-export async function measurePanelOverflow(
+async function runProbe<T>(
 	distDir: string,
-	path = "/ui/theme/",
-	width = 1440,
-): Promise<Measurement> {
+	path: string,
+	width: number,
+	expression: string,
+): Promise<T> {
 	const chrome = findChrome();
 	if (!chrome)
 		throw new Error(
@@ -271,23 +272,110 @@ export async function measurePanelOverflow(
 			awaitPromise: true,
 		});
 		const out = (await cdp.send("Runtime.evaluate", {
-			expression: PROBE,
+			expression,
 			returnByValue: true,
-		})) as {
-			result: {
-				value: {
-					panels: number;
-					offenders: Overflow[];
-					clipped: Measurement["clipped"];
-					metrics: PanelMetrics[];
-				};
-			};
-		};
-		return { path, ...out.result.value } as Measurement;
+		})) as { result: { value: T } };
+		return out.result.value;
 	} finally {
 		cdp?.close();
 		proc.kill();
 		server.stop(true);
 		rmSync(profile, { recursive: true, force: true });
 	}
+}
+
+/** Geometry, containment and feel metrics for one built page. */
+export async function measurePanelOverflow(
+	distDir: string,
+	path = "/ui/theme/",
+	width = 1440,
+): Promise<Measurement> {
+	const m = await runProbe<Omit<Measurement, "path">>(distDir, path, width, PROBE);
+	return { path, ...m };
+}
+
+/**
+ * The colour audit: every painted colour inside a panel must be a resolved --theme-* value or a native
+ * palette hex. Anything else is an ad-hoc colour that escaped the sync pipeline.
+ */
+export interface ColourOffender {
+	theme: string;
+	mode: string;
+	color: string;
+	prop: string;
+	tag: string;
+	slot: string;
+	className: string;
+	count: number;
+}
+
+export interface ColourAudit {
+	panels: { theme: string; mode: string; allowedColors: number; offenders: ColourOffender[] }[];
+}
+
+const COLOUR_PROBE = `(() => {
+  const PALETTES = __PALETTE__; // { dark: [...], light: [...] }
+  const rgbKey = (value) => {
+    const probe = document.createElement("span");
+    probe.style.color = value;
+    document.body.appendChild(probe);
+    const c = getComputedStyle(probe).color;
+    probe.remove();
+    const m = /rgba?\(([^)]+)\)/.exec(c);
+    if (!m) return "";
+    const parts = m[1].split(",").map((n) => Number.parseFloat(n));
+    if (parts.length < 3 || parts.slice(0, 3).some((n) => Number.isNaN(n))) return "";
+    return parts.slice(0, 3).map((n) => String(Math.round(n))).join(",");
+  };
+  const dark = new Set(PALETTES.dark.map(rgbKey));
+  const light = new Set(PALETTES.light.map(rgbKey));
+  const darkOnly = new Set([...dark].filter((c) => !light.has(c)));
+  const props = ["color", "backgroundColor", "borderTopColor", "borderRightColor", "borderBottomColor", "borderLeftColor", "outlineColor", "textDecorationColor", "caretColor"];
+  const panels = [];
+  for (const panel of document.querySelectorAll('[data-slot="theme-scope"]')) {
+    const mode = panel.dataset.mode === "light" ? "light" : "dark";
+    const leaks = new Map();
+    for (const el of [panel, ...panel.querySelectorAll("*")]) {
+      for (const prop of props) {
+        const key = rgbKey(getComputedStyle(el)[prop]);
+        if (!key || key === "0,0,0") continue;
+        const isWhite = key === "255,255,255";
+        const isDarkOnly = mode === "light" && darkOnly.has(key);
+        if (!isWhite && !isDarkOnly) continue;
+        const slot = key + "|" + prop + "|" + (el.getAttribute("data-slot") || el.tagName.toLowerCase());
+        if (!leaks.has(slot)) {
+          leaks.set(slot, { theme: panel.dataset.theme || "", mode, color: "rgb(" + key + ")", prop, tag: el.tagName.toLowerCase(), slot: el.getAttribute("data-slot") || "", className: String(el.className || "").slice(0, 70), count: 0 });
+        }
+        leaks.get(slot).count++;
+      }
+    }
+    panels.push({ theme: panel.dataset.theme || "", mode, offenders: [...leaks.values()].sort((a, b) => b.count - a.count) });
+  }
+  return { panels };
+})()`;
+
+const paletteFile = (distDir: string, file: string) =>
+	join(distDir, "../../../packages/bigface-tokens/palette", file);
+
+/**
+ * The colour audit for Jun's rule: in a light panel no colour may be a value that exists only in the dark
+ * palette (that is a --bf-* leak from the site's inline dark variables), and no element may paint pure
+ * white. Both are what the synced palettes forbid; everything else must resolve from --theme-*.
+ */
+export async function measurePanelColours(
+	distDir: string,
+	path = "/ui/theme/",
+	width = 1440,
+): Promise<ColourAudit> {
+	const hexesOf = (file: string) =>
+		Object.values(
+			(JSON.parse(readFileSync(paletteFile(distDir, file), "utf8")) as {
+				colors: Record<string, { hex: string }>;
+			}).colors,
+		).map((c) => c.hex.toLowerCase());
+	const probe = COLOUR_PROBE.replace(
+		"__PALETTE__",
+		JSON.stringify({ dark: hexesOf("bigface.json"), light: hexesOf("bigface-light.json") }),
+	);
+	return runProbe<ColourAudit>(distDir, path, width, probe);
 }
