@@ -13,7 +13,7 @@ interface Role {
 
 const ROLES: Role[] = [
 	{ name: "Display", cls: "text-5xl font-bold tracking-tight", sample: "Build the catalogue" },
-	{ name: "Heading 1", cls: "scroll-m-20 text-4xl font-extrabold tracking-tight", sample: "Heading one" },
+	{ name: "Heading 1", cls: "scroll-m-20 text-4xl font-bold tracking-tight", sample: "Heading one" },
 	{ name: "Heading 2", cls: "scroll-m-20 text-3xl font-semibold tracking-tight", sample: "Heading two" },
 	{ name: "Heading 3", cls: "scroll-m-20 text-2xl font-semibold tracking-tight", sample: "Heading three" },
 	{ name: "Heading 4", cls: "scroll-m-20 text-xl font-semibold tracking-tight", sample: "Heading four" },
@@ -66,13 +66,16 @@ function ScaleRow({ name, cls, sample }: Role) {
 	);
 }
 
-function FamilyRow({ name, cls, sample }: { name: string; cls: string; sample: string }) {
+/** One face, shown with its family, style and weight, all read from the page after it loads. */
+function FaceRow({ name, cls, sample }: { name: string; cls: string; sample: string }) {
 	const ref = React.useRef<HTMLParagraphElement>(null);
 	const [readout, setReadout] = React.useState("");
 	React.useLayoutEffect(() => {
 		const el = ref.current;
 		if (!el) return;
-		setReadout(getComputedStyle(el).fontFamily.split(",")[0].replace(/"/g, "").trim());
+		const cs = getComputedStyle(el);
+		const family = cs.fontFamily.split(",")[0].replace(/"/g, "").trim();
+		setReadout(family + " · " + cs.fontStyle + " · " + cs.fontWeight);
 	}, [cls]);
 	return (
 		<div className={"border-t " + ROW}>
@@ -88,12 +91,43 @@ function FamilyRow({ name, cls, sample }: { name: string; cls: string; sample: s
 	);
 }
 
+/** The weight axis of QuBlack Sans (400 to 700), one sample per step. The readout is the computed weight. */
+const WEIGHTS = [
+	{ cls: "font-normal", label: "400" },
+	{ cls: "font-medium", label: "500" },
+	{ cls: "font-semibold", label: "600" },
+	{ cls: "font-bold", label: "700" },
+];
+function WeightRow() {
+	const refs = React.useRef<(HTMLSpanElement | null)[]>([]);
+	const [read, setRead] = React.useState<string[]>([]);
+	React.useLayoutEffect(() => {
+		setRead(refs.current.map((el) => (el ? getComputedStyle(el).fontWeight : "")));
+	}, []);
+	return (
+		<div className={"border-t " + ROW}>
+			<div className="flex flex-col gap-1.5">
+				<span className="text-sm font-medium">Weight axis</span>
+				<ClassChips cls="font-normal font-medium font-semibold font-bold" />
+			</div>
+			<div className={SPEC + " gap-x-8"}>
+				{WEIGHTS.map((w, i) => (
+					<span key={w.cls} className="flex flex-col gap-0.5">
+						<span ref={(el) => { refs.current[i] = el; }} className={"text-xl " + w.cls}>QuBlack Sans</span>
+						<span className="font-mono text-xs text-muted-foreground">{w.cls} · {read[i] ?? w.label}</span>
+					</span>
+				))}
+			</div>
+		</div>
+	);
+}
+
 /** One article in the same classes, as it reads on a docs page. */
 function Prose() {
 	const cell = "border px-4 py-2 text-left";
 	return (
 		<article className="flex max-w-[62ch] flex-col gap-4">
-			<h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight text-balance">Business components</h1>
+			<h1 className="scroll-m-20 text-4xl font-bold tracking-tight text-balance">Business components</h1>
 			<p className="text-xl text-muted-foreground">Stock shadcn components, in the business colours.</p>
 			<p className="leading-7">
 				Body text sits on the canvas, and <strong className="font-semibold">strong</strong> text keeps the ink. Inline{" "}
@@ -130,12 +164,14 @@ export function TypographySection() {
 	return (
 		<Block id="typography" title="Typography" source="stock Tailwind and shadcn type classes; the business theme sets no font, size, leading or weight">
 			<p className="max-w-[62ch] text-sm text-muted-foreground">
-				Every size, leading and weight below is shadcn's own. The readout is measured from the page after it loads, so it cannot drift from what the classes produce.
+				Every size, leading and weight below is shadcn's own. The faces are QuBlack, served from this site: Latin cuts of the v1.2.0 release, about 50 KB each. The weight axis stops at 700, so font-extrabold and font-black render at 700. The readout is measured from the page after it loads, so it cannot drift from what the classes produce.
 			</p>
 			<div className="flex max-w-5xl flex-col">
 				<h3 className="pb-2 text-base font-semibold">Families</h3>
-				<FamilyRow name="Sans (font-sans)" cls="font-sans" sample="Aa Bb Cc 0123456789" />
-				<FamilyRow name="Mono (font-mono)" cls="font-mono" sample="const build = 42;" />
+				<FaceRow name="QuBlack Sans, UI text (font-sans)" cls="font-sans" sample="Aa Bb Cc 0123456789" />
+				<FaceRow name="QuBlack Sans, italic" cls="font-sans italic" sample="The quick brown fox, in italic." />
+				<WeightRow />
+				<FaceRow name="QuBlack Mono, code (font-mono)" cls="font-mono" sample="const build = 42;" />
 			</div>
 			<div className="flex max-w-5xl flex-col">
 				<div className="hidden pb-2 md:grid md:grid-cols-[15rem_minmax(0,1fr)] md:gap-6">
