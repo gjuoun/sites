@@ -13,5 +13,6 @@ export default defineConfig({
 
   vite: {
     plugins: [tailwindcss()],
+    server: { allowedHosts: ["juns-macbook-pro.tail610df3.ts.net"] },
   },
 });
