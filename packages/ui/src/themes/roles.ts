@@ -105,7 +105,7 @@ export const COLOURS: ThemeRoles = {
 	"muted-ink": { color: "fgDim" },
 	border: { color: "border" },
 	input: { color: "border" },
-	focus: { color: "blue" }, // the readable blue: a ring is text-sized
+	focus: { color: "blue" }, // the accent blue (ruling 2026-10-24); a readable light ring is parked for Jun
 	"frame-accent": { mix: ["blue", 16, "cursorLine"] },
 	"on-frame-accent": { color: "blue" },
 	"frame-border": { mix: ["fg", 12, "cursorLine"] },

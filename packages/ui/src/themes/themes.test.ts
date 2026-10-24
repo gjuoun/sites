@@ -334,12 +334,13 @@ describe("generated theme files", () => {
 		}
 	});
 
-	test("the primary is two-tier: native blue as the fill, the readable blue as text", () => {
+	test("the primary: native blue as the fill; the light blue is the native blue by ruling (2026-10-24)", () => {
 		type Pal = { colors: Record<string, { hex: string }> };
 		const nativeBlue = (dark as unknown as Pal).colors.blue?.hex.toLowerCase() as string;
-		const readableBlue = (light as unknown as Pal).colors.blue?.hex.toLowerCase() as string;
+		const lightBlue = (light as unknown as Pal).colors.blue?.hex.toLowerCase() as string;
 		expect(nativeBlue).toBe("#00b0ff");
-		expect(readableBlue).not.toBe(nativeBlue);
+		// The accent family borrows the dark palette exactly; the readable-ink tier is a parked question.
+		expect(lightBlue).toBe(nativeBlue);
 		for (const theme of THEMES) {
 			for (const mode of ["light", "dark"] as const) {
 				const decls = themeBlocks(theme.id)[mode] as Record<string, string>;
@@ -347,10 +348,9 @@ describe("generated theme files", () => {
 				expect(decls["--theme-primary-fill"], theme.id + "/" + mode).toBe(nativeBlue);
 				expect(decls["--theme-primary"], theme.id + "/" + mode).toBe(nativeBlue);
 				expect(decls["--theme-on-primary"], theme.id + "/" + mode).toBe("#252925");
-				// Text and links take the readable blue in light mode; dark mode can carry the native one.
-				expect(decls["--theme-primary-ink"], theme.id + "/" + mode).toBe(
-					mode === "light" ? readableBlue : nativeBlue,
-				);
+				// Text and links follow the accent by ruling (2026-10-24): the ink is the native blue in both modes.
+				// The readable light ink is a parked question (sites evidence, round 7).
+				expect(decls["--theme-primary-ink"], theme.id + "/" + mode).toBe(nativeBlue);
 			}
 		}
 	});
