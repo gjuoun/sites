@@ -1,7 +1,6 @@
 import { BGButton } from "@gjuoun/bigface-ui/components/bg/button";
 import { BGModeSwitcher } from "@gjuoun/bigface-ui/components/bg/mode-switcher";
 import { BGThemeScope } from "@gjuoun/bigface-ui/components/bg/theme-scope";
-import { BGThemeSwitcher } from "@gjuoun/bigface-ui/components/bg/theme-switcher";
 import { Badge } from "@gjuoun/bigface-ui/components/ui/badge";
 import {
 	Card,
@@ -14,13 +13,16 @@ import { Input } from "@gjuoun/bigface-ui/components/ui/input";
 import { Switch } from "@gjuoun/bigface-ui/components/ui/switch";
 import { MODES, THEMES } from "@gjuoun/bigface-ui/lib/themes";
 
+// The site's gallery shows console only: business has its own single-theme page (/ui/business/).
+const SITE_THEMES = THEMES.filter((t) => t.id === "console");
+
 // Six panels, one colour system, three feels. Everything here is dressed by the theme's own tokens —
 // spacing, type scale, radius, elevation, motion and weight — so the same markup reads airy, taped-down
 // or bouncy depending on the scope. Colour comes only from roles (primary, success-tint, …): no hue is
 // chosen in this file.
 //
 // The hover and press beats are real CSS, not a caption: the buttons scale by --theme-hover on hover and
-// --theme-press on :active, with the theme's own duration and easing (game overshoots, business glides,
+// --theme-press on :active, with the theme's own duration and easing (console snaps,
 // console snaps). Point at one and click it to feel the difference.
 function Panel({
 	feel,
@@ -81,7 +83,7 @@ function Panel({
 export function ThemeMatrix() {
 	return (
 		<div className="grid min-w-0 gap-4 md:grid-cols-2">
-			{THEMES.flatMap((theme) =>
+			{SITE_THEMES.flatMap((theme) =>
 				MODES.map((mode) => (
 					<BGThemeScope
 						key={theme.id + "-" + mode}
@@ -117,7 +119,6 @@ export function ThemeMatrix() {
 export function ThemeControls() {
 	return (
 		<div className="flex flex-wrap items-center gap-3">
-			<BGThemeSwitcher />
 			<BGModeSwitcher />
 			<span className="font-code text-xs text-muted-foreground">
 				the page itself switches; each panel above keeps its own pair

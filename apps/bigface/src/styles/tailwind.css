@@ -16,7 +16,6 @@
 @import "@gjuoun/bigface-ui/themes/_light.css";
 @import "@gjuoun/bigface-ui/themes/console.css";
 @import "@gjuoun/bigface-ui/themes/business.css";
-@import "@gjuoun/bigface-ui/themes/game.css";
 
 /* Class scanning: site/src, plus the component library. Test fixtures are skipped (they spell
    offending classes on purpose). */
