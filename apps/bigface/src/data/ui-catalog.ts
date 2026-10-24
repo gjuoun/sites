@@ -120,6 +120,33 @@ export const bgCatalog: BGEntry[] = [
     live: "here",
   },
   {
+    file: "theme-scope.tsx",
+    name: "BGThemeScope",
+    kind: "wrapper",
+    purpose:
+      "A subtree with its own theme and mode: data-theme + data-mode and the base classes every scope needs.",
+    finalised: true,
+    live: "here",
+  },
+  {
+    file: "theme-switcher.tsx",
+    name: "BGThemeSwitcher",
+    kind: "wrapper",
+    wraps: "ToggleGroup",
+    purpose: "Theme picker over the registry, driven by useTheme; layout is the only prop.",
+    finalised: true,
+    live: "here",
+  },
+  {
+    file: "mode-switcher.tsx",
+    name: "BGModeSwitcher",
+    kind: "wrapper",
+    wraps: "ToggleGroup",
+    purpose: "Light/dark picker over useMode; writes data-mode and the storage key.",
+    finalised: true,
+    live: "here",
+  },
+  {
     file: "eyebrow.astro",
     name: "BGEyebrow",
     kind: "composite",
