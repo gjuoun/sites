@@ -183,7 +183,7 @@ const connect = (url: string): Promise<Cdp> =>
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /**
- * Measure one built page. path is the URL path ("/ui/theme/"); distDir is served at the root, the way
+ * Measure one built page. path is the URL path ("/ui/console/"); distDir is served at the root, the way
  * the static deploy serves it. Throws when no Chrome is installed.
  */
 async function runProbe<T>(
@@ -287,7 +287,7 @@ async function runProbe<T>(
 /** Geometry, containment and feel metrics for one built page. */
 export async function measurePanelOverflow(
 	distDir: string,
-	path = "/ui/theme/",
+	path = "/ui/console/",
 	width = 1440,
 ): Promise<Measurement> {
 	const m = await runProbe<Omit<Measurement, "path">>(distDir, path, width, PROBE);
@@ -364,7 +364,7 @@ const paletteFile = (distDir: string, file: string) =>
  */
 export async function measurePanelColours(
 	distDir: string,
-	path = "/ui/theme/",
+	path = "/ui/console/",
 	width = 1440,
 ): Promise<ColourAudit> {
 	const hexesOf = (file: string) =>

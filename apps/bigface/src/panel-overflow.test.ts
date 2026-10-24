@@ -4,13 +4,13 @@ import { join } from "node:path";
 import { $ } from "bun";
 import { findChrome, measurePanelColours, measurePanelOverflow } from "./panel-overflow.ts";
 
-// One theme per page. The business page is the business package alone; /ui/theme is console alone. The
+// One theme per page. The business page is the business package alone; /ui/console/ is console alone. The
 // layout proofs run the built pages in a real headless Chrome, because no DOM library has a layout engine.
 const siteDir = join(import.meta.dir, "..");
 const dist = join(siteDir, "dist");
 
 beforeAll(async () => {
-	if (!existsSync(join(dist, "ui/business/index.html")) || !existsSync(join(dist, "ui/theme/index.html"))) {
+	if (!existsSync(join(dist, "ui/business/index.html")) || !existsSync(join(dist, "ui/console/index.html"))) {
 		const r = await $`bun run build`.cwd(siteDir).quiet().nothrow();
 		if (r.exitCode !== 0) throw new Error("site build failed:\n" + r.stderr.toString());
 	}
@@ -18,7 +18,7 @@ beforeAll(async () => {
 
 const PAGES = [
 	{ path: "/ui/business/", theme: "business" },
-	{ path: "/ui/theme/", theme: "console" },
+	{ path: "/ui/console/", theme: "console" },
 ] as const;
 
 for (const page of PAGES) {
@@ -57,9 +57,9 @@ test.skipIf(!findChrome())(
 );
 
 test.skipIf(!findChrome())(
-	"console stays near-square on /ui/theme",
+	"console stays near-square on /ui/console/",
 	async () => {
-		const m = await measurePanelOverflow(dist, "/ui/theme/", 1440);
+		const m = await measurePanelOverflow(dist, "/ui/console/", 1440);
 		for (const p of m.metrics) {
 			expect(p.cardRadius, p.mode + " card").toBe("2px");
 			expect(p.claimRadius, p.mode + " button").toBeLessThanOrEqual(3);

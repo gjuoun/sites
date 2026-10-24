@@ -229,26 +229,23 @@ test("the page root carries the default theme and mode", () => {
 	}
 });
 
-// The site serves console on /ui/theme/ (both modes) and business on its own page /ui/business/ (both
-// modes). One theme per page; the retired game theme is in neither. Business is also tested in
-// panel-overflow.test.ts, which measures the layout in a browser.
-test("the gallery shows console in both modes, the business page shows business in both, and game is offline", () => {
-	const gallery = page("ui/theme");
-	expect([...gallery.matchAll(/data-slot="theme-scope"/g)]).toHaveLength(MODES.length);
-	for (const mode of MODES) {
-		expect(gallery, "console/" + mode).toContain(`data-theme="console" data-mode="${mode}"`);
+// Each theme has its own single-theme page: console on /ui/console/, business on /ui/business/. One theme per
+// page; the retired game theme is on neither, and no page at all shows more than one theme.
+test("each single-theme page shows its own theme in both modes; game is offline; no gallery remains", () => {
+	for (const [rel, theme] of [["ui/console", "console"], ["ui/business", "business"]] as const) {
+		const html = page(rel);
+		expect([...html.matchAll(/data-slot="theme-scope"/g)], rel).toHaveLength(MODES.length);
+		for (const mode of MODES) {
+			expect(html, rel + "/" + mode).toContain(`data-theme="${theme}" data-mode="${mode}"`);
+		}
 	}
-	const business = page("ui/business");
-	expect([...business.matchAll(/data-slot="theme-scope"/g)]).toHaveLength(MODES.length);
-	for (const mode of MODES) {
-		expect(business, "business/" + mode).toContain(`data-theme="business" data-mode="${mode}"`);
-	}
-	for (const rel of ["", "ui", "ui/theme", "ui/business"]) {
+	for (const rel of ["", "ui", "ui/console", "ui/business"]) {
 		expect(page(rel), "game on " + rel).not.toContain('data-theme="game"');
 	}
-	expect(gallery).toContain("bigface-mode");
-	expect(page("ui")).toContain('href="/ui/theme/"');
+	expect(existsSync(join(import.meta.dir, "../dist/ui/theme/index.html")), "the gallery page is gone").toBe(false);
 	expect(page("ui")).toContain('href="/ui/business/"');
+	expect(page("ui")).toContain('href="/ui/console/"');
+	expect(page("ui")).not.toContain('href="/ui/theme/"');
 	expect([...page("ui").matchAll(/data-slot="theme-scope"/g)]).toHaveLength(0);
 	expect(page("")).not.toContain("bigface-mode");
 });
