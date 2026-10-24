@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Spinner } from "@gjuoun/bigface-business-ui/components/ui/spinner";
 import { toast } from "sonner";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@gjuoun/bigface-business-ui/components/ui/accordion";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@gjuoun/bigface-business-ui/components/ui/alert-dialog";
@@ -65,7 +66,13 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
 function Matrix<R extends string, C extends string>({ corner, rows, cols, cell }: { corner: string; rows: readonly R[]; cols: readonly C[]; cell: (r: R, c: C) => React.ReactNode }) {
 	return (
 		<div className="overflow-x-auto">
-			<table className="w-full min-w-[30rem] text-sm">
+			<table className="w-full min-w-[30rem] table-fixed text-sm">
+				<colgroup>
+					<col style={{ width: "20%" }} />
+					{cols.map((c) => (
+						<col key={c} style={{ width: 80 / cols.length + "%" }} />
+					))}
+				</colgroup>
 				<thead>
 					<tr>
 						<th className="px-2 py-2 text-left font-mono text-xs font-normal text-muted-foreground">{corner}</th>
@@ -99,7 +106,20 @@ function Cell({ label, children }: { label: string; children: React.ReactNode })
 	);
 }
 
-const states = (...cells: React.ReactNode[]) => <div className="flex flex-wrap items-start gap-6">{cells}</div>;
+/** The states of a component, one labelled row each, in the same row grid as the variants. */
+const states = (...cells: React.ReactNode[]) => (
+	<div className="flex flex-col divide-y">
+		{cells.map((c, i) => {
+			const el = c as React.ReactElement<{ label: string; children: React.ReactNode }>;
+			return (
+				<div key={i} className="grid items-center gap-2 py-3 md:grid-cols-[10rem_minmax(0,1fr)] md:gap-4">
+					<span className="font-mono text-xs text-muted-foreground">{el.props.label}</span>
+					<div className="flex min-w-0 flex-wrap items-center gap-3">{el.props.children}</div>
+				</div>
+			);
+		})}
+	</div>
+);
 
 export const VARIANTS: Record<string, React.ReactNode> = {
 	alert: (
@@ -526,7 +546,11 @@ export const STATES: Record<string, React.ReactNode> = {
 	),
 	button: states(
 		<Cell key="d" label="default"><Button>Save</Button></Cell>,
+		<Cell key="h" label="hover (live: move the pointer over it)"><Button>Save</Button></Cell>,
+		<Cell key="f" label="focus-visible (live: press Tab to reach it)"><Button>Save</Button></Cell>,
+		<Cell key="a" label="active (live: hold the mouse button down)"><Button>Save</Button></Cell>,
 		<Cell key="x" label="disabled"><Button disabled>Save</Button></Cell>,
+		<Cell key="l" label="loading (stock spinner in the button)"><Button disabled><Spinner data-icon="inline-start" />Saving</Button></Cell>,
 	),
 	checkbox: states(
 		<Cell key="u" label="unchecked"><Checkbox /></Cell>,

@@ -98,7 +98,7 @@ function Section({ id, title, source, children }: { id: string; title: string; s
 function Group({ label, children }: { label: string; children: React.ReactNode }) {
 	return (
 		<div className="flex flex-col gap-1">
-			<h4 className="text-xs font-medium tracking-[0.06em] text-muted-foreground uppercase">{label}</h4>
+			<h4 className="border-b pb-1 text-xs font-semibold tracking-[0.08em] text-foreground uppercase">{label}</h4>
 			{children}
 		</div>
 	);
@@ -122,7 +122,7 @@ function Category({ id, title, count, children }: { id: string; title: string; c
 
 function Demo({ name, className, children }: { name: string; className?: string; children: React.ReactNode }) {
 	return (
-		<div data-demo={name} className={cn("flex min-h-24 flex-wrap items-start gap-3 rounded-md border p-4", className)}>
+		<div data-demo={name} className={cn("flex min-h-24 flex-wrap items-center gap-3 rounded-md border p-4", className)}>
 			{children}
 		</div>
 	);
