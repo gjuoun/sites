@@ -54,8 +54,16 @@ export function Rail() {
 	const active = useActive(ORDER);
 	const activeCategory = CATEGORIES.find((c) => c.components.some((k) => k.id === active))?.id ?? (active === "" ? "" : active);
 
+	// Keep the current item visible inside the rail's own scroll box. Never scrollIntoView here: that also scrolls the
+	// window, and the active section changes as the reader scrolls, which would feed back into the page's scroll.
 	React.useEffect(() => {
-		document.querySelector<HTMLElement>('[data-rail="' + active + '"]')?.scrollIntoView({ block: "nearest" });
+		const el = document.querySelector<HTMLElement>('[data-rail="' + active + '"]');
+		const box = el?.closest<HTMLElement>("aside");
+		if (!el || !box || box.offsetParent === null) return;
+		const b = box.getBoundingClientRect();
+		const r = el.getBoundingClientRect();
+		if (r.top < b.top) box.scrollTop -= b.top - r.top;
+		else if (r.bottom > b.bottom) box.scrollTop += r.bottom - b.bottom;
 	}, [active]);
 
 	return (

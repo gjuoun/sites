@@ -3,6 +3,7 @@ import { ColourSection } from "./_colour.tsx";
 import { VARIANTS, STATES } from "./_variants.tsx";
 import { PARTS } from "./_parts.ts";
 import { Rail } from "./_rail.tsx";
+import { InView } from "./_inview.tsx";
 import { TypographySection } from "./_typography.tsx";
 import { cn } from "@gjuoun/bigface-business-ui/lib/utils";
 import { toast } from "sonner";
@@ -192,7 +193,7 @@ function ForegroundSwitch() {
 				<ToggleGroupItem value="toned">Toned</ToggleGroupItem>
 				<ToggleGroupItem value="native">Native</ToggleGroupItem>
 			</ToggleGroup>
-			<span className="font-mono text-xs text-muted-foreground">
+			<span className="font-mono text-xs text-muted-foreground max-sm:hidden">
 				{lightOnly
 					? "foregrounds: light mode only"
 					: fg === "native"
@@ -217,7 +218,7 @@ export function Catalog() {
 			<div className="grid gap-8 lg:grid-cols-[13rem_minmax(0,1fr)]">
 				<Rail />
 				<div className="flex min-w-0 flex-col gap-10">
-				<div className="flex flex-col gap-3"><div className="flex flex-wrap items-center gap-3"><ModeSwitch /><span className="font-mono text-xs text-muted-foreground">every colour follows this switch; the components are unchanged</span></div><ForegroundSwitch /></div>
+				<div data-controls="" className="flex flex-col gap-2 max-lg:sticky max-lg:top-0 max-lg:z-30 max-lg:-mx-6 max-lg:border-b max-lg:bg-background/95 max-lg:px-6 max-lg:py-2 max-lg:backdrop-blur"><div className="flex flex-wrap items-center gap-2"><ModeSwitch /><span className="font-mono text-xs text-muted-foreground max-sm:hidden">every colour follows this switch; the components are unchanged</span></div><ForegroundSwitch /></div>
 				<ColourSection />
 				<TypographySection />
 				<Category id="cat-actions" title="Actions" count={4}>
@@ -423,6 +424,7 @@ export function Catalog() {
 
 				<Section id="command" title="Command" source="components/ui/command">
 					<Demo name="command">
+						<InView kind="click" minHeight="16rem">
 						<Command className="w-full max-w-sm rounded-lg border">
 							<CommandInput placeholder="Type a command" />
 							<CommandList>
@@ -435,6 +437,7 @@ export function Catalog() {
 								</CommandGroup>
 							</CommandList>
 						</Command>
+						</InView>
 						<p className="text-sm text-muted-foreground">Last command: {picked}</p>
 					</Demo>
 				</Section>

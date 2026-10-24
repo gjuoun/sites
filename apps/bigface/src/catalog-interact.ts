@@ -83,7 +83,7 @@ export async function runInteractions(distDir: string, path = "/ui/business/"): 
 
 		const demos = JSON.parse(
 			await evaluate(
-				"JSON.stringify([...document.querySelectorAll('[data-demo]')].map((d) => { const t = d.querySelector('[data-trigger]'); return { name: d.dataset.demo, kind: t ? t.dataset.trigger : null }; }))",
+				"JSON.stringify([...document.querySelectorAll('[data-demo]')].map((d) => { const t = d.querySelector('[data-trigger]'); const lz = d.querySelector('[data-lazy-trigger]'); return { name: d.dataset.demo, kind: t ? t.dataset.trigger : lz ? lz.dataset.lazyTrigger : null }; }))",
 			),
 		) as { name: string; kind: string | null }[];
 		total = demos.length;
@@ -94,7 +94,7 @@ export async function runInteractions(distDir: string, path = "/ui/business/"): 
 			const sel = "[data-demo=\"" + d.name + "\"]";
 			const at = JSON.parse(
 				await evaluate(
-					"(() => { const d = document.querySelector('" + sel + "'); const t = d.querySelector('[data-trigger]'); t.scrollIntoView({ block: 'center', behavior: 'instant' }); const r = t.getBoundingClientRect(); return JSON.stringify({ x: r.left + r.width / 2, y: r.top + r.height / 2 }); })()",
+					"(async () => { const d = document.querySelector('" + sel + "'); let t = d.querySelector('[data-trigger]'); const lz = d.querySelector('[data-lazy-trigger]'); (lz || t).scrollIntoView({ block: 'center', behavior: 'instant' }); for (let i = 0; i < 40 && !t; i++) { await new Promise((res) => setTimeout(res, 100)); t = d.querySelector('[data-trigger]'); } t.scrollIntoView({ block: 'center', behavior: 'instant' }); const r = t.getBoundingClientRect(); return JSON.stringify({ x: r.left + r.width / 2, y: r.top + r.height / 2 }); })()",
 				),
 			) as { x: number; y: number };
 			await sleep(120);
