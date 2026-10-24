@@ -3,10 +3,10 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import darkJson from "../../../bigface-tokens/palette/bigface.json";
 import lightJson from "../../../bigface-tokens/palette/bigface-light.json";
-import { contrastRatio } from "../../../bigface-tokens/src/contrast-math.ts";
-import { renderAll, themesDir } from "../../scripts/gen-tokens.ts";
 import contract from "./contract.json";
-import { MODES, OPTIONAL, REQUIRED, THEMES } from "./roles.ts";
+import { COLOURS, MODES, OPTIONAL, REQUIRED, THEMES } from "./roles.ts";
+import { renderAll, themesDir } from "../../scripts/gen-tokens.ts";
+import { contrastRatio } from "../../../bigface-tokens/src/contrast-math.ts";
 
 const dark = darkJson as unknown as Parameters<typeof renderAll>[0];
 const light = lightJson as unknown as Parameters<typeof renderAll>[0];
@@ -55,22 +55,17 @@ const themeBlocks = (id: string) => {
 
 /** Evaluate a generated value: a hex as-is, a color-mix(in oklab, a p%, b) by mixing. */
 const evaluate = (value: string): string => {
-	const m =
-		/^color-mix\(\s*in oklab,\s*(#[0-9a-f]{6})\s+([\d.]+)%,\s*(#[0-9a-f]{6})\s*\)$/.exec(
-			value,
-		);
+	const m = /^color-mix\(\s*in oklab,\s*(#[0-9a-f]{6})\s+([\d.]+)%,\s*(#[0-9a-f]{6})\s*\)$/.exec(value);
 	if (!m) return value;
 	const lab = (h: string) => {
-		const v = [1, 3, 5].map(
-			(i) => Number.parseInt(h.slice(i, i + 2), 16) / 255,
-		);
-		const lin = (c: number) =>
-			c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+		const v = [1, 3, 5].map((i) => Number.parseInt(h.slice(i, i + 2), 16));
+		const lin = (c: number) => {
+			const s = c / 255;
+			return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+		};
 		const [r, g, b] = v.map(lin) as [number, number, number];
 		const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
-		const mm = Math.cbrt(
-			0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b,
-		);
+		const mm = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
 		const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
 		return [
 			0.2104542553 * l + 0.793617785 * mm - 0.0040720468 * s,
@@ -106,6 +101,9 @@ const evaluate = (value: string): string => {
 	);
 };
 
+/** Keys that are not colours: the feel half. */
+const FEEL = ["radius", "space", "text-xs", "text-sm", "text-base", "text-lg", "duration", "ease", "press"];
+
 describe("generated theme files", () => {
 	test("every committed file equals a fresh render", () => {
 		for (const [path, next] of Object.entries(files)) {
@@ -113,61 +111,116 @@ describe("generated theme files", () => {
 		}
 	});
 
-	test("control: the render is driven by roles.ts, not hand-written", async () => {
-		const { THEMES: themes } = await import("./roles.ts");
-		expect(themes.length).toBe(3);
-		expect(themeBlocks("game").dark["--theme-primary"]).toBe(
-			"#" + (dark.colors.green as { hex: string }).hex.slice(1).toLowerCase(),
-		);
+	test("control: the render is driven by roles.ts, not hand-written", () => {
+		expect(THEMES).toHaveLength(3);
+		expect(themeBlocks("game").dark["--theme-radius"]).toBe("1.5rem");
+		expect(themeBlocks("console").dark["--theme-radius"]).toBe("0.625rem");
 	});
 
 	test("each theme has a light and a dark block, each with every required key", () => {
 		for (const theme of THEMES) {
 			const { light: l, dark: d } = themeBlocks(theme.id);
 			for (const mode of [l, d]) {
-				for (const key of REQUIRED)
+				for (const key of REQUIRED) {
 					expect(mode["--theme-" + key], theme.id + " " + key).toBeDefined();
+				}
 			}
 		}
 	});
 
 	test("both blocks set exactly the contract keys — no typos, nothing extra", () => {
-		const known = new Set(
-			[...REQUIRED, ...OPTIONAL].map((k) => "--theme-" + k),
-		);
-		const declared = new Set([
-			...Object.keys(contract.required),
-			...Object.keys(contract.optional),
-		]);
+		const known = new Set([...REQUIRED, ...OPTIONAL].map((k) => "--theme-" + k));
+		const declared = new Set([...Object.keys(contract.required), ...Object.keys(contract.optional)]);
 		expect([...declared].sort()).toEqual([...known].sort());
 		for (const theme of THEMES) {
 			for (const mode of Object.values(themeBlocks(theme.id))) {
-				for (const key of Object.keys(mode))
+				for (const key of Object.keys(mode)) {
 					expect(known.has(key), theme.id + " " + key).toBe(true);
+				}
 			}
 		}
 	});
 
 	test("_reset.css resets exactly the optional keys", () => {
-		const reset = blocks(
-			readFileSync(join(themesDir, "_reset.css"), "utf8"),
-		)[0] as { decls: Record<string, string> };
-		const keys = Object.keys(reset.decls).sort();
-		expect(keys).toEqual(OPTIONAL.map((k) => "--theme-" + k).sort());
-		for (const value of Object.values(reset.decls))
-			expect(value).toBe("initial");
+		const reset = blocks(readFileSync(join(themesDir, "_reset.css"), "utf8"))[0] as {
+			decls: Record<string, string>;
+		};
+		expect(Object.keys(reset.decls).sort()).toEqual(
+			OPTIONAL.map((k) => "--theme-" + k).sort(),
+		);
+		for (const value of Object.values(reset.decls)) expect(value).toBe("initial");
 	});
 
-	test("text pairs clear WCAG AA in every theme × mode (console dark keeps its one exemption)", () => {
-		const exemptions = new Set(["console/dark/muted-ink"]);
+	test("the three themes share ONE colour system, in both modes", () => {
+		const colourKeys = [...Object.keys(COLOURS)].map((k) => "--theme-" + k);
+		expect(colourKeys.length).toBeGreaterThan(20);
+		for (const mode of ["light", "dark"] as const) {
+			const [first, ...rest] = THEMES.map((t) => themeBlocks(t.id)[mode]);
+			for (const other of rest) {
+				for (const key of colourKeys) {
+					expect(other[key], mode + " " + key).toBe((first as Record<string, string>)[key]);
+				}
+			}
+		}
+	});
+
+	test("every colour is the native palette value the role names, or that mix of two of them", () => {
+		const palettes = { light, dark } as const;
+		for (const theme of THEMES) {
+			for (const mode of ["light", "dark"] as const) {
+				const palette = palettes[mode] as unknown as {
+					colors: Record<string, { hex: string }>;
+				};
+				const decls = themeBlocks(theme.id)[mode] as Record<string, string>;
+				for (const [key, value] of Object.entries(COLOURS)) {
+					const got = decls["--theme-" + key] as string;
+					if (typeof value === "string") continue;
+					if ("color" in value) {
+						const want = palette.colors[value.color]?.hex.toLowerCase();
+						expect(got, theme.id + "/" + mode + " " + key).toBe(want);
+						continue;
+					}
+					const [a, pct, b] = value.mix;
+					const want = evaluate(
+						"color-mix(in oklab, " +
+							(palette.colors[a] as { hex: string }).hex.toLowerCase() +
+							" " +
+							pct +
+							"%, " +
+							(palette.colors[b] as { hex: string }).hex.toLowerCase() +
+							")",
+					);
+					expect(got, theme.id + "/" + mode + " " + key + " (" + value.mix.join(",") + ")").toBe(want);
+				}
+			}
+		}
+	});
+
+	test("the FEEL is what differs: density, type, radius, elevation and motion", () => {
+		const at = (id: string, key: string) => (themeBlocks(id).dark as Record<string, string>)["--theme-" + key];
+		for (const key of ["space", "radius", "text-sm", "text-base", "duration", "ease", "press", "shadow-sm"]) {
+			const values = THEMES.map((t) => at(t.id, key));
+			expect(new Set(values).size, key + " must differ across themes: " + values.join(" / ")).toBe(3);
+		}
+		// density really moves the same way in both modes
+		expect(Number.parseFloat(at("game", "space") as string)).toBeGreaterThan(
+			Number.parseFloat(at("console", "space") as string),
+		);
+		expect(Number.parseFloat(at("business", "space") as string)).toBeGreaterThan(
+			Number.parseFloat(at("console", "space") as string),
+		);
+	});
+
+	test("text pairs clear WCAG AA in every theme × mode (dark muted ink is the one exemption)", () => {
+		// fgDim is 2.79:1 on the dark canvas — the palette's own choice, identical in all three themes.
+		const exemptions = new Set(THEMES.map((t) => t.id + "/dark/muted-ink"));
 		for (const theme of THEMES) {
 			const { light: l, dark: d } = themeBlocks(theme.id);
 			for (const [mode, decls] of [
 				["light", l],
 				["dark", d],
 			] as const) {
-				const read = (k: string) =>
-					evaluate((decls as Record<string, string>)["--theme-" + k] as string);
+				const read = (k: string) => evaluate((decls as Record<string, string>)["--theme-" + k] as string);
 				for (const [fg, bg, name] of [
 					["on-primary", "primary", "on-primary"],
 					["ink", "canvas", "ink"],
@@ -175,23 +228,24 @@ describe("generated theme files", () => {
 					["muted-ink", "canvas", "muted-ink"],
 				] as const) {
 					if (exemptions.has(theme.id + "/" + mode + "/" + name)) continue;
-					expect(
-						contrastRatio(read(fg), read(bg)),
-						theme.id + "/" + mode + "/" + name,
-					).toBeGreaterThanOrEqual(4.5);
+					expect(contrastRatio(read(fg), read(bg)), theme.id + "/" + mode + "/" + name).toBeGreaterThanOrEqual(
+						4.5,
+					);
 				}
 			}
 		}
 	});
 
-	test("the exemption list is honest: console dark muted-ink really is below AA", () => {
-		const decls = themeBlocks("console").dark;
-		expect(
-			contrastRatio(
-				evaluate(decls["--theme-muted-ink"] as string),
-				evaluate(decls["--theme-canvas"] as string),
-			),
-		).toBeLessThan(4.5);
+	test("the exemption list is honest: dark muted ink really is below AA", () => {
+		for (const theme of THEMES) {
+			const decls = themeBlocks(theme.id).dark;
+			expect(
+				contrastRatio(
+					evaluate(decls["--theme-muted-ink"] as string),
+					evaluate(decls["--theme-canvas"] as string),
+				),
+			).toBeLessThan(4.5);
+		}
 	});
 
 	test("the default theme also answers with no data-theme set", () => {
@@ -199,9 +253,9 @@ describe("generated theme files", () => {
 		expect(css).toContain(":root:not([data-theme])");
 		expect(css).toContain(':root:not([data-theme])[data-mode="dark"]');
 		for (const other of THEMES.filter((t) => !t.isDefault)) {
-			expect(
-				readFileSync(join(themesDir, other.id + ".css"), "utf8"),
-			).not.toContain(":root:not([data-theme])");
+			expect(readFileSync(join(themesDir, other.id + ".css"), "utf8")).not.toContain(
+				":root:not([data-theme])",
+			);
 		}
 	});
 

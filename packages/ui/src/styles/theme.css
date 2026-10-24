@@ -86,6 +86,18 @@
   --shadow-card: var(--theme-shadow-card, 0 1px 3px color-mix(in srgb, var(--theme-canvas) 22%, transparent));
   --shadow-modal: var(--theme-shadow-modal, 0 20px 60px color-mix(in srgb, var(--theme-canvas) 45%, transparent));
 
+  /* The feel half. These are Tailwind's OWN tokens, overridden from the theme, which is what makes one
+     component markup read dense in one theme and bold in another without a component knowing: every
+     p-/m-/gap-/h- utility is a multiple of --spacing, every text-sm reads --text-sm, every shadow-sm and
+     every transition-* reads the two motion defaults below. */
+  --spacing: var(--theme-space, 0.25rem);
+  --text-xs: var(--theme-text-xs, 0.75rem);
+  --text-sm: var(--theme-text-sm, 0.875rem);
+  --text-base: var(--theme-text-base, 1rem);
+  --text-lg: var(--theme-text-lg, 1.125rem);
+  --default-transition-duration: var(--theme-duration, 150ms);
+  --default-transition-timing-function: var(--theme-ease, cubic-bezier(0.4, 0, 0.2, 1));
+
   /* Bigface names: every palette colour and ANSI alias as a Tailwind colour (bg-bf-lime, …). */
   --color-ink-on-bright: var(--ink-on-bright);
   --color-bf-bg: var(--bf-bg);
@@ -112,11 +124,12 @@
   --color-bf-dim: var(--dim);
 
   /* Shadows: Tailwind's defaults are black at 10% — derive from the palette's darkest surface. */
-  --shadow: 0 1px 3px 0 var(--bf-shadow), 0 1px 2px -1px var(--bf-shadow);
-  --shadow-2xs: 0 1px var(--bf-shadow);
-  --shadow-xs: 0 1px 2px 0 var(--bf-shadow);
-  --shadow-sm: 0 1px 3px 0 var(--bf-shadow), 0 1px 2px -1px var(--bf-shadow);
-  --shadow-md: 0 4px 6px -1px var(--bf-shadow), 0 2px 4px -2px var(--bf-shadow);
+  /* The small elevations are the theme's; a theme decides whether a card sits flat or floats. */
+  --shadow: var(--theme-shadow-md, 0 4px 6px -1px var(--bf-shadow), 0 2px 4px -2px var(--bf-shadow));
+  --shadow-2xs: var(--theme-shadow-sm, 0 1px var(--bf-shadow));
+  --shadow-xs: var(--theme-shadow-sm, 0 1px 2px 0 var(--bf-shadow));
+  --shadow-sm: var(--theme-shadow-sm, 0 1px 3px 0 var(--bf-shadow), 0 1px 2px -1px var(--bf-shadow));
+  --shadow-md: var(--theme-shadow-md, 0 4px 6px -1px var(--bf-shadow), 0 2px 4px -2px var(--bf-shadow));
   --shadow-lg: 0 10px 15px -3px var(--bf-shadow), 0 4px 6px -4px var(--bf-shadow);
   --shadow-xl: 0 20px 25px -5px var(--bf-shadow), 0 8px 10px -6px var(--bf-shadow);
   --shadow-2xl: 0 25px 50px -12px var(--bf-shadow);

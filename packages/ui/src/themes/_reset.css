@@ -29,4 +29,14 @@
   --theme-on-solid: initial;
   --theme-shadow-card: initial;
   --theme-shadow-modal: initial;
+  --theme-space: initial;
+  --theme-text-xs: initial;
+  --theme-text-sm: initial;
+  --theme-text-base: initial;
+  --theme-text-lg: initial;
+  --theme-shadow-sm: initial;
+  --theme-shadow-md: initial;
+  --theme-duration: initial;
+  --theme-ease: initial;
+  --theme-press: initial;
 }

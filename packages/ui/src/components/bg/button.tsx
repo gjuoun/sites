@@ -6,7 +6,12 @@ import type * as React from "react";
 // Bigface variants, layered on shadcn's Button without touching components/ui/button.tsx.
 // `tone` picks a Bigface look; shadcn's own `variant` / `size` still pass straight through. The BG
 // classes are merged last, so on a conflict (background, padding, radius…) they win over shadcn's.
-export const bgButtonVariants = cva("", {
+// The feel half of a theme reaches every BG button: duration and easing come from the theme's own
+// motion tokens, and the press scale is its `press` key — the same markup feels calm in business,
+// crisp in console and springy in game.
+export const bgButtonVariants = cva(
+	"transition-[transform,color,background-color,border-color,box-shadow] duration-[var(--theme-duration,150ms)] ease-[var(--theme-ease,ease)] active:scale-[var(--theme-press,0.97)]",
+	{
   variants: {
     tone: {
       none: "",
@@ -24,7 +29,8 @@ export const bgButtonVariants = cva("", {
     },
   },
   defaultVariants: { tone: "none" },
-});
+	},
+);
 
 type ButtonProps = React.ComponentProps<typeof Button>;
 export type BGButtonProps = Omit<ButtonProps, "asChild"> &
