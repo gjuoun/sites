@@ -1,21 +1,15 @@
-// The three Bigface themes as data. ONE colour system, three feels.
+// The business theme as data: COLOUR ONLY.
 //
-// Colour: every theme resolves the same role map against the native Bigface palette — the dark file for a
-// dark block, the generated light file for a light one. No theme invents a hue; primary is the palette's
-// blue in all three, success its green, danger its burnt orange, info its cyan, highlight its purple.
-//
-// Feel: that is what a theme actually chooses — density (the spacing unit every utility is derived from),
-// the type scale, corner radius, elevation, motion and press. The generator renders both into the same
-// --theme-* namespace; theme.css maps the feel keys onto Tailwind's own tokens (--spacing, --text-*,
-// --shadow-*, --default-transition-*), so the same component markup reads denser or bolder without any
-// component knowing which theme it is in.
+// Every entry names a colour of the native Bigface palette. A block resolves against the dark file (dark
+// mode) or the generated light file (light mode), so the same map gives both modes. There is no feel here:
+// radius, type, spacing, shadow geometry and motion are Tailwind's and shadcn's own, so every component
+// renders exactly as the CLI ships it. A theme colours the components; it does not restyle them.
 //
 // A value is one of:
-//   { color: "<palette colour>" }      a colour name from palette/bigface.json or bigface-light.json;
-//                                      `palette: "dark"` pins it to the native dark palette, which is how
-//                                      the light theme keeps bigface's own blue as its button fill.
-//   { mix: [a, pct, b] }               color-mix(in oklab, a pct%, b) of two palette colours
-//   "0.5rem" / "0 1px 2px …" / a font stack   a literal, for the keys that are not colours
+//   { color: "<palette colour>" }                  a colour of the palette (optionally pinned with palette: "dark")
+//   { mix: [a, pct, b] }                           color-mix(in oklab, a pct%, b) of two palette colours
+//   { light: <value>, dark: <value> }              a different value per mode
+//   "<literal>"                                    a non-colour literal (none in this package)
 export type Value =
 	| string
 	| { color: string; palette?: "dark" | "light" }
@@ -29,19 +23,12 @@ export interface Theme {
 	label: string;
 	/** The default theme: it also answers when no [data-theme] is set. */
 	isDefault?: boolean;
-	/** One line on what the theme is for, shown in the gallery. */
+	/** One line on what the theme is for. */
 	purpose: string;
-	/** How it feels, in three words — the gallery prints this next to the name. */
-	feel: string;
 	roles: ThemeRoles;
 }
 
-export const FONT_SANS =
-	'"Recursive", system-ui, -apple-system, "Segoe UI", sans-serif';
-export const FONT_MONO =
-	'"Recursive", ui-monospace, "SF Mono", Menlo, monospace';
-
-/** Keys every theme must set, straight from contract.json (kept in the same order). */
+/** Keys every theme must set. */
 export const REQUIRED = [
 	"canvas",
 	"ink",
@@ -62,22 +49,18 @@ export const REQUIRED = [
 	"danger",
 	"info",
 	"highlight",
-	"radius",
-	"font-sans",
-	"font-mono",
 ] as const;
 
 /**
- * The colour half: identical for all three themes, on purpose. Every entry names a colour of the native
- * palette, so the dark and light blocks differ only because they resolve against different palettes.
+ * Two-tier primary, the business ruling: the FILL is bigface's native blue (#00b0ff in both modes) with the
+ * dark ink on top (6.08:1 as ink-on-fill); TEXT and rings take the readable blue of each mode.
+ * black and white are the palette's own darkest and lightest: the stock scrim (bg-black/10) and the stock
+ * slider thumb (bg-white) resolve through them, so no stock class has to change. White is paper, never #fff.
  */
 export const COLOURS: ThemeRoles = {
 	canvas: { color: "bg" },
 	ink: { color: "fg" },
 	heading: { color: "caret" },
-	// Two-tier primary, Jun's ruling: the FILL is bigface's native blue with dark ink on top (the same
-	// construction the dark theme's buttons already use, 6.08:1 as ink-on-fill); TEXT/links keep the
-	// readable derived blue. Both name the palette, never a hex.
 	primary: { color: "blue", palette: "dark" },
 	"primary-fill": { color: "blue", palette: "dark" },
 	"primary-ink": { color: "blue" },
@@ -100,12 +83,11 @@ export const COLOURS: ThemeRoles = {
 	subtle: { color: "borderMuted" },
 	secondary: { color: "borderMuted" },
 	"on-secondary": { color: "fg" },
-	// Native muted grey. It is 2.79:1 on the dark canvas — the palette's own long-standing choice, kept
-	// identical in all three themes and recorded as an exemption in themes.test.ts.
+	// Native muted grey: 2.79:1 on the dark canvas, the palette's own long-standing choice.
 	"muted-ink": { color: "fgDim" },
 	border: { color: "border" },
 	input: { color: "border" },
-	focus: { color: "blue" }, // the readable blue: a ring is text-sized
+	focus: { color: "blue" },
 	"frame-accent": { mix: ["blue", 16, "cursorLine"] },
 	"on-frame-accent": { color: "blue" },
 	"frame-border": { mix: ["fg", 12, "cursorLine"] },
@@ -122,125 +104,27 @@ export const COLOURS: ThemeRoles = {
 	overlay: { mix: ["bg", 75, "caret"] },
 	solid: { color: "cursorLine" },
 	"on-solid": { color: "fg" },
+	black: { light: { color: "fg" }, dark: { color: "bg" } },
+	white: { light: { color: "bg" }, dark: { color: "fg" } },
 };
 
-/** The feel half: the only thing a theme chooses. */
-export interface Feel {
-	/** Base spacing unit; every p-/m-/gap-/h- utility is a multiple of it (0.25rem = Tailwind's own). */
-	space: string;
-	radius: string;
-	/** Type scale, mapped onto Tailwind's text-xs…text-lg. */
-	"text-xs": string;
-	"text-sm": string;
-	"text-base": string;
-	"text-lg": string;
-	/** Elevation, mapped onto Tailwind's shadow-sm / shadow-md. */
-	"shadow-sm": string;
-	"shadow-md": string;
-	/** Motion: every transition-* utility uses these; hover and press are the two scale beats. */
-	duration: string;
-	ease: string;
-	hover: string;
-	press: string;
-	/** Weight of a demo heading, so a feel can be heavier or flatter in its type. */
-	weight: string;
-	/** The primary plate's elevation — business drops it in light mode; a plain string applies to both. */
-	"primary-shadow": string | { light: string; dark: string };
-}
-
-const feel = (f: Feel): ThemeRoles => ({
-	...f,
-	"font-sans": FONT_SANS,
-	"font-mono": FONT_MONO,
-	// The two component-level elevations the contract also exposes.
-	"shadow-card":
-		"0 1px 3px color-mix(in srgb, var(--theme-canvas) 22%, transparent)",
-	"shadow-modal":
-		"0 20px 60px color-mix(in srgb, var(--theme-canvas) 45%, transparent)",
-});
+/** Optional keys: every colour role that is not required. */
+export const OPTIONAL = Object.keys(COLOURS).filter((k) => !(REQUIRED as readonly string[]).includes(k));
 
 export const THEMES: Theme[] = [
 	{
 		id: "business",
 		label: "Business",
 		isDefault: true,
-		feel: "airy · crisp · calm",
-		purpose:
-			"Quiet marketing and product surfaces: room to breathe, crisp corners, slow confidence.",
-		roles: {
-			...COLOURS,
-			...feel({
-				// comfortable, not tight; a small rounded rect, calm motion
-				space: "0.3125rem",
-				radius: "0.375rem",
-				"text-xs": "0.78rem",
-				"text-sm": "0.94rem",
-				"text-base": "1.06rem",
-				"text-lg": "1.28rem",
-				"shadow-sm":
-					"0 1px 2px color-mix(in srgb, var(--theme-canvas) 8%, transparent)",
-				"shadow-md":
-					"0 12px 32px -20px color-mix(in srgb, var(--theme-canvas) 30%, transparent)",
-				duration: "240ms",
-				ease: "cubic-bezier(0.22, 1, 0.36, 1)",
-				hover: "1",
-				press: "0.99",
-				weight: "600",
-				// Business light: the blue plate carries no dark drop at all; dark keeps bigface's glow.
-				"primary-shadow": { light: "none", dark: "0 8px 26px color-mix(in srgb, var(--bf-blue) 30%, transparent), inset 0 1px 0 color-mix(in srgb, var(--bf-caret) 50%, transparent)" },
-			}),
-		},
+		purpose: "The light, quiet marketing and product surfaces, with a dark mode for the same pages.",
+		roles: COLOURS,
 	},
 ];
-
-/** Optional keys, in contract order: the reset file and the checker both read this. */
-export const OPTIONAL = [
-	"surface",
-	"subtle",
-	"secondary",
-	"on-secondary",
-	"muted-ink",
-	"border",
-	"input",
-	"focus",
-	"frame-accent",
-	"on-frame-accent",
-	"frame-border",
-	"primary-tint",
-	"success-tint",
-	"danger-tint",
-	"info-tint",
-	"highlight-tint",
-	"chart-1",
-	"chart-2",
-	"chart-3",
-	"chart-4",
-	"chart-5",
-	"primary-fill",
-	"primary-ink",
-	"primary-shadow",
-	"overlay",
-	"solid",
-	"on-solid",
-	"shadow-card",
-	"shadow-modal",
-	"space",
-	"text-xs",
-	"text-sm",
-	"text-base",
-	"text-lg",
-	"shadow-sm",
-	"shadow-md",
-	"duration",
-	"ease",
-	"press",
-	"hover",
-	"weight",
-] as const;
 
 export const THEME_STORAGE_KEY = "bigface-theme";
 export const MODE_STORAGE_KEY = "bigface-mode";
 export const MODES = ["light", "dark"] as const;
 export type Mode = (typeof MODES)[number];
 export const DEFAULT_THEME = (THEMES.find((t) => t.isDefault) as Theme).id;
+/** The business package defaults to light: a quiet marketing surface is paper first. */
 export const DEFAULT_MODE: Mode = "light";

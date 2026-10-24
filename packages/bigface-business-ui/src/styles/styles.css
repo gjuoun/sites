@@ -1,9 +1,6 @@
-/* The business theme in one import: the structural mapping, the dark palette names, the reset, the light
-   palette names, and the business theme's light and dark blocks. Same order as @gjuoun/bigface-ui's own
-   styles.css, minus the themes this package does not ship. Tailwind still needs an @source line pointing at
-   this package's src (consumer-side wiring, see README). */
+/* The business theme in one import: the colour mapping, the reset of optional roles, and the business theme's
+   light and dark blocks. Colour only, as the CLI's components expect. Tailwind still needs an @source line
+   pointing at this package's src (consumer-side wiring, see README). */
 @import "./theme.css";
-@import "./tokens.css";
 @import "../themes/_reset.css";
-@import "../themes/_light.css";
 @import "../themes/business.css";

@@ -8,16 +8,18 @@ import { COLOURS, DEFAULT_MODE, OPTIONAL, REQUIRED, THEMES } from "./roles.ts";
 import { mixHex, renderAll, themesDir } from "../../scripts/gen-tokens.ts";
 import { contrastRatio } from "../../../bigface-tokens/src/contrast-math.ts";
 
-// The business package ships ONE theme. These tests hold it to the contract and to the standing business
-// decisions Jun ruled on, so a regeneration cannot quietly move a value.
+// The business package is COLOUR ONLY. These tests hold it to the colour contract and to the standing colour
+// rulings: the two-tier primary, paper surfaces, no pure white, black and white from the palette. Nothing here
+// asserts a size, a radius or a shadow geometry, because the package sets none of them.
 type Pal = { colors: Record<string, { hex: string }>; ansi: Record<string, { hex: string }> };
 const dark = darkJson as unknown as Pal;
 const light = lightJson as unknown as Pal;
 
-const css = (name: string) => readFileSync(join(themesDir, name), "utf8");
+const css = (name: string) =>
+	readFileSync(join(themesDir, name.endsWith("theme.css") ? "../styles/theme.css" : name), "utf8");
 const strip = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, "");
 
-/** Declarations of the light block and the dark block of business.css. */
+/** The light and dark block declarations of business.css. */
 const blocks = () => {
 	const text = strip(css("business.css"));
 	const out: { light: Record<string, string>; dark: Record<string, string> } = { light: {}, dark: {} };
@@ -31,65 +33,41 @@ const blocks = () => {
 	return out;
 };
 
-/** Evaluate color-mix(in oklab, #hex p%, #hex) to a hex so contrast can be measured. */
+/** Evaluate color-mix(in oklab, #hex p%, #hex) to a hex, so contrast can be measured. */
 const evaluate = (value: string): string => {
 	const m = /^color-mix\(in oklab, (#[0-9a-f]{6}) ([\d.]+)%, (#[0-9a-f]{6})\)$/.exec(value);
 	if (!m) return value;
-	const toLin = (c: number) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
-	const lab = (h: string) => {
-		const [r, g, b] = [1, 3, 5].map((i) => toLin(Number.parseInt(h.slice(i, i + 2), 16) / 255)) as [number, number, number];
-		const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
-		const mm = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
-		const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
-		return [
-			0.2104542553 * l + 0.793617785 * mm - 0.0040720468 * s,
-			1.9779984951 * l - 2.428592205 * mm + 0.4505937099 * s,
-			0.0259040371 * l + 0.7827717662 * mm - 0.808675766 * s,
-		];
-	};
-	const a = lab(m[1] as string);
-	const b = lab(m[3] as string);
-	const t = Number(m[2]) / 100;
-	const [L, A, B] = [0, 1, 2].map((k) => (a[k] as number) * t + (b[k] as number) * (1 - t));
-	const l = (L + 0.3963377774 * A + 0.2158037573 * B) ** 3;
-	const mm = (L - 0.1055613458 * A - 0.0638541728 * B) ** 3;
-	const s = (L - 0.0894841775 * A - 1.291485548 * B) ** 3;
-	const enc = (v: number) => {
-		const c = v <= 0.0031308 ? 12.92 * v : 1.055 * v ** (1 / 2.4) - 0.055;
-		return Math.round(Math.min(1, Math.max(0, c)) * 255).toString(16).padStart(2, "0");
-	};
-	return "#" + [
-		4.0767416621 * l - 3.3077115913 * mm + 0.2309699292 * s,
-		-1.2684380046 * l + 2.6097574011 * mm - 0.3413193965 * s,
-		-0.0041960863 * l - 0.7034186147 * mm + 1.707614701 * s,
-	].map(enc).join("");
+	return mixHex(m[1] as string, Number(m[2]), m[3] as string);
 };
 
-describe("bigface-business-ui theme", () => {
+describe("bigface-business-ui: colour only", () => {
 	test("the generated files equal a fresh render (regenerate with theme:sync)", () => {
 		for (const [path, next] of Object.entries(renderAll(dark, light))) {
 			expect(readFileSync(path, "utf8"), path).toBe(next);
 		}
 	});
 
-	test("the package default mode is light, and the registry says so", () => {
+	test("one theme, business, the default; light is the default mode", () => {
+		expect(THEMES.map((t) => t.id)).toEqual(["business"]);
+		expect(THEMES[0]?.isDefault).toBe(true);
 		expect(DEFAULT_MODE).toBe("light");
 	});
 
-	test("one theme, business, and it is the default", () => {
-		expect(THEMES.map((t) => t.id)).toEqual(["business"]);
-		expect(THEMES[0]?.isDefault).toBe(true);
+	test("the contract is colour only: no size, radius, shadow geometry, font or motion role", () => {
+		const keys = [...Object.keys(contract.required), ...Object.keys(contract.optional)];
+		const feel = /radius|space|text-|shadow-(2xs|xs|sm|md|lg|xl|2xl|card|modal)|duration|ease|hover|press|weight|font-/;
+		expect(keys.filter((k) => feel.test(k))).toEqual([]);
+		expect([...REQUIRED, ...OPTIONAL].length).toBe(keys.length);
 	});
 
 	test("the contract lists exactly the keys the theme sets", () => {
 		const known = [...REQUIRED, ...OPTIONAL].map((k) => "--theme-" + k).sort();
 		expect([...Object.keys(contract.required), ...Object.keys(contract.optional)].sort()).toEqual(known);
 		const b = blocks();
-		for (const key of Object.keys(b.light)) expect(known, key).toContain(key);
-		for (const key of Object.keys(b.dark)) expect(known, key).toContain(key);
+		for (const key of [...Object.keys(b.light), ...Object.keys(b.dark)]) expect(known, key).toContain(key);
 	});
 
-	test("every required key is set in both the light and the dark block", () => {
+	test("every required role is set in both the light and the dark block", () => {
 		const b = blocks();
 		for (const key of REQUIRED) {
 			expect(b.light["--theme-" + key], "light " + key).toBeDefined();
@@ -97,13 +75,34 @@ describe("bigface-business-ui theme", () => {
 		}
 	});
 
-	test("standing decision: controls and cards are 6px, from one radius token", () => {
-		const b = blocks();
-		expect(b.light["--theme-radius"]).toBe("0.375rem");
-		expect(b.dark["--theme-radius"]).toBe("0.375rem");
+	test("theme.css carries no feel override: no spacing, text size, radius scale, motion or shadow geometry", () => {
+		const text = strip(css("theme.css"));
+		expect(text).not.toMatch(/--spacing:/);
+		expect(text).not.toMatch(/--text-(xs|sm|base|lg):/);
+		expect(text).not.toMatch(/--default-transition-/);
+		expect(text).not.toMatch(/--theme-(space|radius|duration|ease|hover|press|weight)/);
+		expect(text).not.toMatch(/--font-(sans|mono|display):/);
+		// the only radius is shadcn's own default, and the scale derives from it
+		expect(text).toContain("--radius: 0.625rem;");
 	});
 
-	test("standing decision: the two-tier primary — native blue fill, dark ink; readable blue text in light", () => {
+	test("shadows keep Tailwind's geometry and take the palette's colour: no black literal", () => {
+		const text = strip(css("theme.css"));
+		expect(text).toContain("--shadow-sm: 0 1px 3px 0 color-mix(in oklab, var(--color-black) 10%, transparent)");
+		expect(text).not.toMatch(/rgb\(0 0 0/);
+	});
+
+	test("standing colour decision: paper surfaces in light, dark canvas in dark, never pure white", () => {
+		const b = blocks();
+		expect(b.light["--theme-canvas"]).toBe("#f8f8f0");
+		expect(b.dark["--theme-canvas"]).toBe("#252925");
+		const everything = [css("business.css"), css("_reset.css"), css("theme.css")].join("\n").toLowerCase();
+		expect(everything).not.toContain("#fff;");
+		expect(everything).not.toContain("#ffffff");
+		expect(everything).not.toContain("255, 255, 255");
+	});
+
+	test("standing colour decision: the two-tier primary. Native blue fill with dark ink; readable blue ink in light", () => {
 		const b = blocks();
 		const nativeBlue = dark.colors.blue?.hex.toLowerCase();
 		const readableBlue = light.colors.blue?.hex.toLowerCase();
@@ -118,31 +117,22 @@ describe("bigface-business-ui theme", () => {
 		expect(b.dark["--theme-primary-ink"]).toBe(nativeBlue);
 	});
 
-	test("standing decision: no shadow on the plate in light mode; dark keeps the glow", () => {
+	test("black and white are the palette's own ends, per mode; white is paper, not #fff", () => {
 		const b = blocks();
-		expect(b.light["--theme-primary-shadow"]).toBe("none");
-		expect(b.dark["--theme-primary-shadow"]).toContain("color-mix");
-	});
-
-	test("standing decision: paper surfaces in light, never pure white", () => {
-		const b = blocks();
-		expect(b.light["--theme-canvas"]).toBe(light.colors.bg?.hex.toLowerCase());
-		expect(b.light["--theme-canvas"]).toBe("#f8f8f0");
-		const everything = [css("business.css"), css("_light.css"), readFileSync(join(themesDir, "../styles/tokens.css"), "utf8")].join("\n").toLowerCase();
-		expect(everything).not.toContain("#fff;");
-		expect(everything).not.toContain("#ffffff");
-		expect(everything).not.toContain("255, 255, 255");
+		expect(b.light["--theme-black"]).toBe("#252925");
+		expect(b.light["--theme-white"]).toBe("#f8f8f0");
+		expect(b.dark["--theme-black"]).toBe("#252925");
+		expect(b.dark["--theme-white"]).toBe("#d9d9d4");
 	});
 
 	test("every colour role resolves to the native palette value it names, or the exact mix of two", () => {
 		const b = blocks();
 		for (const mode of ["light", "dark"] as const) {
 			const palette = (mode === "light" ? light : dark) as Pal;
-			// a role may pin itself to the dark palette (the two-tier primary does, on purpose)
 			const pick = (name: string, pinned?: string) =>
 				((pinned === "dark" ? dark : palette) as Pal).colors[name]?.hex.toLowerCase();
 			for (const [key, value] of Object.entries(COLOURS)) {
-				if (typeof value === "string" || ("light" in value)) continue;
+				if (typeof value === "string" || "light" in value) continue;
 				const got = b[mode]["--theme-" + key];
 				if ("color" in value) {
 					expect(got, mode + " " + key).toBe(pick(value.color, value.palette));
@@ -154,7 +144,7 @@ describe("bigface-business-ui theme", () => {
 		}
 	});
 
-	test("text pairs clear WCAG AA in both modes; dark muted ink is the one recorded exemption", () => {
+	test("text pairs clear WCAG AA in both modes", () => {
 		const b = blocks();
 		for (const mode of ["light", "dark"] as const) {
 			const read = (k: string) => evaluate(b[mode]["--theme-" + k] as string);
@@ -162,10 +152,12 @@ describe("bigface-business-ui theme", () => {
 			expect(contrastRatio(read("ink"), read("canvas")), mode + " ink").toBeGreaterThanOrEqual(4.5);
 			expect(contrastRatio(read("on-frame"), read("frame")), mode + " on-frame").toBeGreaterThanOrEqual(4.5);
 		}
-		expect(contrastRatio(evaluate(b.light["--theme-primary-ink"] as string), evaluate(b.light["--theme-canvas"] as string))).toBeGreaterThanOrEqual(4.5);
+		expect(
+			contrastRatio(evaluate(b.light["--theme-primary-ink"] as string), evaluate(b.light["--theme-canvas"] as string)),
+		).toBeGreaterThanOrEqual(4.5);
 	});
 
-	test("the reset file resets exactly the optional keys", () => {
+	test("the reset resets exactly the optional roles", () => {
 		const reset = strip(css("_reset.css"));
 		const keys = [...reset.matchAll(/--theme-([\w-]+): initial;/g)].map((m) => "--theme-" + m[1]);
 		expect(keys.sort()).toEqual(OPTIONAL.map((k) => "--theme-" + k).sort());

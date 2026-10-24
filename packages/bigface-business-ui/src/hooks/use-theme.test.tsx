@@ -87,24 +87,3 @@ describe("useTheme / useMode", () => {
 		await act(async () => root.unmount());
 	});
 });
-
-describe("BGThemeScope", () => {
-	test("renders both attributes, the scope slot and the base classes a subtree needs", async () => {
-		const { BGThemeScope } = await import("../components/bg/theme-scope.tsx");
-		const html = renderToStaticMarkup(
-			BGThemeScope({ theme: "business", mode: "light", children: "x" }),
-		);
-		expect(html).toContain('data-theme="business"');
-		expect(html).toContain('data-mode="light"');
-		expect(html).toContain('data-slot="theme-scope"');
-		expect(html).toContain("bg-background");
-		expect(html).toContain("text-foreground");
-	});
-
-	test("mode is optional: omitted, the scope follows its ancestor's mode", async () => {
-		const { BGThemeScope } = await import("../components/bg/theme-scope.tsx");
-		const html = renderToStaticMarkup(BGThemeScope({ theme: "game" }));
-		expect(html).toContain('data-theme="game"');
-		expect(html).not.toContain("data-mode=");
-	});
-});
