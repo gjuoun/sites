@@ -55,7 +55,7 @@ const ICON_SIZES = ["icon", "icon-xs", "icon-sm", "icon-lg"] as const;
 /** One labelled row: the label on the left, its live cells on the right. */
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
 	return (
-		<div className="grid gap-2 py-3 md:grid-cols-[10rem_minmax(0,1fr)] md:items-center md:gap-4">
+		<div className="grid gap-2 py-3 md:grid-cols-[minmax(0,1fr)_minmax(0,4fr)] md:items-center md:gap-4">
 			<span className="font-mono text-xs text-muted-foreground">{label}</span>
 			<div className="flex min-w-0 flex-wrap items-center gap-3">{children}</div>
 		</div>
@@ -86,7 +86,7 @@ function Matrix<R extends string, C extends string>({ corner, rows, cols, cell }
 						<tr key={r} className="border-t">
 							<th scope="row" className="px-2 py-3 text-left font-mono text-xs font-normal text-muted-foreground">{r}</th>
 							{cols.map((c) => (
-								<td key={c} className="px-2 py-3 align-middle">{cell(r, c)}</td>
+								<td key={c} className="px-2 py-3 align-middle"><span className="inline-flex max-w-full min-w-0 min-h-9 items-center justify-center rounded-sm border border-dashed border-border px-1.5 py-1">{cell(r, c)}</span></td>
 							))}
 						</tr>
 					))}
@@ -94,6 +94,11 @@ function Matrix<R extends string, C extends string>({ corner, rows, cols, cell }
 			</table>
 		</div>
 	);
+}
+
+/** A sub-heading inside a card, styled like the group labels so the matrices read as named blocks. */
+function SubHead({ children }: { children: React.ReactNode }) {
+	return <h5 className="border-b pb-1 text-xs font-semibold tracking-[0.08em] text-foreground uppercase">{children}</h5>;
 }
 
 /** A state: a label above one live instance. */
@@ -112,7 +117,7 @@ const states = (...cells: React.ReactNode[]) => (
 		{cells.map((c, i) => {
 			const el = c as React.ReactElement<{ label: string; children: React.ReactNode }>;
 			return (
-				<div key={i} className="grid items-center gap-2 py-3 md:grid-cols-[10rem_minmax(0,1fr)] md:gap-4">
+				<div key={i} className="grid items-center gap-2 py-3 md:grid-cols-[minmax(0,1fr)_minmax(0,4fr)] md:gap-4">
 					<span className="font-mono text-xs text-muted-foreground">{el.props.label}</span>
 					<div className="flex min-w-0 flex-wrap items-center gap-3">{el.props.children}</div>
 				</div>
@@ -187,7 +192,9 @@ export const VARIANTS: Record<string, React.ReactNode> = {
 	),
 	button: (
 		<div className="flex flex-col gap-4">
+			<SubHead>Text sizes</SubHead>
 			<Matrix corner="variant / size" rows={BUTTON_VARIANTS} cols={BUTTON_SIZES} cell={(r, c) => <Button variant={r} size={c}>{r}</Button>} />
+			<SubHead>Icon sizes</SubHead>
 			<Matrix corner="variant / icon size" rows={BUTTON_VARIANTS} cols={ICON_SIZES} cell={(r, c) => <Button variant={r} size={c} aria-label={c}>+</Button>} />
 		</div>
 	),
