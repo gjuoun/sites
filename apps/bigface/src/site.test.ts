@@ -467,3 +467,24 @@ test("app pages with a screenshot put it beside the instructions on desktop, sta
 		).toEqual([true, true, true, true, true]);
 	}
 });
+
+// QuBlack in the business showcase: three served Latin cuts of the pinned v1.2.0 release, each small, with url() sources
+// only (no local() lookup, so the page never shows whichever QuBlack is installed on the reader's machine).
+test("the business showcase serves QuBlack Sans and Mono from the site, as small Latin woff2 cuts, not from local()", () => {
+	const files = ["QuBlackSans-Latin-VF.woff2", "QuBlackSans-Italic-Latin.woff2", "QuBlackMono-Latin-VF.woff2"];
+	for (const f of files) {
+		const path = join(siteDir, "public/fonts/qublack", f);
+		expect(existsSync(path), f).toBe(true);
+		expect(readFileSync(path).subarray(0, 4).toString("latin1"), f + " is woff2").toBe("wOF2");
+		expect(readFileSync(path).length, f + " stays small").toBeLessThan(120_000);
+	}
+	const face = readFileSync(join(siteDir, "src/styles/qublack.css"), "utf8");
+	expect(face.split("\n").filter((l) => l.trim().startsWith("src:") && l.includes("local(")), "no local() source").toEqual([]);
+	expect(face.match(/font-display: swap/g)?.length, "swap on every face").toBe(3);
+	expect(face).toContain('font-family: "QuBlack Sans"');
+	expect(face).toContain('font-family: "QuBlack Mono"');
+	expect(face).toContain("font-weight: 400 700");
+	const biz = page("ui/business");
+	expect(biz).toContain('href="/fonts/qublack/QuBlackSans-Latin-VF.woff2"');
+	expect(biz, "no Google font in the showcase").not.toContain("fonts.googleapis");
+});

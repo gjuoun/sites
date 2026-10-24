@@ -1,0 +1,26 @@
+/* QuBlack web fonts for the business showcase (/ui/business/). The files are Latin subsets cut from the pinned
+   v1.2.0 release by scripts/fetch-qublack-fonts.sh (public/fonts/qublack/). Sans and Mono are variable faces over
+   the weight axis 400-700; the Sans italic is the static release cut. Only url() sources: no local() lookup, so the
+   page shows the served files and not whichever QuBlack happens to be installed. font-display swap: text shows at once
+   in the fallback and swaps when the file arrives. Latin only: other scripts use the system fallback. */
+@font-face {
+  font-family: "QuBlack Sans";
+  src: url("/fonts/qublack/QuBlackSans-Latin-VF.woff2") format("woff2");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "QuBlack Sans";
+  src: url("/fonts/qublack/QuBlackSans-Italic-Latin.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "QuBlack Mono";
+  src: url("/fonts/qublack/QuBlackMono-Latin-VF.woff2") format("woff2");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}

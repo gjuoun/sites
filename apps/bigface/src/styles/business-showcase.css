@@ -5,9 +5,17 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "./reset-palette.css";
+@import "./qublack.css";
 @import "@gjuoun/bigface-business-ui/styles.css";
 
 @source "../../../../packages/bigface-business-ui/src";
 @source "../pages/ui/business";
 @source not "../**/*.test.ts";
 @source not "../**/*.test.tsx";
+
+/* The showcase's font stacks: QuBlack first, then the system fallback of the same kind. The business theme sets no
+   font; the site's own entry does, and only on this page. */
+@theme inline {
+  --font-sans: "QuBlack Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "QuBlack Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
