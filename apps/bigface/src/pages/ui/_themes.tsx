@@ -8,15 +8,23 @@ import { Input } from "@gjuoun/bigface-ui/components/ui/input";
 import { Switch } from "@gjuoun/bigface-ui/components/ui/switch";
 import { MODES, THEMES } from "@gjuoun/bigface-ui/lib/themes";
 
-// The six panels share one colour system and differ only in feel. Everything below therefore uses the
-// theme's own tokens for spacing, type, radius, elevation and motion — text-sm, p-4, gap-3, rounded-lg,
-// shadow-sm and the BG buttons' press all read --theme-*, so the same markup is airy, dense or bold
-// depending on the scope it sits in. No colour is chosen here: the palette does that.
-function Panel() {
+// Six panels, one colour system, three feels. Everything here is dressed by the theme's own tokens —
+// spacing, type scale, radius, elevation, motion and weight — so the same markup reads airy, taped-down
+// or bouncy depending on the scope. Colour comes only from roles (primary, success-tint, …): no hue is
+// chosen in this file.
+//
+// The hover and press beats are real CSS, not a caption: the buttons scale by --theme-hover on hover and
+// --theme-press on :active, with the theme's own duration and easing (game overshoots, business glides,
+// console snaps). Point at one and click it to feel the difference.
+function Panel({
+	feel,
+}: {
+	feel: { radius: string; space: string; hover: string; press: string };
+}) {
 	return (
 		<Card className="min-w-0 flex-1 gap-3 rounded-lg p-4 shadow-sm">
 			<CardHeader className="gap-1 p-0">
-				<CardTitle className="text-lg">Rewards</CardTitle>
+				<CardTitle className="text-lg font-[var(--theme-weight,600)]">Rewards</CardTitle>
 				<CardDescription className="text-sm">
 					Claim 250 coins for today&rsquo;s streak.
 				</CardDescription>
@@ -33,12 +41,27 @@ function Panel() {
 				<label className="flex items-center gap-2 text-sm">
 					<Switch defaultChecked /> Email me new offers
 				</label>
+				{/* Tints, pills and the press beat: the playful vocabulary, built from native roles only. */}
 				<div className="flex flex-wrap items-center gap-2">
-					<span className="rounded-lg bg-primary px-3 py-1 text-xs text-primary-foreground">
-						radius specimen
+					<span className="rounded-full bg-primary-tint px-3 py-1 text-xs text-primary">
+						+40 coins
 					</span>
-					<span className="rounded-lg border border-border px-3 py-1 text-xs text-muted-foreground shadow-sm">
-						shadow specimen
+					<span className="rounded-full bg-success-tint px-3 py-1 text-xs text-success">
+						streak 3
+					</span>
+					<span className="rounded-full bg-highlight-tint px-3 py-1 text-xs text-highlight">
+						booster
+					</span>
+				</div>
+				<div className="flex flex-wrap items-center gap-3">
+					<BGButton tone="chip" className="rounded-full px-4">
+						Press me
+					</BGButton>
+					<span className="font-code text-xs text-bf-fg-muted">
+						radius <span className="text-foreground">{feel.radius}</span> · space{" "}
+						<span className="text-foreground">{feel.space}</span> · hover{" "}
+						<span className="text-foreground">{feel.hover}</span> × press{" "}
+						<span className="text-foreground">{feel.press}</span>
 					</span>
 				</div>
 			</CardContent>
@@ -56,8 +79,6 @@ export function ThemeMatrix() {
 						key={theme.id + "-" + mode}
 						theme={theme.id}
 						mode={mode}
-						// The panel chrome itself is dressed in the theme: its padding and corners are the
-						// theme's spacing unit and radius, so the row reads as three different systems.
 						className="flex min-w-0 flex-col gap-3 rounded-[var(--theme-radius,0.625rem)] border border-bf-border p-[calc(var(--theme-space,0.25rem)*4)] text-foreground"
 					>
 						<div className="flex min-w-0 flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
@@ -67,7 +88,14 @@ export function ThemeMatrix() {
 							<p className="m-0 font-code text-xs text-bf-dim">{theme.feel}</p>
 						</div>
 						<p className="m-0 text-sm leading-snug text-bf-fg-muted">{theme.purpose}</p>
-						<Panel />
+						<Panel
+							feel={{
+								radius: String(theme.roles.radius),
+								space: String(theme.roles.space),
+								hover: String(theme.roles.hover),
+								press: String(theme.roles.press),
+							}}
+						/>
 					</BGThemeScope>
 				)),
 			)}

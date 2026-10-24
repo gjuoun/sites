@@ -31,7 +31,10 @@ export interface PanelMetrics {
 	space: string;
 	radius: string;
 	duration: string;
+	ease: string;
+	hover: string;
 	press: string;
+	weight: string;
 }
 
 export interface Measurement {
@@ -106,7 +109,10 @@ const PROBE = `(() => {
       space: ps.getPropertyValue("--theme-space").trim(),
       radius: ps.getPropertyValue("--theme-radius").trim(),
       duration: ps.getPropertyValue("--theme-duration").trim(),
+      ease: ps.getPropertyValue("--theme-ease").trim(),
+      hover: ps.getPropertyValue("--theme-hover").trim(),
       press: ps.getPropertyValue("--theme-press").trim(),
+      weight: ps.getPropertyValue("--theme-weight").trim(),
     };
   });
   return { panels: panels.length, offenders, clipped, metrics };
