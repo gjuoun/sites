@@ -247,6 +247,10 @@ test("the business catalogue is one business theme with 63 components; console k
 	expect(business.split(">States<").length - 1, "a States block on every card").toBe(63);
 	expect(business.split(">Examples<").length - 1, "an Examples block on every card").toBe(63);
 	expect(business.split('id="cat-').length - 1, "eight categories").toBe(8);
+	// the navigation: a sticky rail that links every section and component, and a select for narrow screens
+	expect(business.split('aria-label="Catalogue sections"').length - 1, "one rail").toBe(1);
+	expect(business.split('aria-label="Jump to a section"').length - 1, "one jump select").toBe(1);
+	for (const id of ["colour", "typography", "accordion", "trace"]) expect(business, "rail links #" + id).toContain('href="#' + id + '"');
 	expect([...business.matchAll(/data-demo="/g)], "63 demos").toHaveLength(63);
 	const cons = page("ui/console");
 	expect([...cons.matchAll(/data-slot="theme-scope"/g)]).toHaveLength(MODES.length);

@@ -2,6 +2,7 @@ import * as React from "react";
 import { ColourSection } from "./_colour.tsx";
 import { VARIANTS, STATES } from "./_variants.tsx";
 import { PARTS } from "./_parts.ts";
+import { Rail } from "./_rail.tsx";
 import { TypographySection } from "./_typography.tsx";
 import { cn } from "@gjuoun/bigface-business-ui/lib/utils";
 import { toast } from "sonner";
@@ -161,7 +162,9 @@ export function Catalog() {
 
 	return (
 		<TooltipProvider>
-			<div className="flex flex-col gap-10">
+			<div className="grid gap-10 lg:grid-cols-[14rem_minmax(0,1fr)]">
+				<Rail />
+				<div className="flex min-w-0 flex-col gap-10">
 				<div className="flex flex-wrap items-center gap-3"><ModeSwitch /><span className="font-mono text-xs text-muted-foreground">every colour follows this switch; the components are unchanged</span></div>
 				<ColourSection />
 				<TypographySection />
@@ -954,6 +957,7 @@ export function Catalog() {
 					</Demo>
 				</Section>
 				</Category>
+				</div>
 			</div>
 		</TooltipProvider>
 	);
