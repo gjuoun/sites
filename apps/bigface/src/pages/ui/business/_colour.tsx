@@ -4,10 +4,9 @@ import darkPalette from "@gjuoun/bigface-tokens/palette.json";
 import lightPalette from "@gjuoun/bigface-tokens/palette-light.json";
 import { Block } from "./_frame.tsx";
 
-// The colour section reads the generated business theme, so it cannot drift from what the components use. The
-// role table is the light and dark blocks of business.css; the palette is the two Bigface palettes. Each light
-// value sits in a light scope and each dark value in a dark scope, so every swatch is painted by the same
-// --theme-* tokens the components use, and the colour audit measures each in its own mode.
+// The colour section reads the generated business theme, so it cannot drift from what the components use. Each light
+// value sits in a light scope and each dark value in a dark scope, so every swatch is painted by the same --theme-*
+// tokens the components use, and the colour audit measures each in its own mode.
 
 type Hex = string;
 interface Pair {
@@ -68,11 +67,22 @@ const RULES = [
 	"Stock shadcn classes are not restyled: bg-black/10 and bg-white resolve through the palette ends.",
 ];
 
+// Both tables share one column template, so the role table and the text-pairs table line up column for column.
+const GRID = (
+	<colgroup>
+		<col style={{ width: "44%" }} />
+		<col style={{ width: "28%" }} />
+		<col style={{ width: "28%" }} />
+	</colgroup>
+);
+
+const HEAD = "px-3 py-2 text-left font-semibold text-foreground";
+
 function ModeCell({ mode, role, hex }: { mode: "light" | "dark"; role: string; hex: Hex }) {
 	return (
 		<td data-slot="theme-scope" data-theme="business" data-mode={mode} className="bg-background px-3 py-2 text-foreground">
 			<span className="flex items-center gap-2">
-				<span aria-hidden className="inline-block size-5 shrink-0 rounded-sm border border-border" style={{ backgroundColor: "var(--theme-" + role + ")" }} />
+				<span aria-hidden className="inline-block size-5 shrink-0 rounded-sm border border-foreground/30" style={{ backgroundColor: "var(--theme-" + role + ")" }} />
 				<span className="font-mono text-xs">{hex}</span>
 			</span>
 		</td>
@@ -85,8 +95,13 @@ function PairCell({ mode, pair, colours }: { mode: "light" | "dark"; pair: Pair;
 	return (
 		<td data-slot="theme-scope" data-theme="business" data-mode={mode} className="bg-background px-3 py-2 text-foreground">
 			<span className="flex items-center gap-3">
-				<span className="rounded-md px-2 py-0.5 text-sm font-medium" style={{ backgroundColor: "var(--theme-" + pair.bg + ")", color: "var(--theme-" + pair.text + ")" }}>Aa</span>
-				<span className="font-mono text-xs">{ratio === null ? "-" : ratio.toFixed(2) + ":1"} {verdict}</span>
+				<span
+					className="inline-flex h-6 min-w-[2.25rem] items-center justify-center rounded-md px-2 text-sm leading-none font-medium whitespace-nowrap"
+					style={{ backgroundColor: "var(--theme-" + pair.bg + ")", color: "var(--theme-" + pair.text + ")" }}
+				>
+					Aa
+				</span>
+				<span className="font-mono text-xs whitespace-nowrap">{ratio === null ? "-" : ratio.toFixed(2) + ":1"} {verdict}</span>
 			</span>
 		</td>
 	);
@@ -100,7 +115,7 @@ function PaletteColumn({ mode }: { mode: "light" | "dark" }) {
 			<ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
 				{Object.entries(palette.colors).map(([name, c]) => (
 					<li key={name} className="flex items-center gap-2 text-xs">
-						<span aria-hidden className="size-5 shrink-0 rounded-sm border border-border" style={{ backgroundColor: c.hex }} />
+						<span aria-hidden className="size-5 shrink-0 rounded-sm border border-foreground/30" style={{ backgroundColor: c.hex }} />
 						<span className="font-mono">{name}</span>
 						<span className="ml-auto font-mono text-muted-foreground">{c.hex}</span>
 					</li>
@@ -121,12 +136,13 @@ export function ColourSection() {
 				<h3 className="text-base font-semibold">Role table</h3>
 				<p className="text-sm text-muted-foreground">{roles.length} roles. Each name is a --theme-* variable; the hex is its value in the generated file.</p>
 				<div className="overflow-x-auto rounded-lg border">
-					<table className="w-full min-w-[30rem] text-sm">
-						<thead className="bg-muted text-left text-muted-foreground">
-							<tr>
-								<th className="px-3 py-2 font-medium">Role</th>
-								<th className="px-3 py-2 font-medium">Light</th>
-								<th className="px-3 py-2 font-medium">Dark</th>
+					<table className="w-full min-w-[30rem] table-fixed text-sm">
+						{GRID}
+						<thead className="bg-muted">
+							<tr className="border-b">
+								<th scope="col" className={HEAD}>Role</th>
+								<th scope="col" className={HEAD}>Light</th>
+								<th scope="col" className={HEAD}>Dark</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -145,12 +161,13 @@ export function ColourSection() {
 				<h3 className="text-base font-semibold">Text pairs</h3>
 				<p className="text-sm text-muted-foreground">Contrast of each text role on its background, in both modes. AA is 4.5:1 for body text and 3:1 for large text.</p>
 				<div className="overflow-x-auto rounded-lg border">
-					<table className="w-full min-w-[30rem] text-sm">
-						<thead className="bg-muted text-left text-muted-foreground">
-							<tr>
-								<th className="px-3 py-2 font-medium">Pair</th>
-								<th className="px-3 py-2 font-medium">Light</th>
-								<th className="px-3 py-2 font-medium">Dark</th>
+					<table className="w-full min-w-[30rem] table-fixed text-sm">
+						{GRID}
+						<thead className="bg-muted">
+							<tr className="border-b">
+								<th scope="col" className={HEAD}>Pair</th>
+								<th scope="col" className={HEAD}>Light</th>
+								<th scope="col" className={HEAD}>Dark</th>
 							</tr>
 						</thead>
 						<tbody>
