@@ -16,9 +16,13 @@ import { MODES, THEMES } from "@gjuoun/bigface-ui/lib/themes";
 
 // The same small primitive set inside every theme x mode scope: the cheapest honest way to see what a
 // theme does — surfaces, ink, primary plate, tints, borders and the focus ring, side by side.
+// No h-full on the card: inside a padded panel that also holds a label, height:100% is measured
+// against the panel's content box and the card then overflows by exactly the label's height (44.5px
+// below the panel, measured). The panel is a flex column instead, and the card grows into what is
+// left — flex-1 on a min-w-0 child, so a long word can never widen the panel either.
 function Panel() {
 	return (
-		<Card className="h-full">
+		<Card className="min-w-0 flex-1">
 			<CardHeader>
 				<CardTitle className="text-base">Rewards</CardTitle>
 				<CardDescription>Claim 250 coins for today's streak.</CardDescription>
@@ -46,23 +50,23 @@ function Panel() {
 /** Six scopes, no client JS: the matrix is static markup, only the switchers hydrate. */
 export function ThemeMatrix() {
 	return (
-		<div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+		<div className="grid min-w-0 gap-4 md:grid-cols-2">
 			{THEMES.flatMap((theme) =>
 				MODES.map((mode) => (
 					<BGThemeScope
 						key={theme.id + "-" + mode}
 						theme={theme.id}
 						mode={mode}
-						className="rounded-[16px] border border-bf-border p-3 text-foreground"
+						className="flex min-w-0 flex-col gap-3 rounded-[16px] border border-bf-border p-4 text-foreground"
 					>
-						<p className="mb-2 flex items-baseline justify-between font-code text-[0.72rem] tracking-[0.06em] uppercase text-bf-fg-muted">
-							<span>
+						<div className="min-w-0">
+							<p className="m-0 font-code text-[0.74rem] tracking-[0.06em] uppercase text-bf-fg-muted">
 								{theme.id} · {mode}
-							</span>
-							<span className="text-[0.68rem] normal-case">
+							</p>
+							<p className="m-0 mt-1 text-[0.78rem] leading-snug text-bf-fg-muted">
 								{theme.purpose}
-							</span>
-						</p>
+							</p>
+						</div>
 						<Panel />
 					</BGThemeScope>
 				)),
