@@ -32,6 +32,7 @@
     "./lib/utils": "./src/lib/utils.ts",
     "./lib/highlighter": "./src/lib/highlighter.tsx",
     "./theme.css": "./src/styles/theme.css",
+    "./themes/*": "./src/themes/*",
     "./tokens.css": "./src/styles/tokens.css",
     "./styles.css": "./src/styles/styles.css",
     "./package.json": "./package.json"
