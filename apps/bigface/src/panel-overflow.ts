@@ -332,8 +332,9 @@ const COLOUR_PROBE = `(() => {
   const darkOnly = new Set([...dark].filter((c) => !light.has(c)));
   const props = ["color", "backgroundColor", "borderTopColor", "borderRightColor", "borderBottomColor", "borderLeftColor", "outlineColor", "textDecorationColor", "caretColor"];
   const panels = [];
-  for (const panel of document.querySelectorAll('[data-slot="theme-scope"]')) {
-    const mode = panel.dataset.mode === "light" ? "light" : "dark";
+  const scopes = [...document.querySelectorAll('[data-slot="theme-scope"]')];
+  for (const panel of (scopes.length ? scopes : [document.body])) {
+    const mode = (panel === document.body ? document.documentElement.dataset.mode : panel.dataset.mode) === "light" ? "light" : "dark";
     const leaks = new Map();
     for (const el of [panel, ...panel.querySelectorAll("*")]) {
       for (const prop of props) {
@@ -366,6 +367,7 @@ export async function measurePanelColours(
 	distDir: string,
 	path = "/ui/console/",
 	width = 1440,
+	mode?: "light" | "dark",
 ): Promise<ColourAudit> {
 	const hexesOf = (file: string) =>
 		Object.values(
@@ -377,5 +379,21 @@ export async function measurePanelColours(
 		"__PALETTE__",
 		JSON.stringify({ dark: hexesOf("bigface.json"), light: hexesOf("bigface-light.json") }),
 	);
-	return runProbe<ColourAudit>(distDir, path, width, probe);
+	const setMode = mode ? "document.documentElement.dataset.mode = \"" + mode + "\"; " : "";
+	return runProbe<ColourAudit>(distDir, path, width, setMode + probe);
+}
+
+/** How far the page scrolls sideways, in a given mode, at a given width. Zero means nothing escapes the viewport. */
+export async function measureCatalogLayout(
+	distDir: string,
+	path: string,
+	width: number,
+	mode: "light" | "dark",
+): Promise<{ hScroll: number }> {
+	return runProbe<{ hScroll: number }>(
+		distDir,
+		path,
+		width,
+		"document.documentElement.dataset.mode = \"" + mode + "\"; (() => ({ hScroll: document.documentElement.scrollWidth - document.documentElement.clientWidth }))()",
+	);
 }

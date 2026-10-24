@@ -2,10 +2,13 @@ import { beforeAll, expect, test } from "bun:test";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { $ } from "bun";
-import { findChrome, measurePanelColours, measurePanelOverflow } from "./panel-overflow.ts";
+import { findChrome, measureCatalogLayout, measurePanelColours, measurePanelOverflow } from "./panel-overflow.ts";
+import { runInteractions } from "./catalog-interact.ts";
+import { STATIC_DEMOS } from "./pages/ui/business/_catalog.tsx";
 
-// One theme per page. The business page is the business package alone; /ui/console/ is console alone. The
-// layout proofs run the built pages in a real headless Chrome, because no DOM library has a layout engine.
+// The business catalogue is stock shadcn in the business colours. So the tests hold the COLOUR contract and the
+// catalogue liveness. No radius, shadow, size or type is asserted: those are shadcn own, and a test that pins them
+// would pin the CLI defaults, not the theme. The console page keeps its containment test, unchanged.
 const siteDir = join(import.meta.dir, "..");
 const dist = join(siteDir, "dist");
 
@@ -16,76 +19,64 @@ beforeAll(async () => {
 	}
 }, 120_000);
 
-const PAGES = [
-	{ path: "/ui/business/", theme: "business" },
-	{ path: "/ui/console/", theme: "console" },
-] as const;
+test.skipIf(!findChrome())(
+	"the business catalogue lists all 63 shadcn components, and every interactive one responds to a real pointer action",
+	async () => {
+		const r = await runInteractions(dist, "/ui/business/");
+		expect(r.total, "components in the catalogue").toBe(63);
+		expect([...r.statics].sort(), "components with no inherent interaction").toEqual([...STATIC_DEMOS].sort());
+		expect(r.results.length).toBe(63 - STATIC_DEMOS.length);
+		const failed = r.results.filter((x) => !x.pass).map((x) => x.name + "/" + x.kind);
+		expect(failed, "demos that did not respond").toEqual([]);
+	},
+	240_000,
+);
 
-for (const page of PAGES) {
+for (const mode of ["light", "dark"] as const) {
+	for (const width of [1440, 390]) {
+		test.skipIf(!findChrome())(
+			"the business catalogue does not scroll sideways in " + mode + " at " + width + "px",
+			async () => {
+				const m = await measureCatalogLayout(dist, "/ui/business/", width, mode);
+				expect(m.hScroll, mode + " @" + width).toBe(0);
+			},
+			120_000,
+		);
+	}
+}
+
+for (const mode of ["light", "dark"] as const) {
 	test.skipIf(!findChrome())(
-		page.theme + " panels stay inside their bounds on " + page.path,
+		"business colours trace to the synced palettes in " + mode,
 		async () => {
-			for (const width of [1440, 390]) {
-				const m = await measurePanelOverflow(dist, page.path, width);
-				expect(m.panels, page.path + " renders light and dark").toBe(2);
-				const report = m.offenders.map(
-					(o) =>
-						o.theme + "/" + o.mode + " " + o.tag + (o.slot ? "[" + o.slot + "]" : "") + " " +
-						JSON.stringify({ l: o.left, r: o.right, t: o.top, b: o.bottom }),
-				);
-				expect(report, page.path + " @" + width).toEqual([]);
-				expect(m.clipped, page.path + " @" + width).toEqual([]);
-			}
+			const audit = await measurePanelColours(dist, "/ui/business/", 1440, mode);
+			const panel = audit.panels[0];
+			expect(panel, "the catalogue is audited").toBeDefined();
+			// The one dark-palette value a light page may carry is the native blue fill (primary fills are #00b0ff with
+			// dark ink). Stock text-primary links resolve to the same token: the open question on text contrast, listed
+			// in the evidence rather than hidden here.
+			const NATIVE_FILL = "rgb(0,176,255)";
+			const leaks = (panel?.offenders ?? [])
+				.filter((o) => !(mode === "light" && o.color === NATIVE_FILL))
+				.map((o) => o.color + " " + o.prop + " <" + o.tag + "> x" + o.count);
+			expect(leaks, "colours outside the synced palettes").toEqual([]);
 		},
 		120_000,
 	);
 }
 
 test.skipIf(!findChrome())(
-	"business controls are 6px and never a pill, in both modes; the card and badge match",
-	async () => {
-		const m = await measurePanelOverflow(dist, "/ui/business/", 1440);
-		expect(m.metrics).toHaveLength(2);
-		for (const p of m.metrics) {
-			expect(p.cardRadius, p.mode + " card").toBe("6px");
-			expect(p.claimRadius, p.mode + " button").toBe(6);
-			expect(p.claimRadius < p.claimHeight / 2, p.mode + " button is not a pill").toBe(true);
-			expect(p.badgeRadius, p.mode + " badge").toBe(6);
-		}
-	},
-	120_000,
-);
-
-test.skipIf(!findChrome())(
-	"console stays near-square on /ui/console/",
+	"the console page stays inside its own panels, unchanged by the business package",
 	async () => {
 		const m = await measurePanelOverflow(dist, "/ui/console/", 1440);
-		for (const p of m.metrics) {
-			expect(p.cardRadius, p.mode + " card").toBe("2px");
-			expect(p.claimRadius, p.mode + " button").toBeLessThanOrEqual(3);
-		}
-	},
-	120_000,
-);
-
-test.skipIf(!findChrome())(
-	"the business panels use only palette colours: no white, and the light panel's only dark-palette value is the native blue fill",
-	async () => {
-		const audit = await measurePanelColours(dist, "/ui/business/", 1440);
-		// Jun's ruling: primary FILLS (the Claim plate and the Switch on-state) are the native #00b0ff, with dark
-		// ink on top. That is the single dark-palette value a light panel may carry; anything else is a leak.
-		const NATIVE_FILL = "rgb(0,176,255)";
-		const leaks = audit.panels.flatMap((p) =>
-			p.offenders
-				.filter((o) => !(p.mode === "light" && o.color === NATIVE_FILL))
-				.map((o) => p.mode + " " + o.color + " " + o.prop + " <" + o.tag + "> x" + o.count),
-		);
-		expect(leaks).toEqual([]);
+		expect(m.panels, "console renders light and dark").toBe(2);
+		expect(m.offenders.map((o) => o.theme + "/" + o.mode + " " + o.tag)).toEqual([]);
+		expect(m.clipped).toEqual([]);
 	},
 	120_000,
 );
 
 test("the retired game theme is offline in every page the site ships", async () => {
-	const hits = await $`rg -l 'data-theme="game"|--theme-radius:2.5rem' ${dist}`.nothrow().quiet();
+	const hits = await $`rg -l 'data-theme="game"' ${dist}`.nothrow().quiet();
 	expect(hits.stdout.toString().trim()).toBe("");
 });

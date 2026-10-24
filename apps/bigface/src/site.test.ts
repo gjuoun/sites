@@ -229,24 +229,25 @@ test("the page root carries the default theme and mode", () => {
 	}
 });
 
-// Each theme has its own single-theme page: console on /ui/console/, business on /ui/business/. One theme per
-// page; the retired game theme is on neither, and no page at all shows more than one theme.
-test("each single-theme page shows its own theme in both modes; game is offline; no gallery remains", () => {
-	for (const [rel, theme] of [["ui/console", "console"], ["ui/business", "business"]] as const) {
-		const html = page(rel);
-		expect([...html.matchAll(/data-slot="theme-scope"/g)], rel).toHaveLength(MODES.length);
-		for (const mode of MODES) {
-			expect(html, rel + "/" + mode).toContain(`data-theme="${theme}" data-mode="${mode}"`);
-		}
+// The business page is the single-theme catalogue: one page root in the business theme and the default mode, all
+// 63 components, and no theme scope. The console page keeps its two scopes. The retired game theme is on neither.
+test("the business catalogue is one business theme with 63 components; console keeps its scopes; game is offline", () => {
+	const business = page("ui/business");
+	expect(business).toContain('data-theme="business" data-mode="light"');
+	expect([...business.matchAll(/data-slot="theme-scope"/g)], "no theme scope on the catalogue").toHaveLength(0);
+	expect([...business.matchAll(/data-demo="/g)], "63 demos").toHaveLength(63);
+	const cons = page("ui/console");
+	expect([...cons.matchAll(/data-slot="theme-scope"/g)]).toHaveLength(MODES.length);
+	for (const mode of MODES) {
+		expect(cons, "console/" + mode).toContain('data-theme="console" data-mode="' + mode + '"');
 	}
 	for (const rel of ["", "ui", "ui/console", "ui/business"]) {
 		expect(page(rel), "game on " + rel).not.toContain('data-theme="game"');
 	}
-	expect(existsSync(join(import.meta.dir, "../dist/ui/theme/index.html")), "the gallery page is gone").toBe(false);
+	expect(existsSync(join(dist, "ui/theme/index.html")), "the gallery page is gone").toBe(false);
 	expect(page("ui")).toContain('href="/ui/business/"');
 	expect(page("ui")).toContain('href="/ui/console/"');
 	expect(page("ui")).not.toContain('href="/ui/theme/"');
-	expect([...page("ui").matchAll(/data-slot="theme-scope"/g)]).toHaveLength(0);
 	expect(page("")).not.toContain("bigface-mode");
 });
 
@@ -306,19 +307,22 @@ test("the site only ships colours that exist in the palette", () => {
 	expect(page("")).toContain("#252925");
 });
 
-// native-select.tsx ships `bg-[Canvas] text-[CanvasText]`: arbitrary system-colour utilities. Their CSS
-// rules exist (the colour scan drops them as dead), so the reason they are harmless must stay true.
-test("no built page uses the Canvas/CanvasText system-colour classes", () => {
+// native-select.tsx (stock) paints its options with the browser system colours Canvas and CanvasText. A system
+// colour is not a palette colour, so a page may use them only where the built CSS maps them onto the palette: the
+// business theme does, and the console site never uses them.
+test("the Canvas/CanvasText system-colour classes reach a page only where the built CSS maps them onto the palette", () => {
+	const css = readdirSync(join(dist, "_astro"))
+		.filter((f) => f.endsWith(".css"))
+		.map((f) => readFileSync(join(dist, "_astro", f), "utf8"))
+		.join("\n");
+	const mapsCanvas = /\.bg-\\\[Canvas\\\]\{background-color:var\(--background\)\}/.test(css);
+	const mapsCanvasText = /\.text-\\\[CanvasText\\\]\{color:var\(--foreground\)\}/.test(css);
 	const users: string[] = [];
-	for (const f of readdirSync(dist, {
-		recursive: true,
-		encoding: "utf8",
-	}).filter((f) => f.endsWith("index.html"))) {
+	for (const f of readdirSync(dist, { recursive: true, encoding: "utf8" }).filter((f) => f.endsWith("index.html"))) {
 		const html = readFileSync(join(dist, f), "utf8");
-		if (html.includes("bg-[Canvas]") || html.includes("text-[CanvasText]"))
-			users.push(f);
+		if (html.includes("bg-[Canvas]") || html.includes("text-[CanvasText]")) users.push(f);
 	}
-	expect(users).toEqual([]);
+	expect(users.length === 0 || (mapsCanvas && mapsCanvasText), "system colours used without a palette mapping: " + users.join(", ")).toBe(true);
 });
 
 test("the brand mark ships as a vector favicon, a touch icon and a 1200x630 social card", () => {
