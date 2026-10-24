@@ -162,7 +162,7 @@ export function Catalog() {
 
 	return (
 		<TooltipProvider>
-			<div className="grid gap-10 lg:grid-cols-[14rem_minmax(0,1fr)]">
+			<div className="grid gap-8 lg:grid-cols-[13rem_minmax(0,1fr)]">
 				<Rail />
 				<div className="flex min-w-0 flex-col gap-10">
 				<div className="flex flex-wrap items-center gap-3"><ModeSwitch /><span className="font-mono text-xs text-muted-foreground">every colour follows this switch; the components are unchanged</span></div>
