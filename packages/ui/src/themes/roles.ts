@@ -180,8 +180,9 @@ export const THEMES: Theme[] = [
 				"text-sm": "0.875rem",
 				"text-base": "1rem",
 				"text-lg": "1.125rem",
-				"shadow-sm": "0 1px 2px color-mix(in srgb, var(--theme-canvas) 35%, transparent)",
-				"shadow-md": "0 4px 10px -6px color-mix(in srgb, var(--theme-canvas) 45%, transparent)",
+				// the site's own elevations, unchanged: console is what bigface ships today
+				"shadow-sm": "0 1px 3px 0 var(--bf-shadow), 0 1px 2px -1px var(--bf-shadow)",
+				"shadow-md": "0 4px 6px -1px var(--bf-shadow), 0 2px 4px -2px var(--bf-shadow)",
 				duration: "150ms",
 				ease: "cubic-bezier(0.4, 0, 0.2, 1)",
 				press: "0.97",

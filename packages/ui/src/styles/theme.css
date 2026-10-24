@@ -124,10 +124,11 @@
   --color-bf-dim: var(--dim);
 
   /* Shadows: Tailwind's defaults are black at 10% — derive from the palette's darkest surface. */
-  /* The small elevations are the theme's; a theme decides whether a card sits flat or floats. */
-  --shadow: var(--theme-shadow-md, 0 4px 6px -1px var(--bf-shadow), 0 2px 4px -2px var(--bf-shadow));
-  --shadow-2xs: var(--theme-shadow-sm, 0 1px var(--bf-shadow));
-  --shadow-xs: var(--theme-shadow-sm, 0 1px 2px 0 var(--bf-shadow));
+  --shadow: 0 1px 3px 0 var(--bf-shadow), 0 1px 2px -1px var(--bf-shadow);
+  --shadow-2xs: 0 1px var(--bf-shadow);
+  --shadow-xs: 0 1px 2px 0 var(--bf-shadow);
+  /* The two elevations a theme actually chooses. Everything smaller stays exactly as it was: console is
+     the site's theme, and the site's own chrome is not part of the feel experiment. */
   --shadow-sm: var(--theme-shadow-sm, 0 1px 3px 0 var(--bf-shadow), 0 1px 2px -1px var(--bf-shadow));
   --shadow-md: var(--theme-shadow-md, 0 4px 6px -1px var(--bf-shadow), 0 2px 4px -2px var(--bf-shadow));
   --shadow-lg: 0 10px 15px -3px var(--bf-shadow), 0 4px 6px -4px var(--bf-shadow);
