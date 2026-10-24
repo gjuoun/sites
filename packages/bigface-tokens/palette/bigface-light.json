@@ -35,15 +35,15 @@
       "source": "derived:braceMatch"
     },
     "blue": {
-      "hex": "#0079b1",
+      "hex": "#007aa6",
       "source": "derived:blue"
     },
     "lightBlue": {
-      "hex": "#0079a5",
+      "hex": "#007b9f",
       "source": "derived:lightBlue"
     },
     "paleBlue": {
-      "hex": "#49788c",
+      "hex": "#47788b",
       "source": "derived:paleBlue"
     },
     "cyan": {
@@ -101,7 +101,7 @@
       "source": "alias:yellow"
     },
     "blue": {
-      "hex": "#0079b1",
+      "hex": "#007aa6",
       "source": "alias:blue"
     },
     "magenta": {
@@ -133,7 +133,7 @@
       "source": "alias:brightYellow"
     },
     "brightBlue": {
-      "hex": "#0079a5",
+      "hex": "#007b9f",
       "source": "alias:lightBlue"
     },
     "brightMagenta": {
@@ -141,7 +141,7 @@
       "source": "alias:purple"
     },
     "brightCyan": {
-      "hex": "#49788c",
+      "hex": "#47788b",
       "source": "alias:paleBlue"
     },
     "brightWhite": {
