@@ -1,4 +1,10 @@
-/* Bigface as-is: the structural theme plus Bigface's default palette values.
-   For your own palette, import ./theme.css instead and set --bf-* yourself. */
+/* Bigface as-is: the structural theme, the dark palette's --bf-* values, and the three themes with
+   their light and dark blocks. For your own palette, import ./theme.css instead and set --theme-*.
+   Order matters: the reset clears the optional roles inside any theme scope before the themes fill
+   them in. */
 @import "./theme.css";
 @import "./tokens.css";
+@import "../themes/_reset.css";
+@import "../themes/business.css";
+@import "../themes/console.css";
+@import "../themes/game.css";

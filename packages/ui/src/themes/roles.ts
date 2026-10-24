@@ -65,6 +65,7 @@ const shared = (o: {
 	highlight: string;
 	radius: string;
 	mutedInk: Value;
+	charts: [string, string, string, string, string];
 }): ThemeRoles => ({
 	canvas: { color: "bg" },
 	ink: { color: "fg" },
@@ -104,11 +105,13 @@ const shared = (o: {
 	"danger-tint": { mix: [o.danger, 14, "bg"] },
 	"info-tint": { mix: [o.info, 14, "bg"] },
 	"highlight-tint": { mix: [o.highlight, 14, "bg"] },
-	"chart-1": { color: o.primary },
-	"chart-2": { color: o.success },
-	"chart-3": { color: o.highlight },
-	"chart-4": { color: o.danger },
-	"chart-5": { color: o.info },
+	// Chart series: a theme names five palette colours. Console keeps the five it shipped with,
+	// so the dark theme stays pixel-identical (lime/yellow/purple, not its semantic accents).
+	"chart-1": { color: o.charts[0] },
+	"chart-2": { color: o.charts[1] },
+	"chart-3": { color: o.charts[2] },
+	"chart-4": { color: o.charts[3] },
+	"chart-5": { color: o.charts[4] },
 	overlay: { mix: ["bg", 75, "caret"] },
 	solid: { color: "cursorLine" },
 	"on-solid": { color: "fg" },
@@ -131,6 +134,7 @@ export const THEMES: Theme[] = [
 			highlight: "purple",
 			radius: "0.5rem",
 			mutedInk: { mix: ["fg", 75, "bg"] },
+			charts: ["blue", "green", "purple", "burntOrange", "cyan"],
 		}),
 	},
 	{
@@ -149,6 +153,7 @@ export const THEMES: Theme[] = [
 			// Console keeps the palette's own muted grey so the dark theme is unchanged; it is the one
 			// recorded exemption in themes.test.ts (fgDim is 2.79:1 on bg, as it has always been).
 			mutedInk: { color: "fgDim" },
+			charts: ["blue", "lime", "yellow", "burntOrange", "purple"],
 		}),
 	},
 	{
@@ -164,6 +169,7 @@ export const THEMES: Theme[] = [
 			highlight: "brightYellow",
 			radius: "0.75rem",
 			mutedInk: { mix: ["fg", 75, "bg"] },
+			charts: ["green", "lime", "brightYellow", "burntOrange", "cyan"],
 		}),
 	},
 ];

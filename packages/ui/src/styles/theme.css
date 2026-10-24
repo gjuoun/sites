@@ -1,9 +1,11 @@
 /* Tailwind's structural side of the Bigface theme: token names and mapping, no colour values.
-   Import this and set --bf-* to your own palette, or import styles.css to get Bigface's default
-   values too. The shadcn semantic tokens (--background, --primary, …) are mapped onto --bf-*, so a
-   component never names a colour: swap the variables and the whole library re-skins. */
+   A component never names a colour; it names a role (bg-primary, text-heading). The roles come from
+   src/themes/<id>.css — one file per theme, a light and a dark block each, generated from the two
+   palettes — so importing this plus a theme file re-skins the whole library. */
 
-@custom-variant dark (&:is(.dark *));
+/* dark: follows the mode attribute, not a class. :is() keeps the specificity Tailwind's variant had
+   with .dark (0,1,0), so a dark: utility still out-ranks the plain class it sits beside. */
+@custom-variant dark (&:is([data-mode="dark"], [data-mode="dark"] *));
 
 @theme inline {
   --font-heading: var(--font-sans);
@@ -50,6 +52,40 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
+  /* Theme roles: what a theme is made of, as Tailwind colours (bg-surface, text-heading, …). */
+  --color-canvas: var(--theme-canvas);
+  --color-ink: var(--theme-ink);
+  --color-heading: var(--theme-heading);
+  --color-surface: var(--theme-surface, var(--theme-gray-100));
+  --color-subtle: var(--theme-subtle, var(--theme-gray-200));
+  --color-muted-ink: var(--theme-muted-ink, var(--theme-gray-500));
+  --color-frame: var(--theme-frame);
+  --color-on-frame: var(--theme-on-frame);
+  --color-frame-accent: var(--theme-frame-accent, var(--theme-primary-tint));
+  --color-on-frame-accent: var(--theme-on-frame-accent, var(--theme-primary));
+  --color-frame-border: var(--theme-frame-border, color-mix(in oklab, var(--theme-on-frame) 12%, transparent));
+  --color-solid: var(--theme-solid, var(--theme-frame));
+  --color-on-solid: var(--theme-on-solid, var(--theme-on-frame));
+  --color-overlay: var(--theme-overlay, color-mix(in oklab, var(--theme-canvas) 75%, transparent));
+  --color-success: var(--theme-success);
+  --color-danger: var(--theme-danger);
+  --color-info: var(--theme-info);
+  --color-highlight: var(--theme-highlight);
+  --color-primary-tint: var(--theme-primary-tint, color-mix(in oklab, var(--theme-primary) 12%, var(--theme-canvas)));
+  --color-success-tint: var(--theme-success-tint, color-mix(in oklab, var(--theme-success) 14%, var(--theme-canvas)));
+  --color-danger-tint: var(--theme-danger-tint, color-mix(in oklab, var(--theme-danger) 14%, var(--theme-canvas)));
+  --color-info-tint: var(--theme-info-tint, color-mix(in oklab, var(--theme-info) 14%, var(--theme-canvas)));
+  --color-highlight-tint: var(--theme-highlight-tint, color-mix(in oklab, var(--theme-highlight) 14%, var(--theme-canvas)));
+  --color-gray-100: var(--theme-gray-100);
+  --color-gray-200: var(--theme-gray-200);
+  --color-gray-300: var(--theme-gray-300);
+  --color-gray-400: var(--theme-gray-400);
+  --color-gray-500: var(--theme-gray-500);
+  --color-gray-600: var(--theme-gray-600);
+  --color-gray-700: var(--theme-gray-700);
+  --shadow-card: var(--theme-shadow-card, 0 1px 3px color-mix(in srgb, var(--theme-canvas) 22%, transparent));
+  --shadow-modal: var(--theme-shadow-modal, 0 20px 60px color-mix(in srgb, var(--theme-canvas) 45%, transparent));
+
   /* Bigface names: every palette colour and ANSI alias as a Tailwind colour (bg-bf-lime, …). */
   --color-ink-on-bright: var(--ink-on-bright);
   --color-bf-bg: var(--bf-bg);
@@ -86,44 +122,50 @@
   --shadow-2xl: 0 25px 50px -12px var(--bf-shadow);
 }
 
-/* shadcn's semantic tokens, mapped onto the palette. Dark-only by design: no .dark override —
-   `<html class="dark">` switches on the components' own dark: variants. */
-:root {
-  --bf-shadow: color-mix(in srgb, var(--bf-bg) 70%, transparent);
-  --fg-muted: color-mix(in srgb, var(--bf-fg) 75%, var(--bf-bg));
-  --dim: color-mix(in srgb, var(--bf-fg) 55%, var(--bf-bg));
-  --background: var(--bf-bg);
-  --foreground: var(--bf-fg);
-  --card: var(--bf-cursor-line);
-  --card-foreground: var(--bf-fg);
-  --popover: var(--bf-cursor-line);
-  --popover-foreground: var(--bf-fg);
-  --primary: var(--bf-blue);
-  --primary-foreground: var(--ink-on-bright);
-  --secondary: var(--bf-border-muted);
-  --secondary-foreground: var(--bf-fg);
-  --muted: var(--bf-border-muted);
-  --muted-foreground: var(--bf-fg-dim);
-  --accent: var(--bf-border-muted);
-  --accent-foreground: var(--bf-fg);
-  --destructive: var(--bf-burnt-orange);
-  --border: var(--bf-border);
-  --input: var(--bf-border);
-  --ring: var(--bf-blue);
-  --chart-1: var(--bf-blue);
-  --chart-2: var(--bf-lime);
-  --chart-3: var(--bf-yellow);
-  --chart-4: var(--bf-burnt-orange);
-  --chart-5: var(--bf-purple);
-  --radius: 0.625rem;
-  --sidebar: var(--bf-cursor-line);
-  --sidebar-foreground: var(--bf-fg);
-  --sidebar-primary: var(--bf-blue);
-  --sidebar-primary-foreground: var(--ink-on-bright);
-  --sidebar-accent: var(--bf-border-muted);
-  --sidebar-accent-foreground: var(--bf-fg);
-  --sidebar-border: var(--bf-border);
-  --sidebar-ring: var(--bf-blue);
+/* shadcn's semantic tokens, mapped onto the theme roles. The values live in src/themes/<id>.css
+   (generated from the two palettes); every token here names a role and falls back to the contract's
+   default, so this file holds no colour at all.
+
+   Re-declared on [data-theme] as well as :root on purpose: a custom property inherits its RESOLVED
+   value, so a nested [data-theme] scope would otherwise keep the outer theme's colours. */
+:root,
+[data-theme] {
+  --bf-shadow: color-mix(in srgb, var(--theme-canvas) 70%, transparent);
+  --fg-muted: var(--theme-muted-ink, var(--theme-gray-500));
+  --dim: var(--theme-gray-500);
+  --background: var(--theme-canvas);
+  --foreground: var(--theme-ink);
+  --card: var(--theme-surface, var(--theme-gray-100));
+  --card-foreground: var(--theme-ink);
+  --popover: var(--theme-surface, var(--theme-gray-100));
+  --popover-foreground: var(--theme-ink);
+  --primary: var(--theme-primary);
+  --primary-foreground: var(--theme-on-primary);
+  --secondary: var(--theme-secondary, var(--theme-gray-300));
+  --secondary-foreground: var(--theme-on-secondary, var(--theme-ink));
+  --muted: var(--theme-subtle, var(--theme-gray-200));
+  --muted-foreground: var(--theme-muted-ink, var(--theme-gray-500));
+  --accent: var(--theme-subtle, var(--theme-gray-200));
+  --accent-foreground: var(--theme-ink);
+  --destructive: var(--theme-danger);
+  --border: var(--theme-border, var(--theme-gray-300));
+  --input: var(--theme-input, var(--theme-gray-300));
+  --ring: var(--theme-focus, var(--theme-info));
+  --chart-1: var(--theme-chart-1, var(--theme-primary));
+  --chart-2: var(--theme-chart-2, var(--theme-success));
+  --chart-3: var(--theme-chart-3, var(--theme-highlight));
+  --chart-4: var(--theme-chart-4, var(--theme-danger));
+  --chart-5: var(--theme-chart-5, var(--theme-info));
+  --radius: var(--theme-radius, 0.625rem);
+  --sidebar: var(--theme-frame);
+  --sidebar-foreground: var(--theme-on-frame);
+  --sidebar-primary: var(--theme-primary);
+  --sidebar-primary-foreground: var(--theme-on-primary);
+  --sidebar-accent: var(--theme-subtle, var(--theme-gray-200));
+  --sidebar-accent-foreground: var(--theme-ink);
+  --sidebar-border: var(--theme-border, var(--theme-gray-300));
+  --sidebar-ring: var(--theme-focus, var(--theme-info));
+  --overlay: var(--theme-overlay, color-mix(in oklab, var(--theme-canvas) 75%, transparent));
 }
 
 /* Recursive with the MONO axis on: the library's code face. */
@@ -137,6 +179,12 @@
 }
 
 @layer base {
+  :root {
+    color-scheme: light;
+  }
+  [data-mode="dark"] {
+    color-scheme: dark;
+  }
   * {
     @apply border-border outline-ring/50;
   }

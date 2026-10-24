@@ -8,7 +8,9 @@ import {
   paletteHexes,
   ringOffsetOffenders,
 } from "./color-guard.ts";
+import lightPaletteJson from "@gjuoun/bigface-tokens/palette-light.json";
 import { contrastRatio, inkOn, palette } from "./data/palette.ts";
+import type { Palette } from "./data/palette.ts";
 import { targets } from "./data/targets.ts";
 import { bgCatalog } from "./data/ui-catalog.ts";
 import { findInklessBrightPlates } from "./ink-guard.ts";
@@ -189,12 +191,25 @@ test("the built CSS keeps the library's theme names and drops Tailwind's default
   expect(css).not.toMatch(/\.bg-red-500\{/);
 });
 
-test.skipIf(!existsSync(tailwindCss))("the shadcn primary token writes the dark ink", () => {
+test.skipIf(!existsSync(tailwindCss))("the shadcn primary token follows the theme's on-primary", () => {
   const css = readdirSync(join(dist, "_astro"))
     .filter((f) => f.endsWith(".css"))
     .map((f) => readFileSync(join(dist, "_astro", f), "utf8"))
     .join("\n");
-  expect(css).toMatch(/--primary-foreground:\s*var\(--ink-on-bright\)/);
+  expect(css).toMatch(/--primary-foreground:\s*var\(--theme-on-primary\)/);
+});
+
+// The theme system replaces the old static `<html class="dark">` with two attributes: a theme id and a
+// mode. Both are what every dark: variant and every [data-theme] scope keys off, so the site must
+// ship them on the root; a page that lost them would render with the fallback mapping only.
+test("the page root carries the default theme and mode", () => {
+  for (const rel of ["", "ui", "palette"]) {
+    const html = readFileSync(join(dist, rel, "index.html"), "utf8");
+    const tag = /<html\b[^>]*>/.exec(html)?.[0] ?? "";
+    expect(tag, rel).toContain('data-theme="console"');
+    expect(tag, rel).toContain('data-mode="dark"');
+    expect(/class="[^"]*\bdark\b/.test(tag), rel).toBe(false);
+  }
 });
 
 test("the site only ships colours that exist in the palette", () => {
@@ -202,7 +217,25 @@ test("the site only ships colours that exist in the palette", () => {
   // stops, and translucent steps are palette colours with alpha. The scanner (color-guard.ts) knows
   // every CSS colour syntax — hex of any length, rgb(), oklch()/lab()/hsl()…, named colours — because
   // Tailwind/shadcn defaults ship oklch() and short hex that a #rrggbb regex never saw.
-  const known = paletteHexes(palette);
+  // Both palettes ship: the dark one is the site's, the light one is what the light mode of every
+  // theme resolves to. A colour in neither is still an offence.
+  // Both palettes ship, plus the values the theme generator derives from them (a tint is two palette
+  // colours mixed in OKLab — computed at generation time, so it reaches the CSS as a hex). Anything
+  // else is still an offence; themes.test.ts proves each derived value is such a mix.
+  const themeHexes = readdirSync(join(siteDir, "../../packages/ui/src/themes"), "utf8")
+    .filter((f) => f.endsWith(".css"))
+    .flatMap((f) =>
+      [
+        ...readFileSync(join(siteDir, "../../packages/ui/src/themes", f), "utf8").matchAll(
+          /#[0-9a-fA-F]{6}\b/g,
+        ),
+      ].map((m) => m[0].toLowerCase()),
+    );
+  const known = new Set([
+    ...paletteHexes(palette),
+    ...paletteHexes(lightPaletteJson as unknown as Palette),
+    ...themeHexes,
+  ]);
   const htmlFiles = readdirSync(dist, { recursive: true, encoding: "utf8" }).filter((f) =>
     f.endsWith("index.html"),
   );

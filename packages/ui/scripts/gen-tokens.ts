@@ -66,20 +66,61 @@ const hexOf = (palette: PaletteLike, name: string): string => {
 	return c.hex.toLowerCase();
 };
 
-/** One role value as CSS: a palette hex, a color-mix of two palette hexes, or a literal. */
+const toLinear = (v: number): number => {
+	const c = v / 255;
+	return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+};
+
+/** Two palette colours mixed in OKLab, as one hex: the tint a role asks for, computed here. */
+export function mixHex(a: string, pct: number, b: string): string {
+	const lab = (h: string) => {
+		const [r, g, bb] = [1, 3, 5].map((i) => toLinear(Number.parseInt(h.slice(i, i + 2), 16)));
+		const l = Math.cbrt(0.4122214708 * (r as number) + 0.5363325363 * (g as number) + 0.0514459929 * (bb as number));
+		const m = Math.cbrt(0.2119034982 * (r as number) + 0.6806995451 * (g as number) + 0.1073969566 * (bb as number));
+		const s = Math.cbrt(0.0883024619 * (r as number) + 0.2817188376 * (g as number) + 0.6299787005 * (bb as number));
+		return [
+			0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s,
+			1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s,
+			0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s,
+		];
+	};
+	const x = lab(a);
+	const y = lab(b);
+	const t = pct / 100;
+	const L = (x[0] as number) * t + (y[0] as number) * (1 - t);
+	const A = (x[1] as number) * t + (y[1] as number) * (1 - t);
+	const B = (x[2] as number) * t + (y[2] as number) * (1 - t);
+	const l = (L + 0.3963377774 * A + 0.2158037573 * B) ** 3;
+	const m = (L - 0.1055613458 * A - 0.0638541728 * B) ** 3;
+	const s = (L - 0.0894841775 * A - 1.291485548 * B) ** 3;
+	const enc = (v: number) => {
+		const c = v <= 0.0031308 ? 12.92 * v : 1.055 * v ** (1 / 2.4) - 0.055;
+		return Math.round(Math.min(1, Math.max(0, c)) * 255).toString(16).padStart(2, "0");
+	};
+	return (
+		"#" +
+		[
+			4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
+			-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
+			-0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s,
+		]
+			.map(enc)
+			.join("")
+	);
+}
+
+/**
+ * One role value as CSS: a palette hex, a tint mixed here (OKLab, two palette colours), or a literal.
+ *
+ * The mix is computed rather than emitted as color-mix(): a browser would do the same maths, and a
+ * minifier would precompute it anyway — as an oklab() literal the colour guard cannot recognise.
+ * Computing it keeps every colour in the output a value the guard can check.
+ */
 export function cssValue(v: Value, palette: PaletteLike): string {
 	if (typeof v === "string") return v;
 	if ("color" in v) return hexOf(palette, v.color);
 	const [a, pct, b] = v.mix;
-	return (
-		"color-mix(in oklab, " +
-		hexOf(palette, a) +
-		" " +
-		pct +
-		"%, " +
-		hexOf(palette, b) +
-		")"
-	);
+	return mixHex(hexOf(palette, a), pct, hexOf(palette, b));
 }
 
 /** A theme's block for one mode, in contract order: every required key, then every optional key. */
