@@ -44,6 +44,9 @@ function jump(e: React.ChangeEvent<HTMLSelectElement>) {
 	if (e.target.value) window.location.hash = e.target.value;
 }
 
+const catLink = (on: boolean) =>
+	cn("block px-2 py-1 transition-colors", on ? "font-semibold text-foreground" : "font-medium text-muted-foreground hover:text-foreground");
+
 const link = (on: boolean) =>
 	cn("block rounded-md px-2 py-1 transition-colors", on ? "bg-muted font-semibold text-foreground" : "text-muted-foreground hover:text-foreground");
 
@@ -73,13 +76,13 @@ export function Rail() {
 					))}
 				</select>
 			</label>
-			<aside className="hidden lg:sticky lg:top-6 lg:block lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto lg:pb-10">
+			<aside className="hidden lg:sticky lg:top-6 lg:block lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto lg:pb-16">
 				<nav aria-label="Catalogue sections" className="flex flex-col gap-3 pr-2 text-sm">
 					<a href="#colour" data-rail="colour" aria-current={active === "colour" ? "location" : undefined} className={link(active === "colour")}>Colour</a>
 					<a href="#typography" data-rail="typography" aria-current={active === "typography" ? "location" : undefined} className={link(active === "typography")}>Typography</a>
 					{CATEGORIES.map((c) => (
 						<div key={c.id} className="flex flex-col gap-0.5">
-							<a href={"#cat-" + c.id} data-rail={"cat-" + c.id} aria-current={activeCategory === c.id ? "location" : undefined} className={link(activeCategory === c.id) + " font-medium"}>{c.title}</a>
+							<a href={"#cat-" + c.id} data-rail={"cat-" + c.id} aria-current={activeCategory === c.id ? "location" : undefined} className={catLink(activeCategory === c.id)}>{c.title}</a>
 							<ul className="ml-3 flex flex-col gap-0.5 border-l pl-2">
 								{c.components.map((k) => (
 									<li key={k.id}>
