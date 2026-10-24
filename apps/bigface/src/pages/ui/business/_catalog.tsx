@@ -428,7 +428,7 @@ export function Catalog() {
 				</Section>
 
 				<Section id="sidebar" title="Sidebar" source="components/ui/sidebar">
-					<Demo name="sidebar" className="block h-72 overflow-hidden p-0 [transform:translateZ(0)]">
+					<Demo name="sidebar" className="block h-72 overflow-hidden p-0 contain-paint [transform:translateZ(0)]">
 						<SidebarProvider className="h-full min-h-0">
 							<Sidebar collapsible="icon">
 								<SidebarContent>
