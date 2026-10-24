@@ -3,6 +3,7 @@ import { Block } from "./_frame.tsx";
 
 // Typography is the stock shadcn and Tailwind type scale. The business theme sets no font, size, leading or
 // weight, so each row is the class the component ships with. The readout is read from the page after it loads.
+// One alignment rule for every row: the label, the specimen and the readout share their FIRST BASELINE.
 
 interface Role {
 	name: string;
@@ -25,8 +26,9 @@ const ROLES: Role[] = [
 	{ name: "Code", cls: "rounded bg-muted px-1.5 py-0.5 font-mono text-sm font-semibold", sample: "bun add" },
 ];
 
-// One template for every row, so the label, the specimen and the readout share columns and centre lines.
-const ROW = "grid gap-2 py-4 md:grid-cols-[12rem_minmax(0,1fr)_12rem] md:items-center md:gap-6";
+// Label column 15rem (240px); the rest is the specimen, with its readout directly after it.
+const ROW = "grid gap-2 py-4 md:grid-cols-[15rem_minmax(0,1fr)] md:items-baseline md:gap-6";
+const SPEC = "flex min-w-0 flex-wrap items-baseline gap-x-6 gap-y-1";
 
 /** The class string as one chip per class: it wraps between classes, never inside one. */
 function ClassChips({ cls }: { cls: string }) {
@@ -56,8 +58,10 @@ function ScaleRow({ name, cls, sample }: Role) {
 				<span className="text-sm font-medium">{name}</span>
 				<ClassChips cls={cls} />
 			</div>
-			<p ref={ref} className={"w-fit max-w-full min-w-0 " + cls}>{sample}</p>
-			<span className="font-mono text-xs text-muted-foreground md:text-right">{readout}</span>
+			<div className={SPEC}>
+				<p ref={ref} className={"max-w-full min-w-0 " + cls}>{sample}</p>
+				<span className="font-mono text-xs whitespace-nowrap text-muted-foreground">{readout}</span>
+			</div>
 		</div>
 	);
 }
@@ -76,8 +80,10 @@ function FamilyRow({ name, cls, sample }: { name: string; cls: string; sample: s
 				<span className="text-sm font-medium">{name}</span>
 				<ClassChips cls={cls} />
 			</div>
-			<p ref={ref} className={"w-fit max-w-full min-w-0 text-xl " + cls}>{sample}</p>
-			<span className="font-mono text-xs text-muted-foreground md:text-right">{readout}</span>
+			<div className={SPEC}>
+				<p ref={ref} className={"max-w-full min-w-0 text-xl " + cls}>{sample}</p>
+				<span className="font-mono text-xs whitespace-nowrap text-muted-foreground">{readout}</span>
+			</div>
 		</div>
 	);
 }
@@ -126,17 +132,20 @@ export function TypographySection() {
 			<p className="max-w-[62ch] text-sm text-muted-foreground">
 				Every size, leading and weight below is shadcn's own. The readout is measured from the page after it loads, so it cannot drift from what the classes produce.
 			</p>
-			<div className="flex flex-col">
+			<div className="flex max-w-5xl flex-col">
 				<h3 className="pb-2 text-base font-semibold">Families</h3>
 				<FamilyRow name="Sans (font-sans)" cls="font-sans" sample="Aa Bb Cc 0123456789" />
 				<FamilyRow name="Mono (font-mono)" cls="font-mono" sample="const build = 42;" />
 			</div>
-			<div className="flex flex-col">
-				<div className={"pb-2 " + ROW.replace("py-4 ", "")}>
+			<div className="flex max-w-5xl flex-col">
+				<div className="hidden pb-2 md:grid md:grid-cols-[15rem_minmax(0,1fr)] md:gap-6">
 					<h3 className="text-base font-semibold">Scale</h3>
-					<span className="hidden text-xs text-muted-foreground md:block">specimen</span>
-					<span className="hidden font-mono text-xs text-muted-foreground md:block md:text-right">size / line / weight</span>
+					<div className="flex gap-6 text-xs text-muted-foreground">
+						<span>specimen</span>
+						<span className="font-mono">size / line / weight</span>
+					</div>
 				</div>
+				<h3 className="pb-2 text-base font-semibold md:hidden">Scale</h3>
 				{ROLES.map((role) => (
 					<ScaleRow key={role.name} {...role} />
 				))}
