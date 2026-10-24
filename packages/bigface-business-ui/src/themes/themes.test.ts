@@ -4,7 +4,7 @@ import { join } from "node:path";
 import darkJson from "../../../bigface-tokens/palette/bigface.json";
 import lightJson from "../../../bigface-tokens/palette/bigface-light.json";
 import contract from "./contract.json";
-import { COLOURS, OPTIONAL, REQUIRED, THEMES } from "./roles.ts";
+import { COLOURS, DEFAULT_MODE, OPTIONAL, REQUIRED, THEMES } from "./roles.ts";
 import { mixHex, renderAll, themesDir } from "../../scripts/gen-tokens.ts";
 import { contrastRatio } from "../../../bigface-tokens/src/contrast-math.ts";
 
@@ -70,6 +70,10 @@ describe("bigface-business-ui theme", () => {
 		for (const [path, next] of Object.entries(renderAll(dark, light))) {
 			expect(readFileSync(path, "utf8"), path).toBe(next);
 		}
+	});
+
+	test("the package default mode is light, and the registry says so", () => {
+		expect(DEFAULT_MODE).toBe("light");
 	});
 
 	test("one theme, business, and it is the default", () => {

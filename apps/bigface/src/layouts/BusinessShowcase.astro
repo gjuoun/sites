@@ -1,5 +1,6 @@
 ---
 import "../styles/business-showcase.css";
+import { DEFAULT_MODE } from "@gjuoun/bigface-business-ui/lib/themes";
 
 interface Props {
   title: string;
@@ -9,7 +10,7 @@ const { title, description = "" } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en" data-theme="business" data-mode="dark">
+<html lang="en" data-theme="business" data-mode={DEFAULT_MODE}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
