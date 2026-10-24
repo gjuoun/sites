@@ -21,7 +21,7 @@
   --theme-danger: #cc4000;
   --theme-info: #007c8e;
   --theme-highlight: #8658d2;
-  --theme-radius: 1.5rem;
+  --theme-radius: 2.5rem;
   --theme-font-sans: "Recursive", system-ui, -apple-system, "Segoe UI", sans-serif;
   --theme-font-mono: "Recursive", ui-monospace, "SF Mono", Menlo, monospace;
   --theme-surface: #ecece5;
@@ -50,16 +50,18 @@
   --theme-on-solid: #252925;
   --theme-shadow-card: 0 1px 3px color-mix(in srgb, var(--theme-canvas) 22%, transparent);
   --theme-shadow-modal: 0 20px 60px color-mix(in srgb, var(--theme-canvas) 45%, transparent);
-  --theme-space: 0.3125rem;
-  --theme-text-xs: 0.82rem;
-  --theme-text-sm: 1rem;
-  --theme-text-base: 1.12rem;
-  --theme-text-lg: 1.4rem;
-  --theme-shadow-sm: 0 2px 0 color-mix(in srgb, var(--theme-canvas) 55%, transparent);
-  --theme-shadow-md: 0 4px 0 color-mix(in srgb, var(--theme-canvas) 55%, transparent);
-  --theme-duration: 120ms;
+  --theme-space: 0.375rem;
+  --theme-text-xs: 0.85rem;
+  --theme-text-sm: 1.05rem;
+  --theme-text-base: 1.2rem;
+  --theme-text-lg: 1.55rem;
+  --theme-shadow-sm: 0 3px 0 color-mix(in srgb, var(--theme-canvas) 60%, transparent);
+  --theme-shadow-md: 0 6px 0 color-mix(in srgb, var(--theme-canvas) 60%, transparent);
+  --theme-duration: 180ms;
   --theme-ease: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --theme-press: 0.93;
+  --theme-press: 0.9;
+  --theme-hover: 1.04;
+  --theme-weight: 800;
 }
 
 [data-theme="game"][data-mode="dark"],
@@ -83,7 +85,7 @@
   --theme-danger: #fc5d23;
   --theme-info: #66d9ef;
   --theme-highlight: #ae81ff;
-  --theme-radius: 1.5rem;
+  --theme-radius: 2.5rem;
   --theme-font-sans: "Recursive", system-ui, -apple-system, "Segoe UI", sans-serif;
   --theme-font-mono: "Recursive", ui-monospace, "SF Mono", Menlo, monospace;
   --theme-surface: #3b3c32;
@@ -112,14 +114,16 @@
   --theme-on-solid: #d9d9d4;
   --theme-shadow-card: 0 1px 3px color-mix(in srgb, var(--theme-canvas) 22%, transparent);
   --theme-shadow-modal: 0 20px 60px color-mix(in srgb, var(--theme-canvas) 45%, transparent);
-  --theme-space: 0.3125rem;
-  --theme-text-xs: 0.82rem;
-  --theme-text-sm: 1rem;
-  --theme-text-base: 1.12rem;
-  --theme-text-lg: 1.4rem;
-  --theme-shadow-sm: 0 2px 0 color-mix(in srgb, var(--theme-canvas) 55%, transparent);
-  --theme-shadow-md: 0 4px 0 color-mix(in srgb, var(--theme-canvas) 55%, transparent);
-  --theme-duration: 120ms;
+  --theme-space: 0.375rem;
+  --theme-text-xs: 0.85rem;
+  --theme-text-sm: 1.05rem;
+  --theme-text-base: 1.2rem;
+  --theme-text-lg: 1.55rem;
+  --theme-shadow-sm: 0 3px 0 color-mix(in srgb, var(--theme-canvas) 60%, transparent);
+  --theme-shadow-md: 0 6px 0 color-mix(in srgb, var(--theme-canvas) 60%, transparent);
+  --theme-duration: 180ms;
   --theme-ease: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --theme-press: 0.93;
+  --theme-press: 0.9;
+  --theme-hover: 1.04;
+  --theme-weight: 800;
 }

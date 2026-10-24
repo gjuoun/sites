@@ -21,7 +21,7 @@
   --theme-danger: #cc4000;
   --theme-info: #007c8e;
   --theme-highlight: #8658d2;
-  --theme-radius: 0.5rem;
+  --theme-radius: 0.375rem;
   --theme-font-sans: "Recursive", system-ui, -apple-system, "Segoe UI", sans-serif;
   --theme-font-mono: "Recursive", ui-monospace, "SF Mono", Menlo, monospace;
   --theme-surface: #ecece5;
@@ -50,16 +50,18 @@
   --theme-on-solid: #252925;
   --theme-shadow-card: 0 1px 3px color-mix(in srgb, var(--theme-canvas) 22%, transparent);
   --theme-shadow-modal: 0 20px 60px color-mix(in srgb, var(--theme-canvas) 45%, transparent);
-  --theme-space: 0.3rem;
+  --theme-space: 0.3125rem;
   --theme-text-xs: 0.78rem;
   --theme-text-sm: 0.94rem;
   --theme-text-base: 1.06rem;
-  --theme-text-lg: 1.25rem;
-  --theme-shadow-sm: 0 1px 2px color-mix(in srgb, var(--theme-canvas) 10%, transparent);
-  --theme-shadow-md: 0 10px 30px -18px color-mix(in srgb, var(--theme-canvas) 30%, transparent);
-  --theme-duration: 300ms;
+  --theme-text-lg: 1.28rem;
+  --theme-shadow-sm: 0 1px 2px color-mix(in srgb, var(--theme-canvas) 8%, transparent);
+  --theme-shadow-md: 0 12px 32px -20px color-mix(in srgb, var(--theme-canvas) 30%, transparent);
+  --theme-duration: 240ms;
   --theme-ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --theme-press: 0.995;
+  --theme-press: 0.99;
+  --theme-hover: 1;
+  --theme-weight: 600;
 }
 
 [data-theme="business"][data-mode="dark"],
@@ -83,7 +85,7 @@
   --theme-danger: #fc5d23;
   --theme-info: #66d9ef;
   --theme-highlight: #ae81ff;
-  --theme-radius: 0.5rem;
+  --theme-radius: 0.375rem;
   --theme-font-sans: "Recursive", system-ui, -apple-system, "Segoe UI", sans-serif;
   --theme-font-mono: "Recursive", ui-monospace, "SF Mono", Menlo, monospace;
   --theme-surface: #3b3c32;
@@ -112,14 +114,16 @@
   --theme-on-solid: #d9d9d4;
   --theme-shadow-card: 0 1px 3px color-mix(in srgb, var(--theme-canvas) 22%, transparent);
   --theme-shadow-modal: 0 20px 60px color-mix(in srgb, var(--theme-canvas) 45%, transparent);
-  --theme-space: 0.3rem;
+  --theme-space: 0.3125rem;
   --theme-text-xs: 0.78rem;
   --theme-text-sm: 0.94rem;
   --theme-text-base: 1.06rem;
-  --theme-text-lg: 1.25rem;
-  --theme-shadow-sm: 0 1px 2px color-mix(in srgb, var(--theme-canvas) 10%, transparent);
-  --theme-shadow-md: 0 10px 30px -18px color-mix(in srgb, var(--theme-canvas) 30%, transparent);
-  --theme-duration: 300ms;
+  --theme-text-lg: 1.28rem;
+  --theme-shadow-sm: 0 1px 2px color-mix(in srgb, var(--theme-canvas) 8%, transparent);
+  --theme-shadow-md: 0 12px 32px -20px color-mix(in srgb, var(--theme-canvas) 30%, transparent);
+  --theme-duration: 240ms;
   --theme-ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --theme-press: 0.995;
+  --theme-press: 0.99;
+  --theme-hover: 1;
+  --theme-weight: 600;
 }

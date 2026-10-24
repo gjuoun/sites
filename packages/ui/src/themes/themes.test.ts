@@ -102,7 +102,19 @@ const evaluate = (value: string): string => {
 };
 
 /** Keys that are not colours: the feel half. */
-const FEEL = ["radius", "space", "text-xs", "text-sm", "text-base", "text-lg", "duration", "ease", "press"];
+const FEEL = [
+	"radius",
+	"space",
+	"text-xs",
+	"text-sm",
+	"text-base",
+	"text-lg",
+	"duration",
+	"ease",
+	"press",
+	"hover",
+	"weight",
+];
 
 describe("generated theme files", () => {
 	test("every committed file equals a fresh render", () => {
@@ -113,8 +125,8 @@ describe("generated theme files", () => {
 
 	test("control: the render is driven by roles.ts, not hand-written", () => {
 		expect(THEMES).toHaveLength(3);
-		expect(themeBlocks("game").dark["--theme-radius"]).toBe("1.5rem");
-		expect(themeBlocks("console").dark["--theme-radius"]).toBe("0.625rem");
+		expect(themeBlocks("game").dark["--theme-radius"]).toBe("2.5rem");
+		expect(themeBlocks("console").dark["--theme-radius"]).toBe("0.125rem");
 	});
 
 	test("each theme has a light and a dark block, each with every required key", () => {
@@ -198,10 +210,14 @@ describe("generated theme files", () => {
 
 	test("the FEEL is what differs: density, type, radius, elevation and motion", () => {
 		const at = (id: string, key: string) => (themeBlocks(id).dark as Record<string, string>)["--theme-" + key];
-		for (const key of ["space", "radius", "text-sm", "text-base", "duration", "ease", "press", "shadow-sm"]) {
+		for (const key of ["space", "radius", "text-sm", "text-base", "duration", "ease", "press", "weight", "shadow-sm"]) {
 			const values = THEMES.map((t) => at(t.id, key));
 			expect(new Set(values).size, key + " must differ across themes: " + values.join(" / ")).toBe(3);
 		}
+		// hover only moves in the playful feel: a bounce is not a house style
+		expect(at("game", "hover")).not.toBe("1");
+		expect([at("business", "hover"), at("console", "hover")]).toEqual(["1", "1"]);
+
 		// density really moves the same way in both modes
 		expect(Number.parseFloat(at("game", "space") as string)).toBeGreaterThan(
 			Number.parseFloat(at("console", "space") as string),

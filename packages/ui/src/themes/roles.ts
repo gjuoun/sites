@@ -124,10 +124,13 @@ export interface Feel {
 	/** Elevation, mapped onto Tailwind's shadow-sm / shadow-md. */
 	"shadow-sm": string;
 	"shadow-md": string;
-	/** Motion: every transition-* utility uses these, and :active scales by press. */
+	/** Motion: every transition-* utility uses these; hover and press are the two scale beats. */
 	duration: string;
 	ease: string;
+	hover: string;
 	press: string;
+	/** Weight of a demo heading, so a feel can be heavier or flatter in its type. */
+	weight: string;
 }
 
 const feel = (f: Feel): ThemeRoles => ({
@@ -150,17 +153,20 @@ export const THEMES: Theme[] = [
 		roles: {
 			...COLOURS,
 			...feel({
-				space: "0.3rem",
-				radius: "0.5rem",
+				// comfortable, not tight; a small rounded rect, calm motion
+				space: "0.3125rem",
+				radius: "0.375rem",
 				"text-xs": "0.78rem",
 				"text-sm": "0.94rem",
 				"text-base": "1.06rem",
-				"text-lg": "1.25rem",
-				"shadow-sm": "0 1px 2px color-mix(in srgb, var(--theme-canvas) 10%, transparent)",
-				"shadow-md": "0 10px 30px -18px color-mix(in srgb, var(--theme-canvas) 30%, transparent)",
-				duration: "300ms",
+				"text-lg": "1.28rem",
+				"shadow-sm": "0 1px 2px color-mix(in srgb, var(--theme-canvas) 8%, transparent)",
+				"shadow-md": "0 12px 32px -20px color-mix(in srgb, var(--theme-canvas) 30%, transparent)",
+				duration: "240ms",
 				ease: "cubic-bezier(0.22, 1, 0.36, 1)",
-				press: "0.995",
+				hover: "1",
+				press: "0.99",
+				weight: "600",
 			}),
 		},
 	},
@@ -174,18 +180,20 @@ export const THEMES: Theme[] = [
 			...COLOURS,
 			...feel({
 				// Tailwind's own unit and scale: this is the site's theme, and its look is the baseline.
-				space: "0.25rem",
-				radius: "0.625rem",
-				"text-xs": "0.75rem",
-				"text-sm": "0.875rem",
-				"text-base": "1rem",
-				"text-lg": "1.125rem",
-				// the site's own elevations, unchanged: console is what bigface ships today
-				"shadow-sm": "0 1px 3px 0 var(--bf-shadow), 0 1px 2px -1px var(--bf-shadow)",
-				"shadow-md": "0 4px 6px -1px var(--bf-shadow), 0 2px 4px -2px var(--bf-shadow)",
-				duration: "150ms",
+				// tightest density, near-square corners, no ornament, the shortest beat
+				space: "0.1875rem",
+				radius: "0.125rem",
+				"text-xs": "0.72rem",
+				"text-sm": "0.82rem",
+				"text-base": "0.95rem",
+				"text-lg": "1.05rem",
+				"shadow-sm": "0 0 0 0 transparent",
+				"shadow-md": "0 1px 2px 0 var(--bf-shadow)",
+				duration: "90ms",
 				ease: "cubic-bezier(0.4, 0, 0.2, 1)",
-				press: "0.97",
+				hover: "1",
+				press: "0.975",
+				weight: "500",
 			}),
 		},
 	},
@@ -197,17 +205,20 @@ export const THEMES: Theme[] = [
 		roles: {
 			...COLOURS,
 			...feel({
-				space: "0.3125rem",
-				radius: "1.5rem",
-				"text-xs": "0.82rem",
-				"text-sm": "1rem",
-				"text-base": "1.12rem",
-				"text-lg": "1.4rem",
-				"shadow-sm": "0 2px 0 color-mix(in srgb, var(--theme-canvas) 55%, transparent)",
-				"shadow-md": "0 4px 0 color-mix(in srgb, var(--theme-canvas) 55%, transparent)",
-				duration: "120ms",
+				// pill corners, the biggest type, the chunkiest shadow, a spring on hover and press
+				space: "0.375rem",
+				radius: "2.5rem",
+				"text-xs": "0.85rem",
+				"text-sm": "1.05rem",
+				"text-base": "1.2rem",
+				"text-lg": "1.55rem",
+				"shadow-sm": "0 3px 0 color-mix(in srgb, var(--theme-canvas) 60%, transparent)",
+				"shadow-md": "0 6px 0 color-mix(in srgb, var(--theme-canvas) 60%, transparent)",
+				duration: "180ms",
 				ease: "cubic-bezier(0.34, 1.56, 0.64, 1)",
-				press: "0.93",
+				hover: "1.04",
+				press: "0.9",
+				weight: "800",
 			}),
 		},
 	},
@@ -251,6 +262,8 @@ export const OPTIONAL = [
 	"duration",
 	"ease",
 	"press",
+	"hover",
+	"weight",
 ] as const;
 
 export const THEME_STORAGE_KEY = "bigface-theme";

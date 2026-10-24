@@ -26,6 +26,11 @@
     "--theme-font-mono": "Mono font stack (IDs, macros, code)"
   },
   "optional": {
+    "--theme-press": "Scale applied on :active (the press feel). Default: 0.97",
+    "--theme-hover": "Hover scale for an interactive surface (1 = no movement). Default: 1",
+    "--theme-weight": "Heading weight, so a feel can be heavier or flatter in its type. Default: 600",
+    "--theme-duration": "Default transition duration. Default: 150ms",
+    "--theme-ease": "Default transition timing function. Default: cubic-bezier(0.4, 0, 0.2, 1)",
     "--theme-surface": "Card and popover fill. Default: gray-100",
     "--theme-subtle": "shadcn muted/accent fill. Default: gray-200",
     "--theme-secondary": "Secondary button fill. Default: gray-300",
@@ -58,10 +63,7 @@
     "--theme-text-base": "Type scale, base. Default: 1rem",
     "--theme-text-lg": "Type scale, lg. Default: 1.125rem",
     "--theme-shadow-sm": "Tailwind shadow-sm. Default: 0 1px 2px color-mix(canvas 35%, transparent)",
-    "--theme-shadow-md": "Tailwind shadow-md. Default: 0 4px 10px -6px color-mix(canvas 45%, transparent)",
-    "--theme-duration": "Default transition duration. Default: 150ms",
-    "--theme-ease": "Default transition timing function. Default: cubic-bezier(0.4, 0, 0.2, 1)",
-    "--theme-press": "Scale applied on :active (the press feel). Default: 0.97"
+    "--theme-shadow-md": "Tailwind shadow-md. Default: 0 4px 10px -6px color-mix(canvas 45%, transparent)"
   },
   "$feel": "The three themes share one colour system: every colour role resolves the native Bigface palette, and a theme chooses only the feel — density (space), type scale, radius, elevation, motion, press."
 }

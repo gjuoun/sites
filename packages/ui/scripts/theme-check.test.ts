@@ -70,7 +70,10 @@ describe("theme-check", () => {
 			const path = join(d, "business.css");
 			writeFileSync(
 				path,
-				readFileSync(path, "utf8").split("  --theme-radius: 0.5rem;").join(""),
+				readFileSync(path, "utf8")
+					.split(String.fromCharCode(10))
+					.filter((line) => !line.trim().startsWith("--theme-radius:"))
+					.join(String.fromCharCode(10)),
 			);
 		});
 		const messages = checkThemes(dir).map((v) => v.message);

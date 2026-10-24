@@ -39,4 +39,6 @@
   --theme-duration: initial;
   --theme-ease: initial;
   --theme-press: initial;
+  --theme-hover: initial;
+  --theme-weight: initial;
 }

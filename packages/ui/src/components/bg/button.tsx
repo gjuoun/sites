@@ -10,7 +10,7 @@ import type * as React from "react";
 // motion tokens, and the press scale is its `press` key — the same markup feels calm in business,
 // crisp in console and springy in game.
 export const bgButtonVariants = cva(
-	"transition-[transform,color,background-color,border-color,box-shadow] duration-[var(--theme-duration,150ms)] ease-[var(--theme-ease,ease)] active:scale-[var(--theme-press,0.97)]",
+	"transition-[transform,color,background-color,border-color,box-shadow] duration-[var(--theme-duration,150ms)] ease-[var(--theme-ease,ease)] hover:scale-[var(--theme-hover,1)] active:scale-[var(--theme-press,0.97)]",
 	{
   variants: {
     tone: {
