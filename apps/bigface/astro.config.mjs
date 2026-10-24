@@ -13,6 +13,10 @@ export default defineConfig({
 
   vite: {
     plugins: [tailwindcss()],
+    // The business catalogue (/ui/business/) is a React island that imports these two only when it loads. Vite
+    // would otherwise pre-bundle them mid-session: the browser keeps the old hash and the island stops hydrating
+    // (504 Outdated Optimize Dep), so the page's toggles do nothing. Pre-bundling them at startup avoids that.
+    optimizeDeps: { include: ["recharts", "sonner"] },
     server: { allowedHosts: ["juns-macbook-pro.tail610df3.ts.net"] },
   },
 });

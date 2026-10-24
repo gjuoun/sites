@@ -1,6 +1,6 @@
 ---
 import "../styles/business-showcase.css";
-import { DEFAULT_MODE } from "@gjuoun/bigface-business-ui/lib/themes";
+import { DEFAULT_MODE, themeInitScript } from "@gjuoun/bigface-business-ui/lib/themes";
 
 interface Props {
   title: string;
@@ -18,6 +18,8 @@ const { title, description = "" } = Astro.props;
     <meta name="robots" content="noindex" />
     <link rel="preload" href="/fonts/qublack/QuBlackSans-Latin-VF.woff2" as="font" type="font/woff2" crossorigin />
     <title>{title}</title>
+    <!-- Before first paint: a stored mode (set by the toggle) is applied, so a reload keeps the reader's choice. -->
+    <script is:inline set:html={themeInitScript}></script>
   </head>
   <body class="min-h-screen bg-background font-sans text-foreground antialiased">
     <slot />
