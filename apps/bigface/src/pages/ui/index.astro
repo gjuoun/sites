@@ -294,9 +294,9 @@ const cellLabel = "font-code text-[0.7rem] text-bf-dim";
       One component set, six looks. Every value is a role from <code>contract.json</code>, rendered by
       the generator from the two palettes (<code>bigface.json</code> and <code>bigface-light.json</code>),
       so a theme is data — never a forked component. <strong>Business</strong> is the light, quiet one for
-      marketing and product pages; <strong>console</strong> is this site's own dark workspace;
-      <strong>play</strong> is the reward-forward one for game communities. The six panels live on their
-      own page, where each one has room to be read.
+      marketing and product pages (<code>/ui/business/</code>); <strong>console</strong> is this site's own dark workspace;
+      Business now ships as its own package with its own page; console stays on the library and is
+      shown on its own page too.
     </BGSectionHead>
     <BGCard tone="plate" className="p-5 md:p-6">
       <a
@@ -308,12 +308,28 @@ const cellLabel = "font-code text-[0.7rem] text-bf-dim";
             theme gallery
           </span>
           <span class="mt-1 block text-[1.05rem] font-semibold text-foreground">
-            Open the three themes × two modes →
+            Open console, light and dark →
           </span>
         </span>
         <span class="font-code text-[0.78rem] text-bf-blue group-hover:underline">
           /ui/theme/
         </span>
+      </a>
+    </BGCard>
+    <BGCard tone="plate" className="p-5 md:p-6">
+      <a
+        href={`${base}/ui/business/`}
+        class="group flex flex-wrap items-baseline justify-between gap-3 no-underline"
+      >
+        <span>
+          <span class="font-code text-[0.78rem] tracking-[0.06em] uppercase text-bf-fg-muted">
+            business package
+          </span>
+          <span class="mt-1 block text-[1.05rem] font-semibold text-foreground">
+            Open business, light and dark →
+          </span>
+        </span>
+        <span class="font-code text-[0.78rem] text-bf-blue group-hover:underline">/ui/business/</span>
       </a>
     </BGCard>
   </section>
