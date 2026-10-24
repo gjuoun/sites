@@ -229,22 +229,26 @@ test("the page root carries the default theme and mode", () => {
 	}
 });
 
-// The matrix is the only place all six looks exist at once, and it is static markup: six scopes, each
-// carrying its own pair. The pre-paint script ships here only — a marketing page has no theme to
-// restore, so it keeps the server-rendered pair and no script.
-test("the /ui workspace shows all six theme × mode scopes and is the only page with the theme script", () => {
-	const ui = page("ui");
-	expect([...ui.matchAll(/data-slot="theme-scope"/g)]).toHaveLength(
+// /ui/theme/ is the only place all six looks exist at once, and it is static markup: six scopes, each
+// carrying its own pair. The catalogue links to the gallery instead of repeating the matrix, and the
+// pre-paint script ships on the themable pages only - a marketing page keeps the server-rendered pair
+// and no script.
+test("the theme gallery shows all six theme x mode scopes and only themable pages ship the script", () => {
+	const gallery = page("ui/theme");
+	expect([...gallery.matchAll(/data-slot="theme-scope"/g)]).toHaveLength(
 		THEMES.length * MODES.length,
 	);
 	for (const theme of THEMES) {
 		for (const mode of MODES) {
-			expect(ui, theme.id + "/" + mode).toContain(
+			expect(gallery, theme.id + "/" + mode).toContain(
 				`data-theme="${theme.id}" data-mode="${mode}"`,
 			);
 		}
 	}
-	expect(ui).toContain("bigface-mode");
+	expect(gallery).toContain("bigface-mode");
+	// The catalogue points at the gallery rather than duplicating it.
+	expect(page("ui")).toContain('href="/ui/theme/"');
+	expect([...page("ui").matchAll(/data-slot="theme-scope"/g)]).toHaveLength(0);
 	expect(page("")).not.toContain("bigface-mode");
 });
 

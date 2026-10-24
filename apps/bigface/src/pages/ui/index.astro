@@ -38,7 +38,6 @@ import Base from "../../layouts/Base.astro";
 import tailwindCss from "../../styles/tailwind.css?raw";
 import BGEntry from "./_bg-entry.astro";
 import { CardDemo, TabsDemo } from "./_demos.tsx";
-import { ThemeControls, ThemeMatrix } from "./_themes.tsx";
 
 // The component library the site is built from, rendered live. Lists that can be read from source
 // are: the semantic tokens (tailwind.css :root), the font stacks (@theme), the text scale (every
@@ -296,11 +295,27 @@ const cellLabel = "font-code text-[0.7rem] text-bf-dim";
       the generator from the two palettes (<code>bigface.json</code> and <code>bigface-light.json</code>),
       so a theme is data — never a forked component. <strong>Business</strong> is the light, quiet one for
       marketing and product pages; <strong>console</strong> is this site's own dark workspace;
-      <strong>play</strong> is the reward-forward one for game communities. The panels below are static
-      markup, each in its own <code>BGThemeScope</code>; the switchers above them drive this page.
+      <strong>play</strong> is the reward-forward one for game communities. The six panels live on their
+      own page, where each one has room to be read.
     </BGSectionHead>
-    <div class="mb-[1.2rem]"><ThemeControls client:load /></div>
-    <ThemeMatrix />
+    <BGCard tone="plate" className="p-5 md:p-6">
+      <a
+        href={`${base}/ui/theme/`}
+        class="group flex flex-wrap items-baseline justify-between gap-3 no-underline"
+      >
+        <span>
+          <span class="font-code text-[0.78rem] tracking-[0.06em] uppercase text-bf-fg-muted">
+            theme gallery
+          </span>
+          <span class="mt-1 block text-[1.05rem] font-semibold text-foreground">
+            Open the three themes × two modes →
+          </span>
+        </span>
+        <span class="font-code text-[0.78rem] text-bf-blue group-hover:underline">
+          /ui/theme/
+        </span>
+      </a>
+    </BGCard>
   </section>
 
   <BGDivider />
