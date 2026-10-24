@@ -319,7 +319,8 @@ export interface ColourOffender {
 }
 
 export interface ColourAudit {
-	panels: { theme: string; mode: string; allowedColors: number; offenders: ColourOffender[] }[];
+	/** checked: how many painted colour values the audit read in this panel. A zero means it read nothing. */
+	panels: { theme: string; mode: string; checked: number; offenders: ColourOffender[] }[];
 }
 
 const COLOUR_PROBE = `(() => {
@@ -354,11 +355,13 @@ const COLOUR_PROBE = `(() => {
     const inBody = panel === document.body;
     const mode = (inBody ? document.documentElement.dataset.mode : panel.dataset.mode) === "light" ? "light" : "dark";
     const leaks = new Map();
+    let checked = 0;
     for (const el of [panel, ...panel.querySelectorAll("*")]) {
       if (inBody && el.closest('[data-slot="theme-scope"]')) continue;
       for (const prop of props) {
         const key = rgbKey(getComputedStyle(el)[prop]);
         if (!key || key === "0,0,0") continue;
+        checked++;
         const isWhite = key === "255,255,255";
         const isDarkOnly = mode === "light" && darkOnly.has(key);
         if (!isWhite && !isDarkOnly) continue;
@@ -369,7 +372,7 @@ const COLOUR_PROBE = `(() => {
         leaks.get(slot).count++;
       }
     }
-    panels.push({ theme: panel.dataset.theme || "", mode, offenders: [...leaks.values()].sort((a, b) => b.count - a.count) });
+    panels.push({ theme: panel.dataset.theme || "", mode, checked, offenders: [...leaks.values()].sort((a, b) => b.count - a.count) });
   }
   return { panels };
 })()`;

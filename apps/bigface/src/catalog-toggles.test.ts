@@ -46,18 +46,15 @@ for (const width of [1440, 390]) {
 }
 
 test.skipIf(!findChrome())(
-	"the native comparison paints only the palette's own foreground hues in light, and paints some",
+	"in light, the native comparison paints nothing outside the synced palettes, and the audit reads the page",
 	async () => {
-		const css = readFileSync(join(pkgThemes, "_foreground.css"), "utf8");
-		const hexes = [...css.matchAll(/--theme-[\w-]+:\s*(#[0-9a-f]{6});/gi)].map((m) => m[1].toLowerCase());
-		expect(hexes.length, "twelve foreground roles").toBe(12);
-		const rgb = (h: string) => "rgb(" + [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16)).join(",") + ")";
-		const allowed = new Set(hexes.map(rgb));
+		// After the ruling the light accents ARE the native palette, so the comparison has no colour to add. What is
+		// still true, and checked here: the page reads colours (a vacuous audit fails), and no painted colour is
+		// dark-only, so nothing reaches a light surface from outside the synced palettes.
 		const audit = await measurePanelColours(dist, "/ui/business/", 1440, "light", "native");
-		const light = audit.panels.flatMap((p) => p.offenders).filter((o) => o.mode === "light");
-		const stray = light.filter((o) => !allowed.has(o.color) && !(o.color === "rgb(0,176,255)" && o.prop === "backgroundColor"));
-		expect(stray.map((o) => o.color + " " + o.prop), "native light paints only the foreground hues (and the fill)").toEqual([]);
-		expect(light.some((o) => allowed.has(o.color)), "the comparison does paint the palette hues").toBe(true);
+		expect(audit.panels.reduce((n, p) => n + p.checked, 0), "the audit reads the painted colours").toBeGreaterThan(100);
+		const offenders = audit.panels.flatMap((p) => p.offenders).filter((o) => o.mode === "light");
+		expect(offenders.map((o) => o.color + " " + o.prop), "no dark-only colour on a light surface").toEqual([]);
 	},
 	120_000,
 );

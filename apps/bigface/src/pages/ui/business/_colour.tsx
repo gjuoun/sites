@@ -62,8 +62,9 @@ const PAIRS: Pair[] = [
 
 const RULES = [
 	"Paper, never white: light surfaces are the paper tone, and pure white is not used in either mode.",
-	"The primary fill is native blue in both modes, with the dark ink on top. It is the one dark-palette colour a light page carries.",
-	"The primary ink (links and rings) is the readable blue in light, and the native blue in dark.",
+	"The accent family is the palette's own in both modes (ruling 2026-10-24): a light page shows the vivid hues on paper.",
+	"Accents are not text-safe on paper: link, success, info and danger text, and the lime and yellow family, measure below AA above. Body ink and muted text keep AA.",
+	"The primary ink (links and rings) follows the accent, so it measures 2.27:1 on paper. Whether a readable light ink returns is parked for Jun.",
 	"Stock shadcn classes are not restyled: bg-black/10 and bg-white resolve through the palette ends.",
 ];
 
