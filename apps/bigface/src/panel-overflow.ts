@@ -336,7 +336,7 @@ const COLOUR_PROBE = `(() => {
     document.body.appendChild(probe);
     const c = getComputedStyle(probe).color;
     probe.remove();
-    const m = /rgba?\(([^)]+)\)/.exec(c);
+    const m = /rgba?\\(([^)]+)\\)/.exec(c);
     if (!m) return "";
     const parts = m[1].split(",").map((n) => Number.parseFloat(n));
     if (parts.length < 3 || parts.slice(0, 3).some((n) => Number.isNaN(n))) return "";
@@ -387,6 +387,7 @@ export async function measurePanelColours(
 	path = "/ui/console/",
 	width = 1440,
 	mode?: "light" | "dark",
+	fg?: "toned" | "native",
 ): Promise<ColourAudit> {
 	const hexesOf = (file: string) =>
 		Object.values(
@@ -399,7 +400,8 @@ export async function measurePanelColours(
 		JSON.stringify({ dark: hexesOf("bigface.json"), light: hexesOf("bigface-light.json") }),
 	);
 	const setMode = mode ? "document.documentElement.dataset.mode = \"" + mode + "\"; " : "";
-	return runProbe<ColourAudit>(distDir, path, width, setMode + probe);
+	const setFg = fg ? "document.documentElement.dataset.fg = \"" + fg + "\"; " : "";
+	return runProbe<ColourAudit>(distDir, path, width, setMode + setFg + probe);
 }
 
 /** How far the page scrolls sideways, in a given mode, at a given width. Zero means nothing escapes the viewport. */

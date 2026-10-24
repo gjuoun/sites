@@ -53,10 +53,21 @@ for (const mode of ["light", "dark"] as const) {
 			// The page body and every mode scope are audited, each in its own mode. The one dark-palette value a light
 			// page may carry is the native blue fill (the ruling: primary fills are #00b0ff with dark ink).
 			expect(audit.panels.length, "body and scopes audited").toBeGreaterThan(1);
+			// The audit must see the page: a vacuous audit (no colour keys read) passes everything.
+			const all = audit.panels.flatMap((p) => p.offenders);
+			expect(all.length, "the audit reads the painted colours").toBeGreaterThan(0);
+			// Allowed, by name, and nothing else. (1) The primary FILL is the native blue, in light, as the ruling says.
+			// (2) The same blue as INK (text, caret, underline, border, outline): the stock classes read --color-primary,
+			// which is the fill token, for those too. A stock class cannot take a second token, so this class is parked
+			// as a QUESTION (evidence.md, round 5, question A). It is counted and reported, not hidden.
 			const NATIVE_FILL = "rgb(0,176,255)";
-			const leaks = audit.panels
-				.flatMap((p) => p.offenders)
-				.filter((o) => !(o.mode === "light" && o.color === NATIVE_FILL))
+			const INK_PROPS = ["color", "caretColor", "textDecorationColor", "borderTopColor", "borderRightColor", "borderBottomColor", "borderLeftColor", "outlineColor"];
+			const fillOk = (o: { mode: string; color: string; prop: string }) => o.mode === "light" && o.color === NATIVE_FILL && o.prop === "backgroundColor";
+			const parkedInk = (o: { mode: string; color: string; prop: string }) => o.mode === "light" && o.color === NATIVE_FILL && INK_PROPS.includes(o.prop);
+			const parked = all.filter((o) => parkedInk(o)).reduce((n, o) => n + o.count, 0);
+			console.log("parked (question A), uses of the fill blue as ink in light: " + parked);
+			const leaks = all
+				.filter((o) => !fillOk(o) && !parkedInk(o))
 				.map((o) => o.mode + " " + o.color + " " + o.prop + " <" + o.tag + "> x" + o.count);
 			expect(leaks, "colours outside the synced palettes").toEqual([]);
 		},
