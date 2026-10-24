@@ -2,7 +2,7 @@ import { beforeAll, expect, test } from "bun:test";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import lightPaletteJson from "@gjuoun/bigface-tokens/palette-light.json";
-import { MODES, THEMES } from "@gjuoun/bigface-ui/lib/themes";
+import { MODES } from "@gjuoun/bigface-ui/lib/themes";
 import { $ } from "bun";
 import {
 	findForeignInCss,
@@ -229,25 +229,26 @@ test("the page root carries the default theme and mode", () => {
 	}
 });
 
-// /ui/theme/ is the only place all six looks exist at once, and it is static markup: six scopes, each
-// carrying its own pair. The catalogue links to the gallery instead of repeating the matrix, and the
-// pre-paint script ships on the themable pages only - a marketing page keeps the server-rendered pair
-// and no script.
-test("the theme gallery shows all six theme x mode scopes and only themable pages ship the script", () => {
+// The site serves console on /ui/theme/ (both modes) and business on its own page /ui/business/ (both
+// modes). One theme per page; the retired game theme is in neither. Business is also tested in
+// panel-overflow.test.ts, which measures the layout in a browser.
+test("the gallery shows console in both modes, the business page shows business in both, and game is offline", () => {
 	const gallery = page("ui/theme");
-	expect([...gallery.matchAll(/data-slot="theme-scope"/g)]).toHaveLength(
-		THEMES.length * MODES.length,
-	);
-	for (const theme of THEMES) {
-		for (const mode of MODES) {
-			expect(gallery, theme.id + "/" + mode).toContain(
-				`data-theme="${theme.id}" data-mode="${mode}"`,
-			);
-		}
+	expect([...gallery.matchAll(/data-slot="theme-scope"/g)]).toHaveLength(MODES.length);
+	for (const mode of MODES) {
+		expect(gallery, "console/" + mode).toContain(`data-theme="console" data-mode="${mode}"`);
+	}
+	const business = page("ui/business");
+	expect([...business.matchAll(/data-slot="theme-scope"/g)]).toHaveLength(MODES.length);
+	for (const mode of MODES) {
+		expect(business, "business/" + mode).toContain(`data-theme="business" data-mode="${mode}"`);
+	}
+	for (const rel of ["", "ui", "ui/theme", "ui/business"]) {
+		expect(page(rel), "game on " + rel).not.toContain('data-theme="game"');
 	}
 	expect(gallery).toContain("bigface-mode");
-	// The catalogue points at the gallery rather than duplicating it.
 	expect(page("ui")).toContain('href="/ui/theme/"');
+	expect(page("ui")).toContain('href="/ui/business/"');
 	expect([...page("ui").matchAll(/data-slot="theme-scope"/g)]).toHaveLength(0);
 	expect(page("")).not.toContain("bigface-mode");
 });
