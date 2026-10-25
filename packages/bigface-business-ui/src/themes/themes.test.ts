@@ -4,7 +4,7 @@ import { join } from "node:path";
 import darkJson from "../../../bigface-tokens/palette/bigface.json";
 import lightJson from "../../../bigface-tokens/palette/bigface-light.json";
 import contract from "./contract.json";
-import { COLOURS, DEFAULT_MODE, FOREGROUND, OPTIONAL, REQUIRED, THEMES } from "./roles.ts";
+import { COLOURS, DEFAULT_MODE, OPTIONAL, REQUIRED, THEMES } from "./roles.ts";
 import { mixHex, renderAll, themesDir } from "../../scripts/gen-tokens.ts";
 import { contrastRatio } from "../../../bigface-tokens/src/contrast-math.ts";
 
@@ -166,33 +166,4 @@ describe("bigface-business-ui: colour only", () => {
 		const keys = [...reset.matchAll(/--theme-([\w-]+): initial;/g)].map((m) => "--theme-" + m[1]);
 		expect(keys.sort()).toEqual(OPTIONAL.map((k) => "--theme-" + k).sort());
 	});
-});
-
-// Recorded fact (ruling 2026-10-24): the light accents ARE the native palette now, so the derived foreground set the
-// Toned/Native comparison was built to contrast no longer exists for these roles. Every foreground role's light value
-// equals its native value; the comparison is a no-op in light until Jun decides what it should show (parked question).
-test("in light, the toned and native foregrounds are identical (the comparison is a no-op after the ruling)", () => {
-	const b = blocks();
-	const native = strip(css("_foreground.css"));
-	const nativeOf = (k: string) => (native.match(new RegExp("--theme-" + k + ":\\s*(#[0-9a-f]{6})", "i")) ?? [])[1]?.toLowerCase();
-	for (const k of FOREGROUND) {
-		expect(nativeOf(k), k).toBeDefined();
-		expect(String(b.light["--theme-" + k]).toLowerCase(), k).toBe(nativeOf(k));
-	}
-});
-
-// The foreground comparison (data-fg="native") is a light-only, page-level affordance: every selector in its file
-// carries the no-dark guard, and it names exactly the foreground roles, each a value of the role map.
-test("the foreground comparison is light only and names exactly the foreground roles", () => {
-	const text = strip(css("_foreground.css"));
-	const selectors = [...text.matchAll(/([^{}]+)\{/g)].map((m) => (m[1] as string).trim()).filter(Boolean);
-	expect(selectors.length, "a selector block").toBeGreaterThan(0);
-	for (const s of selectors) {
-		expect(s, s).toContain('[data-fg="native"]');
-		expect(s, s).toContain(':not([data-mode="dark"])');
-	}
-	expect(text, "a locked scope is never overridden").toContain(':not([data-fg-lock])');
-	const names = [...text.matchAll(/--theme-([\w-]+):/g)].map((m) => m[1] as string).sort();
-	expect(names).toEqual([...FOREGROUND].sort());
-	for (const k of FOREGROUND) expect(k in COLOURS, k).toBe(true);
 });

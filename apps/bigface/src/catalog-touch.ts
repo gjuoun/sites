@@ -25,7 +25,7 @@ export interface TouchRun {
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-const CONTROLS = "[aria-label=\"Colour mode\"] [data-slot=\"toggle-group-item\"], [aria-label=\"Foregrounds\"] [data-slot=\"toggle-group-item\"]";
+const CONTROLS = "[aria-label=\"Colour mode\"] [data-slot=\"toggle-group-item\"]";
 const READ_CONTROLS = "JSON.stringify({ scrollY: Math.round(scrollY), vh: innerHeight, controls: [...document.querySelectorAll('" + CONTROLS + "')].map((el) => { const r = el.getBoundingClientRect(); const at = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); const hitEl = at && at.closest('[data-slot=\"toggle-group-item\"]'); return { label: el.textContent.trim(), group: el.closest('[aria-label]').getAttribute('aria-label'), top: Math.round(r.top), bottom: Math.round(r.bottom), inView: r.top >= 0 && r.bottom <= innerHeight, hit: hitEl === el }; }) })";
 
 /** Loads the built page with touch enabled, reads the controls, taps the four controls, and reads again. */
@@ -107,10 +107,6 @@ export async function runTouch(distDir: string, path: string, width: number, hei
 		readings.push({ after: "dark", ...(await readState()) });
 		await tap("Colour mode", "Light");
 		readings.push({ after: "light", ...(await readState()) });
-		await tap("Foregrounds", "Native");
-		readings.push({ after: "native", ...(await readState()) });
-		await tap("Foregrounds", "Toned");
-		readings.push({ after: "toned", ...(await readState()) });
 		const after = JSON.parse(await evaluate(READ_CONTROLS));
 		return {
 			scrollYAtLoad: load.scrollY,

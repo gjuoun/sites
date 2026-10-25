@@ -108,27 +108,6 @@ export const COLOURS: ThemeRoles = {
 	white: { light: { color: "bg" }, dark: { color: "fg" } },
 };
 
-/**
- * The foreground roles: the colours a light page paints text, rings, links and chart series with. The comparison
- * toggle (data-fg="native", light mode only) swaps exactly these to their DARK-mode values, which are the palette's own
- * hues, derived by the same generator. Backgrounds, fills and surfaces (canvas, primary fill, tints, frame, borders)
- * are not here: they keep the light palette in both settings.
- */
-export const FOREGROUND = [
-	"primary-ink",
-	"focus",
-	"on-frame-accent",
-	"success",
-	"danger",
-	"info",
-	"highlight",
-	"chart-1",
-	"chart-2",
-	"chart-3",
-	"chart-4",
-	"chart-5",
-] as const;
-
 /** Optional keys: every colour role that is not required. */
 export const OPTIONAL = Object.keys(COLOURS).filter((k) => !(REQUIRED as readonly string[]).includes(k));
 

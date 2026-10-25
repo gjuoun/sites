@@ -152,58 +152,6 @@ function ModeSwitch() {
 	);
 }
 
-type Foreground = "toned" | "native";
-
-/** The foreground comparison: data-fg on the page root, read and written like data-mode. Default toned. */
-function subscribeForeground(onChange: () => void): () => void {
-	const observer = new MutationObserver(onChange);
-	observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-fg"] });
-	return () => observer.disconnect();
-}
-
-function useForeground() {
-	const fg = React.useSyncExternalStore<Foreground>(
-		subscribeForeground,
-		() => (document.documentElement.dataset.fg === "native" ? "native" : "toned"),
-		() => "toned",
-	);
-	const setFg = React.useCallback((next: Foreground) => {
-		document.documentElement.dataset.fg = next;
-	}, []);
-	return { fg, setFg };
-}
-
-/** Toned (default) or native foregrounds. A comparison only: it changes the foreground roles in light mode. */
-function ForegroundSwitch() {
-	const { fg, setFg } = useForeground();
-	const { mode } = useMode();
-	const lightOnly = mode === "dark";
-	return (
-		<div className="flex flex-wrap items-center gap-3">
-			<ToggleGroup
-				type="single"
-				variant="outline"
-				value={lightOnly ? "" : fg}
-				disabled={lightOnly}
-				aria-label="Foregrounds"
-				onValueChange={(next) => {
-					if (next === "toned" || next === "native") setFg(next);
-				}}
-			>
-				<ToggleGroupItem value="toned">Toned</ToggleGroupItem>
-				<ToggleGroupItem value="native">Native</ToggleGroupItem>
-			</ToggleGroup>
-			<span className="font-mono text-xs text-muted-foreground max-sm:hidden">
-				{lightOnly
-					? "foregrounds: light mode only"
-					: fg === "native"
-						? "native: accent and chart roles take the palette's own hues"
-						: "toned: the derived light foregrounds (default)"}
-			</span>
-		</div>
-	);
-}
-
 export function Catalog() {
 	const [clicks, setClicks] = React.useState(0);
 	const [progress, setProgress] = React.useState(30);
@@ -218,7 +166,7 @@ export function Catalog() {
 			<div className="grid gap-8 lg:grid-cols-[13rem_minmax(0,1fr)]">
 				<Rail />
 				<div className="flex min-w-0 flex-col gap-10">
-				<div data-controls="" className="flex flex-col gap-2 max-lg:sticky max-lg:top-0 max-lg:z-30 max-lg:-mx-6 max-lg:border-b max-lg:bg-background/95 max-lg:px-6 max-lg:py-2 max-lg:backdrop-blur"><div className="flex flex-wrap items-center gap-2"><ModeSwitch /><span className="font-mono text-xs text-muted-foreground max-sm:hidden">every colour follows this switch; the components are unchanged</span></div><ForegroundSwitch /></div>
+				<div data-controls="" className="flex flex-col gap-2 max-lg:sticky max-lg:top-0 max-lg:z-30 max-lg:-mx-6 max-lg:border-b max-lg:bg-background/95 max-lg:px-6 max-lg:py-2 max-lg:backdrop-blur"><div className="flex flex-wrap items-center gap-2"><ModeSwitch /><span className="font-mono text-xs text-muted-foreground max-sm:hidden">every colour follows this switch; the components are unchanged</span></div></div>
 				<ColourSection />
 				<TypographySection />
 				<Category id="cat-actions" title="Actions" count={4}>

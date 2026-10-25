@@ -81,7 +81,7 @@ const HEAD = "px-3 py-2 text-left font-semibold text-foreground";
 
 function ModeCell({ mode, role, hex }: { mode: "light" | "dark"; role: string; hex: Hex }) {
 	return (
-		<td data-slot="theme-scope" data-theme="business" data-mode={mode} data-fg-lock="" className="bg-background px-3 py-2 text-foreground">
+		<td data-slot="theme-scope" data-theme="business" data-mode={mode} className="bg-background px-3 py-2 text-foreground">
 			<span className="flex items-center gap-2">
 				<span aria-hidden className="inline-block size-5 shrink-0 rounded-sm border border-foreground/30" style={{ backgroundColor: "var(--theme-" + role + ")" }} />
 				<span className="font-mono text-xs">{hex}</span>
@@ -94,7 +94,7 @@ function PairCell({ mode, pair, colours }: { mode: "light" | "dark"; pair: Pair;
 	const ratio = contrast(colours[pair.text] ?? "", colours[pair.bg] ?? "");
 	const verdict = ratio === null ? "no hex" : ratio >= 4.5 ? "AA" : ratio >= 3 ? "AA large only" : "below AA";
 	return (
-		<td data-slot="theme-scope" data-theme="business" data-mode={mode} data-fg-lock="" className="bg-background px-3 py-2 text-foreground">
+		<td data-slot="theme-scope" data-theme="business" data-mode={mode} className="bg-background px-3 py-2 text-foreground">
 			<span className="flex items-center gap-3">
 				<span
 					className="inline-flex h-6 min-w-[2.25rem] items-center justify-center rounded-md px-2 text-sm leading-none font-medium whitespace-nowrap"

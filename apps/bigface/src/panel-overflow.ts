@@ -390,7 +390,6 @@ export async function measurePanelColours(
 	path = "/ui/console/",
 	width = 1440,
 	mode?: "light" | "dark",
-	fg?: "toned" | "native",
 ): Promise<ColourAudit> {
 	const hexesOf = (file: string) =>
 		Object.values(
@@ -403,8 +402,7 @@ export async function measurePanelColours(
 		JSON.stringify({ dark: hexesOf("bigface.json"), light: hexesOf("bigface-light.json") }),
 	);
 	const setMode = mode ? "document.documentElement.dataset.mode = \"" + mode + "\"; " : "";
-	const setFg = fg ? "document.documentElement.dataset.fg = \"" + fg + "\"; " : "";
-	return runProbe<ColourAudit>(distDir, path, width, setMode + setFg + probe);
+	return runProbe<ColourAudit>(distDir, path, width, setMode + probe);
 }
 
 /** How far the page scrolls sideways, in a given mode, at a given width. Zero means nothing escapes the viewport. */

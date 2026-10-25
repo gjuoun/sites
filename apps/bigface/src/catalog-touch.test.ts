@@ -27,12 +27,10 @@ for (const [width, height] of [[390, 844], [1440, 1000]] as const) {
 				expect(c.inView, c.group + " " + c.label + " is on screen at load (top " + c.top + ")").toBe(true);
 				expect(c.hit, c.group + " " + c.label + " receives a touch at its position").toBe(true);
 			}
-			expect(r.readings.map((x) => x.after)).toEqual(["dark", "light", "native", "toned"]);
+			expect(r.readings.map((x) => x.after)).toEqual(["dark", "light"]);
 			expect(r.readings[0]!.mode).toBe("dark");
 			expect(r.readings[0]!.canvas).toBe("rgb(37, 41, 37)");
 			expect(r.readings[1]!.canvas).toBe("rgb(248, 248, 240)");
-			expect(r.readings[2]!.fg).toBe("native");
-			expect(r.readings[3]!.fg).toBe("toned");
 			for (const c of r.controlsAfterTaps) expect(c.inView, c.label + " still on screen after the taps").toBe(true);
 		},
 		240_000,
