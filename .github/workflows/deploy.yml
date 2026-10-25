@@ -1,0 +1,169 @@
+name: Deploy affected sites to Cloudflare Pages
+
+# One deploy entry point for every site in the monorepo. The `prep` job asks turbo which
+# packages the pushed commit actually affects (`turbo run build --filter='...[HEAD^1]'`), then
+# each site job runs only if its package is in that set (or if the workflow was dispatched for
+# that app explicitly). This replaces the five per-site workflows, whose `paths:` filters were
+# blunt: any `packages/**` edit re-deployed every consumer even when the dependency graph says
+# otherwise, and a root-level edit (turbo.json, bun.lock) missed some sites entirely.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      app:
+        description: "Deploy one app by name (bigface, bundant, qublack, jun-hermes, blackboard-site). Empty = affected set."
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  prep:
+    runs-on: ubuntu-latest
+    outputs:
+      apps: ${{ steps.affected.outputs.apps }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # the affected diff needs history
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: bun install --frozen-lockfile
+      - id: affected
+        env:
+          FORCED: ${{ inputs.app }}
+        run: |
+          set -euo pipefail
+          # app -> workspace package name, the bridge between turbo's graph and this file.
+          # blackboard-site has no package.json (static folder), so it is handled by a path diff below.
+          MAP="bigface=@sites/bigface bundant=@sites/bundant qublack=@sites/qublack jun-hermes=@sites/jun-hermes"
+          if [ -n "${FORCED:-}" ]; then
+            CHANGED=$(python3 -c 'import json,sys; print(json.dumps([sys.argv[1]]))' "$FORCED")
+            echo "forced by dispatch: $FORCED"
+          else
+            AFFECTED=$(bunx turbo run build --filter='...[HEAD^1]' --dry-run=json 2>/dev/null \
+              | python3 -c 'import sys,json; print("\n".join(sorted({t["package"] for t in json.load(sys.stdin).get("tasks",[])})))')
+            echo "affected packages:"; echo "$AFFECTED"
+            APPS=""
+            for pair in $MAP; do
+              app="${pair%%=*}"; pkg="${pair#*=}"
+              if grep -qx "$pkg" <<<"$AFFECTED"; then APPS="$APPS $app"; fi
+            done
+            [ -d apps/blackboard-site ] && git diff --name-only HEAD^1 HEAD -- apps/blackboard-site | grep -q . && APPS="$APPS blackboard-site"
+            CHANGED=$(python3 -c 'import json,sys; print(json.dumps(sys.argv[1].split()))' "$APPS")
+          fi
+          echo "apps=$CHANGED" >> "$GITHUB_OUTPUT"
+          echo "deploying: $CHANGED"
+
+  bigface:
+    needs: prep
+    if: contains(needs.prep.outputs.apps, '"bigface"')
+    runs-on: ubuntu-latest
+    concurrency: { group: deploy-bigface, cancel-in-progress: true }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: latest }
+      - uses: actions/setup-node@v4
+        with: { node-version: 24 }
+      - run: bun install --frozen-lockfile
+      - run: bunx turbo run build --filter=@sites/bigface...
+      - run: ./scripts/check-asset-prefixes.sh apps/bigface/dist
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy apps/bigface/dist --project-name bigface-theme --branch main
+
+  bundant:
+    needs: prep
+    if: contains(needs.prep.outputs.apps, '"bundant"')
+    runs-on: ubuntu-latest
+    concurrency: { group: deploy-bundant, cancel-in-progress: true }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: latest }
+      - uses: actions/setup-node@v4
+        with: { node-version: 24 }
+      - run: bun install --frozen-lockfile
+      - run: bunx turbo run build --filter=@sites/bundant...
+      - run: ./scripts/check-asset-prefixes.sh apps/bundant/dist
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy apps/bundant/dist --project-name bundant --branch main
+
+  qublack:
+    needs: prep
+    if: contains(needs.prep.outputs.apps, '"qublack"')
+    runs-on: ubuntu-latest
+    concurrency: { group: deploy-qublack, cancel-in-progress: true }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: latest }
+      - uses: actions/setup-node@v4
+        with: { node-version: 24 }
+      - run: bun install --frozen-lockfile
+      # The woff2 shards are cut from the latest release on every deploy; the script also rewrites
+      # the committed qublack-fonts.css from the same cut.
+      - run: bunx turbo run build --filter=@sites/qublack...
+      - run: ./scripts/check-asset-prefixes.sh apps/qublack/dist
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy apps/qublack/dist --project-name qublack --branch main
+
+  jun-hermes:
+    needs: prep
+    if: contains(needs.prep.outputs.apps, '"jun-hermes"')
+    runs-on: ubuntu-latest
+    concurrency: { group: deploy-jun-hermes, cancel-in-progress: true }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: latest }
+      - uses: actions/setup-node@v4
+        with: { node-version: 24 }
+      - run: bun install --frozen-lockfile
+      - run: bun run --cwd apps/jun-hermes build
+      - run: ./scripts/check-asset-prefixes.sh apps/jun-hermes/dist
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy apps/jun-hermes/dist --project-name jun-hermes --branch main
+
+  blackboard-site:
+    needs: prep
+    if: contains(needs.prep.outputs.apps, '"blackboard-site"')
+    runs-on: ubuntu-latest
+    concurrency: { group: deploy-blackboard, cancel-in-progress: true }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: latest }
+      - uses: actions/setup-node@v4
+        with: { node-version: 24 }
+      - run: bun install --frozen-lockfile
+      - name: Ensure the Pages project exists
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx --yes wrangler@4 pages project create blackboard --production-branch main || true
+      - run: ./scripts/check-asset-prefixes.sh apps/blackboard-site
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy apps/blackboard-site --project-name blackboard --branch main
