@@ -8,12 +8,15 @@
 // A value is one of:
 //   { color: "<palette colour>" }                  a colour of the palette (optionally pinned with palette: "dark")
 //   { mix: [a, pct, b] }                           color-mix(in oklab, a pct%, b) of two palette colours
+//   { plate: "<accent>" }                          a DEEPENED plate for an accent: the lightest mix of the accent into the dark
+//                                                  ink that still gives the accent 4.5:1 as text (solved in scripts/gen-tokens.ts)
 //   { light: <value>, dark: <value> }              a different value per mode
 //   "<literal>"                                    a non-colour literal (none in this package)
 export type Value =
 	| string
 	| { color: string; palette?: "dark" | "light" }
 	| { mix: [string, number, string] }
+	| { plate: string }
 	| { light: Value; dark: Value };
 
 export type ThemeRoles = Record<string, Value>;
@@ -104,6 +107,28 @@ export const COLOURS: ThemeRoles = {
 	overlay: { mix: ["bg", 75, "caret"] },
 	solid: { color: "cursorLine" },
 	"on-solid": { color: "fg" },
+	// The accent family as text colours, and a deepened plate for each: a vivid accent is read on its own plate, not on
+	// the paper (ruling 2026-10-24: the colour itself is unchanged; the plate is the deepened tint it is read on).
+	"accent-blue": { color: "blue" },
+	"plate-blue": { plate: "blue" },
+	"accent-light-blue": { color: "lightBlue" },
+	"plate-light-blue": { plate: "lightBlue" },
+	"accent-pale-blue": { color: "paleBlue" },
+	"plate-pale-blue": { plate: "paleBlue" },
+	"accent-cyan": { color: "cyan" },
+	"plate-cyan": { plate: "cyan" },
+	"accent-green": { color: "green" },
+	"plate-green": { plate: "green" },
+	"accent-lime": { color: "lime" },
+	"plate-lime": { plate: "lime" },
+	"accent-yellow": { color: "yellow" },
+	"plate-yellow": { plate: "yellow" },
+	"accent-bright-yellow": { color: "brightYellow" },
+	"plate-bright-yellow": { plate: "brightYellow" },
+	"accent-burnt-orange": { color: "burntOrange" },
+	"plate-burnt-orange": { plate: "burntOrange" },
+	"accent-purple": { color: "purple" },
+	"plate-purple": { plate: "purple" },
 	black: { light: { color: "fg" }, dark: { color: "bg" } },
 	white: { light: { color: "bg" }, dark: { color: "fg" } },
 };

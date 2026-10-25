@@ -29,6 +29,26 @@
   --theme-overlay: initial;
   --theme-solid: initial;
   --theme-on-solid: initial;
+  --theme-accent-blue: initial;
+  --theme-plate-blue: initial;
+  --theme-accent-light-blue: initial;
+  --theme-plate-light-blue: initial;
+  --theme-accent-pale-blue: initial;
+  --theme-plate-pale-blue: initial;
+  --theme-accent-cyan: initial;
+  --theme-plate-cyan: initial;
+  --theme-accent-green: initial;
+  --theme-plate-green: initial;
+  --theme-accent-lime: initial;
+  --theme-plate-lime: initial;
+  --theme-accent-yellow: initial;
+  --theme-plate-yellow: initial;
+  --theme-accent-bright-yellow: initial;
+  --theme-plate-bright-yellow: initial;
+  --theme-accent-burnt-orange: initial;
+  --theme-plate-burnt-orange: initial;
+  --theme-accent-purple: initial;
+  --theme-plate-purple: initial;
   --theme-black: initial;
   --theme-white: initial;
 }

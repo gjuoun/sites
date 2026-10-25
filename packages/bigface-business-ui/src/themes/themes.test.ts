@@ -5,7 +5,7 @@ import darkJson from "../../../bigface-tokens/palette/bigface.json";
 import lightJson from "../../../bigface-tokens/palette/bigface-light.json";
 import contract from "./contract.json";
 import { COLOURS, DEFAULT_MODE, OPTIONAL, REQUIRED, THEMES } from "./roles.ts";
-import { mixHex, renderAll, themesDir } from "../../scripts/gen-tokens.ts";
+import { mixHex, PLATE_FLOOR, renderAll, solvePlate, themesDir } from "../../scripts/gen-tokens.ts";
 import { contrastRatio } from "../../../bigface-tokens/src/contrast-math.ts";
 
 // The business package is COLOUR ONLY. These tests hold it to the colour contract and to the standing colour
@@ -139,6 +139,9 @@ describe("bigface-business-ui: colour only", () => {
 				const got = b[mode]["--theme-" + key];
 				if ("color" in value) {
 					expect(got, mode + " " + key).toBe(pick(value.color, value.palette));
+				} else if ("plate" in value) {
+					// a plate is solved, not mixed: the lightest mix of the accent into the dark ink that gives it the floor
+					expect(got, mode + " " + key).toBe(solvePlate(pick(value.plate) as string, dark.colors.bg.hex.toLowerCase()));
 				} else {
 					const [a, pct, c] = value.mix;
 					expect(got, mode + " " + key).toBe(mixHex(pick(a) as string, pct, pick(c) as string));
@@ -166,4 +169,28 @@ describe("bigface-business-ui: colour only", () => {
 		const keys = [...reset.matchAll(/--theme-([\w-]+): initial;/g)].map((m) => "--theme-" + m[1]);
 		expect(keys.sort()).toEqual(OPTIONAL.map((k) => "--theme-" + k).sort());
 	});
+});
+
+// The accent family (ruling 2026-10-24): each accent is the palette's own colour as text, and a deepened plate it is
+// read on. The plate is the LIGHTEST mix of the accent into the dark ink that still gives the accent PLATE_FLOOR:
+// the ratio sits at the floor, not far above it, so the plate is no darker than the accent needs.
+const ACCENTS = [
+	["blue", "blue"], ["light-blue", "lightBlue"], ["pale-blue", "paleBlue"], ["cyan", "cyan"], ["green", "green"],
+	["lime", "lime"], ["yellow", "yellow"], ["bright-yellow", "brightYellow"], ["burnt-orange", "burntOrange"], ["purple", "purple"],
+] as const;
+
+test("each accent is the palette's own colour, and reads on its deepened plate at the floor, not far above it", () => {
+	const b = blocks();
+	const base = dark.colors.bg.hex.toLowerCase();
+	for (const [id, pal] of ACCENTS) {
+		const accent = dark.colors[pal]?.hex.toLowerCase() as string;
+		expect(String(b.light["--theme-accent-" + id]).toLowerCase(), "accent " + id).toBe(accent);
+		expect(String(b.dark["--theme-accent-" + id]).toLowerCase(), "accent " + id + " dark").toBe(accent);
+		const plate = String(b.light["--theme-plate-" + id]).toLowerCase();
+		expect(String(b.dark["--theme-plate-" + id]).toLowerCase(), "plate " + id + " same in both modes").toBe(plate);
+		const ratio = contrastRatio(accent, plate);
+		expect(ratio, id + " on its plate").toBeGreaterThanOrEqual(PLATE_FLOOR);
+		expect(ratio, id + " plate is no darker than it needs to be").toBeLessThan(PLATE_FLOOR + 0.15);
+		expect(plate, id + " is the solved plate").toBe(solvePlate(accent, base));
+	}
 });

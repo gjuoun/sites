@@ -11,6 +11,7 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { OPTIONAL, REQUIRED, THEMES, type Theme, type Value } from "../src/themes/roles.ts";
+import { contrastRatio } from "../../bigface-tokens/src/contrast-math.ts";
 
 export interface PaletteLike {
 	colors: Record<string, { hex: string }>;
@@ -62,6 +63,26 @@ export function mixHex(a: string, pct: number, b: string): string {
 	);
 }
 
+/** WCAG floor for text: a plate must give its accent at least this ratio. */
+export const PLATE_FLOOR = 4.5;
+
+/**
+ * The deepened plate of an accent: the lightest mix of the accent into the base that still gives the accent PLATE_FLOOR
+ * as text. More accent is lighter, so the contrast falls as the share rises; bisection finds the largest share that
+ * still clears the floor. Deterministic: same accent and base, same hex.
+ */
+export function solvePlate(accent: string, base: string, floor = PLATE_FLOOR): string {
+	if (contrastRatio(accent, base) < floor) throw new Error("accent " + accent + " cannot clear " + floor + " on " + base);
+	let lo = 0; // always clears the floor
+	let hi = 100; // never does (checked by the loop)
+	for (let i = 0; i < 40; i++) {
+		const mid = (lo + hi) / 2;
+		if (contrastRatio(accent, mixHex(accent, mid, base)) >= floor) lo = mid;
+		else hi = mid;
+	}
+	return mixHex(accent, lo, base);
+}
+
 const hexOf = (palette: PaletteLike, name: string): string => {
 	const c = palette.colors[name] ?? palette.ansi[name];
 	if (!c) throw new Error("no palette colour named " + name);
@@ -81,6 +102,8 @@ export function cssValue(
 		const chosen = v.palette === "dark" && dark ? dark : palette;
 		return hexOf(chosen, v.color);
 	}
+	// A plate is solved against the dark ink, the same in both modes: the accents are identical in both palettes.
+	if ("plate" in v) return solvePlate(hexOf(palette, v.plate), hexOf(dark ?? palette, "bg"));
 	const [a, pct, b] = v.mix;
 	return mixHex(hexOf(palette, a), pct, hexOf(palette, b));
 }

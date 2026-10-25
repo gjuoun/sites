@@ -66,3 +66,18 @@ sets one.
 
 Three copies are a decision: a shadcn upgrade is applied to each package. `biz:drift` checks each copy against the
 registry, not the copies against each other.
+
+## The accent family and its plates
+
+The light accents are the palette's own colours (ruling 2026-10-24): blue, light blue, pale blue, cyan, green, lime,
+yellow, bright yellow, burnt orange and purple are the same hex in both modes. Each is a role as text (`--theme-accent-*`),
+and a deepened plate it is read on (`--theme-plate-*`).
+
+A plate is solved, not picked: it is the lightest mix of the accent into the dark ink that still gives the accent 4.5:1
+as text (`solvePlate` in `scripts/gen-tokens.ts`, `PLATE_FLOOR`). Two facts follow from the measurements:
+
+- on the paper canvas the accents read at 1.11 to 2.92:1, so as text they are not legible;
+- on their own plates each reads at 4.51 to 4.54:1, and the plate is identical in both modes.
+
+Plates are used where an accent is content (the accent chips and the colour section's accent table). The stock components
+are not restyled, so a stock badge that uses a tint keeps its own colours.
