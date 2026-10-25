@@ -43,69 +43,84 @@ import { CardDemo, TabsDemo } from "./_demos.tsx";
 // are: the semantic tokens (tailwind.css :root), the font stacks (@theme), the text scale (every
 // font-size class used under src/).
 const sources = Object.values(
-  import.meta.glob(
-    [
-      "../../components/**/*.astro",
-      "../../../../../packages/ui/src/components/**/*.tsx",
-      "../**/*.astro",
-    ],
-    {
-      query: "?raw",
-      import: "default",
-      eager: true,
-    },
-  ),
+	import.meta.glob(
+		[
+			"../../components/**/*.astro",
+			"../../../../../packages/ui/src/components/**/*.tsx",
+			"../**/*.astro",
+		],
+		{
+			query: "?raw",
+			import: "default",
+			eager: true,
+		},
+	),
 ) as string[];
 const scale = textScale(sources);
 
 const rootBlock = /:root \{([\s\S]*?)\n\}/.exec(tailwindCss)?.[1] ?? "";
-const tokens = [...rootBlock.matchAll(/--([\w-]+):\s*var\(--([\w-]+)\);/g)].map((m) => ({
-  token: m[1] as string,
-  source: m[2] as string,
-}));
+const tokens = [...rootBlock.matchAll(/--([\w-]+):\s*var\(--([\w-]+)\);/g)].map(
+	(m) => ({
+		token: m[1] as string,
+		source: m[2] as string,
+	}),
+);
 const font = (name: string) =>
-  new RegExp(`--font-${name}:\\s*([^;]+);`).exec(tailwindCss)?.[1]?.trim() ?? "";
+	new RegExp(`--font-${name}:\\s*([^;]+);`).exec(tailwindCss)?.[1]?.trim() ??
+	"";
 const fonts = [
-  {
-    cls: "font-display",
-    label: "Display",
-    stack: font("display"),
-    use: "headings, the brand, stats",
-  },
-  { cls: "font-sans", label: "Sans", stack: font("sans"), use: "body copy and controls" },
-  {
-    cls: "font-code",
-    label: "Mono",
-    stack: `${font("mono")} + "MONO" 1 axis`,
-    use: "code, commands, kickers, chips",
-  },
+	{
+		cls: "font-display",
+		label: "Display",
+		stack: font("display"),
+		use: "headings, the brand, stats",
+	},
+	{
+		cls: "font-sans",
+		label: "Sans",
+		stack: font("sans"),
+		use: "body copy and controls",
+	},
+	{
+		cls: "font-code",
+		label: "Mono",
+		stack: `${font("mono")} + "MONO" 1 axis`,
+		use: "code, commands, kickers, chips",
+	},
 ];
 const ansiRows = Object.entries(palette.ansi);
-const swatches = "grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-[0.7rem]";
+const swatches =
+	"grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-[0.7rem]";
 const subLink =
-  "rounded-full px-[0.7rem] py-[0.3rem] text-bf-fg-muted hover:bg-bf-border/10 hover:text-foreground";
+	"rounded-full px-[0.7rem] py-[0.3rem] text-bf-fg-muted hover:bg-bf-border/10 hover:text-foreground";
 const sections = [
-  ["tokens", "Colour"],
-  ["type", "Type"],
-  ["native", "Native"],
-  ["bg", "BG"],
-  ["missing", "Not yet"],
+	["tokens", "Colour"],
+	["themes", "Themes"],
+	["type", "Type"],
+	["native", "Native"],
+	["bg", "BG"],
+	["missing", "Not yet"],
 ];
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 const bgSources = Object.fromEntries(
-  Object.entries(
-    import.meta.glob(
-      ["../../components/bg/*.{astro,ts}", "../../../../../packages/ui/src/components/bg/*.tsx"],
-      {
-        query: "?raw",
-        import: "default",
-        eager: true,
-      },
-    ),
-  ).map(([path, src]) => [path.split("/").pop() as string, src as string]),
+	Object.entries(
+		import.meta.glob(
+			[
+				"../../components/bg/*.{astro,ts}",
+				"../../../../../packages/ui/src/components/bg/*.tsx",
+			],
+			{
+				query: "?raw",
+				import: "default",
+				eager: true,
+			},
+		),
+	).map(([path, src]) => [path.split("/").pop() as string, src as string]),
 );
 const notFinal = bgCatalog.filter((e) => !e.finalised);
-const pi = targets.find((t) => t.id === "pi") ?? (targets[0] as (typeof targets)[number]);
+const pi =
+	targets.find((t) => t.id === "pi") ??
+	(targets[0] as (typeof targets)[number]);
 const market = targets.find((t) => t.market);
 const kinds = [...new Set(targets.map((t) => t.kind))];
 // Variant and size keys come from the shadcn sources, so a variant added upstream shows up here.
@@ -117,59 +132,67 @@ type ButtonVariant = NonNullable<Parameters<typeof Button>[0]["variant"]>;
 type ButtonSize = NonNullable<Parameters<typeof Button>[0]["size"]>;
 type BadgeVariant = NonNullable<Parameters<typeof Badge>[0]["variant"]>;
 const entry = "mt-[1.4rem] min-w-0 p-5 md:p-6";
-const matrix = "max-w-full overflow-x-auto rounded-[14px] border border-bf-border-muted p-3";
+const matrix =
+	"max-w-full overflow-x-auto rounded-[14px] border border-bf-border-muted p-3";
 
 // The whole native set, read from the directory itself: the list can never fall behind
 // components/ui. Exports come from each file's own export statement, variants from its cva.
 const nativeSet = Object.entries(
-  import.meta.glob("../../../../../packages/ui/src/components/ui/*.tsx", {
-    query: "?raw",
-    import: "default",
-    eager: true,
-  }),
+	import.meta.glob("../../../../../packages/ui/src/components/ui/*.tsx", {
+		query: "?raw",
+		import: "default",
+		eager: true,
+	}),
 )
-  .map(([path, raw]) => {
-    const name = (path.split("/").pop() as string).replace(/\.tsx$/, "");
-    const src = raw as string;
-    const block = /export\s*\{([\s\S]*?)\}/.exec(src)?.[1] ?? "";
-    const parts = block
-      ? block
-          .split(",")
-          .map((s) => s.trim())
-          .filter(Boolean)
-      : [...src.matchAll(/export\s+(?:function|const|class|type|interface)\s+(\w+)/g)].map(
-          (m) => m[1] as string,
-        );
-    return {
-      name,
-      parts,
-      variants: variantKeys(src, "variant"),
-      sizes: variantKeys(src, "size"),
-    };
-  })
-  .sort((a, b) => a.name.localeCompare(b.name));
+	.map(([path, raw]) => {
+		const name = (path.split("/").pop() as string).replace(/\.tsx$/, "");
+		const src = raw as string;
+		const block = /export\s*\{([\s\S]*?)\}/.exec(src)?.[1] ?? "";
+		const parts = block
+			? block
+					.split(",")
+					.map((s) => s.trim())
+					.filter(Boolean)
+			: [
+					...src.matchAll(
+						/export\s+(?:function|const|class|type|interface)\s+(\w+)/g,
+					),
+				].map((m) => m[1] as string);
+		return {
+			name,
+			parts,
+			variants: variantKeys(src, "variant"),
+			sizes: variantKeys(src, "size"),
+		};
+	})
+	.sort((a, b) => a.name.localeCompare(b.name));
 const nativeFeatured = new Set(["button", "badge", "card", "tabs"]);
 const nativeRest = nativeSet.filter((e) => !nativeFeatured.has(e.name));
 const cellLabel = "font-code text-[0.7rem] text-bf-dim";
 ---
 
 <Base
-  title="Bigface UI — the component library"
-  description="Every colour, font and component the Bigface site is built from, rendered live."
+  chrome={false}
+  bleed
+  noindex
+  themable
+  title="Bigface UI — component workspace"
+  description="The internal Bigface component workspace: every colour, font and component, rendered live."
 >
-  <section class="pt-[clamp(0.5rem,3vw,2rem)]" data-reveal>
+  <div class="px-[clamp(1rem,4vw,2.5rem)] pt-[clamp(0.75rem,3vw,1.5rem)] pb-20">
+  <section data-reveal>
     <BGEyebrow>component library · work in progress</BGEyebrow>
     <h1 class="text-[clamp(2.6rem,6vw,4.4rem)] leading-[1.02] font-extrabold">
       Bigface <span class="bf-grad">UI</span>
     </h1>
     <p class="bf-lead">
-      This page is the library the site itself is built from: every colour, font and component below
-      is the production one, rendered live.
+      The internal workspace where this library is built and iterated: every colour, font and
+      component below is the production one, rendered live. Unlisted — reachable by URL only.
     </p>
   </section>
 
   <nav
-    class="sticky top-[3.9rem] z-20 mt-[2.2rem] flex flex-wrap gap-[0.35rem] rounded-[16px] border border-bf-border bg-bf-border-muted/82 p-[0.55rem] text-[0.8rem] backdrop-blur-[14px] max-[700px]:static"
+    class="sticky top-0 z-20 mt-[1.6rem] flex flex-wrap gap-[0.35rem] rounded-[16px] border border-bf-border bg-bf-border-muted/82 p-[0.55rem] text-[0.8rem] backdrop-blur-[14px] max-[700px]:static"
     aria-label="Library sections"
   >
     {sections.map(([id, title]) => <a class={subLink} href={`#${id}`}>{title}</a>)}
@@ -264,6 +287,50 @@ const cellLabel = "font-code text-[0.7rem] text-bf-dim";
       }
     </BGCard>
   </section>
+  <BGDivider />
+
+  <section id="themes">
+    <BGSectionHead eyebrow="02 — themes" title="Two themes, one page each">
+      Every value is a role from <code>contract.json</code>, rendered by
+      the generator from the two palettes (<code>bigface.json</code> and <code>bigface-light.json</code>),
+      so a theme is data — never a forked component. <strong>Business</strong> is the light, quiet one for
+      marketing and product pages ; <strong>console</strong> is this site's own dark workspace;
+      Each theme has its own page, one theme per page.
+    </BGSectionHead>
+    <BGCard tone="plate" className="p-5 md:p-6">
+      <a
+        href={`${base}/ui/business/`}
+        class="group flex flex-wrap items-baseline justify-between gap-3 no-underline"
+      >
+        <span>
+          <span class="font-code text-[0.78rem] tracking-[0.06em] uppercase text-bf-fg-muted">
+            business · @gjuoun/bigface-business-ui
+          </span>
+          <span class="mt-1 block text-[1.05rem] font-semibold text-foreground">
+            Open business, light and dark →
+          </span>
+        </span>
+        <span class="font-code text-[0.78rem] text-bf-blue group-hover:underline">/ui/business/</span>
+      </a>
+    </BGCard>
+    <BGCard tone="plate" className="p-5 md:p-6">
+      <a
+        href={`${base}/ui/console/`}
+        class="group flex flex-wrap items-baseline justify-between gap-3 no-underline"
+      >
+        <span>
+          <span class="font-code text-[0.78rem] tracking-[0.06em] uppercase text-bf-fg-muted">
+            console · @gjuoun/bigface-ui
+          </span>
+          <span class="mt-1 block text-[1.05rem] font-semibold text-foreground">
+            Open console, light and dark →
+          </span>
+        </span>
+        <span class="font-code text-[0.78rem] text-bf-blue group-hover:underline">/ui/console/</span>
+      </a>
+    </BGCard>
+  </section>
+
   <BGDivider />
 
   <section id="native">
@@ -614,4 +681,5 @@ const cellLabel = "font-code text-[0.7rem] text-bf-dim";
       </ul>
     </BGCard>
   </section>
+  </div>
 </Base>

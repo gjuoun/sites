@@ -59,6 +59,7 @@ jobs:
           src="$RUNNER_TEMP/bigface-theme"
           dst=packages/bigface-tokens
           cmp "$src/palette/bigface.json" "$dst/palette/bigface.json"
+          cmp "$src/palette/bigface-light.json" "$dst/palette/bigface-light.json"
           cmp "$src/src/contrast-math.ts" "$dst/src/contrast-math.ts"
           cmp "$src/src/installer.ts" "$dst/src/installer.ts"
           diff -r "$src/themes" "$dst/themes"

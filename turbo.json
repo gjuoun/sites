@@ -13,7 +13,8 @@
     },
     "test": {
       "cache": false,
-      "outputs": []
+      "outputs": [],
+      "dependsOn": ["build"]
     }
   }
 }

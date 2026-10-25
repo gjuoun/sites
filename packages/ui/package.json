@@ -30,8 +30,10 @@
     "./components/*": "./src/components/*.tsx",
     "./hooks/*": "./src/hooks/*.ts",
     "./lib/utils": "./src/lib/utils.ts",
+    "./lib/themes": "./src/lib/themes.ts",
     "./lib/highlighter": "./src/lib/highlighter.tsx",
     "./theme.css": "./src/styles/theme.css",
+    "./themes/*": "./src/themes/*",
     "./tokens.css": "./src/styles/tokens.css",
     "./styles.css": "./src/styles/styles.css",
     "./package.json": "./package.json"
@@ -39,9 +41,10 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "ui:drift": "bun run scripts/ui-drift.ts",
+    "ui:theme": "bun run scripts/theme-check.ts",
     "theme:sync": "bun run scripts/gen-tokens.ts",
     "theme:check": "bun run scripts/gen-tokens.ts --check",
-    "test": "bun test src"
+    "test": "bun test src scripts"
   },
   "dependencies": {
     "cn": "^0.5.0"
@@ -118,12 +121,14 @@
   },
   "devDependencies": {
     "@base-ui/react": "^1.9.0",
+    "@happy-dom/global-registrator": "^21.0.4",
     "@shadcn/react": "^0.3.1",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "class-variance-authority": "^0.7.1",
     "cmdk": "^1.1.1",
     "embla-carousel-react": "^8.6.0",
+    "happy-dom": "^21.0.4",
     "input-otp": "^1.5.0",
     "lucide-react": "^1.60.0",
     "next-themes": "^0.4.6",

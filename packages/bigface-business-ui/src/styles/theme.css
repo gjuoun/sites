@@ -1,0 +1,164 @@
+/* Tailwind's colour side of the business theme: COLOUR ONLY.
+
+   Every size, radius, shadow geometry, font and motion value is Tailwind's or shadcn's own, so each component
+   renders exactly as the CLI ships it. This file only says which palette colour each shadcn role is. The values
+   come from src/themes/business.css, generated from the two Bigface palettes, light and dark. */
+
+/* dark: follows the mode attribute, not a class. :is() keeps the (0,1,0) specificity the .dark variant had. */
+@custom-variant dark (&:is([data-mode="dark"], [data-mode="dark"] *));
+
+@theme inline {
+  /* the shadcn init alias: components.json's class rewrites read it; it adds no style of its own */
+  --font-heading: var(--font-sans);
+
+  /* shadcn's colour names, as Tailwind colours */
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+
+  /* shadcn's radius scale, derived from --radius exactly as the CLI writes it */
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* the business colour roles, as Tailwind colours (bg-surface, text-heading, ...) */
+  --color-canvas: var(--theme-canvas);
+  --color-ink: var(--theme-ink);
+  --color-heading: var(--theme-heading);
+  --color-surface: var(--theme-surface, var(--theme-gray-100));
+  --color-subtle: var(--theme-subtle, var(--theme-gray-200));
+  --color-muted-ink: var(--theme-muted-ink, var(--theme-gray-500));
+  --color-frame: var(--theme-frame);
+  --color-on-frame: var(--theme-on-frame);
+  --color-solid: var(--theme-solid, var(--theme-frame));
+  --color-on-solid: var(--theme-on-solid, var(--theme-on-frame));
+  --color-overlay: var(--theme-overlay, color-mix(in oklab, var(--theme-canvas) 75%, transparent));
+  --color-success: var(--theme-success);
+  --color-danger: var(--theme-danger);
+  --color-info: var(--theme-info);
+  --color-highlight: var(--theme-highlight);
+  --color-primary-ink: var(--theme-primary-ink, var(--theme-primary));
+  --color-primary-tint: var(--theme-primary-tint, color-mix(in oklab, var(--theme-primary) 12%, var(--theme-canvas)));
+  --color-success-tint: var(--theme-success-tint, color-mix(in oklab, var(--theme-success) 14%, var(--theme-canvas)));
+  --color-danger-tint: var(--theme-danger-tint, color-mix(in oklab, var(--theme-danger) 14%, var(--theme-canvas)));
+  --color-info-tint: var(--theme-info-tint, color-mix(in oklab, var(--theme-info) 14%, var(--theme-canvas)));
+  --color-highlight-tint: var(--theme-highlight-tint, color-mix(in oklab, var(--theme-highlight) 14%, var(--theme-canvas)));
+  --color-gray-100: var(--theme-gray-100);
+  --color-gray-200: var(--theme-gray-200);
+  --color-gray-300: var(--theme-gray-300);
+  --color-gray-400: var(--theme-gray-400);
+  --color-gray-500: var(--theme-gray-500);
+  --color-gray-600: var(--theme-gray-600);
+  --color-gray-700: var(--theme-gray-700);
+
+  /* black and white are the palette's darkest and lightest. The stock scrim (bg-black/10) and the stock
+     slider thumb (bg-white) resolve through them, so no stock class changes. White is paper, never #fff. */
+  --color-black: var(--theme-black);
+  --color-white: var(--theme-white);
+
+  /* Tailwind's shadow geometry, unchanged. Only the colour is the palette's: Tailwind's shadows are black at
+     5-25%, and black is not a palette colour, so the same alphas are taken from --color-black. */
+  --shadow: 0 1px 3px 0 color-mix(in oklab, var(--color-black) 10%, transparent), 0 1px 2px -1px color-mix(in oklab, var(--color-black) 10%, transparent);
+  --shadow-2xs: 0 1px color-mix(in oklab, var(--color-black) 5%, transparent);
+  --shadow-xs: 0 1px 2px 0 color-mix(in oklab, var(--color-black) 5%, transparent);
+  --shadow-sm: 0 1px 3px 0 color-mix(in oklab, var(--color-black) 10%, transparent), 0 1px 2px -1px color-mix(in oklab, var(--color-black) 10%, transparent);
+  --shadow-md: 0 4px 6px -1px color-mix(in oklab, var(--color-black) 10%, transparent), 0 2px 4px -2px color-mix(in oklab, var(--color-black) 10%, transparent);
+  --shadow-lg: 0 10px 15px -3px color-mix(in oklab, var(--color-black) 10%, transparent), 0 4px 6px -4px color-mix(in oklab, var(--color-black) 10%, transparent);
+  --shadow-xl: 0 20px 25px -5px color-mix(in oklab, var(--color-black) 10%, transparent), 0 8px 10px -6px color-mix(in oklab, var(--color-black) 10%, transparent);
+  --shadow-2xl: 0 25px 50px -12px color-mix(in oklab, var(--color-black) 25%, transparent);
+}
+
+/* The stock native-select paints its options with the browser system colours Canvas and CanvasText. Those are
+   keywords, not palette colours, so the business theme maps the two utilities onto its own canvas and ink. The
+   component is unchanged; only the colour it resolves to is the palette's. */
+.bg-\[Canvas\] {
+  background-color: var(--background);
+}
+.text-\[CanvasText\] {
+  color: var(--foreground);
+}
+
+/* shadcn's semantic colour tokens, mapped onto the theme roles. Each falls back to its contract default, so
+   a block that omits an optional role still resolves. --radius is shadcn's default, not a theme value. */
+:root,
+[data-theme] {
+  --radius: 0.625rem;
+  --background: var(--theme-canvas);
+  --foreground: var(--theme-ink);
+  --card: var(--theme-surface, var(--theme-gray-100));
+  --card-foreground: var(--theme-ink);
+  --popover: var(--theme-surface, var(--theme-gray-100));
+  --popover-foreground: var(--theme-ink);
+  --primary: var(--theme-primary-fill, var(--theme-primary));
+  --primary-foreground: var(--theme-on-primary);
+  --secondary: var(--theme-secondary, var(--theme-gray-300));
+  --secondary-foreground: var(--theme-on-secondary, var(--theme-ink));
+  --muted: var(--theme-subtle, var(--theme-gray-200));
+  --muted-foreground: var(--theme-muted-ink, var(--theme-gray-500));
+  --accent: var(--theme-subtle, var(--theme-gray-200));
+  --accent-foreground: var(--theme-ink);
+  --destructive: var(--theme-danger);
+  --border: var(--theme-border, var(--theme-gray-300));
+  --input: var(--theme-input, var(--theme-gray-300));
+  --ring: var(--theme-primary-ink, var(--theme-focus, var(--theme-info)));
+  --chart-1: var(--theme-chart-1, var(--theme-primary));
+  --chart-2: var(--theme-chart-2, var(--theme-success));
+  --chart-3: var(--theme-chart-3, var(--theme-highlight));
+  --chart-4: var(--theme-chart-4, var(--theme-danger));
+  --chart-5: var(--theme-chart-5, var(--theme-info));
+  --sidebar: var(--theme-frame);
+  --sidebar-foreground: var(--theme-on-frame);
+  --sidebar-primary: var(--theme-primary-fill, var(--theme-primary));
+  --sidebar-primary-foreground: var(--theme-on-primary);
+  --sidebar-accent: var(--theme-subtle, var(--theme-gray-200));
+  --sidebar-accent-foreground: var(--theme-ink);
+  --sidebar-border: var(--theme-border, var(--theme-gray-300));
+  --sidebar-ring: var(--theme-primary-ink, var(--theme-focus, var(--theme-info)));
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+  [data-mode="dark"] {
+    color-scheme: dark;
+  }
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

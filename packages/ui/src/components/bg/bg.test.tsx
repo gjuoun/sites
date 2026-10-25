@@ -6,10 +6,13 @@ import { BGCard } from "./card.tsx";
 
 const classes = (html: string) => (/class="([^"]*)"/.exec(html)?.[1] ?? "").split(" ");
 
-test("BGButton tone=glow paints the blue plate with dark ink and drops shadcn's bg-primary", () => {
+test("BGButton tone=glow paints the theme's primary FILL with its on-primary ink", () => {
   const c = classes(renderToStaticMarkup(<BGButton tone="glow">Install</BGButton>));
-  expect(c).toContain("from-bf-blue");
-  expect(c).toContain("text-ink-on-bright");
+  // The plate is the theme's own fill, so light mode gets bigface's native blue and dark ink on it —
+  // not a palette name that would follow the mode's derived (text-safe) blue.
+  expect(c).toContain("from-[var(--theme-primary)]");
+  expect(c).toContain("to-[var(--theme-primary-edge)]");
+  expect(c).toContain("text-[var(--theme-on-primary)]");
   expect(c).not.toContain("bg-primary");
   expect(c).not.toContain("text-primary-foreground");
 });

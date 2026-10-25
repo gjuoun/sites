@@ -1,0 +1,21 @@
+/* Tailwind entry for the business showcase page only (/ui/business/). It is its own entry, not the site's
+   global one, so no other theme's variables reach this page: one theme per page. The business package
+   owns the theme; this file scans it and clears Tailwind's default colour scale. */
+@import "tailwindcss" source(none);
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "./reset-palette.css";
+@import "./qublack.css";
+@import "@gjuoun/bigface-business-ui/styles.css";
+
+@source "../../../../packages/bigface-business-ui/src";
+@source "../pages/ui/business";
+@source not "../**/*.test.ts";
+@source not "../**/*.test.tsx";
+
+/* The showcase's font stacks: QuBlack first, then the system fallback of the same kind. The business theme sets no
+   font; the site's own entry does, and only on this page. */
+@theme inline {
+  --font-sans: "QuBlack Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "QuBlack Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}

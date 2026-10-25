@@ -1,0 +1,23 @@
+---
+import BusinessShowcase from "../../../layouts/BusinessShowcase.astro";
+import { Catalog } from "./_catalog.tsx";
+---
+
+<BusinessShowcase
+  title="Bigface Business: UI package"
+  description="All 63 shadcn components of @gjuoun/bigface-business-ui, live, in the business colours."
+>
+  <main class="mx-auto flex max-w-[1480px] flex-col gap-8 px-6 pt-10 pb-24">
+    <header class="flex flex-col gap-2">
+      <p class="font-mono text-xs uppercase tracking-[0.06em] text-muted-foreground">
+        @gjuoun/bigface-business-ui
+      </p>
+      <h1 class="text-3xl font-semibold text-foreground">Business</h1>
+      <p class="max-w-[62ch] text-muted-foreground">
+        The shadcn components, as the CLI ships them, in the business colours. Only the colour is the theme's:
+        radius, type, spacing and motion are shadcn's own. Every component below is live; try them.
+      </p>
+    </header>
+    <Catalog client:load />
+  </main>
+</BusinessShowcase>

@@ -48,8 +48,8 @@ export function findInklessBrightPlates(html: string): string[] {
     const slot = /data-slot="([\w-]+)"/.exec(tagAt(html, at))?.[1] ?? "";
     if (TEXTLESS.has(slot)) continue;
     const tokens = (m[1] as string).split(/\s+/).filter(Boolean).map(splitVariant);
-    // The site is permanently dark (`<html class="dark">` is static), so a `dark:`-prefixed
-    // variant is the same state as the un-prefixed one: normalise it away before matching.
+    // The page ships with `data-mode="dark"` on <html> (a theme can be switched to light at runtime),
+    // so a `dark:`-prefixed variant is the state this build paints: normalise it away before matching.
     const norm = (v: string) => v.replace(/(^|:)dark:/g, "$1");
     const inks = new Set(tokens.filter(([, u]) => INK.has(u)).map(([v]) => norm(v)));
     // a ::before/::after with empty content is a decorative dot or rim: there is no text to ink

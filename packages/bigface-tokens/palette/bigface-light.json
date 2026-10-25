@@ -1,0 +1,166 @@
+{
+  "name": "Bigface Light",
+  "appearance": "light",
+  "colors": {
+    "bg": {
+      "hex": "#f8f8f0",
+      "source": "dark:caret"
+    },
+    "fg": {
+      "hex": "#252925",
+      "source": "dark:bg"
+    },
+    "fgDim": {
+      "hex": "#6e6b68",
+      "source": "derived:fgDim"
+    },
+    "border": {
+      "hex": "#d7d8d0",
+      "source": "derived:border"
+    },
+    "borderMuted": {
+      "hex": "#e5e5de",
+      "source": "derived:borderMuted"
+    },
+    "selection": {
+      "hex": "#c5c6bf",
+      "source": "derived:selection"
+    },
+    "cursorLine": {
+      "hex": "#ecece5",
+      "source": "derived:cursorLine"
+    },
+    "braceMatch": {
+      "hex": "#dedfd7",
+      "source": "derived:braceMatch"
+    },
+    "blue": {
+      "hex": "#00b0ff",
+      "source": "dark:blue"
+    },
+    "lightBlue": {
+      "hex": "#40c4ff",
+      "source": "dark:lightBlue"
+    },
+    "paleBlue": {
+      "hex": "#b3e5fc",
+      "source": "dark:paleBlue"
+    },
+    "cyan": {
+      "hex": "#66d9ef",
+      "source": "dark:cyan"
+    },
+    "green": {
+      "hex": "#00c853",
+      "source": "dark:green"
+    },
+    "lime": {
+      "hex": "#c6ff00",
+      "source": "dark:lime"
+    },
+    "yellow": {
+      "hex": "#e5e500",
+      "source": "dark:yellow"
+    },
+    "brightYellow": {
+      "hex": "#ffeb3b",
+      "source": "dark:brightYellow"
+    },
+    "burntOrange": {
+      "hex": "#fc5d23",
+      "source": "dark:burntOrange"
+    },
+    "purple": {
+      "hex": "#ae81ff",
+      "source": "dark:purple"
+    },
+    "comment": {
+      "hex": "#75715e",
+      "source": "derived:comment"
+    },
+    "caret": {
+      "hex": "#252925",
+      "source": "dark:bg"
+    }
+  },
+  "ansi": {
+    "black": {
+      "hex": "#d7d8d0",
+      "source": "alias:border"
+    },
+    "red": {
+      "hex": "#fc5d23",
+      "source": "alias:burntOrange"
+    },
+    "green": {
+      "hex": "#00c853",
+      "source": "alias:green"
+    },
+    "yellow": {
+      "hex": "#e5e500",
+      "source": "alias:yellow"
+    },
+    "blue": {
+      "hex": "#00b0ff",
+      "source": "alias:blue"
+    },
+    "magenta": {
+      "hex": "#ae81ff",
+      "source": "alias:purple"
+    },
+    "cyan": {
+      "hex": "#66d9ef",
+      "source": "alias:cyan"
+    },
+    "white": {
+      "hex": "#252925",
+      "source": "alias:fg"
+    },
+    "brightBlack": {
+      "hex": "#6e6b68",
+      "source": "alias:fgDim"
+    },
+    "brightRed": {
+      "hex": "#fc5d23",
+      "source": "alias:burntOrange"
+    },
+    "brightGreen": {
+      "hex": "#c6ff00",
+      "source": "alias:lime"
+    },
+    "brightYellow": {
+      "hex": "#ffeb3b",
+      "source": "alias:brightYellow"
+    },
+    "brightBlue": {
+      "hex": "#40c4ff",
+      "source": "alias:lightBlue"
+    },
+    "brightMagenta": {
+      "hex": "#ae81ff",
+      "source": "alias:purple"
+    },
+    "brightCyan": {
+      "hex": "#b3e5fc",
+      "source": "alias:paleBlue"
+    },
+    "brightWhite": {
+      "hex": "#252925",
+      "source": "alias:caret"
+    }
+  },
+  "syntax": {
+    "comment": "comment",
+    "keyword": "blue",
+    "function": "lime",
+    "variable": "green",
+    "string": "yellow",
+    "number": "burntOrange",
+    "type": "cyan",
+    "operator": "brightYellow",
+    "punctuation": "fg",
+    "constant": "purple",
+    "tag": "lightBlue",
+    "parameter": "paleBlue"
+  }
+}

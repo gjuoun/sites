@@ -1,0 +1,6 @@
+/* The business theme in one import: the colour mapping, the reset of optional roles, and the business theme's
+   light and dark blocks. Colour only, as the CLI's components expect. Tailwind still needs an @source line
+   pointing at this package's src (consumer-side wiring, see README). */
+@import "./theme.css";
+@import "../themes/_reset.css";
+@import "../themes/business.css";
