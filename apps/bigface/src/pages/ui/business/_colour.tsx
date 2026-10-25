@@ -3,6 +3,7 @@ import businessCss from "@gjuoun/bigface-business-ui/themes/business.css?raw";
 import darkPalette from "@gjuoun/bigface-tokens/palette.json";
 import lightPalette from "@gjuoun/bigface-tokens/palette-light.json";
 import { Block } from "./_frame.tsx";
+import { ACCENTS } from "./_accents.tsx";
 
 // The colour section reads the generated business theme, so it cannot drift from what the components use. Each light
 // value sits in a light scope and each dark value in a dark scope, so every swatch is painted by the same --theme-*
@@ -63,7 +64,7 @@ const PAIRS: Pair[] = [
 const RULES = [
 	"Paper, never white: light surfaces are the paper tone, and pure white is not used in either mode.",
 	"The accent family is the palette's own in both modes (ruling 2026-10-24): a light page shows the vivid hues on paper.",
-	"Accents are not text-safe on paper: link, success, info and danger text, and the lime and yellow family, measure below AA above. Body ink and muted text keep AA.",
+	"Accents are not text-safe on paper: link, success, info and danger text, and the lime and yellow family, measure below AA. Read on their deepened plates they clear 4.5:1 (the accents table). Body ink and muted text keep AA.",
 	"The primary ink (links and rings) follows the accent, so it measures 2.27:1 on paper. Whether a readable light ink returns is parked for Jun.",
 	"Stock shadcn classes are not restyled: bg-black/10 and bg-white resolve through the palette ends.",
 ];
@@ -182,6 +183,56 @@ export function ColourSection() {
 									<PairCell mode="dark" pair={p} colours={parsed.dark} />
 								</tr>
 							))}
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div className="flex flex-col gap-3">
+				<h3 className="text-base font-semibold">Accents on their plates</h3>
+				<p className="text-sm text-muted-foreground">
+					Each accent is the palette's own colour in both modes. On paper several sit below 3:1, so each is read on its deepened plate, solved to clear 4.5:1 as text. The plate is the same in both modes.
+				</p>
+				<div className="overflow-x-auto rounded-lg border">
+					<table className="w-full min-w-[30rem] table-fixed text-sm">
+						<colgroup>
+							<col style={{ width: "22%" }} />
+							<col style={{ width: "26%" }} />
+							<col style={{ width: "26%" }} />
+							<col style={{ width: "26%" }} />
+						</colgroup>
+						<thead className="bg-muted">
+							<tr className="border-b">
+								<th scope="col" className={HEAD}>Accent</th>
+								<th scope="col" className={HEAD}>On paper</th>
+								<th scope="col" className={HEAD}>On its plate</th>
+								<th scope="col" className={HEAD}>Plate</th>
+							</tr>
+						</thead>
+						<tbody>
+							{ACCENTS.map((id) => {
+								const accent = parsed.light["accent-" + id] ?? "";
+								const plate = parsed.light["plate-" + id] ?? "";
+								const onPaper = contrast(accent, parsed.light.canvas ?? "");
+								const onPlate = contrast(accent, plate);
+								return (
+									<tr key={id} className="border-t">
+										<th scope="row" className="px-3 py-2 text-left font-mono text-xs font-normal">{id}</th>
+										<td className="bg-background px-3 py-2 text-foreground">
+											<span className="flex items-center gap-3">
+												<span className="font-medium" style={{ color: accent }}>Aa</span>
+												<span className="font-mono text-xs whitespace-nowrap">{accent} · {onPaper === null ? "-" : onPaper.toFixed(2) + ":1"} {onPaper !== null && onPaper < 4.5 ? "below AA" : "AA"}</span>
+											</span>
+										</td>
+										<td className="bg-background px-3 py-2 text-foreground">
+											<span className="flex items-center gap-3">
+												<span className="inline-flex h-6 min-w-[2.25rem] items-center justify-center rounded-md px-2 text-sm leading-none font-medium whitespace-nowrap" style={{ backgroundColor: plate, color: accent }}>Aa</span>
+												<span className="font-mono text-xs whitespace-nowrap">{onPlate === null ? "-" : onPlate.toFixed(2) + ":1"} {onPlate !== null && onPlate >= 4.5 ? "AA" : "below AA"}</span>
+											</span>
+										</td>
+										<td className="bg-background px-3 py-2 font-mono text-xs text-foreground">{plate}</td>
+									</tr>
+								);
+							})}
 						</tbody>
 					</table>
 				</div>

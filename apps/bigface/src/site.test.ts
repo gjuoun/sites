@@ -277,19 +277,15 @@ test("the site only ships colours that exist in the palette", () => {
 	// Both palettes ship, plus the values the theme generator derives from them (a tint is two palette
 	// colours mixed in OKLab — computed at generation time, so it reaches the CSS as a hex). Anything
 	// else is still an offence; themes.test.ts proves each derived value is such a mix.
-	const themeHexes = readdirSync(
-		join(siteDir, "../../packages/ui/src/themes"),
-		"utf8",
-	)
-		.filter((f) => f.endsWith(".css"))
-		.flatMap((f) =>
-			[
-				...readFileSync(
-					join(siteDir, "../../packages/ui/src/themes", f),
-					"utf8",
-				).matchAll(/#[0-9a-fA-F]{6}\b/g),
-			].map((m) => m[0].toLowerCase()),
-		);
+	// The derived values of both generators: the console package's mixes, and the business package's mixes and solved
+	// plates (its themes.test.ts proves each business value is a palette colour, a mix, or a solved plate).
+	const themeHexes = ["../../packages/ui/src/themes", "../../packages/bigface-business-ui/src/themes"].flatMap((dir) =>
+		readdirSync(join(siteDir, dir), "utf8")
+			.filter((f) => f.endsWith(".css"))
+			.flatMap((f) =>
+				[...readFileSync(join(siteDir, dir, f), "utf8").matchAll(/#[0-9a-fA-F]{6}\b/g)].map((m) => m[0].toLowerCase()),
+			),
+	);
 	const known = new Set([
 		...paletteHexes(palette),
 		...paletteHexes(lightPaletteJson as unknown as Palette),

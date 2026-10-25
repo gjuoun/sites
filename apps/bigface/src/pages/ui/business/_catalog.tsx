@@ -1,5 +1,6 @@
 import * as React from "react";
 import { ColourSection } from "./_colour.tsx";
+import { AccentChips } from "./_accents.tsx";
 import { VARIANTS, STATES } from "./_variants.tsx";
 import { PARTS } from "./_parts.ts";
 import { Rail } from "./_rail.tsx";
@@ -799,6 +800,7 @@ export function Catalog() {
 						<Badge variant="outline">Outline</Badge>
 						<Badge variant="destructive">Destructive</Badge>
 					</Demo>
+									<AccentChips />
 				</Section>
 
 				<Section id="chart" title="Chart" source="components/ui/chart">
