@@ -18,12 +18,12 @@ export const BADGES = [
 ] as const;
 export type Badge = (typeof BADGES)[number];
 
-export type Cell = { text: string; na: boolean; reason: string | null; badges: Badge[]; title: string | null };
+export type Cell = { text: string; na: boolean; reason: string | null; badges: Badge[]; title: string | null; note: string | null };
 
-export const na = (reason: string, badges: Badge[] = []): Cell => ({ text: "N/A", na: true, reason, badges, title: reason });
-export const value = (text: string, badges: Badge[] = [], title: string | null = null): Cell => ({ text, na: false, reason: null, badges, title });
-export const orCell = (text: string, title: string | null, lowConfidence: boolean): Cell =>
-  value(text, lowConfidence ? ["OR p50", "low confidence"] : ["OR p50"], title);
+export const na = (reason: string, badges: Badge[] = []): Cell => ({ text: "N/A", na: true, reason, badges, title: reason, note: null });
+export const value = (text: string, badges: Badge[] = [], title: string | null = null, note: string | null = null): Cell => ({ text, na: false, reason: null, badges, title, note });
+export const orCell = (text: string, title: string | null, lowConfidence: boolean, note: string | null = null): Cell =>
+  value(text, lowConfidence ? ["OR p50", "low confidence"] : ["OR p50"], title, note);
 
 /** A cell is well-formed when it names a value or says N/A with a reason. */
 export function wellFormed(c: Cell): boolean {

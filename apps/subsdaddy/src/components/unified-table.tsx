@@ -40,6 +40,7 @@ export function CellView({ cell, numeric = false }: { cell: Cell; numeric?: bool
     <span className={numeric ? "block " + NUM : "block"} data-na={cell.na ? "yes" : undefined} title={cell.title ?? undefined}>
       <span className={cell.na ? "text-muted-foreground" : "font-medium"}>{cell.text}</span>
       {cell.na && cell.reason && <span className="mt-0.5 block text-xs text-muted-foreground">{cell.reason}</span>}
+      {!cell.na && cell.note && <span className="mt-0.5 block text-xs text-muted-foreground">{cell.note}</span>}
       {cell.badges.length > 0 && (
         <span className="mt-0.5 block">
           {cell.badges.map((b) => (

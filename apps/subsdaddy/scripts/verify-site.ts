@@ -17,7 +17,9 @@ const problems: string[] = [];
 const fail = (m: string) => problems.push(m);
 
 const read = (f: string) => JSON.parse(readFileSync(join(APP, "data", f), "utf8"));
-const lanes = read("lanes.json").lanes as Array<{ lane: string; usd_per_b: number | null }>;
+const lanes = read("lanes.json").lanes as Array<{ lane: string; usd_per_b: number | null; measured: { p50_output_tps: number | null; p50_ttft_ms: number | null } }>;
+const laneModels = read("models.json").models as Array<{ lane: string; openrouter: string }>;
+const orEndpoints = new Set((read("benchmark.json").endpoints as Array<{ model: string }>).map((e) => e.model));
 const catalog = read("catalog.json").rows as Array<{ plan_id: string; price_month_usd: number | null; allowance_model: string; estimate: { status: string; values: Array<{ ref: string; shape: string; usd_per_b: number | null }> } | null }>;
 
 const byModelPlans = catalog.filter((r) => r.estimate?.status === "estimated" || (r.allowance_model === "credits" && r.price_month_usd !== null));
@@ -53,6 +55,16 @@ for (const l of lanes) if (!measuredTable.includes('data-row="' + l.lane + '"'))
 const measuredRows = (measuredTable.match(/data-row="/g) ?? []).length;
 if (measuredRows !== lanes.length) fail("Section A has " + measuredRows + " rows, expected " + lanes.length);
 if (/data-badge="estimated"/.test(measuredTable)) fail("an estimate leaked into Section A");
+
+// 2b. regression: a plan with a measured value never shows N/A for it; its OR cell is filled when OpenRouter has its model
+for (const l of lanes) {
+  const row = (measuredTable.match(new RegExp('<tr data-row="' + l.lane + '">([\\s\\S]*?)<\\/tr>')) ?? [])[1] ?? "";
+  const cell = (col: string) => (row.match(new RegExp('<td[^>]*data-col="' + col + '"[\\s\\S]*?<\\/td>')) ?? [])[0] ?? ""; // whole cell, attributes included
+  if (l.measured.p50_output_tps !== null && /data-na="yes"/.test(cell("tps"))) fail("Section A shows N/A for measured tok/s of " + l.lane);
+  if (l.measured.p50_ttft_ms !== null && /data-na="yes"/.test(cell("ttft"))) fail("Section A shows N/A for measured TTFT of " + l.lane);
+  const orModel = laneModels.find((m) => m.lane === l.lane)?.openrouter;
+  if (orModel && orEndpoints.has(orModel) && /data-na="yes"/.test(cell("or"))) fail("Section A shows N/A for the OR p50 of " + l.lane + " although OpenRouter has " + orModel);
+}
 
 // 3. Section B: each model table lists the by-model plans
 const modelRowCounts: Record<string, number> = {};

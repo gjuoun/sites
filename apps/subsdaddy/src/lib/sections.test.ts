@@ -29,6 +29,48 @@ describe("section A: measured plans", () => {
   });
 });
 
+describe("regression: Section A shows each plan's own measured values", () => {
+  test("every plan with a measured tok/s and TTFT shows them, not N/A (all four rows covered)", () => {
+    const t = measuredTable(ds);
+    expect(t.rows.length).toBe(4);
+    for (const l of ds.lanes.lanes) {
+      const row = t.rows.find((r) => r.key === l.lane)!;
+      expect(l.measured.p50_output_tps).not.toBeNull();
+      expect(l.measured.p50_ttft_ms).not.toBeNull();
+      expect(row.cells.tps.na).toBe(false);
+      expect(row.cells.ttft.na).toBe(false);
+    }
+  });
+
+  test("a plan with no capacity reading and a derived dollar figure still shows its own speed", () => {
+    const broken: DS = {
+      ...ds,
+      lanes: {
+        ...ds.lanes,
+        lanes: ds.lanes.lanes.map((l) => ({ ...l, usd_per_b: null, usd_per_b_basis: null, capacity: { ...l.capacity, tokens_per_week: null, reason: "window_saturated" } })),
+      },
+    };
+    const t = measuredTable(broken);
+    for (const r of t.rows) {
+      expect(r.cells.usd.na).toBe(true);
+      expect(r.cells.tps.na).toBe(false);
+      expect(r.cells.ttft.na).toBe(false);
+    }
+  });
+
+  test("the OpenRouter column has a value for every plan whose model is in the benchmark, and names the model it read", () => {
+    const t = measuredTable(ds);
+    for (const r of t.rows) {
+      expect(r.cells.or.na).toBe(false);
+      expect(r.cells.or.note).toMatch(/^model: /);
+    }
+    const cc = t.rows.find((r) => r.key === "commandcode-goat")!;
+    expect(cc.cells.or.note).toBe("model: DeepSeek V4.1 Flash");
+    const qwen = t.rows.find((r) => r.key === "qwen-cloud-token")!;
+    expect(qwen.cells.or.note).toBe("model: deepseek/deepseek-v4.1-flash-1017");
+  });
+});
+
 describe("section B: one table per reference model", () => {
   test("five model sections in the required order", () => {
     const tables = modelTables(ds);

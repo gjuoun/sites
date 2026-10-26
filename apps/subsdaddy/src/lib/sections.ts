@@ -11,6 +11,11 @@ export type Table = { columns: Array<{ key: string; label: string; width: string
 const usd = (v: number) => "$" + (v < 0.1 ? String(Number(v.toPrecision(3))) : v.toFixed(2));
 const ms = (v: number) => Math.round(v).toLocaleString("en-US") + " ms";
 const orModelOf = (ds: DS, lane: string) => ds.models.models.find((m) => m.lane === lane)?.openrouter ?? null;
+/** The reference name of an OpenRouter model id, so the cell says which model it read. */
+const orModelName = (ds: DS, id: string) => {
+  const ref = ds.models.reference.find((r) => r.openrouter === id);
+  return ref ? REF_NAMES[ref.ref as RefId] : id;
+};
 const refModelOf = (ds: DS, ref: RefId) => ds.models.reference.find((r) => r.ref === ref)?.openrouter ?? null;
 
 /** Section A: the four measured plans, our own traffic, with OpenRouter's p50 for the plan's lane model beside it. */
@@ -48,7 +53,7 @@ export function measuredTable(ds: DS): Table {
             ? na("no measured time to first token for this plan")
             : value(ms(l.measured.p50_ttft_ms), ["measured"]),
         or: or.summary?.tps
-          ? orCell(formatRange(or.summary.tps), (orId ?? "") + " · " + or.summary.endpoints + " endpoints · 30-min window", (or.summary.low_confidence ?? 0) > 0)
+          ? orCell(formatRange(or.summary.tps), (orId ?? "") + " · " + or.summary.endpoints + " endpoints · 30-min window", (or.summary.low_confidence ?? 0) > 0, "model: " + (orId ? orModelName(ds, orId) : "none"))
           : na(or.reason ?? "no OpenRouter data"),
       },
     };
