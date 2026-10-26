@@ -56,7 +56,7 @@ export const REQUIRED = [
 
 /**
  * Two-tier primary, the business ruling: the FILL is bigface's native blue (#00b0ff in both modes) with the
- * dark ink on top (6.08:1 as ink-on-fill). TEXT and rings follow the accent blue in both modes (ruling 2026-10-24: 2.27:1 on paper, parked for Jun).
+ * ink on top: the light ink in light mode (5.29:1 on the fill, the one ink of the light scope, ruling 2026-10-26), and the dark canvas in dark mode. TEXT and rings follow the accent blue in both modes (ruling 2026-10-24: 2.27:1 on paper, parked for Jun).
  * black and white are the palette's own darkest and lightest: the stock scrim (bg-black/10) and the stock
  * slider thumb (bg-white) resolve through them, so no stock class has to change. White is paper, never #fff.
  */
@@ -67,7 +67,7 @@ export const COLOURS: ThemeRoles = {
 	primary: { color: "blue", palette: "dark" },
 	"primary-fill": { color: "blue", palette: "dark" },
 	"primary-ink": { color: "blue" },
-	"on-primary": { color: "bg", palette: "dark" },
+	"on-primary": { light: { color: "fg" }, dark: { color: "bg", palette: "dark" } },
 	"primary-edge": { mix: ["blue", 78, "bg"] },
 	frame: { color: "highlight" },
 	"on-frame": { color: "fg" },

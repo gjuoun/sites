@@ -102,7 +102,7 @@ describe("bigface-business-ui: colour only", () => {
 		expect(everything).not.toContain("255, 255, 255");
 	});
 
-	test("the primary: native blue fill with dark ink; the light blue is the native blue by ruling (2026-10-24)", () => {
+	test("the primary: native blue fill; light ink on it in light mode; the light blue is the native blue by ruling (2026-10-24)", () => {
 		const b = blocks();
 		const nativeBlue = dark.colors.blue?.hex.toLowerCase();
 		// Jun's ruling: the accent family borrows the dark palette exactly, so the light blue IS the native blue.
@@ -114,8 +114,12 @@ describe("bigface-business-ui: colour only", () => {
 		for (const mode of [b.light, b.dark]) {
 			expect(mode["--theme-primary"]).toBe(nativeBlue);
 			expect(mode["--theme-primary-fill"]).toBe(nativeBlue);
-			expect(mode["--theme-on-primary"]).toBe("#252925");
 		}
+		// Ruling 2026-10-26: the light ink on the blue fill is the light fg, the one ink of the light scope.
+		expect(b.light["--theme-on-primary"]).toBe(light.colors.fg.hex);
+		// The dark ink on the fill is still the dark canvas: whether dark follows the one-ink rule is an open question
+		// (dark fg on the fill measures 1.98:1), so this records the current value rather than pinning a ruling.
+		expect(b.dark["--theme-on-primary"]).toBe("#252925");
 		expect(b.light["--theme-primary-ink"]).toBe(nativeBlue);
 		expect(b.dark["--theme-primary-ink"]).toBe(nativeBlue);
 	});
