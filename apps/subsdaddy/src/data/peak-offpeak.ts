@@ -16,6 +16,9 @@ export const OFFPEAK_HOURS = 10;
 
 export type PeakOffPeak = { peak: TierPrice; offpeak: TierPrice };
 
+/** Where a tier's time band or price comes from, when it is not the model's own row. */
+export type BandSource = { band_inherited_from?: string | null; priced_as?: string | null };
+
 /** Hour-weighted average of the two bands, per token class. */
 export function averagePrice(t: PeakOffPeak): TierPrice {
   const w = (p: number, o: number) => (p * PEAK_HOURS + o * OFFPEAK_HOURS) / (PEAK_HOURS + OFFPEAK_HOURS);
@@ -31,9 +34,13 @@ export function fmtPrice(v: number): string {
   return String(Number(v.toPrecision(4)));
 }
 
-/** The three-price sentence used in every basis that relies on a tier average. */
-export function tierBasis(model: string, t: PeakOffPeak): string {
+/** The three-price sentence used in every basis that relies on a tier average, with its band and price source named. */
+export function tierBasis(model: string, t: PeakOffPeak, src: BandSource = {}): string {
   const a = averagePrice(t);
   const trio = (p: TierPrice) => "$" + fmtPrice(p.in_per_m) + " / $" + fmtPrice(p.out_per_m) + " / $" + fmtPrice(p.cache_per_m);
-  return model + ": peak " + trio(t.peak) + " × " + PEAK_HOURS + "h, off-peak " + trio(t.offpeak) + " × " + OFFPEAK_HOURS + "h → avg " + trio(a) + " per M (in / out / cache)";
+  const base = model + ": peak " + trio(t.peak) + " × " + PEAK_HOURS + "h, off-peak " + trio(t.offpeak) + " × " + OFFPEAK_HOURS + "h → avg " + trio(a) + " per M (in / out / cache)";
+  const tags: string[] = [];
+  if (src.priced_as) tags.push("priced_as: " + src.priced_as);
+  if (src.band_inherited_from) tags.push("band_inherited_from: " + src.band_inherited_from);
+  return tags.length > 0 ? base + "; " + tags.join("; ") : base;
 }

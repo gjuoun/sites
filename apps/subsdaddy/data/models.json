@@ -91,8 +91,10 @@
         "timezone_note": "Beijing time: peak 08:00-22:00, off-peak 22:00-08:00 (= Montreal 10:00-20:00 off-peak)",
         "source": "qwencloud.com/pricing/api (read 2026-10-26)",
         "measured_at": "2026-10-26",
-        "note": "no -1017 row on the official page; the deepseek-v4.1-flash row is applied to this snapshot (assumption, to confirm)",
-        "provider": "qwen-cloud"
+        "note": "no -1017 row on the official page; priced as the deepseek-v4.1-flash row",
+        "provider": "qwen-cloud",
+        "band_inherited_from": null,
+        "priced_as": "deepseek-v4.1-flash"
       }
     },
     {
@@ -121,7 +123,9 @@
         "source": "qwencloud.com/pricing/api (read 2026-10-26)",
         "measured_at": "2026-10-26",
         "note": "exact row on the official page: peak 08:00-22:00, off-peak 22:00-08:00 Beijing time",
-        "provider": "qwen-cloud"
+        "provider": "qwen-cloud",
+        "band_inherited_from": null,
+        "priced_as": null
       }
     },
     {
@@ -149,8 +153,10 @@
         "timezone_note": "Beijing time: peak 08:00-22:00, off-peak 22:00-08:00 (= Montreal 10:00-20:00 off-peak)",
         "source": "qwencloud.com/pricing/api (read 2026-10-26)",
         "measured_at": "2026-10-26",
-        "note": "flat page price taken as peak; off-peak = 0.6 x peak (brief: qwen3.8 family 6折); the page shows no band for qwen3.8 rows",
-        "provider": "qwen-cloud"
+        "note": "flat page price taken as peak; off-peak = 0.6 x peak; the page gives no band for qwen3.8 rows, so the deepseek-v4.1-flash band is inherited",
+        "provider": "qwen-cloud",
+        "band_inherited_from": "deepseek-v4.1-flash",
+        "priced_as": null
       }
     },
     {
@@ -178,8 +184,10 @@
         "timezone_note": "Beijing time: peak 08:00-22:00, off-peak 22:00-08:00 (= Montreal 10:00-20:00 off-peak)",
         "source": "qwencloud.com/pricing/api (read 2026-10-26)",
         "measured_at": "2026-10-26",
-        "note": "flat page price taken as peak; off-peak = 0.6 x peak (brief: qwen3.8 family 6折); the page shows no band for qwen3.8 rows",
-        "provider": "qwen-cloud"
+        "note": "flat page price taken as peak; off-peak = 0.6 x peak; the page gives no band for qwen3.8 rows, so the deepseek-v4.1-flash band is inherited",
+        "provider": "qwen-cloud",
+        "band_inherited_from": "deepseek-v4.1-flash",
+        "priced_as": null
       }
     }
   ]

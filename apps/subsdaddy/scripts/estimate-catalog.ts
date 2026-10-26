@@ -34,7 +34,7 @@ function priceFor(row: CatalogRow, ref: RefId): { price: { in_per_m: number; out
     const tier = models.usage_models.find((u) => laneModels.includes(u.upstream_model) && u.peak_offpeak?.ref === ref && u.peak_offpeak.provider === row.provider);
     if (tier?.peak_offpeak) {
       const tiers = { peak: tier.peak_offpeak.peak_usd_per_m, offpeak: tier.peak_offpeak.offpeak_usd_per_m };
-      return { price: averagePrice(tiers), note: tierBasis(tier.upstream_model, tiers) };
+      return { price: averagePrice(tiers), note: tierBasis(tier.upstream_model, tiers, { band_inherited_from: tier.peak_offpeak.band_inherited_from, priced_as: tier.peak_offpeak.priced_as }) };
     }
   }
   return { price: price.get(ref)!, note: null };

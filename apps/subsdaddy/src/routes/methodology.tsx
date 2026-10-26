@@ -41,6 +41,7 @@ function MethodologyPage() {
         <h2 className="text-lg font-medium">Est. $/B and measured $/B differ on purpose</h2>
         <p>Est. $/B (section B) is fee ÷ allowance × the list-price cost per billion tokens of one model: what a billion tokens of that model would cost if the whole allowance were spent on it. Measured $/B (section A) is fee ÷ the tokens actually delivered in our traffic. The vs measured column shows the gap. It is mostly model mix: the estimate prices a whole allowance at one model's list cost, while measured traffic also carries cheaper models, so a costly model such as Claude Haiku 5.5 shows a large positive gap. Each plan uses its own measured mix for the cache and output shares when it has one, and the pooled mix otherwise.</p>
         <p>Each plan appears only under the models its official model list names (offered_models). A model no plan lists has no table. A missing value says N/A with its reason; a model we could not read is never filled in.</p>
+        <p>When a provider publishes a time-of-day discount without naming the band, the DeepSeek band is used.</p>
         <h2 className="text-lg font-medium">Official subscriptions (section C)</h2>
         <p>Codex and Claude Code token counts are read from this machine's session logs, read only, and reduced to counts, call numbers and per-turn speed. Session ids, paths, prompts and account details are never kept. The plan fee is shown as unverified unless a confirmed source names it.</p>
         <h2 className="text-lg font-medium">Limits</h2>

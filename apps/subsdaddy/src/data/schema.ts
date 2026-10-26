@@ -213,6 +213,8 @@ export const modelsFileSchema = z.object({
           .object({
             provider: z.string().min(1),
             ref: z.string().min(1).nullable(),
+            band_inherited_from: z.string().min(1).nullable(),
+            priced_as: z.string().min(1).nullable(),
             peak_usd_per_m: z.object({ in_per_m: z.number().nonnegative(), out_per_m: z.number().nonnegative(), cache_per_m: z.number().nonnegative() }),
             offpeak_usd_per_m: z.object({ in_per_m: z.number().nonnegative(), out_per_m: z.number().nonnegative(), cache_per_m: z.number().nonnegative() }),
             peak_hours: z.literal(14),

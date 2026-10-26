@@ -30,7 +30,7 @@ for (const m of models.usage_models) {
   if (m.peak_offpeak) {
     const tiers = { peak: m.peak_offpeak.peak_usd_per_m, offpeak: m.peak_offpeak.offpeak_usd_per_m };
     prices[m.upstream_model] = averagePrice(tiers);
-    tierNotes.push(tierBasis(m.upstream_model, tiers));
+    tierNotes.push(tierBasis(m.upstream_model, tiers, { band_inherited_from: m.peak_offpeak.band_inherited_from, priced_as: m.peak_offpeak.priced_as }));
     continue;
   }
   prices[m.upstream_model] = m.in_per_m !== null && m.out_per_m !== null && m.cache_per_m !== null
