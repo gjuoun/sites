@@ -89,6 +89,11 @@ if (new Set(ctxChips).size !== 2) fail("context switch has " + new Set(ctxChips)
 if (!/data-testid="context-distribution"/.test(html.methodology)) fail("methodology has no context distribution table");
 if (!/data-testid="context-compare"/.test(html.methodology)) fail("methodology has no 100K vs 350K comparison table");
 
+// 4d. the switch labels: Model and Context size, each naming its own group
+if (!/aria-labelledby="switch-label-model"/.test(html.index) || !/>Model<\/span>/.test(html.index)) fail("Model label missing on the front page");
+if (!/aria-labelledby="switch-label-context"/.test(html.index) || !/>Context size<\/span>/.test(html.index)) fail("Context size label missing on the front page");
+if (html.index.indexOf(">Model</span>") > html.index.indexOf(">Context size</span>")) fail("Context size label comes before Model");
+
 // 5. methodology: every detail table, in full
 const meth = main(html.methodology);
 const mt = tables(html.methodology);
