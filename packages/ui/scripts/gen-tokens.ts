@@ -218,7 +218,7 @@ export function renderLightAliases(light: PaletteLike, dark: PaletteLike): strin
 		...Object.entries(light.colors).map(colour),
 		...Object.entries(light.ansi).map(ansi),
 		// A bright plate takes dark ink in BOTH modes; the light palette's own bg is the plate, not the ink.
-		"  --ink-on-bright: " + dark.colors.bg.hex.toLowerCase() + ";",
+		"  --ink-on-bright: " + light.colors.fg.hex.toLowerCase() + ";", // the light ink (neutral collapse): light scope paints only light values
 		"}",
 		"",
 	].join("\n");

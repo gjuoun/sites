@@ -301,7 +301,7 @@ describe("generated theme files", () => {
 		}
 	});
 
-	test("the exemption list is honest: dark muted ink really is below AA", () => {
+	test("dark muted ink reaches AA: fgDim solves to 4.5:1 in both modes (neutral collapse, Q5)", () => {
 		for (const theme of THEMES) {
 			const decls = themeBlocks(theme.id).dark;
 			expect(
@@ -309,7 +309,7 @@ describe("generated theme files", () => {
 					evaluate(decls["--theme-muted-ink"] as string),
 					evaluate(decls["--theme-canvas"] as string),
 				),
-			).toBeLessThan(4.5);
+			).toBeGreaterThanOrEqual(4.5);
 		}
 	});
 

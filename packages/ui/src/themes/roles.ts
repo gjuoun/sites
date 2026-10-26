@@ -74,7 +74,7 @@ export const REQUIRED = [
 export const COLOURS: ThemeRoles = {
 	canvas: { color: "bg" },
 	ink: { color: "fg" },
-	heading: { color: "caret" },
+	heading: { color: "paper" },
 	// Two-tier primary, Jun's ruling: the FILL is bigface's native blue with dark ink on top (the same
 	// construction the dark theme's buttons already use, 6.08:1 as ink-on-fill); TEXT/links keep the
 	// readable derived blue. Both name the palette, never a hex.
@@ -83,22 +83,22 @@ export const COLOURS: ThemeRoles = {
 	"primary-ink": { color: "blue" },
 	"on-primary": { color: "bg", palette: "dark" },
 	"primary-edge": { mix: ["blue", 78, "bg"] },
-	frame: { color: "cursorLine" },
+	frame: { color: "highlight" },
 	"on-frame": { color: "fg" },
-	"gray-100": { color: "borderMuted" },
+	"gray-100": { color: "border" },
 	"gray-200": { color: "border" },
 	"gray-300": { color: "border" },
-	"gray-400": { color: "selection" },
+	"gray-400": { color: "highlight" },
 	"gray-500": { color: "fgDim" },
-	"gray-600": { color: "comment" },
+	"gray-600": { color: "fgDim" },
 	"gray-700": { color: "fg" },
 	success: { color: "green" },
 	danger: { color: "burntOrange" },
 	info: { color: "cyan" },
 	highlight: { color: "purple" },
-	surface: { color: "cursorLine" },
-	subtle: { color: "borderMuted" },
-	secondary: { color: "borderMuted" },
+	surface: { color: "highlight" },
+	subtle: { color: "border" },
+	secondary: { color: "border" },
 	"on-secondary": { color: "fg" },
 	// Native muted grey. It is 2.79:1 on the dark canvas — the palette's own long-standing choice, kept
 	// identical in all three themes and recorded as an exemption in themes.test.ts.
@@ -106,9 +106,9 @@ export const COLOURS: ThemeRoles = {
 	border: { color: "border" },
 	input: { color: "border" },
 	focus: { color: "blue" }, // the accent blue (ruling 2026-10-24); a readable light ring is parked for Jun
-	"frame-accent": { mix: ["blue", 16, "cursorLine"] },
+	"frame-accent": { mix: ["blue", 16, "highlight"] },
 	"on-frame-accent": { color: "blue" },
-	"frame-border": { mix: ["fg", 12, "cursorLine"] },
+	"frame-border": { mix: ["fg", 12, "highlight"] },
 	"primary-tint": { mix: ["blue", 12, "bg"] },
 	"success-tint": { mix: ["green", 14, "bg"] },
 	"danger-tint": { mix: ["burntOrange", 14, "bg"] },
@@ -119,8 +119,8 @@ export const COLOURS: ThemeRoles = {
 	"chart-3": { color: "yellow" },
 	"chart-4": { color: "burntOrange" },
 	"chart-5": { color: "purple" },
-	overlay: { mix: ["bg", 75, "caret"] },
-	solid: { color: "cursorLine" },
+	overlay: { mix: ["bg", 75, "paper"] },
+	solid: { color: "highlight" },
 	"on-solid": { color: "fg" },
 };
 
