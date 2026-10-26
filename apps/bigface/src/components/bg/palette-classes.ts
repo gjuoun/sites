@@ -2,7 +2,6 @@
 // Tailwind's scanner sees every one; anything that colours text by palette name goes through here.
 export const bgTextClass: Record<string, string> = {
   bg: "text-bf-bg",
-  paper: "text-bf-paper",
   fg: "text-bf-fg",
   fgDim: "text-bf-fg-dim",
   border: "text-bf-border",
