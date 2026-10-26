@@ -42,7 +42,7 @@ const MONTH_MS = 30 * 24 * 60 * 60 * 1000;
 
 /** Same-rate peer that stands in while a plan has no capacity reading of its own (owner ruling 2026-10-26). */
 const RATE_PEER: Partial<Record<LaneId, LaneId>> = { "commandcode-goat": "opencode-go" };
-const RATE_PEER_SOURCE = "同费率推算（owner 2026-10-26）；实测待 CommandCode GOAT 周窗 2026-10-28 复位后替换";
+const RATE_PEER_SOURCE = "same-rate derivation (owner decision 2026-10-26); replaced by the measured value once the CommandCode weekly window resets on 2026-10-28";
 
 /** Plans whose quota reading covers one of several accounts: the capacity is stated for the single plan. */
 const SINGLE_ACCOUNT_READING = new Set<LaneId>(["opencode-go"]);

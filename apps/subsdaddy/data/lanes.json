@@ -2,7 +2,7 @@
   "lanes": [
     {
       "lane": "commandcode-goat",
-      "label": "CommandCode GOAT",
+      "label": "CommandCode - GOAT",
       "price_month_usd": 10,
       "price_badge": "plan_spec",
       "capacity": {
@@ -15,19 +15,19 @@
         "confidence": null,
         "confidence_reason": null,
         "badge": null,
-        "measured_at": "2026-10-26T13:38:45.811Z",
+        "measured_at": "2026-10-26T13:41:59.125Z",
         "source": "codexbar quota reading"
       },
-      "usd_per_b": 1.8667563177433641,
+      "usd_per_b": 1.8721214365081469,
       "usd_per_b_basis": "derived",
       "usd_per_b_derived_from": "opencode-go",
-      "usd_per_b_source": "同费率推算（owner 2026-10-26）；实测待 CommandCode GOAT 周窗 2026-10-28 复位后替换",
+      "usd_per_b_source": "same-rate derivation (owner decision 2026-10-26); replaced by the measured value once the CommandCode weekly window resets on 2026-10-28",
       "measured": {
         "p50_ttft_ms": 3700,
         "p90_ttft_ms": 8441,
         "p50_output_tps": 201.41116100064144,
         "n": 11743,
-        "measured_at": "2026-10-26T13:38:45.811Z",
+        "measured_at": "2026-10-26T13:41:59.125Z",
         "source": "usage_logs(7d) rows=11743"
       },
       "presets": [
@@ -48,38 +48,38 @@
         "no_fit:too_few_priced_rows",
         "low_priced_share"
       ],
-      "measured_at": "2026-10-26T13:38:45.811Z",
+      "measured_at": "2026-10-26T13:41:59.125Z",
       "source": "usage_logs(7d) + quota reading + published price"
     },
     {
       "lane": "opencode-go",
-      "label": "OpenCode Go",
+      "label": "OpenCode Go - Max",
       "price_month_usd": 10,
       "price_badge": "plan_spec",
       "capacity": {
         "method": "window_snapshot",
         "window": "weekly",
-        "tokens_per_week": 1232034402.0370617,
+        "tokens_per_week": 1228503642.354316,
         "coverage": 1,
         "seeded": false,
         "reason": null,
         "confidence": "normal",
         "confidence_reason": null,
         "badge": "single_account_reading",
-        "measured_at": "2026-10-26T13:38:45.811Z",
+        "measured_at": "2026-10-26T13:41:59.125Z",
         "source": "codexbar quota reading"
       },
-      "usd_per_b": 1.8667563177433641,
+      "usd_per_b": 1.8721214365081469,
       "usd_per_b_basis": "measured",
       "usd_per_b_derived_from": null,
       "usd_per_b_source": "usage logs, quota reading, published price",
       "measured": {
-        "p50_ttft_ms": 2660,
-        "p90_ttft_ms": 13373,
-        "p50_output_tps": 214.1535615171138,
-        "n": 7890,
-        "measured_at": "2026-10-26T13:38:45.811Z",
-        "source": "usage_logs(7d) rows=7890"
+        "p50_ttft_ms": 2661,
+        "p90_ttft_ms": 13364,
+        "p50_output_tps": 214.2099681866384,
+        "n": 7901,
+        "measured_at": "2026-10-26T13:41:59.125Z",
+        "source": "usage_logs(7d) rows=7901"
       },
       "presets": [
         {
@@ -99,12 +99,12 @@
         "low_fit",
         "capacity_conflict"
       ],
-      "measured_at": "2026-10-26T13:38:45.811Z",
+      "measured_at": "2026-10-26T13:41:59.125Z",
       "source": "usage_logs(7d) + quota reading + published price"
     },
     {
       "lane": "zai-glm-max",
-      "label": "z.ai GLM Coding Plan (Max)",
+      "label": "Z.ai Coding Plan - Max (Legacy v2)",
       "price_month_usd": 56,
       "price_badge": "plan_spec",
       "capacity": {
@@ -117,7 +117,7 @@
         "confidence": "low",
         "confidence_reason": "used_pct 1 is an integer percent: error about 1/used_pct",
         "badge": null,
-        "measured_at": "2026-10-26T13:38:45.811Z",
+        "measured_at": "2026-10-26T13:41:59.125Z",
         "source": "codexbar quota reading"
       },
       "usd_per_b": 9.228853200768244,
@@ -129,7 +129,7 @@
         "p90_ttft_ms": 13464,
         "p50_output_tps": 83.31064524911517,
         "n": 689,
-        "measured_at": "2026-10-26T13:38:45.811Z",
+        "measured_at": "2026-10-26T13:41:59.125Z",
         "source": "usage_logs(7d) rows=689"
       },
       "presets": [
@@ -149,38 +149,38 @@
       "flags": [
         "capacity_conflict"
       ],
-      "measured_at": "2026-10-26T13:38:45.811Z",
+      "measured_at": "2026-10-26T13:41:59.125Z",
       "source": "usage_logs(7d) + quota reading + published price"
     },
     {
       "lane": "qwen-cloud-token",
-      "label": "QwenCloud token plan",
+      "label": "QwenCloud - Essential",
       "price_month_usd": 10,
       "price_badge": "plan_spec",
       "capacity": {
         "method": "window_snapshot",
         "window": "monthly",
-        "tokens_per_week": 80797157.83867176,
+        "tokens_per_week": 80889237.51976022,
         "coverage": 1,
         "seeded": false,
         "reason": null,
         "confidence": "normal",
         "confidence_reason": null,
         "badge": null,
-        "measured_at": "2026-10-26T13:38:45.811Z",
+        "measured_at": "2026-10-26T13:41:59.125Z",
         "source": "codexbar quota reading"
       },
-      "usd_per_b": 28.46520923758352,
+      "usd_per_b": 28.43280607161137,
       "usd_per_b_basis": "measured",
       "usd_per_b_derived_from": null,
       "usd_per_b_source": "usage logs, quota reading, published price",
       "measured": {
-        "p50_ttft_ms": 3887,
+        "p50_ttft_ms": 3889,
         "p90_ttft_ms": 9395,
-        "p50_output_tps": 142.49578414839797,
-        "n": 2249,
-        "measured_at": "2026-10-26T13:38:45.811Z",
-        "source": "usage_logs(7d) rows=2249"
+        "p50_output_tps": 142.56198347107437,
+        "n": 2252,
+        "measured_at": "2026-10-26T13:41:59.125Z",
+        "source": "usage_logs(7d) rows=2252"
       },
       "presets": [
         {
@@ -200,10 +200,10 @@
         "low_fit",
         "capacity_conflict"
       ],
-      "measured_at": "2026-10-26T13:38:45.811Z",
+      "measured_at": "2026-10-26T13:41:59.125Z",
       "source": "usage_logs(7d) + quota reading + published price"
     }
   ],
-  "measured_at": "2026-10-26T13:38:45.811Z",
+  "measured_at": "2026-10-26T13:41:59.125Z",
   "source": "build-dataset"
 }

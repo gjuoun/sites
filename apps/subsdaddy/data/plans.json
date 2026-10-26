@@ -2,35 +2,35 @@
   "plans": [
     {
       "plan_id": "commandcode-goat",
-      "label": "CommandCode GOAT",
+      "label": "CommandCode - GOAT",
       "price_month_usd": 10,
       "badge": "plan_spec",
       "measured_at": "2026-10-26T06:06:22Z",
-      "source": "published plan price: $10/mo for $80 credits"
+      "source": "published plan price: $10/mo (GOAT tier)"
     },
     {
       "plan_id": "opencode-go",
-      "label": "OpenCode Go",
+      "label": "OpenCode Go - Max",
       "price_month_usd": 10,
       "badge": "plan_spec",
       "measured_at": "2026-10-26T06:06:22Z",
-      "source": "published plan price: $10/mo for $80 credits; two subscriptions merged"
+      "source": "published plan price: $10/mo (Max tier); two subscriptions merged"
     },
     {
       "plan_id": "zai-glm-max",
-      "label": "z.ai GLM Coding Plan (Max)",
+      "label": "Z.ai Coding Plan - Max (Legacy v2)",
       "price_month_usd": 56,
       "badge": "plan_spec",
       "measured_at": "2026-10-26T06:06:22Z",
-      "source": "published plan price: $672/yr"
+      "source": "published plan price: $672/yr legacy v2 Max plan"
     },
     {
       "plan_id": "qwen-cloud-token",
-      "label": "QwenCloud token plan",
+      "label": "QwenCloud - Essential",
       "price_month_usd": 10,
       "badge": "plan_spec",
       "measured_at": "2026-10-26T06:06:22Z",
-      "source": "published plan price"
+      "source": "published plan price: $10/mo (Essential tier)"
     }
   ],
   "measured_at": "2026-10-26T06:06:22Z",
