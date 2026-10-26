@@ -1,0 +1,212 @@
+{
+  "lanes": [
+    {
+      "lane": "cc",
+      "label": "CommandCode",
+      "price_month_usd": 35,
+      "price_badge": "plan_spec",
+      "capacity": {
+        "method": "unavailable",
+        "window": null,
+        "tokens_per_week": null,
+        "coverage": null,
+        "seeded": false,
+        "reason": "window_saturated+no_prior_observation"
+      },
+      "usd_per_b": null,
+      "measured": {
+        "p50_ttft_ms": 3700,
+        "p90_ttft_ms": 8441,
+        "p50_output_tps": 201.41116100064144,
+        "n": 11743
+      },
+      "presets": [
+        {
+          "shape": "interactive",
+          "unavailable": "capacity_usd_unavailable"
+        },
+        {
+          "shape": "agent",
+          "unavailable": "capacity_usd_unavailable"
+        },
+        {
+          "shape": "cache_heavy",
+          "unavailable": "capacity_usd_unavailable"
+        }
+      ],
+      "flags": [
+        "no_fit:too_few_priced_rows",
+        "low_priced_share",
+        "excluded_from_ranking"
+      ],
+      "measured_at": "2026-10-26T06:32:46.762Z",
+      "source": "usage_logs(7d) + codexbar quota + plans.json"
+    },
+    {
+      "lane": "go-1",
+      "label": "OpenCode Go (jun1)",
+      "price_month_usd": 10,
+      "price_badge": "plan_spec",
+      "capacity": {
+        "method": "window_snapshot",
+        "window": "weekly",
+        "tokens_per_week": 1600771173.2067475,
+        "coverage": 1,
+        "seeded": false,
+        "reason": null
+      },
+      "usd_per_b": 1.4367500128532165,
+      "measured": {
+        "p50_ttft_ms": 2561,
+        "p90_ttft_ms": 12221,
+        "p50_output_tps": 213.68894601542416,
+        "n": 4685
+      },
+      "presets": [
+        {
+          "shape": "interactive",
+          "unavailable": "capacity_conflict"
+        },
+        {
+          "shape": "agent",
+          "unavailable": "capacity_conflict"
+        },
+        {
+          "shape": "cache_heavy",
+          "unavailable": "capacity_conflict"
+        }
+      ],
+      "flags": [
+        "low_fit",
+        "capacity_conflict"
+      ],
+      "measured_at": "2026-10-26T06:32:46.762Z",
+      "source": "usage_logs(7d) + codexbar quota + plans.json"
+    },
+    {
+      "lane": "go-2",
+      "label": "OpenCode Go (jun2)",
+      "price_month_usd": 10,
+      "price_badge": "plan_spec",
+      "capacity": {
+        "method": "unavailable",
+        "window": null,
+        "tokens_per_week": null,
+        "coverage": null,
+        "seeded": false,
+        "reason": "no codexbar token account for opencodego (--all-accounts: 'No token accounts configured')"
+      },
+      "usd_per_b": null,
+      "measured": {
+        "p50_ttft_ms": 2765,
+        "p90_ttft_ms": 16846,
+        "p50_output_tps": 214.00705926063534,
+        "n": 4303
+      },
+      "presets": [
+        {
+          "shape": "interactive",
+          "unavailable": "capacity_usd_unavailable"
+        },
+        {
+          "shape": "agent",
+          "unavailable": "capacity_usd_unavailable"
+        },
+        {
+          "shape": "cache_heavy",
+          "unavailable": "capacity_usd_unavailable"
+        }
+      ],
+      "flags": [
+        "low_fit",
+        "excluded_from_ranking"
+      ],
+      "measured_at": "2026-10-26T06:32:46.762Z",
+      "source": "usage_logs(7d) + codexbar quota + plans.json"
+    },
+    {
+      "lane": "zai",
+      "label": "z.ai GLM plan",
+      "price_month_usd": 56,
+      "price_badge": "plan_spec",
+      "capacity": {
+        "method": "plan_spec",
+        "window": "weekly",
+        "tokens_per_week": 5700000000,
+        "coverage": null,
+        "seeded": true,
+        "reason": "JW-251 published allowance (flash weight), seed"
+      },
+      "usd_per_b": null,
+      "measured": {
+        "p50_ttft_ms": 6857,
+        "p90_ttft_ms": 12674,
+        "p50_output_tps": 102.17917675544794,
+        "n": 597
+      },
+      "presets": [
+        {
+          "shape": "interactive",
+          "unavailable": "capacity_usd_unavailable"
+        },
+        {
+          "shape": "agent",
+          "unavailable": "capacity_usd_unavailable"
+        },
+        {
+          "shape": "cache_heavy",
+          "unavailable": "capacity_usd_unavailable"
+        }
+      ],
+      "flags": [
+        "seed",
+        "excluded_from_ranking"
+      ],
+      "measured_at": "2026-10-26T06:32:46.762Z",
+      "source": "usage_logs(7d) + codexbar quota + plans.json"
+    },
+    {
+      "lane": "qwen",
+      "label": "QwenCloud token plan",
+      "price_month_usd": 10,
+      "price_badge": "plan_spec",
+      "capacity": {
+        "method": "window_snapshot",
+        "window": "monthly",
+        "tokens_per_week": 76854256.32852039,
+        "coverage": 1,
+        "seeded": false,
+        "reason": null
+      },
+      "usd_per_b": 29.92557749630275,
+      "measured": {
+        "p50_ttft_ms": 3820,
+        "p90_ttft_ms": 9108,
+        "p50_output_tps": 142.49578414839797,
+        "n": 2187
+      },
+      "presets": [
+        {
+          "shape": "interactive",
+          "unavailable": "capacity_conflict"
+        },
+        {
+          "shape": "agent",
+          "unavailable": "capacity_conflict"
+        },
+        {
+          "shape": "cache_heavy",
+          "unavailable": "capacity_conflict"
+        }
+      ],
+      "flags": [
+        "low_fit",
+        "capacity_conflict"
+      ],
+      "measured_at": "2026-10-26T06:32:46.762Z",
+      "source": "usage_logs(7d) + codexbar quota + plans.json"
+    }
+  ],
+  "measured_at": "2026-10-26T06:32:46.762Z",
+  "source": "build-dataset"
+}
