@@ -122,10 +122,10 @@ describe("bigface-business-ui: colour only", () => {
 
 	test("black and white are the palette's own ends, per mode; white is paper, not #fff", () => {
 		const b = blocks();
-		expect(b.light["--theme-black"]).toBe("#252925");
+		expect(b.light["--theme-black"]).toBe(light.colors.fg.hex); // the light ink is the derived fg (neutral collapse)
 		expect(b.light["--theme-white"]).toBe("#f8f8f0");
 		expect(b.dark["--theme-black"]).toBe("#252925");
-		expect(b.dark["--theme-white"]).toBe("#d9d9d4");
+		expect(b.dark["--theme-white"]).toBe(dark.colors.fg.hex); // the dark ink is the derived fg
 	});
 
 	test("every colour role resolves to the native palette value it names, or the exact mix of two", () => {
