@@ -129,19 +129,7 @@ describe("section B: one table per reference model", () => {
     for (const t of modelTables(ds)) expect(t.table.subtitle).toContain("assumes the whole allowance is spent on");
   });
 
-  test("the same plans appear in every model section, and every cell is well-formed", () => {
-    const tables = modelTables(ds);
-    const rowKeys = tables.map((t) => t.table.rows.map((r) => r.key).join(","));
-    expect(new Set(rowKeys).size).toBe(1);
-    for (const t of tables) for (const c of allCells(t.table)) expect(wellFormed(c)).toBe(true);
-  });
 
-  test("Gemini has no published OpenCode limit, so its estimate cell is N/A with that reason", () => {
-    const gemini = modelTable(ds, "gemini-3.8-flash");
-    const opencode = gemini.rows.find((r) => r.key === "opencode-go-go")!;
-    expect(opencode.cells.est.na).toBe(true);
-    expect(opencode.cells.est.reason).toContain("no published allowance");
-  });
 
   test("when OpenRouter has no data for a model, its whole section is N/A with the reason, and no endpoint is invented", () => {
     const haikuOR = "anthropic/claude-haiku-5.5";

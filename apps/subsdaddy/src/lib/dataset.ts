@@ -5,6 +5,8 @@ import plansRaw from "../../data/plans.json";
 import quotaRaw from "../../data/quota.json";
 import usageRaw from "../../data/usage.json";
 import catalogRaw from "../../data/catalog.json";
+import officialRaw from "../../data/official.json";
+import { officialFileSchema } from "../data/official";
 import { catalogDisplayRow, catalogFileSchema, type CatalogDisplay } from "../data/catalog";
 import {
   benchmarkFileSchema,
@@ -26,6 +28,7 @@ export const dataset = {
   benchmark: benchmarkFileSchema.parse(benchmarkRaw),
   models: modelsFileSchema.parse(modelsRaw),
   catalog: catalogFileSchema.parse(catalogRaw),
+  official: officialFileSchema.parse(officialRaw),
 };
 
 /** Catalog rows for display only: published price and allowance, never ranked, never per-B. */

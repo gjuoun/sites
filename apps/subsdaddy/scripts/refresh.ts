@@ -25,6 +25,7 @@ const stages: Array<[string, string[]]> = [
   ["estimate:catalog", ["bun", "run", "scripts/estimate-catalog.ts"]],
   ["build:dataset", ["bun", "run", "scripts/build-dataset.ts"]],
   ["collect:openrouter", ["bun", "run", "scripts/collect-openrouter.ts"]],
+  ["collect:official", ["bun", "run", "scripts/collect-official.ts"]],
   ["build", ["bun", "run", "build"]],
   ["verify:site", ["bun", "run", "scripts/verify-site.ts"]],
   ["verify:data", ["bun", "run", "scripts/verify-data.ts"]],

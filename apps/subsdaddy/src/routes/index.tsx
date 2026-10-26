@@ -3,7 +3,7 @@ import { UnifiedTable } from "@/components/unified-table";
 import { SiteFooter } from "@/components/site-footer";
 import { MODEL_BLOCK, MODEL_GAP, MODEL_TITLE, NOTE, PAGE, PAGE_TITLE, SECTION, SECTION_TITLE, SMALL_NOTE } from "@/components/layout";
 import { dataset } from "@/lib/dataset";
-import { measuredTable, modelTables, type DS } from "@/lib/sections";
+import { measuredTable, modelTables, officialTable, type DS } from "@/lib/sections";
 
 export const Route = createFileRoute("/")({
   component: IndexPage,
@@ -46,11 +46,28 @@ function IndexPage() {
         {models.map((s) => (
           <div key={s.ref} className={MODEL_BLOCK} data-model={s.ref}>
             <h3 className={MODEL_TITLE}>{s.name}</h3>
-            <p className={NOTE}>{s.table.subtitle}</p>
-            <UnifiedTable testId={"model-" + s.ref} columns={s.table.columns} rows={s.table.rows} />
-            <p className={SMALL_NOTE}>{s.table.orNote}</p>
+            {s.table.rows.length === 0 ? (
+              <p className={NOTE} data-no-plan={s.ref}>No plan on this site lists {s.name} on its published model list, so there is no table for it.</p>
+            ) : (
+              <>
+                <p className={NOTE}>{s.table.subtitle}</p>
+                <UnifiedTable testId={"model-" + s.ref} columns={s.table.columns} rows={s.table.rows} />
+                <p className={SMALL_NOTE}>{s.table.orNote}</p>
+              </>
+            )}
           </div>
         ))}
+      </section>
+
+      <section className={MODEL_GAP} aria-labelledby="sec-c">
+        <div className={SECTION}>
+          <h2 id="sec-c" className={SECTION_TITLE}>C · Official subscriptions (local logs)</h2>
+          <p className={NOTE}>
+            Token counts and speeds come from this machine's Codex and Claude Code session logs, read only and aggregated. No session ids, paths or prompts are kept.
+          </p>
+        </div>
+        <UnifiedTable testId="official" columns={officialTable(ds).columns} rows={officialTable(ds).rows} />
+        <p className={SMALL_NOTE}>{dataset.official.source} · measured {dataset.official.measured_at}</p>
       </section>
 
       <SiteFooter />

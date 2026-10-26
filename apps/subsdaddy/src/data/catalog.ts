@@ -91,6 +91,11 @@ export const catalogRowSchema = z
     price_note: z.string().min(1).nullable(),
     allowance: z.array(allowanceEntrySchema).default([]),
     allowance_reason: z.string().min(1).nullable().default(null),
+    // the reference models this plan offers, from its official model list; a model not listed gets no row
+    offered_models: z.array(z.enum(REF_LITERALS)).default([]),
+    offered_basis: z.string().min(1).nullable().default(null),
+    // the measured lane whose $/B is this plan's own measurement, when there is one
+    measured_lane: z.enum(LANES).nullable().default(null),
     estimate: estimateSchema.nullable().optional(),
     window_readings: z.array(windowReadingSchema).optional(),
     reading_error: z.string().min(1).nullable().optional(),

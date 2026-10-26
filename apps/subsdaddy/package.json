@@ -12,6 +12,7 @@
     "probe:quota": "opk get ZAI_API_KEY -- bun run scripts/collect-quota.ts",
     "build:dataset": "bun run scripts/build-dataset.ts",
     "collect:openrouter": "bun run scripts/collect-openrouter.ts",
+    "collect:official": "bun run scripts/collect-official.ts",
     "verify:site": "bun run scripts/verify-site.ts",
     "verify:data": "bun run scripts/verify-data.ts",
     "verify:public": "bun run scripts/verify-public.ts",

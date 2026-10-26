@@ -94,36 +94,60 @@ export function byModelRows(ds: DS): CatalogRow[] {
   return ds.catalog.rows.filter((r) => r.estimate?.status === "estimated" || (r.allowance_model === "credits" && r.price_month_usd !== null));
 }
 
-/** Section B for one reference model: the same table style, with OpenRouter's numbers for that model. */
+/** The vs-measured comparison: est against the plan's own measured $/B, as a signed percent. */
+export function vsMeasuredText(est: number, measured: number): string {
+  const pct = (est / measured - 1) * 100;
+  return (pct >= 0 ? "+" : "−") + Math.round(Math.abs(pct)).toLocaleString("en-US") + "%";
+}
+
+/** The plan's own measured $/B, or the reason there is none. A derived figure is not a measurement. */
+function measuredFor(ds: DS, row: CatalogRow): { value: number | null; reason: string } {
+  if (!row.measured_lane) return { value: null, reason: "this plan has no measured $/B of its own" };
+  const lane = ds.lanes.lanes.find((l) => l.lane === row.measured_lane);
+  if (!lane) return { value: null, reason: "no lane measurement for this plan" };
+  if (lane.usd_per_b === null) return { value: null, reason: "no measured $/B: " + (lane.capacity.reason ?? "capacity unavailable") };
+  if (lane.usd_per_b_basis !== "measured") return { value: null, reason: "its $/B is derived from another plan, not measured" };
+  return { value: lane.usd_per_b, reason: "" };
+}
+
+/** Section B for one reference model: only the plans that offer the model; the same table style; OpenRouter's numbers for the model. */
 export function modelTable(ds: DS, ref: RefId): Table & { subtitle: string; orNote: string } {
   const orId = refModelOf(ds, ref);
   const or = orId ? orForModel(ds.benchmark, orId) : { summary: null, reason: "no OpenRouter id for this model" };
   const speedNote = or.summary ? count(or.summary.endpoints, "endpoint") + (or.summary.low_confidence > 0 ? ", " + or.summary.low_confidence.toLocaleString("en-US") + " low confidence" : "") : null;
-  const rows = byModelRows(ds).map((r) => {
-    const v = r.estimate?.status === "estimated" ? r.estimate.values.find((x) => x.ref === ref && x.shape === "agent") : undefined;
-    const estCell =
-      v && v.usd_per_b !== null
-        ? value(usd(v.usd_per_b), ["estimated"], "fee/allowance " + Number(v.fee_over_allowance?.toPrecision(3) ?? 0) + " × blended " + Number(v.blended_usd_per_b.toPrecision(3)) + " per B tokens")
-        : na(v?.reason ?? r.estimate?.reason ?? "no estimate for this model");
-    const basis =
-      v && v.fee_over_allowance !== null
-        ? value("fee/allowance " + Number(v.fee_over_allowance.toPrecision(3)) + " × blended " + Number(v.blended_usd_per_b.toPrecision(3)) + " per B tokens", [], r.estimate?.basis ?? null)
-        : na(v?.reason ?? r.estimate?.reason ?? "no published allowance for this model in this plan");
-    const unverified: BadgeKind[] = r.sources.some((s) => s.kind === "unverified") ? ["unverified"] : [];
-    const speed = (formatted: string | null, reason: string | null) =>
-      formatted !== null && orId ? orCell(formatted, orId + " · " + (speedNote ?? "N/A") + " · 30-minute window", null) : na(reason ?? "no OpenRouter data");
-    return {
-      key: r.plan_id,
-      cells: {
-        plan: value(r.label, unverified),
-        fee: r.price_month_usd !== null ? value(money(r.price_month_usd) + "/mo") : na("no USD fee published"),
-        est: estCell,
-        tps: speed(or.summary?.tps ? formatRange(or.summary.tps) : null, or.reason),
-        ttft: speed(or.summary?.latency_ms ? formatRange(or.summary.latency_ms) + " ms" : null, or.reason),
-        basis,
-      },
-    };
-  });
+  const rows = byModelRows(ds)
+    .filter((r) => r.offered_models.includes(ref))
+    .map((r) => {
+      const v = r.estimate?.status === "estimated" ? r.estimate.values.find((x) => x.ref === ref && x.shape === "agent") : undefined;
+      const estCell =
+        v && v.usd_per_b !== null
+          ? value(usd(v.usd_per_b), ["estimated"], "fee/allowance " + Number(v.fee_over_allowance?.toPrecision(3) ?? 0) + " × blended " + Number(v.blended_usd_per_b.toPrecision(3)) + " per B tokens")
+          : na(v?.reason ?? r.estimate?.reason ?? "no estimate for this model");
+      const m = measuredFor(ds, r);
+      const vs =
+        v && v.usd_per_b !== null && m.value !== null
+          ? value(vsMeasuredText(v.usd_per_b, m.value), [], "est " + usd(v.usd_per_b) + " prices the whole allowance at this model's list cost; measured " + usd(m.value) + " is fee over all tokens this plan delivered in our mixed traffic, so the gap is mostly model mix", "est " + usd(v.usd_per_b) + " vs measured " + usd(m.value))
+          : na(m.value === null ? m.reason : v?.reason ?? r.estimate?.reason ?? "no estimate for this model");
+      const basis =
+        v && v.fee_over_allowance !== null
+          ? value("fee/allowance " + Number(v.fee_over_allowance.toPrecision(3)) + " × blended " + Number(v.blended_usd_per_b.toPrecision(3)) + " per B tokens", [], r.estimate?.basis ?? null)
+          : na(v?.reason ?? r.estimate?.reason ?? "no published allowance for this model in this plan");
+      const unverified: BadgeKind[] = r.sources.some((s) => s.kind === "unverified") ? ["unverified"] : [];
+      const speed = (formatted: string | null, reason: string | null) =>
+        formatted !== null && orId ? orCell(formatted, orId + " · " + (speedNote ?? "N/A") + " · 30-minute window", null) : na(reason ?? "no OpenRouter data");
+      return {
+        key: r.plan_id,
+        cells: {
+          plan: value(r.label, unverified),
+          fee: r.price_month_usd !== null ? value(money(r.price_month_usd) + "/mo") : na("no USD fee published"),
+          est: estCell,
+          vs,
+          tps: speed(or.summary?.tps ? formatRange(or.summary.tps) : null, or.reason),
+          ttft: speed(or.summary?.latency_ms ? formatRange(or.summary.latency_ms) + " ms" : null, or.reason),
+          basis,
+        },
+      };
+    });
   const subtitle = "This table assumes the whole allowance is spent on " + ds.models.reference.find((x) => x.ref === ref)!.name + ". Other models are in their own tables.";
   const orNote = or.summary
     ? "OpenRouter " + orId + ": " + count(or.summary.endpoints, "endpoint") + ", p50 over the last 30 minutes."
@@ -132,20 +156,82 @@ export function modelTable(ds: DS, ref: RefId): Table & { subtitle: string; orNo
     subtitle,
     orNote,
     columns: [
-      { key: "plan", label: "Plan", width: "24%" },
+      { key: "plan", label: "Plan", width: "21%" },
       { key: "fee", label: "Fee/mo", width: "10%", numeric: true },
-      { key: "est", label: "Est. $/B", width: "10%", numeric: true },
+      { key: "est", label: "Est. $/B", width: "9%", numeric: true },
+      { key: "vs", label: "vs measured", width: "11%", numeric: true },
       { key: "tps", label: "tok/s", width: "16%", numeric: true },
-      { key: "ttft", label: "TTFT p50", width: "22%", numeric: true },
-      { key: "basis", label: "Basis", width: "18%", clip: true },
+      { key: "ttft", label: "TTFT p50", width: "19%", numeric: true },
+      { key: "basis", label: "Basis", width: "14%", clip: true },
     ],
     rows,
   };
 }
 
-/** Every reference model, in display order. */
+/** Every reference model, in display order. A model no plan here offers has no table; the page says so. */
 export function modelTables(ds: DS) {
   return REF_IDS.map((ref) => ({ ref, name: ds.models.reference.find((x) => x.ref === ref)!.name, table: modelTable(ds, ref) }));
+}
+
+/** Section C: the official subscriptions, from their local logs. Aggregates only. */
+export function officialTable(ds: DS): Table {
+  const tokensOf = (t: { input: number; cache_read: number; cache_write: number; output: number }) => t.input + t.cache_read + t.cache_write + t.output;
+  const rows = ds.official.providers.map((p) => {
+    const total = tokensOf(p.tokens_7d);
+    const allTotal = tokensOf(p.all_time);
+    const windowCell = p.window
+      ? value(
+          "5h " + (p.window.five_hour_pct === null ? "N/A" : p.window.five_hour_pct + "%") + " · weekly " + (p.window.weekly_pct === null ? "N/A" : p.window.weekly_pct + "%"),
+          [],
+          "codexbar window reading; resets " + (p.window.resets_at ?? "N/A"),
+        )
+      : na(p.window_reason ?? "no window reading");
+    const tokensCell =
+      p.tokens_7d.calls === 0
+        ? value("0 tokens", [], "no session in the last 7 days", "0 calls · last session " + (p.all_time.last_day ?? "N/A"))
+        : value(total.toLocaleString("en-US") + " tokens", [], null, p.tokens_7d.calls.toLocaleString("en-US") + " calls");
+    const feeCell =
+      p.fee_usd !== null
+        ? value(money(p.fee_usd) + "/mo")
+        : value("unverified", [], p.fee_reason, p.fee_claimed_usd !== null ? money(p.fee_claimed_usd) + " claimed" : "tier not readable");
+    const perB =
+      p.fee_usd !== null && total > 0
+        ? value(usd(p.fee_usd / (total / 1e9)))
+        : na(p.fee_usd === null ? "fee not confirmed, so no $/B" : "no tokens in the last 7 days");
+    const basis = value(
+      "all time: " + p.all_time.calls.toLocaleString("en-US") + " calls, " + allTotal.toLocaleString("en-US") + " tokens" +
+        (p.all_time.speed ? ", p50 " + Math.round(p.all_time.speed.tps_p50) + " tok/s over " + p.all_time.speed.n + " turns" : "") +
+        (p.all_time.first_day ? ", " + p.all_time.first_day + " to " + p.all_time.last_day : ""),
+      [],
+      "in " + p.all_time.input.toLocaleString("en-US") + " · cached " + p.all_time.cache_read.toLocaleString("en-US") + " · out " + p.all_time.output.toLocaleString("en-US") + " · source: " + p.source,
+    );
+    return {
+      key: p.provider,
+      cells: {
+        plan: value(p.plan),
+        fee: feeCell,
+        perB,
+        window: windowCell,
+        tokens: tokensCell,
+        tps: p.speed_7d ? value(Math.round(p.speed_7d.tps_p50).toLocaleString("en-US"), [], null, "p50 over " + p.speed_7d.n + " turns") : na(p.speed_reason ?? "no speed in the last 7 days"),
+        ttft: na(p.ttft_reason),
+        basis,
+      },
+    };
+  });
+  return {
+    columns: [
+      { key: "plan", label: "Plan", width: "18%" },
+      { key: "fee", label: "Fee/mo", width: "11%", numeric: true },
+      { key: "perB", label: "$/B", width: "9%", numeric: true },
+      { key: "window", label: "Window %", width: "14%", numeric: true },
+      { key: "tokens", label: "Tokens 7d", width: "15%", numeric: true },
+      { key: "tps", label: "tok/s", width: "10%", numeric: true },
+      { key: "ttft", label: "TTFT p50", width: "10%", numeric: true },
+      { key: "basis", label: "Basis", width: "13%", clip: true },
+    ],
+    rows,
+  };
 }
 
 /** A native-currency price: the amount is the value; the rest of the sentence is the secondary line, in full in title. */
