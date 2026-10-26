@@ -58,6 +58,7 @@ export const quotaObservationSchema = z.object({
   window_minutes: z.number().positive(),
   used_pct: z.number().min(0).max(100),
   resets_at: z.iso.datetime(),
+  plan_level: z.string().nullable().optional(),
   ...provenance,
 });
 export type QuotaObservation = z.infer<typeof quotaObservationSchema>;

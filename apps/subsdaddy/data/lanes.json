@@ -12,7 +12,7 @@
         "coverage": null,
         "seeded": false,
         "reason": "window_saturated+used_pct_did_not_advance",
-        "measured_at": "2026-10-26T12:55:16.545Z",
+        "measured_at": "2026-10-26T12:58:44.102Z",
         "source": "codexbar usage --provider commandcode"
       },
       "usd_per_b": null,
@@ -21,7 +21,7 @@
         "p90_ttft_ms": 8441,
         "p50_output_tps": 201.41116100064144,
         "n": 11743,
-        "measured_at": "2026-10-26T12:55:16.545Z",
+        "measured_at": "2026-10-26T12:58:44.102Z",
         "source": "usage_logs(7d) rows=11743"
       },
       "presets": [
@@ -43,7 +43,7 @@
         "low_priced_share",
         "excluded_from_ranking"
       ],
-      "measured_at": "2026-10-26T12:55:16.545Z",
+      "measured_at": "2026-10-26T12:58:44.102Z",
       "source": "usage_logs(7d) + codexbar quota + plans.json"
     },
     {
@@ -54,21 +54,21 @@
       "capacity": {
         "method": "window_snapshot",
         "window": "weekly",
-        "tokens_per_week": 1278897528.2729611,
+        "tokens_per_week": 1271775978.6388412,
         "coverage": 1,
         "seeded": false,
         "reason": null,
-        "measured_at": "2026-10-26T12:55:16.545Z",
+        "measured_at": "2026-10-26T12:58:44.102Z",
         "source": "codexbar usage --provider opencodego"
       },
-      "usd_per_b": 1.798352059359812,
+      "usd_per_b": 1.8084222711466864,
       "measured": {
-        "p50_ttft_ms": 2587,
+        "p50_ttft_ms": 2589,
         "p90_ttft_ms": 12015,
         "p50_output_tps": 213.903743315508,
-        "n": 4155,
-        "measured_at": "2026-10-26T12:55:16.545Z",
-        "source": "usage_logs(7d) rows=4155"
+        "n": 4157,
+        "measured_at": "2026-10-26T12:58:44.102Z",
+        "source": "usage_logs(7d) rows=4157"
       },
       "presets": [
         {
@@ -88,7 +88,7 @@
         "low_fit",
         "capacity_conflict"
       ],
-      "measured_at": "2026-10-26T12:55:16.545Z",
+      "measured_at": "2026-10-26T12:58:44.102Z",
       "source": "usage_logs(7d) + codexbar quota + plans.json"
     },
     {
@@ -103,17 +103,17 @@
         "coverage": null,
         "seeded": false,
         "reason": "no codexbar token account for opencodego (--all-accounts: 'No token accounts configured')",
-        "measured_at": "2026-10-26T12:55:16.545Z",
+        "measured_at": "2026-10-26T12:58:44.102Z",
         "source": "codexbar usage"
       },
       "usd_per_b": null,
       "measured": {
-        "p50_ttft_ms": 2748,
-        "p90_ttft_ms": 15536,
-        "p50_output_tps": 215.8273381294964,
-        "n": 3654,
-        "measured_at": "2026-10-26T12:55:16.545Z",
-        "source": "usage_logs(7d) rows=3654"
+        "p50_ttft_ms": 2759,
+        "p90_ttft_ms": 15491,
+        "p50_output_tps": 215.5009451795841,
+        "n": 3673,
+        "measured_at": "2026-10-26T12:58:44.102Z",
+        "source": "usage_logs(7d) rows=3673"
       },
       "presets": [
         {
@@ -133,7 +133,7 @@
         "low_fit",
         "excluded_from_ranking"
       ],
-      "measured_at": "2026-10-26T12:55:16.545Z",
+      "measured_at": "2026-10-26T12:58:44.102Z",
       "source": "usage_logs(7d) + codexbar quota + plans.json"
     },
     {
@@ -142,43 +142,42 @@
       "price_month_usd": 56,
       "price_badge": "plan_spec",
       "capacity": {
-        "method": "plan_spec",
+        "method": "window_snapshot",
         "window": "weekly",
-        "tokens_per_week": 5700000000,
-        "coverage": null,
-        "seeded": true,
-        "reason": "published allowance, flash weight (seed, unverified against console)",
-        "measured_at": "2026-10-26T12:55:16.545Z",
-        "source": "published allowance, flash weight (seed, unverified against console)"
+        "tokens_per_week": 1318823100,
+        "coverage": 1,
+        "seeded": false,
+        "reason": null,
+        "measured_at": "2026-10-26T12:58:44.102Z",
+        "source": "api.z.ai monitor quota/limit (direct, ZAI_API_KEY from env)"
       },
-      "usd_per_b": null,
+      "usd_per_b": 9.765892651263975,
       "measured": {
         "p50_ttft_ms": 7158,
         "p90_ttft_ms": 13166,
         "p50_output_tps": 86.31713554987212,
         "n": 675,
-        "measured_at": "2026-10-26T12:55:16.545Z",
+        "measured_at": "2026-10-26T12:58:44.102Z",
         "source": "usage_logs(7d) rows=675"
       },
       "presets": [
         {
           "shape": "interactive",
-          "unavailable": "capacity_usd_unavailable"
+          "unavailable": "capacity_conflict"
         },
         {
           "shape": "agent",
-          "unavailable": "capacity_usd_unavailable"
+          "unavailable": "capacity_conflict"
         },
         {
           "shape": "cache_heavy",
-          "unavailable": "capacity_usd_unavailable"
+          "unavailable": "capacity_conflict"
         }
       ],
       "flags": [
-        "seed",
-        "excluded_from_ranking"
+        "capacity_conflict"
       ],
-      "measured_at": "2026-10-26T12:55:16.545Z",
+      "measured_at": "2026-10-26T12:58:44.102Z",
       "source": "usage_logs(7d) + codexbar quota + plans.json"
     },
     {
@@ -189,21 +188,21 @@
       "capacity": {
         "method": "window_snapshot",
         "window": "monthly",
-        "tokens_per_week": 79958932.71328299,
+        "tokens_per_week": 80829740.36587411,
         "coverage": 1,
         "seeded": false,
         "reason": null,
-        "measured_at": "2026-10-26T12:55:16.545Z",
+        "measured_at": "2026-10-26T12:58:44.102Z",
         "source": "codexbar usage --provider qwen-cloud"
       },
-      "usd_per_b": 28.763615591604637,
+      "usd_per_b": 28.45373489101125,
       "measured": {
-        "p50_ttft_ms": 3867,
-        "p90_ttft_ms": 9351,
+        "p50_ttft_ms": 3875,
+        "p90_ttft_ms": 9364,
         "p50_output_tps": 142.77305078396748,
-        "n": 2214,
-        "measured_at": "2026-10-26T12:55:16.545Z",
-        "source": "usage_logs(7d) rows=2214"
+        "n": 2220,
+        "measured_at": "2026-10-26T12:58:44.102Z",
+        "source": "usage_logs(7d) rows=2220"
       },
       "presets": [
         {
@@ -223,10 +222,10 @@
         "low_fit",
         "capacity_conflict"
       ],
-      "measured_at": "2026-10-26T12:55:16.545Z",
+      "measured_at": "2026-10-26T12:58:44.102Z",
       "source": "usage_logs(7d) + codexbar quota + plans.json"
     }
   ],
-  "measured_at": "2026-10-26T12:55:16.545Z",
+  "measured_at": "2026-10-26T12:58:44.102Z",
   "source": "build-dataset"
 }

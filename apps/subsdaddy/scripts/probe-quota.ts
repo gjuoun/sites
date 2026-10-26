@@ -1,13 +1,23 @@
 #!/usr/bin/env bun
 /**
- * Resolves one quota source per lane and prints one line each:
+ * Resolves one quota source per lane and returns one result each:
  *   {lane, window, used_pct, resets_at, source}  or  {lane, unavailable, reason}
- * Reads only: codexbar (cached provider sessions). Never prints cookies, tokens or keys.
+ * Sources: codexbar (cached provider sessions) for cc / go-1 / qwen; the z.ai monitor API
+ * (direct, key from env via opk) for zai. Never prints cookies, tokens or keys.
  */
 import { spawnSync } from "node:child_process";
+import { fetchZaiQuota } from "../src/lib/zai";
 
 export type Resolved =
-  | { lane: string; window: "5h" | "weekly" | "monthly"; window_minutes: number; used_pct: number; resets_at: string; source: string }
+  | {
+      lane: string;
+      window: "5h" | "weekly" | "monthly";
+      window_minutes: number;
+      used_pct: number;
+      resets_at: string;
+      source: string;
+      plan_level?: string | null;
+    }
   | { lane: string; unavailable: string };
 
 const CODEXBAR: Record<string, string> = { cc: "commandcode", "go-1": "opencodego", qwen: "qwen-cloud" };
@@ -41,11 +51,24 @@ export function fromCodexbar(lane: string, provider: string, json: string): Reso
   };
 }
 
-export function probeOne(lane: string): Resolved {
+export async function probeOne(lane: string): Promise<Resolved> {
+  if (lane === "zai") {
+    const r = await fetchZaiQuota();
+    if (!r.ok) return { lane, unavailable: r.unavailable };
+    return {
+      lane,
+      window: r.window,
+      window_minutes: r.window_minutes,
+      used_pct: r.used_pct,
+      resets_at: r.resets_at,
+      source: "api.z.ai monitor quota/limit (direct, ZAI_API_KEY from env)",
+      plan_level: r.plan_level,
+    };
+  }
   const provider = CODEXBAR[lane];
   if (!provider) {
     if (lane === "go-2") return { lane, unavailable: "no codexbar token account for opencodego (--all-accounts: 'No token accounts configured')" };
-    return { lane, unavailable: "no codexbar strategy for zai ('No available fetch strategy for zai.')" };
+    return { lane, unavailable: "unknown lane" };
   }
   const res = spawnSync("codexbar", ["usage", "--provider", provider, "--format", "json"], { encoding: "utf8", timeout: 30000 });
   if (res.status !== 0 && !res.stdout) return { lane, unavailable: `codexbar_exit_${res.status}` };
@@ -54,5 +77,5 @@ export function probeOne(lane: string): Resolved {
 
 if (import.meta.main) {
   const lanes = ["cc", "go-1", "go-2", "zai", "qwen"];
-  for (const l of lanes) console.log(JSON.stringify(probeOne(l)));
+  for (const l of lanes) console.log(JSON.stringify(await probeOne(l)));
 }

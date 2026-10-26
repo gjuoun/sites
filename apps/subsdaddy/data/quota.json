@@ -6,40 +6,44 @@
       "window_minutes": 10080,
       "used_pct": 100,
       "resets_at": "2026-10-28T15:50:44Z",
-      "measured_at": "2026-10-26T12:55:09.626Z",
+      "measured_at": "2026-10-26T12:58:37.862Z",
       "source": "codexbar usage --provider commandcode"
     },
     {
       "lane": "go-1",
       "window": "weekly",
       "window_minutes": 10080,
-      "used_pct": 10.052242666666666,
+      "used_pct": 10.120899133333333,
       "resets_at": "2026-11-01T23:59:59Z",
-      "measured_at": "2026-10-26T12:55:09.626Z",
+      "measured_at": "2026-10-26T12:58:37.862Z",
       "source": "codexbar usage --provider opencodego"
     },
     {
       "lane": "go-2",
       "unavailable": "no codexbar token account for opencodego (--all-accounts: 'No token accounts configured')",
-      "measured_at": "2026-10-26T12:55:09.626Z",
+      "measured_at": "2026-10-26T12:58:37.862Z",
       "source": "codexbar usage"
     },
     {
       "lane": "zai",
-      "unavailable": "no codexbar strategy for zai ('No available fetch strategy for zai.')",
-      "measured_at": "2026-10-26T12:55:09.626Z",
-      "source": "codexbar usage"
+      "window": "weekly",
+      "window_minutes": 10080,
+      "used_pct": 1,
+      "resets_at": "2026-11-02T04:43:38.999Z",
+      "plan_level": "max",
+      "measured_at": "2026-10-26T12:58:37.862Z",
+      "source": "api.z.ai monitor quota/limit (direct, ZAI_API_KEY from env)"
     },
     {
       "lane": "qwen",
       "window": "monthly",
       "window_minutes": 43200,
-      "used_pct": 52.61164004966549,
+      "used_pct": 52.90737168410079,
       "resets_at": "2026-11-24T16:00:00Z",
-      "measured_at": "2026-10-26T12:55:09.626Z",
+      "measured_at": "2026-10-26T12:58:37.862Z",
       "source": "codexbar usage --provider qwen-cloud"
     }
   ],
-  "measured_at": "2026-10-26T12:55:09.626Z",
+  "measured_at": "2026-10-26T12:58:37.862Z",
   "source": "codexbar usage (probe-quota)"
 }
