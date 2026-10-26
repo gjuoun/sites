@@ -6,10 +6,6 @@
       "hex": "#252925",
       "source": "jetbrains:TEXT#BACKGROUND"
     },
-    "paper": {
-      "hex": "#f8f8f0",
-      "source": "jetbrains:colors#CARET_COLOR"
-    },
     "panel": {
       "hex": "#2d312d",
       "source": "derived:panel"
@@ -133,8 +129,8 @@
       "source": "alias:paleBlue"
     },
     "brightWhite": {
-      "hex": "#f8f8f0",
-      "source": "alias:paper"
+      "hex": "#e8e9e1",
+      "source": "alias:fg"
     }
   },
   "syntax": {

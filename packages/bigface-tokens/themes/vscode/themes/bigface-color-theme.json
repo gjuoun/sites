@@ -15,7 +15,7 @@
     "icon.foreground": "#8c8f89",
     "editor.background": "#252925",
     "editor.foreground": "#e8e9e1",
-    "editorCursor.foreground": "#f8f8f0",
+    "editorCursor.foreground": "#e8e9e1",
     "editor.lineHighlightBackground": "#4b4e49",
     "editor.selectionBackground": "#4b4e49",
     "editor.inactiveSelectionBackground": "#4b4e49",
@@ -108,7 +108,7 @@
     "terminal.background": "#252925",
     "terminal.foreground": "#e8e9e1",
     "terminal.selectionBackground": "#4b4e49",
-    "terminalCursor.foreground": "#f8f8f0",
+    "terminalCursor.foreground": "#e8e9e1",
     "terminal.ansiBlack": "#3c403c",
     "terminal.ansiRed": "#fc5d23",
     "terminal.ansiGreen": "#00c853",
@@ -124,7 +124,7 @@
     "terminal.ansiBrightBlue": "#40c4ff",
     "terminal.ansiBrightMagenta": "#ae81ff",
     "terminal.ansiBrightCyan": "#b3e5fc",
-    "terminal.ansiBrightWhite": "#f8f8f0"
+    "terminal.ansiBrightWhite": "#e8e9e1"
   },
   "tokenColors": [
     {

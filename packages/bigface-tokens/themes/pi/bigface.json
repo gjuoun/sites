@@ -3,7 +3,6 @@
   "appearance": "dark",
   "vars": {
     "bg": "#252925",
-    "paper": "#f8f8f0",
     "panel": "#2d312d",
     "fg": "#e8e9e1",
     "fgDim": "#8c8f89",

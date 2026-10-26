@@ -31,7 +31,7 @@
   --color-base-50: #8c8f89;
   --color-base-60: #8c8f89;
   --color-base-70: #e8e9e1;
-  --color-base-100: #f8f8f0;
+  --color-base-100: #e8e9e1;
 
   /* Accent */
   --accent-h: 199;
@@ -75,7 +75,7 @@
   --text-error: #fc5d23;
   --text-selection: #4b4e4999;
   --text-highlight-bg: #4b4e49;
-  --caret-color: #f8f8f0;
+  --caret-color: #e8e9e1;
 
   /* Headings (lime like functions, then cyan and blue) */
   --h1-color: #c6ff00;

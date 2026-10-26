@@ -4,11 +4,7 @@
   "colors": {
     "bg": {
       "hex": "#f8f8f0",
-      "source": "dark:paper"
-    },
-    "paper": {
-      "hex": "#f8f8f0",
-      "source": "dark:paper"
+      "source": "jetbrains:colors#CARET_COLOR"
     },
     "panel": {
       "hex": "#edede5",
@@ -134,7 +130,7 @@
     },
     "brightWhite": {
       "hex": "#f8f8f0",
-      "source": "alias:paper"
+      "source": "alias:bg"
     }
   },
   "syntax": {

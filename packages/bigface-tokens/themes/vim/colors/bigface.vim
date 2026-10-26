@@ -6,12 +6,12 @@ set background=dark
 if has('termguicolors') | set termguicolors | endif
 let g:colors_name = "bigface"
 
-let g:terminal_ansi_colors = ['#3c403c', '#fc5d23', '#00c853', '#e5e500', '#00b0ff', '#ae81ff', '#66d9ef', '#e8e9e1', '#8c8f89', '#fc5d23', '#c6ff00', '#ffeb3b', '#40c4ff', '#ae81ff', '#b3e5fc', '#f8f8f0']
+let g:terminal_ansi_colors = ['#3c403c', '#fc5d23', '#00c853', '#e5e500', '#00b0ff', '#ae81ff', '#66d9ef', '#e8e9e1', '#8c8f89', '#fc5d23', '#c6ff00', '#ffeb3b', '#40c4ff', '#ae81ff', '#b3e5fc', '#e8e9e1']
 
 hi Normal guifg=#e8e9e1 guibg=#252925 gui=NONE cterm=NONE
 hi NonText guifg=#3c403c guibg=NONE gui=NONE cterm=NONE
 hi EndOfBuffer guifg=#252925 guibg=NONE gui=NONE cterm=NONE
-hi Cursor guifg=#252925 guibg=#f8f8f0 gui=NONE cterm=NONE
+hi Cursor guifg=#252925 guibg=#e8e9e1 gui=NONE cterm=NONE
 hi CursorLine guifg=NONE guibg=#4b4e49 gui=NONE cterm=NONE
 hi CursorLineNr guifg=#e8e9e1 guibg=#4b4e49 gui=NONE cterm=NONE
 hi LineNr guifg=#8c8f89 guibg=#252925 gui=NONE cterm=NONE
