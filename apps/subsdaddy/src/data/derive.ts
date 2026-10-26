@@ -80,6 +80,21 @@ export function capacityConfidence(used_pct: number | null | undefined): { confi
   return { confidence: "normal", reason: null };
 }
 
+export type DollarPerB = { usd_per_b: number | null; basis: "measured" | "derived" | null; derived_from: string | null };
+
+/**
+ * A plan with no capacity reading of its own takes the dollar figure of a same-rate peer.
+ * Once the plan has its own measured value, that value wins and the derived basis disappears.
+ * `peer_value` must be the peer's own measured figure, never another derived one.
+ */
+export function resolveDollarPerB(input: { own: number | null; rate_peer: string | null; peer_value: number | null }): DollarPerB {
+  if (input.own !== null) return { usd_per_b: input.own, basis: "measured", derived_from: null };
+  if (input.rate_peer !== null && input.peer_value !== null) {
+    return { usd_per_b: input.peer_value, basis: "derived", derived_from: input.rate_peer };
+  }
+  return { usd_per_b: null, basis: null, derived_from: null };
+}
+
 export type PricedRow = {
   tokens: TokenCounts;
   total_cost: number;

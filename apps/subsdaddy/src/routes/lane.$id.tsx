@@ -23,13 +23,14 @@ function LanePage() {
   return (
     <main className="mx-auto max-w-5xl space-y-6 p-6">
       <Link to="/" className="underline">← ranking</Link>
-      <h1 className="text-2xl font-semibold">{lane.label} <span className="text-muted-foreground">({lane.lane})</span></h1>
+      <h1 className="text-2xl font-semibold">{lane.label}</h1>
 
       <Card>
         <CardHeader><CardTitle>Capacity</CardTitle></CardHeader>
         <CardContent className="space-y-1 text-sm">
           <p>Method: <code>{lane.capacity.method}</code> {lane.capacity.window && <LayerBadge layer="window" />} {lane.capacity.seeded && <LayerBadge layer="seed" />}</p>
-          <p>Tokens per week: {fmt.tokensWeek(lane.capacity.tokens_per_week)}</p>
+          <p>Tokens per week: {fmt.tokensWeek(lane.capacity.tokens_per_week)} {lane.capacity.badge && <Badge variant="outline">{lane.capacity.badge}</Badge>}</p>
+          <p data-basis={lane.usd_per_b_basis ?? "none"}>$/B: {fmt.usd(lane.usd_per_b)} {lane.usd_per_b_basis === "derived" ? <Badge variant="outline" title={lane.usd_per_b_source ?? undefined}>derived</Badge> : null}{lane.usd_per_b_basis === "derived" ? ` — ${lane.usd_per_b_source}` : ""}</p>
           <p>Log coverage of window: {fmt.pct(lane.capacity.coverage)}</p>
           {lane.capacity.confidence === "low" && (
             <p data-confidence="low">

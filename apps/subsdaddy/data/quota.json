@@ -1,49 +1,43 @@
 {
   "observations": [
     {
-      "lane": "cc",
+      "lane": "commandcode-goat",
       "window": "weekly",
       "window_minutes": 10080,
       "used_pct": 100,
       "resets_at": "2026-10-28T15:50:44Z",
-      "measured_at": "2026-10-26T13:06:05.079Z",
-      "source": "codexbar usage --provider commandcode"
+      "measured_at": "2026-10-26T13:38:37.825Z",
+      "source": "codexbar quota reading"
     },
     {
-      "lane": "go-1",
+      "lane": "opencode-go",
       "window": "weekly",
       "window_minutes": 10080,
-      "used_pct": 10.295947866666667,
+      "used_pct": 10.567901333333333,
       "resets_at": "2026-11-01T23:59:59Z",
-      "measured_at": "2026-10-26T13:06:05.079Z",
-      "source": "codexbar usage --provider opencodego"
+      "measured_at": "2026-10-26T13:38:37.825Z",
+      "source": "codexbar quota reading"
     },
     {
-      "lane": "go-2",
-      "unavailable": "no codexbar token account for opencodego (--all-accounts: 'No token accounts configured')",
-      "measured_at": "2026-10-26T13:06:05.079Z",
-      "source": "codexbar usage"
-    },
-    {
-      "lane": "zai",
+      "lane": "zai-glm-max",
       "window": "weekly",
       "window_minutes": 10080,
       "used_pct": 1,
       "resets_at": "2026-11-02T04:43:38Z",
       "plan_level": "max",
-      "measured_at": "2026-10-26T13:06:05.079Z",
-      "source": "codexbar usage --provider zai"
+      "measured_at": "2026-10-26T13:38:37.825Z",
+      "source": "codexbar quota reading"
     },
     {
-      "lane": "qwen",
+      "lane": "qwen-cloud-token",
       "window": "monthly",
       "window_minutes": 43200,
-      "used_pct": 53.4623937101949,
+      "used_pct": 54.468124098959606,
       "resets_at": "2026-11-24T16:00:00Z",
-      "measured_at": "2026-10-26T13:06:05.079Z",
-      "source": "codexbar usage --provider qwen-cloud"
+      "measured_at": "2026-10-26T13:38:37.825Z",
+      "source": "codexbar quota reading"
     }
   ],
-  "measured_at": "2026-10-26T13:06:05.079Z",
+  "measured_at": "2026-10-26T13:38:37.825Z",
   "source": "codexbar usage (probe-quota)"
 }

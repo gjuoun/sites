@@ -1,51 +1,38 @@
 {
   "plans": [
     {
-      "lane": "cc",
-      "label": "CommandCode",
-      "provider": "commandcode",
+      "plan_id": "commandcode-goat",
+      "label": "CommandCode GOAT",
       "price_month_usd": 10,
       "badge": "plan_spec",
       "measured_at": "2026-10-26T06:06:22Z",
-      "source": "Jun 2026-10-26: CC GOAT is $10/mo (codexbar loginMethod '$35.00 of $70.00' is credit consumption, not the plan fee)"
+      "source": "published plan price: $10/mo for $80 credits"
     },
     {
-      "lane": "go-1",
-      "label": "OpenCode Go (jun1)",
-      "provider": "opencodego",
+      "plan_id": "opencode-go",
+      "label": "OpenCode Go",
       "price_month_usd": 10,
       "badge": "plan_spec",
       "measured_at": "2026-10-26T06:06:22Z",
-      "source": "pricing decision 2026-10-26"
+      "source": "published plan price: $10/mo for $80 credits; two subscriptions merged"
     },
     {
-      "lane": "go-2",
-      "label": "OpenCode Go (jun2)",
-      "provider": "opencodego",
-      "price_month_usd": 10,
-      "badge": "plan_spec",
-      "measured_at": "2026-10-26T06:06:22Z",
-      "source": "pricing decision 2026-10-26; assumed_same_plan as go-1"
-    },
-    {
-      "lane": "zai",
-      "label": "z.ai GLM plan",
-      "provider": "zai",
+      "plan_id": "zai-glm-max",
+      "label": "z.ai GLM Coding Plan (Max)",
       "price_month_usd": 56,
       "badge": "plan_spec",
       "measured_at": "2026-10-26T06:06:22Z",
-      "source": "pricing decision 2026-10-26: $672/yr"
+      "source": "published plan price: $672/yr"
     },
     {
-      "lane": "qwen",
+      "plan_id": "qwen-cloud-token",
       "label": "QwenCloud token plan",
-      "provider": "qwencloud",
       "price_month_usd": 10,
       "badge": "plan_spec",
       "measured_at": "2026-10-26T06:06:22Z",
-      "source": "pricing decision 2026-10-26"
+      "source": "published plan price"
     }
   ],
   "measured_at": "2026-10-26T06:06:22Z",
-  "source": "pricing decision 2026-10-26"
+  "source": "published plan prices"
 }

@@ -54,11 +54,16 @@ for (const f of readdirSync(dataDir).filter((x) => x.endsWith(".json"))) {
   if (REFRESHED.has(f) && started && measured && measured < started) problems.push(`${f}: measured_at predates the refresh start (stale)`);
 }
 
-const lanes = JSON.parse(readFileSync(join(dataDir, "lanes.json"), "utf8")).lanes as Array<{ lane: string; usd_per_b: number | null; capacity: { method: string } }>;
+type LaneCheck = { lane: string; usd_per_b: number | null; usd_per_b_basis: string | null; usd_per_b_derived_from: string | null; usd_per_b_source: string | null; capacity: { method: string } };
+const lanes = JSON.parse(readFileSync(join(dataDir, "lanes.json"), "utf8")).lanes as LaneCheck[];
 for (const l of lanes) {
-  if (l.usd_per_b !== null && (l.capacity.method === "unavailable" || !l.capacity.method)) {
-    problems.push(`${l.lane}: ranked without a capacity method`);
+  if (l.usd_per_b === null) continue;
+  if (l.usd_per_b_basis === "derived") {
+    // a derived figure is provenanced by its peer and must say so
+    if (!l.usd_per_b_derived_from || !l.usd_per_b_source) problems.push(`${l.lane}: derived figure without peer or source`);
+    continue;
   }
+  if (l.capacity.method === "unavailable" || !l.capacity.method) problems.push(`${l.lane}: ranked without a capacity method`);
 }
 
 if (problems.length) {

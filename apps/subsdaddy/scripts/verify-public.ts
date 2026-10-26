@@ -1,11 +1,12 @@
 #!/usr/bin/env bun
 /**
  * Public-hygiene gate: scans committed data/ (aggregates; raw exports are gitignored) and the
- * built dist/ HTML for keys, tokens, email addresses, IP literals, DB hostnames, and raw
- * gateway account ids. Prints secrets=<n> account_ids=<m>.
+ * built dist/ HTML for keys, tokens, email addresses, IP literals, DB hostnames, raw gateway
+ * account ids, and local identifiers (account labels, pre-plan lane ids).
  */
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
+import { findLocalIdentifiers } from "../src/lib/public-scan";
 
 const APP = resolve(import.meta.dir, "..");
 const roots = [join(APP, "data"), join(APP, "dist", "client")];
@@ -39,6 +40,7 @@ function files(dir: string): string[] {
 
 let secrets = 0;
 let accountIds = 0;
+let localIds = 0;
 for (const root of roots) {
   for (const f of files(root)) {
     const text = readFileSync(f, "utf8");
@@ -50,7 +52,9 @@ for (const root of roots) {
     for (const [name, re] of accountPatterns) {
       if (re.test(text)) { accountIds++; console.error(`FAIL ${name} in ${rel}`); }
     }
+    const local = findLocalIdentifiers(text);
+    if (local.length) { localIds += local.length; console.error(`FAIL local-identifier in ${rel}: ${local.join(",")}`); }
   }
 }
-console.log(`secrets=${secrets} account_ids=${accountIds}`);
-if (secrets || accountIds) process.exit(1);
+console.log(`secrets=${secrets} account_ids=${accountIds} local_ids=${localIds}`);
+if (secrets || accountIds || localIds) process.exit(1);

@@ -44,7 +44,7 @@ export function fromCodexbar(lane: string, provider: string, json: string): Quot
     window_minutes: pick.windowMinutes,
     used_pct: pick.usedPercent,
     resets_at: pick.resetsAt,
-    source: `codexbar usage --provider ${provider}`,
+    source: "codexbar quota reading",
   };
 }
 

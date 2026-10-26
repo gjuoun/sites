@@ -5,7 +5,7 @@
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { LANES, quotaFileSchema, type QuotaObservationOrGap } from "../src/data/schema";
+import { LANES, migrateQuotaFile, quotaFileSchema, type QuotaObservationOrGap } from "../src/data/schema";
 import { probeOne, type Resolved } from "./probe-quota";
 
 const APP = resolve(import.meta.dir, "..");
@@ -23,7 +23,7 @@ const observations: QuotaObservationOrGap[] = resolved.map((r) =>
 
 mkdirSync(join(dataDir, "raw", "quota"), { recursive: true });
 const rawPath = join(dataDir, "raw", "quota", `${day}.json`);
-const history = existsSync(rawPath) ? quotaFileSchema.parse(JSON.parse(readFileSync(rawPath, "utf8"))).observations : [];
+const history = existsSync(rawPath) ? quotaFileSchema.parse(migrateQuotaFile(JSON.parse(readFileSync(rawPath, "utf8")))).observations : [];
 writeFileSync(
   rawPath,
   JSON.stringify(quotaFileSchema.parse({ observations: [...history, ...observations], measured_at: measuredAt, source: "codexbar usage (probe-quota)" }), null, 2) + "\n",

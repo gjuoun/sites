@@ -1,31 +1,26 @@
 {
   "models": [
     {
-      "lane": "cc",
+      "lane": "commandcode-goat",
       "upstream_model": "deepseek-v4.1-flash",
       "openrouter": "deepseek/deepseek-v4.1-flash"
     },
     {
-      "lane": "go-1",
+      "lane": "opencode-go",
       "upstream_model": "deepseek-v4.1-flash",
       "openrouter": "deepseek/deepseek-v4.1-flash"
     },
     {
-      "lane": "go-2",
-      "upstream_model": "deepseek-v4.1-flash",
-      "openrouter": "deepseek/deepseek-v4.1-flash"
-    },
-    {
-      "lane": "zai",
+      "lane": "zai-glm-max",
       "upstream_model": "glm-5.3-flash",
       "openrouter": "z-ai/glm-5.3-flash"
     },
     {
-      "lane": "qwen",
+      "lane": "qwen-cloud-token",
       "upstream_model": "deepseek-v4.1-flash-1017",
       "openrouter": "deepseek/deepseek-v4.1-flash-1017"
     }
   ],
   "measured_at": "2026-10-26T06:06:22Z",
-  "source": "OpenRouter /api/v1/models ids (dominant upstream per lane, usage_logs 7d)"
+  "source": "OpenRouter model ids for each plan's dominant upstream model"
 }

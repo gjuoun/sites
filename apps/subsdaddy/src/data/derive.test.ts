@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import {
   WEEKS_PER_MONTH,
+  resolveDollarPerB,
   capacityConfidence,
   elapsedCoverage,
   cacheShare,
@@ -88,6 +89,33 @@ describe("capacity confidence", () => {
     expect(capacityConfidence(52.9)?.confidence).toBe("normal");
     expect(capacityConfidence(null)).toBeNull();
     expect(capacityConfidence(undefined)).toBeNull();
+  });
+});
+
+describe("dollars per billion: measured or derived", () => {
+  test("a plan's own measured value is used and carries no derived basis", () => {
+    expect(resolveDollarPerB({ own: 3, rate_peer: "opencode-go", peer_value: 9 })).toEqual({ usd_per_b: 3, basis: "measured", derived_from: null });
+  });
+
+  test("the derived badge appears when the plan has no measured value and a same-rate peer does", () => {
+    expect(resolveDollarPerB({ own: null, rate_peer: "opencode-go", peer_value: 9 })).toEqual({
+      usd_per_b: 9,
+      basis: "derived",
+      derived_from: "opencode-go",
+    });
+  });
+
+  test("the derived badge disappears once the plan has its own measured value", () => {
+    const before = resolveDollarPerB({ own: null, rate_peer: "opencode-go", peer_value: 9 });
+    const after = resolveDollarPerB({ own: 12, rate_peer: "opencode-go", peer_value: 9 });
+    expect(before.basis).toBe("derived");
+    expect(after.basis).toBe("measured");
+    expect(after.derived_from).toBeNull();
+  });
+
+  test("no own value and no usable peer is no number at all", () => {
+    expect(resolveDollarPerB({ own: null, rate_peer: null, peer_value: null })).toEqual({ usd_per_b: null, basis: null, derived_from: null });
+    expect(resolveDollarPerB({ own: null, rate_peer: "opencode-go", peer_value: null })).toEqual({ usd_per_b: null, basis: null, derived_from: null });
   });
 });
 

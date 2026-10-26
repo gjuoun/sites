@@ -1,8 +1,8 @@
 {
   "lanes": [
     {
-      "lane": "cc",
-      "label": "CommandCode",
+      "lane": "commandcode-goat",
+      "label": "CommandCode GOAT",
       "price_month_usd": 10,
       "price_badge": "plan_spec",
       "capacity": {
@@ -14,16 +14,20 @@
         "reason": "window_saturated+used_pct_did_not_advance",
         "confidence": null,
         "confidence_reason": null,
-        "measured_at": "2026-10-26T13:06:13.419Z",
-        "source": "codexbar usage --provider commandcode"
+        "badge": null,
+        "measured_at": "2026-10-26T13:38:45.811Z",
+        "source": "codexbar quota reading"
       },
-      "usd_per_b": null,
+      "usd_per_b": 1.8667563177433641,
+      "usd_per_b_basis": "derived",
+      "usd_per_b_derived_from": "opencode-go",
+      "usd_per_b_source": "同费率推算（owner 2026-10-26）；实测待 CommandCode GOAT 周窗 2026-10-28 复位后替换",
       "measured": {
         "p50_ttft_ms": 3700,
         "p90_ttft_ms": 8441,
         "p50_output_tps": 201.41116100064144,
         "n": 11743,
-        "measured_at": "2026-10-26T13:06:13.419Z",
+        "measured_at": "2026-10-26T13:38:45.811Z",
         "source": "usage_logs(7d) rows=11743"
       },
       "presets": [
@@ -42,37 +46,40 @@
       ],
       "flags": [
         "no_fit:too_few_priced_rows",
-        "low_priced_share",
-        "excluded_from_ranking"
+        "low_priced_share"
       ],
-      "measured_at": "2026-10-26T13:06:13.419Z",
-      "source": "usage_logs(7d) + codexbar quota + plans.json"
+      "measured_at": "2026-10-26T13:38:45.811Z",
+      "source": "usage_logs(7d) + quota reading + published price"
     },
     {
-      "lane": "go-1",
-      "label": "OpenCode Go (jun1)",
+      "lane": "opencode-go",
+      "label": "OpenCode Go",
       "price_month_usd": 10,
       "price_badge": "plan_spec",
       "capacity": {
         "method": "window_snapshot",
         "window": "weekly",
-        "tokens_per_week": 1253570304.2733614,
+        "tokens_per_week": 1232034402.0370617,
         "coverage": 1,
         "seeded": false,
         "reason": null,
         "confidence": "normal",
         "confidence_reason": null,
-        "measured_at": "2026-10-26T13:06:13.419Z",
-        "source": "codexbar usage --provider opencodego"
+        "badge": "single_account_reading",
+        "measured_at": "2026-10-26T13:38:45.811Z",
+        "source": "codexbar quota reading"
       },
-      "usd_per_b": 1.8346860928657738,
+      "usd_per_b": 1.8667563177433641,
+      "usd_per_b_basis": "measured",
+      "usd_per_b_derived_from": null,
+      "usd_per_b_source": "usage logs, quota reading, published price",
       "measured": {
-        "p50_ttft_ms": 2589,
-        "p90_ttft_ms": 12050,
-        "p50_output_tps": 213.80160197165742,
-        "n": 4164,
-        "measured_at": "2026-10-26T13:06:13.419Z",
-        "source": "usage_logs(7d) rows=4164"
+        "p50_ttft_ms": 2660,
+        "p90_ttft_ms": 13373,
+        "p50_output_tps": 214.1535615171138,
+        "n": 7890,
+        "measured_at": "2026-10-26T13:38:45.811Z",
+        "source": "usage_logs(7d) rows=7890"
       },
       "presets": [
         {
@@ -92,81 +99,38 @@
         "low_fit",
         "capacity_conflict"
       ],
-      "measured_at": "2026-10-26T13:06:13.419Z",
-      "source": "usage_logs(7d) + codexbar quota + plans.json"
+      "measured_at": "2026-10-26T13:38:45.811Z",
+      "source": "usage_logs(7d) + quota reading + published price"
     },
     {
-      "lane": "go-2",
-      "label": "OpenCode Go (jun2)",
-      "price_month_usd": 10,
-      "price_badge": "plan_spec",
-      "capacity": {
-        "method": "unavailable",
-        "window": null,
-        "tokens_per_week": null,
-        "coverage": null,
-        "seeded": false,
-        "reason": "no codexbar token account for opencodego (--all-accounts: 'No token accounts configured')",
-        "confidence": null,
-        "confidence_reason": null,
-        "measured_at": "2026-10-26T13:06:13.419Z",
-        "source": "codexbar usage"
-      },
-      "usd_per_b": null,
-      "measured": {
-        "p50_ttft_ms": 2760,
-        "p90_ttft_ms": 15470,
-        "p50_output_tps": 215.44167228590692,
-        "n": 3689,
-        "measured_at": "2026-10-26T13:06:13.419Z",
-        "source": "usage_logs(7d) rows=3689"
-      },
-      "presets": [
-        {
-          "shape": "interactive",
-          "unavailable": "capacity_usd_unavailable"
-        },
-        {
-          "shape": "agent",
-          "unavailable": "capacity_usd_unavailable"
-        },
-        {
-          "shape": "cache_heavy",
-          "unavailable": "capacity_usd_unavailable"
-        }
-      ],
-      "flags": [
-        "low_fit",
-        "excluded_from_ranking"
-      ],
-      "measured_at": "2026-10-26T13:06:13.419Z",
-      "source": "usage_logs(7d) + codexbar quota + plans.json"
-    },
-    {
-      "lane": "zai",
-      "label": "z.ai GLM plan",
+      "lane": "zai-glm-max",
+      "label": "z.ai GLM Coding Plan (Max)",
       "price_month_usd": 56,
       "price_badge": "plan_spec",
       "capacity": {
         "method": "window_snapshot",
         "window": "weekly",
-        "tokens_per_week": 1385302700,
+        "tokens_per_week": 1395567200,
         "coverage": 1,
         "seeded": false,
         "reason": null,
         "confidence": "low",
         "confidence_reason": "used_pct 1 is an integer percent: error about 1/used_pct",
-        "measured_at": "2026-10-26T13:06:13.419Z",
-        "source": "codexbar usage --provider zai"
+        "badge": null,
+        "measured_at": "2026-10-26T13:38:45.811Z",
+        "source": "codexbar quota reading"
       },
-      "usd_per_b": 9.297235052387595,
+      "usd_per_b": 9.228853200768244,
+      "usd_per_b_basis": "measured",
+      "usd_per_b_derived_from": null,
+      "usd_per_b_source": "usage logs, quota reading, published price",
       "measured": {
         "p50_ttft_ms": 7186,
         "p90_ttft_ms": 13464,
         "p50_output_tps": 83.31064524911517,
-        "n": 688,
-        "measured_at": "2026-10-26T13:06:13.419Z",
-        "source": "usage_logs(7d) rows=688"
+        "n": 689,
+        "measured_at": "2026-10-26T13:38:45.811Z",
+        "source": "usage_logs(7d) rows=689"
       },
       "presets": [
         {
@@ -185,34 +149,38 @@
       "flags": [
         "capacity_conflict"
       ],
-      "measured_at": "2026-10-26T13:06:13.419Z",
-      "source": "usage_logs(7d) + codexbar quota + plans.json"
+      "measured_at": "2026-10-26T13:38:45.811Z",
+      "source": "usage_logs(7d) + quota reading + published price"
     },
     {
-      "lane": "qwen",
+      "lane": "qwen-cloud-token",
       "label": "QwenCloud token plan",
       "price_month_usd": 10,
       "price_badge": "plan_spec",
       "capacity": {
         "method": "window_snapshot",
         "window": "monthly",
-        "tokens_per_week": 80865043.69348733,
+        "tokens_per_week": 80797157.83867176,
         "coverage": 1,
         "seeded": false,
         "reason": null,
         "confidence": "normal",
         "confidence_reason": null,
-        "measured_at": "2026-10-26T13:06:13.419Z",
-        "source": "codexbar usage --provider qwen-cloud"
+        "badge": null,
+        "measured_at": "2026-10-26T13:38:45.811Z",
+        "source": "codexbar quota reading"
       },
-      "usd_per_b": 28.441312817408168,
+      "usd_per_b": 28.46520923758352,
+      "usd_per_b_basis": "measured",
+      "usd_per_b_derived_from": null,
+      "usd_per_b_source": "usage logs, quota reading, published price",
       "measured": {
-        "p50_ttft_ms": 3877,
+        "p50_ttft_ms": 3887,
         "p90_ttft_ms": 9395,
-        "p50_output_tps": 142.77305078396748,
-        "n": 2224,
-        "measured_at": "2026-10-26T13:06:13.419Z",
-        "source": "usage_logs(7d) rows=2224"
+        "p50_output_tps": 142.49578414839797,
+        "n": 2249,
+        "measured_at": "2026-10-26T13:38:45.811Z",
+        "source": "usage_logs(7d) rows=2249"
       },
       "presets": [
         {
@@ -232,10 +200,10 @@
         "low_fit",
         "capacity_conflict"
       ],
-      "measured_at": "2026-10-26T13:06:13.419Z",
-      "source": "usage_logs(7d) + codexbar quota + plans.json"
+      "measured_at": "2026-10-26T13:38:45.811Z",
+      "source": "usage_logs(7d) + quota reading + published price"
     }
   ],
-  "measured_at": "2026-10-26T13:06:13.419Z",
+  "measured_at": "2026-10-26T13:38:45.811Z",
   "source": "build-dataset"
 }

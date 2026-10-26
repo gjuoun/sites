@@ -1,4 +1,4 @@
-import { ACCOUNT_TO_LANE, type LaneId } from "../data/schema";
+import { ACCOUNT_TO_LANE, LANES, QUOTA_METERED_ACCOUNTS, type LaneId } from "../data/schema";
 
 /** Read-only SQL. The statement is fixed in code; only the window length is parameterized, and it is validated. */
 export function usageSql(days: number): string {
@@ -18,6 +18,7 @@ export function usageSql(days: number): string {
 
 export type UsageRow = {
   lane: LaneId;
+  metered: boolean;
   upstream_model: string;
   input: number;
   cache_creation: number;
@@ -29,7 +30,7 @@ export type UsageRow = {
   created_at_utc: string;
 };
 
-/** Parse `psql -A -F'|'` output (no header) into lane-keyed rows. Account 3 never reaches here: the SQL filters it. */
+/** Parse `psql -t -A -F'|'` output into plan-keyed rows. Account 3 never reaches here: the SQL filters it. */
 export function parseUsageRows(text: string): UsageRow[] {
   const out: UsageRow[] = [];
   for (const raw of text.split("\n")) {
@@ -43,6 +44,7 @@ export function parseUsageRows(text: string): UsageRow[] {
     const num = (s: string) => (s === "" ? null : Number(s));
     out.push({
       lane,
+      metered: QUOTA_METERED_ACCOUNTS.has(account),
       upstream_model: f[1],
       input: Number(f[2]),
       cache_creation: Number(f[3]),
@@ -55,6 +57,13 @@ export function parseUsageRows(text: string): UsageRow[] {
     });
   }
   return out;
+}
+
+/** Every plan id is present, even with no rows; accounts of one plan land in the same bucket. */
+export function groupByPlan(rows: UsageRow[]): Map<LaneId, UsageRow[]> {
+  const map = new Map<LaneId, UsageRow[]>(LANES.map((l) => [l, []]));
+  for (const r of rows) map.get(r.lane)!.push(r);
+  return map;
 }
 
 /** Nearest-rank percentile; null on an empty sample. */

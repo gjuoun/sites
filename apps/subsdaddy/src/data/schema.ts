@@ -1,23 +1,45 @@
 import { z } from "zod";
 
-/**
- * Every number that reaches the site carries where it came from and when it was
- * read. A value we could not read is an explicit `unavailable` with a reason —
- * never a 0, because a 0 ranks as "free" in every downstream sort.
- */
-
-export const LANES = ["cc", "go-1", "go-2", "zai", "qwen"] as const;
+/** Public plan ids: the only lane identities that appear in committed data or in dist/. */
+export const LANES = ["commandcode-goat", "opencode-go", "zai-glm-max", "qwen-cloud-token"] as const;
 export const laneSchema = z.enum(LANES);
 export type LaneId = z.infer<typeof laneSchema>;
 
-/** sub2api account_id -> lane id. Account 3 (pay-as-you-go) is not a lane. */
+/**
+ * sub2api account_id -> plan. OpenCode Go is two subscriptions merged into one plan.
+ * Account 3 is pay-as-you-go and is not a plan at all.
+ */
 export const ACCOUNT_TO_LANE: Record<number, LaneId> = {
-  2: "go-1",
-  6: "go-2",
-  7: "cc",
-  8: "zai",
-  9: "qwen",
+  2: "opencode-go",
+  6: "opencode-go",
+  7: "commandcode-goat",
+  8: "zai-glm-max",
+  9: "qwen-cloud-token",
 };
+
+/** Accounts whose quota window the codexbar reading comes from. Only these tokens feed capacity. */
+export const QUOTA_METERED_ACCOUNTS: ReadonlySet<number> = new Set([2, 7, 8, 9]);
+
+/** Lane ids from the pre-plan model, found in local raw history. null = no longer a plan, dropped. */
+const LEGACY_LANE: Record<string, LaneId | null> = {
+  cc: "commandcode-goat",
+  "go-1": "opencode-go",
+  "go-2": null,
+  zai: "zai-glm-max",
+  qwen: "qwen-cloud-token",
+};
+
+/** Maps legacy lane ids in a quota file to plan ids before schema parsing. Unknown shapes pass through. */
+export function migrateQuotaFile(raw: unknown): unknown {
+  const obj = raw as { observations?: unknown } | null;
+  if (!obj || !Array.isArray(obj.observations)) return raw;
+  const observations = (obj.observations as Array<{ lane?: unknown }>).flatMap((o) => {
+    if (!o || typeof o.lane !== "string" || !Object.hasOwn(LEGACY_LANE, o.lane)) return [o];
+    const to = LEGACY_LANE[o.lane];
+    return to ? [{ ...o, lane: to }] : [];
+  });
+  return { ...obj, observations };
+}
 
 export const provenance = {
   measured_at: z.iso.datetime(),
@@ -37,9 +59,8 @@ export const reading = z.union([
 export type Reading = z.infer<typeof reading>;
 
 export const planSchema = z.object({
-  lane: laneSchema,
+  plan_id: laneSchema,
   label: z.string().min(1),
-  provider: z.string().min(1),
   price_month_usd: z.number().positive(),
   badge: z.enum(["plan_spec", "console"]),
   ...provenance,
@@ -47,11 +68,11 @@ export const planSchema = z.object({
 export type Plan = z.infer<typeof planSchema>;
 
 export const plansFileSchema = z.object({
-  plans: z.array(planSchema).length(5),
+  plans: z.array(planSchema).length(LANES.length),
   ...provenance,
 });
 
-/** One provider window reading, e.g. codexbar's weekly window for a lane. */
+/** One provider window reading from the codexbar quota source. */
 export const quotaObservationSchema = z.object({
   lane: laneSchema,
   window: z.enum(["5h", "weekly", "monthly"]),
@@ -95,7 +116,8 @@ export const modelUsageSchema = z.object({
   p50_ttft_ms: z.number().nullable(),
   p90_ttft_ms: z.number().nullable(),
   p50_output_tps: z.number().nullable(),
-  ...provenance,
+  measured_at: z.iso.datetime(),
+  source: z.string().min(1),
 });
 
 export const laneUsageSchema = z.object({
@@ -115,7 +137,7 @@ export const usageFileSchema = z.object({
   window_days: z.number().positive(),
   coverage_start: z.iso.datetime(),
   coverage_end: z.iso.datetime(),
-  lanes: z.array(laneUsageSchema).length(5),
+  lanes: z.array(laneUsageSchema).length(LANES.length),
   ...provenance,
 });
 export type UsageFile = z.infer<typeof usageFileSchema>;
@@ -151,7 +173,7 @@ export const modelsFileSchema = z.object({
   ...provenance,
 });
 
-/** The lane record the site renders. */
+/** The plan record the site renders. */
 export const laneRecordSchema = z.object({
   lane: laneSchema,
   label: z.string().min(1),
@@ -166,9 +188,13 @@ export const laneRecordSchema = z.object({
     reason: z.string().nullable(),
     confidence: z.enum(["low", "normal"]).nullable(),
     confidence_reason: z.string().nullable(),
+    badge: z.string().nullable(),
     ...provenance,
   }),
   usd_per_b: z.number().positive().nullable(),
+  usd_per_b_basis: z.enum(["measured", "derived"]).nullable(),
+  usd_per_b_derived_from: laneSchema.nullable(),
+  usd_per_b_source: z.string().nullable(),
   measured: z.object({
     p50_ttft_ms: z.number().nullable(),
     p90_ttft_ms: z.number().nullable(),
@@ -188,7 +214,7 @@ export const laneRecordSchema = z.object({
 export type LaneRecord = z.infer<typeof laneRecordSchema>;
 
 export const lanesFileSchema = z.object({
-  lanes: z.array(laneRecordSchema).length(5),
+  lanes: z.array(laneRecordSchema).length(LANES.length),
   ...provenance,
 });
 export type LanesFile = z.infer<typeof lanesFileSchema>;
