@@ -21,15 +21,22 @@
       "openrouter": "deepseek/deepseek-v4.1-flash-1017"
     }
   ],
-  "measured_at": "2026-10-26T17:00:00Z",
+  "measured_at": "2026-10-26T17:30:00Z",
   "source": "openrouter.ai/api/v1/models, fetched 2026-10-26 (list price, USD per 1M tokens); lane model mapping as before",
   "reference": [
     {
-      "ref": "deepseek-v4-flash",
-      "openrouter": "deepseek/deepseek-v4-flash",
-      "in_per_m": 0.091,
-      "out_per_m": 0.182,
-      "cache_per_m": 0.0182
+      "ref": "deepseek-v4.1-flash",
+      "openrouter": "deepseek/deepseek-v4.1-flash",
+      "in_per_m": 0.02,
+      "out_per_m": 1.0,
+      "cache_per_m": 0.015
+    },
+    {
+      "ref": "gemini-3.8-flash",
+      "openrouter": "google/gemini-3.8-flash",
+      "in_per_m": 0.825,
+      "out_per_m": 4.125,
+      "cache_per_m": 0.0825
     },
     {
       "ref": "claude-haiku-5.5",

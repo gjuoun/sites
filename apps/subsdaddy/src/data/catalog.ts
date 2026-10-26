@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { LANES } from "./schema";
+import { REF_IDS, REF_NAMES } from "./estimate";
 
 /**
  * The plans catalog: published prices and published allowance models only.
@@ -24,7 +25,7 @@ const windowReadingSchema = z.strictObject({
   source: z.string().min(1),
 });
 
-const REF_LITERALS = ["deepseek-v4-flash", "claude-haiku-5.5", "gpt-6-luna"] as const;
+const REF_LITERALS = REF_IDS;
 
 /** A published usage-dollar allowance: "*" applies to every reference model, otherwise one reference model. */
 export const allowanceEntrySchema = z.strictObject({
@@ -88,6 +89,7 @@ export const catalogRowSchema = z
     exclusion_reason: z.string().min(1).nullable(),
     price_note: z.string().min(1).nullable(),
     allowance: z.array(allowanceEntrySchema).default([]),
+    allowance_reason: z.string().min(1).nullable().default(null),
     estimate: estimateSchema.nullable().optional(),
     window_readings: z.array(windowReadingSchema).optional(),
     reading_error: z.string().min(1).nullable().optional(),
@@ -159,7 +161,7 @@ export type CatalogDisplay = {
   estimate_text: string;
   estimate_reason: string | null;
   estimate_basis: string | null;
-  estimate_by_model: string | null;
+  estimate_models: Array<{ ref: string; name: string; text: string | null; reason: string | null; basis: string | null }>;
 };
 
 /** Two significant figures, dollars, no unit: 3.6 -> "$3.6", 19.07 -> "$19", 0.0004 -> "$0.00040". */
@@ -203,15 +205,17 @@ export function catalogDisplayRow(r: CatalogRow): CatalogDisplay {
   };
 }
 
-function estimateDisplay(e: Estimate | null): Pick<CatalogDisplay, "estimate_status" | "estimate_text" | "estimate_reason" | "estimate_basis" | "estimate_by_model"> {
-  if (!e) return { estimate_status: "none", estimate_text: "—", estimate_reason: null, estimate_basis: null, estimate_by_model: null };
-  if (e.status === "unavailable") return { estimate_status: "unavailable", estimate_text: "—", estimate_reason: e.reason, estimate_basis: null, estimate_by_model: null };
+function estimateDisplay(e: Estimate | null): Pick<CatalogDisplay, "estimate_status" | "estimate_text" | "estimate_reason" | "estimate_basis" | "estimate_models"> {
+  if (!e) return { estimate_status: "none", estimate_text: "—", estimate_reason: null, estimate_basis: null, estimate_models: [] };
+  if (e.status === "unavailable") return { estimate_status: "unavailable", estimate_text: "—", estimate_reason: e.reason, estimate_basis: null, estimate_models: [] };
   const [low, high] = e.range_agent!;
   const text = low === high ? formatEstimate(low) : formatEstimate(low) + " – " + formatEstimate(high);
-  const NAMES: Record<string, string> = { "deepseek-v4-flash": "DeepSeek V4 Flash", "claude-haiku-5.5": "Claude Haiku 5.5", "gpt-6-luna": "GPT-6 Luna" };
-  const byModel = e.values
-    .filter((v) => v.shape === "agent")
-    .map((v) => NAMES[v.ref] + " " + (v.usd_per_b === null ? "n/a" : formatEstimate(v.usd_per_b)))
-    .join(" · ");
-  return { estimate_status: "estimated", estimate_text: text, estimate_reason: null, estimate_basis: e.basis, estimate_by_model: byModel };
+  const estimate_models = REF_IDS.map((ref) => {
+    const v = e.values.find((x) => x.ref === ref && x.shape === "agent");
+    if (!v) return { ref, name: REF_NAMES[ref], text: null, reason: "not evaluated", basis: null };
+    if (v.usd_per_b === null) return { ref, name: REF_NAMES[ref], text: null, reason: v.reason, basis: null };
+    const basis = v.fee_over_allowance === null ? null : "fee/allowance = " + Number(v.fee_over_allowance.toPrecision(3)) + " × blended " + v.blended_usd_per_b.toFixed(2) + " per B tokens (agent mix)";
+    return { ref, name: REF_NAMES[ref], text: formatEstimate(v.usd_per_b), reason: null, basis };
+  });
+  return { estimate_status: "estimated", estimate_text: text, estimate_reason: null, estimate_basis: e.basis, estimate_models };
 }

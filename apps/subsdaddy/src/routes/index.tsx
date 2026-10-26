@@ -139,10 +139,23 @@ function IndexPage() {
                       )}
                     </TableCell>
                     <TableCell className="whitespace-normal align-top" data-estimate={c.estimate_status}>
-                      <span className="font-medium" title={c.estimate_basis ?? undefined}>{c.estimate_text}</span>
-                      {c.estimate_status === "estimated" && <Badge variant="outline" className="ml-1" data-badge="estimated">estimated</Badge>}
-                      {c.estimate_by_model && <div className="max-w-[16rem] whitespace-normal break-words text-xs text-muted-foreground">{c.estimate_by_model}</div>}
-                      {c.estimate_reason && <div className="max-w-[16rem] whitespace-normal break-words text-xs text-muted-foreground">{c.estimate_reason}</div>}
+                      {c.estimate_status === "estimated" && (
+                        <ul className="space-y-1">
+                          {c.estimate_models.map((m) => (
+                            <li key={m.ref} data-est-model={m.ref} data-est-value={m.text ? "yes" : "no"} title={m.basis ?? undefined} className="whitespace-normal break-words">
+                              <span className="text-xs text-muted-foreground">{m.name}</span>{" "}
+                              <span className="font-medium">{m.text ?? "—"}</span>
+                              {m.reason && <div className="max-w-[16rem] whitespace-normal break-words text-xs text-muted-foreground">{m.reason}</div>}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                      {c.estimate_status === "unavailable" && (
+                        <div className="max-w-[16rem] whitespace-normal break-words text-xs text-muted-foreground">
+                          <span className="font-medium text-foreground">—</span> {c.estimate_reason}
+                        </div>
+                      )}
+                      {c.estimate_status === "estimated" && <Badge variant="outline" className="mt-1" data-badge="estimated">estimated</Badge>}
                     </TableCell>
                     <TableCell className="whitespace-normal break-words align-top">
                       <div className="font-medium">{c.allowance_model}</div>

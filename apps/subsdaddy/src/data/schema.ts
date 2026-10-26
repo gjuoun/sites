@@ -174,14 +174,14 @@ export const modelsFileSchema = z.object({
   reference: z
     .array(
       z.object({
-        ref: z.enum(["deepseek-v4-flash", "claude-haiku-5.5", "gpt-6-luna"]),
+        ref: z.enum(["deepseek-v4.1-flash", "gemini-3.8-flash", "claude-haiku-5.5", "gpt-6-luna"]),
         openrouter: z.string().min(1),
         in_per_m: z.number().nonnegative(),
         out_per_m: z.number().nonnegative(),
         cache_per_m: z.number().nonnegative(),
       }),
     )
-    .length(3),
+    .length(4),
   ...provenance,
 });
 

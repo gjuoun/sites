@@ -121,6 +121,8 @@ for (const r of catalogJson.rows) {
   if (status === "estimated") {
     estimatedRows++;
     if (!rowHtml.includes('data-estimate="estimated"')) problems.push("estimated row " + r.plan_id + " shows no estimate");
+    const modelLines = (rowHtml.match(/data-est-model="/g) ?? []).length;
+    if (modelLines !== 4) problems.push("estimated row " + r.plan_id + " lists " + modelLines + " models, expected 4");
   } else if (status === "unavailable") {
     if (!rowHtml.includes('data-estimate="unavailable"')) problems.push("unavailable row " + r.plan_id + " not marked unavailable");
   }

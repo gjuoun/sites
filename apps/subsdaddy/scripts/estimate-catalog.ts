@@ -28,7 +28,8 @@ function estimateRow(row: CatalogRow) {
   const fee = row.price_month_usd;
   if (fee === null) return { status: "unavailable" as const, reason: "no USD fee to divide", basis: null, values: [], range_agent: null };
   if (row.allowance.length === 0) {
-    return { status: "unavailable" as const, reason: "no published usage-dollar allowance (token, credit or window allowance only)", basis: null, values: [], range_agent: null };
+    const reason = row.status === "excluded" ? (row.exclusion_reason ?? "excluded") : (row.allowance_reason ?? "no published usage-dollar allowance");
+    return { status: "unavailable" as const, reason, basis: null, values: [], range_agent: null };
   }
   const values = [] as Array<{ ref: RefId; shape: Shape; usd_per_b: number | null; reason: string | null; fee_over_allowance: number | null; blended_usd_per_b: number; measured_at: string; source: string }>;
   const ratios: string[] = [];
@@ -49,7 +50,7 @@ function estimateRow(row: CatalogRow) {
   }
   const agent = values.filter((v) => v.shape === "agent" && v.usd_per_b !== null).map((v) => v.usd_per_b as number);
   if (agent.length === 0) {
-    return { status: "unavailable" as const, reason: "no allowance matches the three reference models", basis: null, values, range_agent: null };
+    return { status: "unavailable" as const, reason: "no allowance matches any reference model", basis: null, values, range_agent: null };
   }
   const low = Math.min(...agent);
   const high = Math.max(...agent);

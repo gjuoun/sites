@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { blendedUsdPerB, cacheFor, estimateOne, pooledMix } from "./estimate";
+import { REF_IDS, blendedUsdPerB, cacheFor, estimateOne, pooledMix } from "./estimate";
 
 const MIX = { output_share: 0.5, agent_cache_share: 0.8 };
 
@@ -38,6 +38,48 @@ describe("estimate formula", () => {
     const e = estimateOne({ fee_usd: 10, allowance_usd: 0, allowance_reason: null, price: { in_per_m: 1, out_per_m: 2, cache_per_m: 0.1 }, mix: MIX, shape: "agent" });
     expect(e.usd_per_b).toBeNull();
     expect(e.reason).toBe("no published usage-dollar allowance");
+  });
+});
+
+describe("per-model matrix", () => {
+  const flash = { in_per_m: 0.02, out_per_m: 1.0, cache_per_m: 0.015 };
+  const gemini = { in_per_m: 0.825, out_per_m: 4.125, cache_per_m: 0.0825 };
+  const haiku = { in_per_m: 0.1, out_per_m: 0.5, cache_per_m: 0.01 };
+  const agentMix = { output_share: 0.0056, agent_cache_share: 0.9176 };
+  const at = (price: { in_per_m: number; out_per_m: number; cache_per_m: number }) =>
+    estimateOne({ fee_usd: 10, allowance_usd: 80, allowance_reason: null, price, mix: agentMix, shape: "agent" }).usd_per_b!;
+
+  test("the same plan gives a different $/B for each reference model, ordered by the blended cost at the agent mix", () => {
+    // Under the agent mix cache reads dominate, so Haiku's cache price ($0.010/M) puts it below DeepSeek V4.1 Flash
+    // ($0.015/M) even though DeepSeek's input price is lower. The ranking follows the blend, not the input price alone.
+    expect(at(gemini)).toBeGreaterThan(at(flash));
+    expect(at(flash)).toBeGreaterThan(at(haiku));
+  });
+
+  test("each model's value is (fee/allowance) x its own blended cost", () => {
+    const p = { in_per_m: 1, out_per_m: 2, cache_per_m: 0.1 };
+    const e = estimateOne({ fee_usd: 10, allowance_usd: 80, allowance_reason: null, price: p, mix: { output_share: 0.5, agent_cache_share: 0 }, shape: "interactive" });
+    expect(e.usd_per_b).toBeCloseTo(0.125 * 1500, 6);
+  });
+
+  test("a model with no allowance in a plan is refused with its reason, never zero", () => {
+    const e = estimateOne({ fee_usd: 10, allowance_usd: null, allowance_reason: "no published allowance for this model in this plan", price: gemini, mix: agentMix, shape: "agent" });
+    expect(e.usd_per_b).toBeNull();
+    expect(e.reason).toBe("no published allowance for this model in this plan");
+  });
+
+  test("the reference set is exactly the four models the page names", () => {
+    expect([...REF_IDS]).toEqual(["deepseek-v4.1-flash", "gemini-3.8-flash", "claude-haiku-5.5", "gpt-6-luna"]);
+  });
+});
+
+describe("credits folding", () => {
+  test("a fixed credit count times the usage dollars per credit gives the real fee per usage dollar", () => {
+    // QwenCloud: $10 for 25,500 credits, 1 credit = $1 of usage (stated assumption): fee per usage $ = 10/25500
+    const usdPerCredit = 10 / 25500;
+    const allowance = 25500 * 1;
+    const folded = estimateOne({ fee_usd: 10, allowance_usd: allowance, allowance_reason: null, price: { in_per_m: 1, out_per_m: 2, cache_per_m: 0.1 }, mix: { output_share: 0.5, agent_cache_share: 0 }, shape: "interactive" });
+    expect(folded.fee_over_allowance).toBeCloseTo(usdPerCredit, 12);
   });
 });
 

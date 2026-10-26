@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { catalogDisplayRow, catalogFileSchema, catalogRowSchema, formatUsdPerCredit } from "./catalog";
+import { REF_IDS } from "./estimate";
 
 const T = "2026-10-26T16:00:00Z";
 const official = { kind: "official_page", url: "https://claude.com/pricing", note: "pricing page" };
@@ -100,6 +101,37 @@ describe("catalog file", () => {
 });
 
 describe("catalog display guard", () => {
+  test("an estimated row lists all four reference models, each with its value or its reason", () => {
+    const T2 = "2026-10-26T17:30:00Z";
+    const values = REF_IDS.flatMap((ref) =>
+      (["interactive", "agent", "cache_heavy"] as const).map((shape) => ({
+        ref,
+        shape,
+        usd_per_b: ref === "gemini-3.8-flash" ? null : 5,
+        reason: ref === "gemini-3.8-flash" ? "no allowance" : null,
+        fee_over_allowance: ref === "gemini-3.8-flash" ? null : 0.5,
+        blended_usd_per_b: 10,
+        measured_at: T2,
+        source: "t",
+      })),
+    );
+    const row = catalogRowSchema.parse({ ...base, estimate: { status: "estimated", reason: null, basis: "b", values, range_agent: [5, 5], measured_at: T2, source: "t" } });
+    const d = catalogDisplayRow(row);
+    expect(d.estimate_models.map((m) => m.ref)).toEqual([...REF_IDS]);
+    expect(d.estimate_models[0].text).toBe("$5");
+    expect(d.estimate_models[1].text).toBeNull();
+    expect(d.estimate_models[1].reason).toBe("no allowance");
+    expect(JSON.stringify(d)).not.toContain("$/B");
+  });
+
+  test("an unavailable row shows its reason and no per-model values", () => {
+    const row = catalogRowSchema.parse({ ...base, allowance_reason: "weekly token allowance; no dollar amount published", estimate: { status: "unavailable", reason: "weekly token allowance; no dollar amount published", basis: null, values: [], range_agent: null, measured_at: "2026-10-26T17:30:00Z", source: "t" } });
+    const d = catalogDisplayRow(row);
+    expect(d.estimate_status).toBe("unavailable");
+    expect(d.estimate_models).toEqual([]);
+    expect(d.estimate_reason).toContain("weekly token allowance");
+  });
+
   test("a catalog row renders with a badge and no per-billion dollar figure", () => {
     const d = catalogDisplayRow(catalogRowSchema.parse(base));
     expect(d.badge).toBe("unmeasured");

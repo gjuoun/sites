@@ -11,7 +11,14 @@
  *   blended ($/B tokens) = blended ($/token) × 1e9
  */
 
-export const REF_IDS = ["deepseek-v4-flash", "claude-haiku-5.5", "gpt-6-luna"] as const;
+export const REF_IDS = ["deepseek-v4.1-flash", "gemini-3.8-flash", "claude-haiku-5.5", "gpt-6-luna"] as const;
+/** Display names for the reference models, used in the catalog table. */
+export const REF_NAMES: Record<RefId, string> = {
+  "deepseek-v4.1-flash": "DeepSeek V4.1 Flash",
+  "gemini-3.8-flash": "Gemini 3.8 Flash",
+  "claude-haiku-5.5": "Claude Haiku 5.5",
+  "gpt-6-luna": "GPT-6 Luna",
+};
 export type RefId = (typeof REF_IDS)[number];
 export const SHAPES = ["interactive", "agent", "cache_heavy"] as const;
 export type Shape = (typeof SHAPES)[number];

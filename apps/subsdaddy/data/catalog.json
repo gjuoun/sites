@@ -19,13 +19,14 @@
       "exclusion_reason": null,
       "price_note": null,
       "allowance": [],
+      "allowance_reason": "window percentages (5h and weekly); no dollar amount published",
       "estimate": {
         "status": "unavailable",
-        "reason": "no published usage-dollar allowance (token, credit or window allowance only)",
+        "reason": "window percentages (5h and weekly); no dollar amount published",
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-26T17:11:50.035Z",
+        "measured_at": "2026-10-26T17:16:50.039Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -61,13 +62,14 @@
       "exclusion_reason": null,
       "price_note": null,
       "allowance": [],
+      "allowance_reason": "window percentages (5h and weekly); no dollar amount published",
       "estimate": {
         "status": "unavailable",
-        "reason": "no published usage-dollar allowance (token, credit or window allowance only)",
+        "reason": "window percentages (5h and weekly); no dollar amount published",
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-26T17:11:50.035Z",
+        "measured_at": "2026-10-26T17:16:50.039Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -98,13 +100,14 @@
       "exclusion_reason": null,
       "price_note": null,
       "allowance": [],
+      "allowance_reason": "window percentages (5h and weekly); no dollar amount published",
       "estimate": {
         "status": "unavailable",
-        "reason": "no published usage-dollar allowance (token, credit or window allowance only)",
+        "reason": "window percentages (5h and weekly); no dollar amount published",
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-26T17:11:50.035Z",
+        "measured_at": "2026-10-26T17:16:50.039Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -135,28 +138,29 @@
       "exclusion_reason": null,
       "price_note": "Brief states 20 USD/month; openai.com, chatgpt.com and help pages returned 403 on 2026-10-26, so the price is not confirmed",
       "allowance": [],
+      "allowance_reason": "window percentages (5h and weekly); no dollar amount published",
       "estimate": {
         "status": "unavailable",
         "reason": "no USD fee to divide",
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-26T17:11:50.035Z",
+        "measured_at": "2026-10-26T17:16:50.039Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
       },
       "window_readings": [
         {
           "window": "5h",
           "used_pct": 0,
-          "resets_at": "2026-10-26T22:11:49Z",
-          "measured_at": "2026-10-26T17:11:46.781Z",
+          "resets_at": "2026-10-26T22:16:49Z",
+          "measured_at": "2026-10-26T17:16:47.542Z",
           "source": "codexbar usage --provider codex"
         },
         {
           "window": "weekly",
           "used_pct": 0,
-          "resets_at": "2026-11-02T17:11:49Z",
-          "measured_at": "2026-10-26T17:11:46.781Z",
+          "resets_at": "2026-11-02T17:16:49Z",
+          "measured_at": "2026-10-26T17:16:47.542Z",
           "source": "codexbar usage --provider codex"
         }
       ],
@@ -189,13 +193,14 @@
       "exclusion_reason": null,
       "price_note": null,
       "allowance": [],
+      "allowance_reason": "shared usage pool; no dollar amount on the page read",
       "estimate": {
         "status": "unavailable",
-        "reason": "no published usage-dollar allowance (token, credit or window allowance only)",
+        "reason": "shared usage pool; no dollar amount on the page read",
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-26T17:11:50.035Z",
+        "measured_at": "2026-10-26T17:16:50.039Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -226,13 +231,14 @@
       "exclusion_reason": null,
       "price_note": "One X user says the tier was 60 USD/month; the pricing page read did not map a Pro+ price",
       "allowance": [],
+      "allowance_reason": "shared usage pool; no dollar amount on the page read",
       "estimate": {
         "status": "unavailable",
         "reason": "no USD fee to divide",
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-26T17:11:50.035Z",
+        "measured_at": "2026-10-26T17:16:50.039Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -268,13 +274,14 @@
       "exclusion_reason": null,
       "price_note": null,
       "allowance": [],
+      "allowance_reason": "premium-request allowance; no dollar amount published",
       "estimate": {
         "status": "unavailable",
-        "reason": "no published usage-dollar allowance (token, credit or window allowance only)",
+        "reason": "premium-request allowance; no dollar amount published",
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-26T17:11:50.035Z",
+        "measured_at": "2026-10-26T17:16:50.039Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -305,13 +312,14 @@
       "exclusion_reason": null,
       "price_note": null,
       "allowance": [],
+      "allowance_reason": "premium-request allowance; no dollar amount published",
       "estimate": {
         "status": "unavailable",
-        "reason": "no published usage-dollar allowance (token, credit or window allowance only)",
+        "reason": "premium-request allowance; no dollar amount published",
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-26T17:11:50.035Z",
+        "measured_at": "2026-10-26T17:16:50.039Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -342,13 +350,14 @@
       "exclusion_reason": null,
       "price_note": null,
       "allowance": [],
+      "allowance_reason": "tier multiple of Pro; no dollar amount published",
       "estimate": {
         "status": "unavailable",
-        "reason": "no published usage-dollar allowance (token, credit or window allowance only)",
+        "reason": "tier multiple of Pro; no dollar amount published",
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-26T17:11:50.035Z",
+        "measured_at": "2026-10-26T17:16:50.039Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -379,13 +388,14 @@
       "exclusion_reason": null,
       "price_note": null,
       "allowance": [],
+      "allowance_reason": "tier multiple of Pro; no dollar amount published",
       "estimate": {
         "status": "unavailable",
-        "reason": "no published usage-dollar allowance (token, credit or window allowance only)",
+        "reason": "tier multiple of Pro; no dollar amount published",
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-26T17:11:50.035Z",
+        "measured_at": "2026-10-26T17:16:50.039Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -416,13 +426,14 @@
       "exclusion_reason": null,
       "price_note": null,
       "allowance": [],
+      "allowance_reason": "tier multiple of Pro; no dollar amount published",
       "estimate": {
         "status": "unavailable",
-        "reason": "no published usage-dollar allowance (token, credit or window allowance only)",
+        "reason": "tier multiple of Pro; no dollar amount published",
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-26T17:11:50.035Z",
+        "measured_at": "2026-10-26T17:16:50.039Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -459,107 +470,138 @@
           "basis": "official pricing page: 20 USD usage per month"
         }
       ],
+      "allowance_reason": null,
       "estimate": {
         "status": "estimated",
         "reason": null,
-        "basis": "fee $20/mo ÷ published usage-dollar allowance (deepseek-v4-flash 1.000, claude-haiku-5.5 1.000, gpt-6-luna 1.000) × blended list cost per billion tokens of each reference model; measured output share 0.6%, agent cache share 91.8% (interactive 0%, cache_heavy 94%)",
+        "basis": "fee $20/mo ÷ published usage-dollar allowance (deepseek-v4.1-flash 1.000, gemini-3.8-flash 1.000, claude-haiku-5.5 1.000, gpt-6-luna 1.000) × blended list cost per billion tokens of each reference model; measured output share 0.6%, agent cache share 91.8% (interactive 0%, cache_heavy 94%)",
         "values": [
           {
-            "ref": "deepseek-v4-flash",
+            "ref": "deepseek-v4.1-flash",
             "shape": "interactive",
-            "usd_per_b": 91.50682968710713,
+            "usd_per_b": 25.45401944098835,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 91.50682968710713,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 25.45401944098835,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
-            "ref": "deepseek-v4-flash",
+            "ref": "deepseek-v4.1-flash",
             "shape": "agent",
-            "usd_per_b": 25.076960412100572,
+            "usd_per_b": 20.891505934909762,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 25.076960412100572,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 20.891505934909762,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
-            "ref": "deepseek-v4-flash",
+            "ref": "deepseek-v4.1-flash",
             "shape": "cache_heavy",
-            "usd_per_b": 23.455965611811695,
+            "usd_per_b": 20.780176473001255,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 23.455965611811695,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 20.780176473001255,
+            "measured_at": "2026-10-26T17:16:50.039Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
+          },
+          {
+            "ref": "gemini-3.8-flash",
+            "shape": "interactive",
+            "usd_per_b": 843.3655756686343,
+            "reason": null,
+            "fee_over_allowance": 1,
+            "blended_usd_per_b": 843.3655756686343,
+            "measured_at": "2026-10-26T17:16:50.039Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
+          },
+          {
+            "ref": "gemini-3.8-flash",
+            "shape": "agent",
+            "usd_per_b": 165.83232001596426,
+            "reason": null,
+            "fee_over_allowance": 1,
+            "blended_usd_per_b": 165.83232001596426,
+            "measured_at": "2026-10-26T17:16:50.039Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
+          },
+          {
+            "ref": "gemini-3.8-flash",
+            "shape": "cache_heavy",
+            "usd_per_b": 149.2998949225504,
+            "reason": null,
+            "fee_over_allowance": 1,
+            "blended_usd_per_b": 149.2998949225504,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "claude-haiku-5.5",
             "shape": "interactive",
-            "usd_per_b": 102.2278228004709,
+            "usd_per_b": 102.22613038407688,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 102.2278228004709,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 102.22613038407688,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "claude-haiku-5.5",
             "shape": "agent",
-            "usd_per_b": 20.102984411039717,
+            "usd_per_b": 20.100887274662337,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 20.102984411039717,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 20.100887274662337,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "claude-haiku-5.5",
             "shape": "cache_heavy",
-            "usd_per_b": 18.099007322770504,
+            "usd_per_b": 18.096956960309143,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 18.099007322770504,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 18.096956960309143,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "gpt-6-luna",
             "shape": "interactive",
-            "usd_per_b": 102.2278228004709,
+            "usd_per_b": 102.22613038407688,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 102.2278228004709,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 102.22613038407688,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "gpt-6-luna",
             "shape": "agent",
-            "usd_per_b": 20.102984411039717,
+            "usd_per_b": 20.100887274662337,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 20.102984411039717,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 20.100887274662337,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "gpt-6-luna",
             "shape": "cache_heavy",
-            "usd_per_b": 18.099007322770504,
+            "usd_per_b": 18.096956960309143,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 18.099007322770504,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 18.096956960309143,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           }
         ],
         "range_agent": [
-          20.102984411039717,
-          25.076960412100572
+          20.100887274662337,
+          165.83232001596426
         ],
-        "measured_at": "2026-10-26T17:11:50.035Z",
+        "measured_at": "2026-10-26T17:16:50.039Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -596,107 +638,138 @@
           "basis": "official pricing page: 60 USD usage per month"
         }
       ],
+      "allowance_reason": null,
       "estimate": {
         "status": "estimated",
         "reason": null,
-        "basis": "fee $60/mo ÷ published usage-dollar allowance (deepseek-v4-flash 1.000, claude-haiku-5.5 1.000, gpt-6-luna 1.000) × blended list cost per billion tokens of each reference model; measured output share 0.6%, agent cache share 91.8% (interactive 0%, cache_heavy 94%)",
+        "basis": "fee $60/mo ÷ published usage-dollar allowance (deepseek-v4.1-flash 1.000, gemini-3.8-flash 1.000, claude-haiku-5.5 1.000, gpt-6-luna 1.000) × blended list cost per billion tokens of each reference model; measured output share 0.6%, agent cache share 91.8% (interactive 0%, cache_heavy 94%)",
         "values": [
           {
-            "ref": "deepseek-v4-flash",
+            "ref": "deepseek-v4.1-flash",
             "shape": "interactive",
-            "usd_per_b": 91.50682968710713,
+            "usd_per_b": 25.45401944098835,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 91.50682968710713,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 25.45401944098835,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
-            "ref": "deepseek-v4-flash",
+            "ref": "deepseek-v4.1-flash",
             "shape": "agent",
-            "usd_per_b": 25.076960412100572,
+            "usd_per_b": 20.891505934909762,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 25.076960412100572,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 20.891505934909762,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
-            "ref": "deepseek-v4-flash",
+            "ref": "deepseek-v4.1-flash",
             "shape": "cache_heavy",
-            "usd_per_b": 23.455965611811695,
+            "usd_per_b": 20.780176473001255,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 23.455965611811695,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 20.780176473001255,
+            "measured_at": "2026-10-26T17:16:50.039Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
+          },
+          {
+            "ref": "gemini-3.8-flash",
+            "shape": "interactive",
+            "usd_per_b": 843.3655756686343,
+            "reason": null,
+            "fee_over_allowance": 1,
+            "blended_usd_per_b": 843.3655756686343,
+            "measured_at": "2026-10-26T17:16:50.039Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
+          },
+          {
+            "ref": "gemini-3.8-flash",
+            "shape": "agent",
+            "usd_per_b": 165.83232001596426,
+            "reason": null,
+            "fee_over_allowance": 1,
+            "blended_usd_per_b": 165.83232001596426,
+            "measured_at": "2026-10-26T17:16:50.039Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
+          },
+          {
+            "ref": "gemini-3.8-flash",
+            "shape": "cache_heavy",
+            "usd_per_b": 149.2998949225504,
+            "reason": null,
+            "fee_over_allowance": 1,
+            "blended_usd_per_b": 149.2998949225504,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "claude-haiku-5.5",
             "shape": "interactive",
-            "usd_per_b": 102.2278228004709,
+            "usd_per_b": 102.22613038407688,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 102.2278228004709,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 102.22613038407688,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "claude-haiku-5.5",
             "shape": "agent",
-            "usd_per_b": 20.102984411039717,
+            "usd_per_b": 20.100887274662337,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 20.102984411039717,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 20.100887274662337,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "claude-haiku-5.5",
             "shape": "cache_heavy",
-            "usd_per_b": 18.099007322770504,
+            "usd_per_b": 18.096956960309143,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 18.099007322770504,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 18.096956960309143,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "gpt-6-luna",
             "shape": "interactive",
-            "usd_per_b": 102.2278228004709,
+            "usd_per_b": 102.22613038407688,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 102.2278228004709,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 102.22613038407688,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "gpt-6-luna",
             "shape": "agent",
-            "usd_per_b": 20.102984411039717,
+            "usd_per_b": 20.100887274662337,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 20.102984411039717,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 20.100887274662337,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "gpt-6-luna",
             "shape": "cache_heavy",
-            "usd_per_b": 18.099007322770504,
+            "usd_per_b": 18.096956960309143,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 18.099007322770504,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 18.096956960309143,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           }
         ],
         "range_agent": [
-          20.102984411039717,
-          25.076960412100572
+          20.100887274662337,
+          165.83232001596426
         ],
-        "measured_at": "2026-10-26T17:11:50.035Z",
+        "measured_at": "2026-10-26T17:16:50.039Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -733,107 +806,138 @@
           "basis": "official pricing page: 200 USD usage per month"
         }
       ],
+      "allowance_reason": null,
       "estimate": {
         "status": "estimated",
         "reason": null,
-        "basis": "fee $200/mo ÷ published usage-dollar allowance (deepseek-v4-flash 1.000, claude-haiku-5.5 1.000, gpt-6-luna 1.000) × blended list cost per billion tokens of each reference model; measured output share 0.6%, agent cache share 91.8% (interactive 0%, cache_heavy 94%)",
+        "basis": "fee $200/mo ÷ published usage-dollar allowance (deepseek-v4.1-flash 1.000, gemini-3.8-flash 1.000, claude-haiku-5.5 1.000, gpt-6-luna 1.000) × blended list cost per billion tokens of each reference model; measured output share 0.6%, agent cache share 91.8% (interactive 0%, cache_heavy 94%)",
         "values": [
           {
-            "ref": "deepseek-v4-flash",
+            "ref": "deepseek-v4.1-flash",
             "shape": "interactive",
-            "usd_per_b": 91.50682968710713,
+            "usd_per_b": 25.45401944098835,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 91.50682968710713,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 25.45401944098835,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
-            "ref": "deepseek-v4-flash",
+            "ref": "deepseek-v4.1-flash",
             "shape": "agent",
-            "usd_per_b": 25.076960412100572,
+            "usd_per_b": 20.891505934909762,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 25.076960412100572,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 20.891505934909762,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
-            "ref": "deepseek-v4-flash",
+            "ref": "deepseek-v4.1-flash",
             "shape": "cache_heavy",
-            "usd_per_b": 23.455965611811695,
+            "usd_per_b": 20.780176473001255,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 23.455965611811695,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 20.780176473001255,
+            "measured_at": "2026-10-26T17:16:50.039Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
+          },
+          {
+            "ref": "gemini-3.8-flash",
+            "shape": "interactive",
+            "usd_per_b": 843.3655756686343,
+            "reason": null,
+            "fee_over_allowance": 1,
+            "blended_usd_per_b": 843.3655756686343,
+            "measured_at": "2026-10-26T17:16:50.039Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
+          },
+          {
+            "ref": "gemini-3.8-flash",
+            "shape": "agent",
+            "usd_per_b": 165.83232001596426,
+            "reason": null,
+            "fee_over_allowance": 1,
+            "blended_usd_per_b": 165.83232001596426,
+            "measured_at": "2026-10-26T17:16:50.039Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
+          },
+          {
+            "ref": "gemini-3.8-flash",
+            "shape": "cache_heavy",
+            "usd_per_b": 149.2998949225504,
+            "reason": null,
+            "fee_over_allowance": 1,
+            "blended_usd_per_b": 149.2998949225504,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "claude-haiku-5.5",
             "shape": "interactive",
-            "usd_per_b": 102.2278228004709,
+            "usd_per_b": 102.22613038407688,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 102.2278228004709,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 102.22613038407688,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "claude-haiku-5.5",
             "shape": "agent",
-            "usd_per_b": 20.102984411039717,
+            "usd_per_b": 20.100887274662337,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 20.102984411039717,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 20.100887274662337,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "claude-haiku-5.5",
             "shape": "cache_heavy",
-            "usd_per_b": 18.099007322770504,
+            "usd_per_b": 18.096956960309143,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 18.099007322770504,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 18.096956960309143,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "gpt-6-luna",
             "shape": "interactive",
-            "usd_per_b": 102.2278228004709,
+            "usd_per_b": 102.22613038407688,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 102.2278228004709,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 102.22613038407688,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "gpt-6-luna",
             "shape": "agent",
-            "usd_per_b": 20.102984411039717,
+            "usd_per_b": 20.100887274662337,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 20.102984411039717,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 20.100887274662337,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "gpt-6-luna",
             "shape": "cache_heavy",
-            "usd_per_b": 18.099007322770504,
+            "usd_per_b": 18.096956960309143,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 18.099007322770504,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 18.096956960309143,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           }
         ],
         "range_agent": [
-          20.102984411039717,
-          25.076960412100572
+          20.100887274662337,
+          165.83232001596426
         ],
-        "measured_at": "2026-10-26T17:11:50.035Z",
+        "measured_at": "2026-10-26T17:16:50.039Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -864,13 +968,14 @@
       "exclusion_reason": null,
       "price_note": "Price from the 2025-09-01 launch post; the subscription page returned 404 on 2026-10-26",
       "allowance": [],
+      "allowance_reason": "usage limits not read",
       "estimate": {
         "status": "unavailable",
-        "reason": "no published usage-dollar allowance (token, credit or window allowance only)",
+        "reason": "usage limits not read",
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-26T17:11:50.035Z",
+        "measured_at": "2026-10-26T17:16:50.039Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -906,13 +1011,14 @@
       "exclusion_reason": null,
       "price_note": "Kimi pricing pages are JS-rendered and were not readable; no price taken from posts",
       "allowance": [],
+      "allowance_reason": "window percentages and monthly quota; no dollar amount published",
       "estimate": {
         "status": "unavailable",
         "reason": "no USD fee to divide",
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-26T17:11:50.035Z",
+        "measured_at": "2026-10-26T17:16:50.039Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -948,13 +1054,14 @@
       "exclusion_reason": null,
       "price_note": "Docs pricing URL returned 404 and the platform page was not read; mention counts are mostly model posts",
       "allowance": [],
+      "allowance_reason": "not read (pricing page unavailable)",
       "estimate": {
         "status": "unavailable",
         "reason": "no USD fee to divide",
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-26T17:11:50.035Z",
+        "measured_at": "2026-10-26T17:16:50.039Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -985,13 +1092,14 @@
       "exclusion_reason": null,
       "price_note": null,
       "allowance": [],
+      "allowance_reason": "tier multiple; price in CNY, no dollar amount published",
       "estimate": {
         "status": "unavailable",
         "reason": "no USD fee to divide",
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-26T17:11:50.035Z",
+        "measured_at": "2026-10-26T17:16:50.039Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -1027,13 +1135,14 @@
       "exclusion_reason": null,
       "price_note": null,
       "allowance": [],
+      "allowance_reason": "per-seat pricing; no usage dollars published",
       "estimate": {
         "status": "unavailable",
         "reason": "no USD fee to divide",
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-26T17:11:50.035Z",
+        "measured_at": "2026-10-26T17:16:50.039Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -1064,13 +1173,14 @@
       "exclusion_reason": null,
       "price_note": "Pricing page read without dollar amounts; one post mentions a 20 USD plan for another model (not confirmed as this product)",
       "allowance": [],
+      "allowance_reason": "not read",
       "estimate": {
         "status": "unavailable",
         "reason": "no USD fee to divide",
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-26T17:11:50.035Z",
+        "measured_at": "2026-10-26T17:16:50.039Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -1106,13 +1216,14 @@
       "exclusion_reason": "pay-as-you-go API, not a flat-rate subscription (project rule)",
       "price_note": null,
       "allowance": [],
+      "allowance_reason": "pay-as-you-go; no subscription allowance",
       "estimate": {
         "status": "unavailable",
         "reason": "no USD fee to divide",
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-26T17:11:50.035Z",
+        "measured_at": "2026-10-26T17:16:50.039Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -1143,13 +1254,14 @@
       "exclusion_reason": "monthly plans no longer sold on chutes.ai; now pay-as-you-go",
       "price_note": null,
       "allowance": [],
+      "allowance_reason": "monthly plans no longer sold; no subscription allowance",
       "estimate": {
         "status": "unavailable",
         "reason": "no USD fee to divide",
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-26T17:11:50.035Z",
+        "measured_at": "2026-10-26T17:16:50.039Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -1194,107 +1306,138 @@
           "basis": "official pricing page: $80 of usage on 29+ models (plan $10/mo)"
         }
       ],
+      "allowance_reason": null,
       "estimate": {
         "status": "estimated",
         "reason": null,
-        "basis": "fee $10/mo ÷ published usage-dollar allowance (deepseek-v4-flash 0.125, claude-haiku-5.5 0.125, gpt-6-luna 0.125) × blended list cost per billion tokens of each reference model; measured output share 0.6%, agent cache share 91.8% (interactive 0%, cache_heavy 94%)",
+        "basis": "fee $10/mo ÷ published usage-dollar allowance (deepseek-v4.1-flash 0.125, gemini-3.8-flash 0.125, claude-haiku-5.5 0.125, gpt-6-luna 0.125) × blended list cost per billion tokens of each reference model; measured output share 0.6%, agent cache share 91.8% (interactive 0%, cache_heavy 94%)",
         "values": [
           {
-            "ref": "deepseek-v4-flash",
+            "ref": "deepseek-v4.1-flash",
             "shape": "interactive",
-            "usd_per_b": 11.438353710888391,
+            "usd_per_b": 3.181752430123544,
             "reason": null,
             "fee_over_allowance": 0.125,
-            "blended_usd_per_b": 91.50682968710713,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 25.45401944098835,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
-            "ref": "deepseek-v4-flash",
+            "ref": "deepseek-v4.1-flash",
             "shape": "agent",
-            "usd_per_b": 3.1346200515125715,
+            "usd_per_b": 2.6114382418637203,
             "reason": null,
             "fee_over_allowance": 0.125,
-            "blended_usd_per_b": 25.076960412100572,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 20.891505934909762,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
-            "ref": "deepseek-v4-flash",
+            "ref": "deepseek-v4.1-flash",
             "shape": "cache_heavy",
-            "usd_per_b": 2.931995701476462,
+            "usd_per_b": 2.597522059125157,
             "reason": null,
             "fee_over_allowance": 0.125,
-            "blended_usd_per_b": 23.455965611811695,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 20.780176473001255,
+            "measured_at": "2026-10-26T17:16:50.039Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
+          },
+          {
+            "ref": "gemini-3.8-flash",
+            "shape": "interactive",
+            "usd_per_b": 105.42069695857928,
+            "reason": null,
+            "fee_over_allowance": 0.125,
+            "blended_usd_per_b": 843.3655756686343,
+            "measured_at": "2026-10-26T17:16:50.039Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
+          },
+          {
+            "ref": "gemini-3.8-flash",
+            "shape": "agent",
+            "usd_per_b": 20.729040001995532,
+            "reason": null,
+            "fee_over_allowance": 0.125,
+            "blended_usd_per_b": 165.83232001596426,
+            "measured_at": "2026-10-26T17:16:50.039Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
+          },
+          {
+            "ref": "gemini-3.8-flash",
+            "shape": "cache_heavy",
+            "usd_per_b": 18.6624868653188,
+            "reason": null,
+            "fee_over_allowance": 0.125,
+            "blended_usd_per_b": 149.2998949225504,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "claude-haiku-5.5",
             "shape": "interactive",
-            "usd_per_b": 12.778477850058863,
+            "usd_per_b": 12.77826629800961,
             "reason": null,
             "fee_over_allowance": 0.125,
-            "blended_usd_per_b": 102.2278228004709,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 102.22613038407688,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "claude-haiku-5.5",
             "shape": "agent",
-            "usd_per_b": 2.5128730513799646,
+            "usd_per_b": 2.512610909332792,
             "reason": null,
             "fee_over_allowance": 0.125,
-            "blended_usd_per_b": 20.102984411039717,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 20.100887274662337,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "claude-haiku-5.5",
             "shape": "cache_heavy",
-            "usd_per_b": 2.262375915346313,
+            "usd_per_b": 2.262119620038643,
             "reason": null,
             "fee_over_allowance": 0.125,
-            "blended_usd_per_b": 18.099007322770504,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 18.096956960309143,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "gpt-6-luna",
             "shape": "interactive",
-            "usd_per_b": 12.778477850058863,
+            "usd_per_b": 12.77826629800961,
             "reason": null,
             "fee_over_allowance": 0.125,
-            "blended_usd_per_b": 102.2278228004709,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 102.22613038407688,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "gpt-6-luna",
             "shape": "agent",
-            "usd_per_b": 2.5128730513799646,
+            "usd_per_b": 2.512610909332792,
             "reason": null,
             "fee_over_allowance": 0.125,
-            "blended_usd_per_b": 20.102984411039717,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 20.100887274662337,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "gpt-6-luna",
             "shape": "cache_heavy",
-            "usd_per_b": 2.262375915346313,
+            "usd_per_b": 2.262119620038643,
             "reason": null,
             "fee_over_allowance": 0.125,
-            "blended_usd_per_b": 18.099007322770504,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 18.096956960309143,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           }
         ],
         "range_agent": [
-          2.5128730513799646,
-          3.1346200515125715
+          2.512610909332792,
+          20.729040001995532
         ],
-        "measured_at": "2026-10-26T17:11:50.035Z",
+        "measured_at": "2026-10-26T17:16:50.039Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
       },
       "measured_at": "2026-10-26T16:38:14.752Z",
@@ -1331,7 +1474,7 @@
       "price_note": "Published price basis for the ranked OpenCode Go plan above.",
       "allowance": [
         {
-          "ref": "deepseek-v4-flash",
+          "ref": "deepseek-v4.1-flash",
           "usd": 80,
           "basis": "official docs: Go monthly limit for DeepSeek V4.1 Flash (Off-Peak) is $80; mapped by model name"
         },
@@ -1346,107 +1489,138 @@
           "basis": "official docs: Go monthly limit for GPT 6 Luna (≤272K tokens) is $15"
         }
       ],
+      "allowance_reason": null,
       "estimate": {
         "status": "estimated",
         "reason": null,
-        "basis": "fee $10/mo ÷ published usage-dollar allowance (deepseek-v4-flash 0.125, claude-haiku-5.5 0.667, gpt-6-luna 0.667) × blended list cost per billion tokens of each reference model; measured output share 0.6%, agent cache share 91.8% (interactive 0%, cache_heavy 94%)",
+        "basis": "fee $10/mo ÷ published usage-dollar allowance (deepseek-v4.1-flash 0.125, claude-haiku-5.5 0.667, gpt-6-luna 0.667) × blended list cost per billion tokens of each reference model; measured output share 0.6%, agent cache share 91.8% (interactive 0%, cache_heavy 94%)",
         "values": [
           {
-            "ref": "deepseek-v4-flash",
+            "ref": "deepseek-v4.1-flash",
             "shape": "interactive",
-            "usd_per_b": 11.438353710888391,
+            "usd_per_b": 3.181752430123544,
             "reason": null,
             "fee_over_allowance": 0.125,
-            "blended_usd_per_b": 91.50682968710713,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 25.45401944098835,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
-            "ref": "deepseek-v4-flash",
+            "ref": "deepseek-v4.1-flash",
             "shape": "agent",
-            "usd_per_b": 3.1346200515125715,
+            "usd_per_b": 2.6114382418637203,
             "reason": null,
             "fee_over_allowance": 0.125,
-            "blended_usd_per_b": 25.076960412100572,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 20.891505934909762,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
-            "ref": "deepseek-v4-flash",
+            "ref": "deepseek-v4.1-flash",
             "shape": "cache_heavy",
-            "usd_per_b": 2.931995701476462,
+            "usd_per_b": 2.597522059125157,
             "reason": null,
             "fee_over_allowance": 0.125,
-            "blended_usd_per_b": 23.455965611811695,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 20.780176473001255,
+            "measured_at": "2026-10-26T17:16:50.039Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
+          },
+          {
+            "ref": "gemini-3.8-flash",
+            "shape": "interactive",
+            "usd_per_b": null,
+            "reason": "no published allowance for this model in this plan",
+            "fee_over_allowance": null,
+            "blended_usd_per_b": 843.3655756686343,
+            "measured_at": "2026-10-26T17:16:50.039Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
+          },
+          {
+            "ref": "gemini-3.8-flash",
+            "shape": "agent",
+            "usd_per_b": null,
+            "reason": "no published allowance for this model in this plan",
+            "fee_over_allowance": null,
+            "blended_usd_per_b": 165.83232001596426,
+            "measured_at": "2026-10-26T17:16:50.039Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
+          },
+          {
+            "ref": "gemini-3.8-flash",
+            "shape": "cache_heavy",
+            "usd_per_b": null,
+            "reason": "no published allowance for this model in this plan",
+            "fee_over_allowance": null,
+            "blended_usd_per_b": 149.2998949225504,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "claude-haiku-5.5",
             "shape": "interactive",
-            "usd_per_b": 68.1518818669806,
+            "usd_per_b": 68.15075358938458,
             "reason": null,
             "fee_over_allowance": 0.6666666666666666,
-            "blended_usd_per_b": 102.2278228004709,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 102.22613038407688,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "claude-haiku-5.5",
             "shape": "agent",
-            "usd_per_b": 13.40198960735981,
+            "usd_per_b": 13.400591516441558,
             "reason": null,
             "fee_over_allowance": 0.6666666666666666,
-            "blended_usd_per_b": 20.102984411039717,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 20.100887274662337,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "claude-haiku-5.5",
             "shape": "cache_heavy",
-            "usd_per_b": 12.066004881847002,
+            "usd_per_b": 12.064637973539428,
             "reason": null,
             "fee_over_allowance": 0.6666666666666666,
-            "blended_usd_per_b": 18.099007322770504,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 18.096956960309143,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "gpt-6-luna",
             "shape": "interactive",
-            "usd_per_b": 68.1518818669806,
+            "usd_per_b": 68.15075358938458,
             "reason": null,
             "fee_over_allowance": 0.6666666666666666,
-            "blended_usd_per_b": 102.2278228004709,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 102.22613038407688,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "gpt-6-luna",
             "shape": "agent",
-            "usd_per_b": 13.40198960735981,
+            "usd_per_b": 13.400591516441558,
             "reason": null,
             "fee_over_allowance": 0.6666666666666666,
-            "blended_usd_per_b": 20.102984411039717,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 20.100887274662337,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "gpt-6-luna",
             "shape": "cache_heavy",
-            "usd_per_b": 12.066004881847002,
+            "usd_per_b": 12.064637973539428,
             "reason": null,
             "fee_over_allowance": 0.6666666666666666,
-            "blended_usd_per_b": 18.099007322770504,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 18.096956960309143,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           }
         ],
         "range_agent": [
-          3.1346200515125715,
-          13.40198960735981
+          2.6114382418637203,
+          13.400591516441558
         ],
-        "measured_at": "2026-10-26T17:11:50.035Z",
+        "measured_at": "2026-10-26T17:16:50.039Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
       },
       "measured_at": "2026-10-26T16:38:14.752Z",
@@ -1478,7 +1652,7 @@
       "price_note": null,
       "allowance": [
         {
-          "ref": "deepseek-v4-flash",
+          "ref": "deepseek-v4.1-flash",
           "usd": 160,
           "basis": "official docs: Go Plus monthly limit for DeepSeek V4.1 Flash (Off-Peak) is $160; mapped by model name"
         },
@@ -1493,107 +1667,138 @@
           "basis": "official docs: Go Plus monthly limit for GPT 6 Luna (≤272K tokens) is $60"
         }
       ],
+      "allowance_reason": null,
       "estimate": {
         "status": "estimated",
         "reason": null,
-        "basis": "fee $40/mo ÷ published usage-dollar allowance (deepseek-v4-flash 0.250, claude-haiku-5.5 0.667, gpt-6-luna 0.667) × blended list cost per billion tokens of each reference model; measured output share 0.6%, agent cache share 91.8% (interactive 0%, cache_heavy 94%)",
+        "basis": "fee $40/mo ÷ published usage-dollar allowance (deepseek-v4.1-flash 0.250, claude-haiku-5.5 0.667, gpt-6-luna 0.667) × blended list cost per billion tokens of each reference model; measured output share 0.6%, agent cache share 91.8% (interactive 0%, cache_heavy 94%)",
         "values": [
           {
-            "ref": "deepseek-v4-flash",
+            "ref": "deepseek-v4.1-flash",
             "shape": "interactive",
-            "usd_per_b": 22.876707421776782,
+            "usd_per_b": 6.363504860247088,
             "reason": null,
             "fee_over_allowance": 0.25,
-            "blended_usd_per_b": 91.50682968710713,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 25.45401944098835,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
-            "ref": "deepseek-v4-flash",
+            "ref": "deepseek-v4.1-flash",
             "shape": "agent",
-            "usd_per_b": 6.269240103025143,
+            "usd_per_b": 5.222876483727441,
             "reason": null,
             "fee_over_allowance": 0.25,
-            "blended_usd_per_b": 25.076960412100572,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 20.891505934909762,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
-            "ref": "deepseek-v4-flash",
+            "ref": "deepseek-v4.1-flash",
             "shape": "cache_heavy",
-            "usd_per_b": 5.863991402952924,
+            "usd_per_b": 5.195044118250314,
             "reason": null,
             "fee_over_allowance": 0.25,
-            "blended_usd_per_b": 23.455965611811695,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 20.780176473001255,
+            "measured_at": "2026-10-26T17:16:50.039Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
+          },
+          {
+            "ref": "gemini-3.8-flash",
+            "shape": "interactive",
+            "usd_per_b": null,
+            "reason": "no published allowance for this model in this plan",
+            "fee_over_allowance": null,
+            "blended_usd_per_b": 843.3655756686343,
+            "measured_at": "2026-10-26T17:16:50.039Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
+          },
+          {
+            "ref": "gemini-3.8-flash",
+            "shape": "agent",
+            "usd_per_b": null,
+            "reason": "no published allowance for this model in this plan",
+            "fee_over_allowance": null,
+            "blended_usd_per_b": 165.83232001596426,
+            "measured_at": "2026-10-26T17:16:50.039Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
+          },
+          {
+            "ref": "gemini-3.8-flash",
+            "shape": "cache_heavy",
+            "usd_per_b": null,
+            "reason": "no published allowance for this model in this plan",
+            "fee_over_allowance": null,
+            "blended_usd_per_b": 149.2998949225504,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "claude-haiku-5.5",
             "shape": "interactive",
-            "usd_per_b": 68.1518818669806,
+            "usd_per_b": 68.15075358938458,
             "reason": null,
             "fee_over_allowance": 0.6666666666666666,
-            "blended_usd_per_b": 102.2278228004709,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 102.22613038407688,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "claude-haiku-5.5",
             "shape": "agent",
-            "usd_per_b": 13.40198960735981,
+            "usd_per_b": 13.400591516441558,
             "reason": null,
             "fee_over_allowance": 0.6666666666666666,
-            "blended_usd_per_b": 20.102984411039717,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 20.100887274662337,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "claude-haiku-5.5",
             "shape": "cache_heavy",
-            "usd_per_b": 12.066004881847002,
+            "usd_per_b": 12.064637973539428,
             "reason": null,
             "fee_over_allowance": 0.6666666666666666,
-            "blended_usd_per_b": 18.099007322770504,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 18.096956960309143,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "gpt-6-luna",
             "shape": "interactive",
-            "usd_per_b": 68.1518818669806,
+            "usd_per_b": 68.15075358938458,
             "reason": null,
             "fee_over_allowance": 0.6666666666666666,
-            "blended_usd_per_b": 102.2278228004709,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 102.22613038407688,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "gpt-6-luna",
             "shape": "agent",
-            "usd_per_b": 13.40198960735981,
+            "usd_per_b": 13.400591516441558,
             "reason": null,
             "fee_over_allowance": 0.6666666666666666,
-            "blended_usd_per_b": 20.102984411039717,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 20.100887274662337,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           },
           {
             "ref": "gpt-6-luna",
             "shape": "cache_heavy",
-            "usd_per_b": 12.066004881847002,
+            "usd_per_b": 12.064637973539428,
             "reason": null,
             "fee_over_allowance": 0.6666666666666666,
-            "blended_usd_per_b": 18.099007322770504,
-            "measured_at": "2026-10-26T17:11:50.035Z",
+            "blended_usd_per_b": 18.096956960309143,
+            "measured_at": "2026-10-26T17:16:50.039Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
           }
         ],
         "range_agent": [
-          6.269240103025143,
-          13.40198960735981
+          5.222876483727441,
+          13.400591516441558
         ],
-        "measured_at": "2026-10-26T17:11:50.035Z",
+        "measured_at": "2026-10-26T17:16:50.039Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
       },
       "measured_at": "2026-10-26T16:38:14.752Z",
@@ -1624,13 +1829,14 @@
       "exclusion_reason": null,
       "price_note": "\"from\" price: the starting tier. The ranked QwenCloud row uses a $10 plan price that is not confirmed by any page read.",
       "allowance": [],
+      "allowance_reason": "credits per tier not published and no per-credit price, so no conversion (unverified)",
       "estimate": {
         "status": "unavailable",
-        "reason": "no published usage-dollar allowance (token, credit or window allowance only)",
+        "reason": "credits per tier not published and no per-credit price, so no conversion (unverified)",
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-26T17:11:50.035Z",
+        "measured_at": "2026-10-26T17:16:50.039Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
       },
       "measured_at": "2026-10-26T16:38:14.752Z",
@@ -1673,14 +1879,145 @@
       "heat_samples": null,
       "exclusion_reason": null,
       "price_note": "The owner's own plan. The official pages read show Token Plan Individual from $6/month, a different starting price.",
-      "allowance": [],
+      "allowance": [
+        {
+          "ref": "*",
+          "usd": 25500,
+          "basis": "25,500 credits in the monthly window (codexbar console reading). Assumes 1 credit = $1 of list usage; QwenCloud does not publish this (assumption)."
+        }
+      ],
+      "allowance_reason": null,
       "estimate": {
-        "status": "unavailable",
-        "reason": "no published usage-dollar allowance (token, credit or window allowance only)",
-        "basis": null,
-        "values": [],
-        "range_agent": null,
-        "measured_at": "2026-10-26T17:11:50.035Z",
+        "status": "estimated",
+        "reason": null,
+        "basis": "fee $10/mo ÷ published usage-dollar allowance (deepseek-v4.1-flash 0.000, gemini-3.8-flash 0.000, claude-haiku-5.5 0.000, gpt-6-luna 0.000) × blended list cost per billion tokens of each reference model; measured output share 0.6%, agent cache share 91.8% (interactive 0%, cache_heavy 94%)",
+        "values": [
+          {
+            "ref": "deepseek-v4.1-flash",
+            "shape": "interactive",
+            "usd_per_b": 0.009981968408230726,
+            "reason": null,
+            "fee_over_allowance": 0.000392156862745098,
+            "blended_usd_per_b": 25.45401944098835,
+            "measured_at": "2026-10-26T17:16:50.039Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
+          },
+          {
+            "ref": "deepseek-v4.1-flash",
+            "shape": "agent",
+            "usd_per_b": 0.008192747425454809,
+            "reason": null,
+            "fee_over_allowance": 0.000392156862745098,
+            "blended_usd_per_b": 20.891505934909762,
+            "measured_at": "2026-10-26T17:16:50.039Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
+          },
+          {
+            "ref": "deepseek-v4.1-flash",
+            "shape": "cache_heavy",
+            "usd_per_b": 0.008149088812941668,
+            "reason": null,
+            "fee_over_allowance": 0.000392156862745098,
+            "blended_usd_per_b": 20.780176473001255,
+            "measured_at": "2026-10-26T17:16:50.039Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
+          },
+          {
+            "ref": "gemini-3.8-flash",
+            "shape": "interactive",
+            "usd_per_b": 0.3307315983014252,
+            "reason": null,
+            "fee_over_allowance": 0.000392156862745098,
+            "blended_usd_per_b": 843.3655756686343,
+            "measured_at": "2026-10-26T17:16:50.039Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
+          },
+          {
+            "ref": "gemini-3.8-flash",
+            "shape": "agent",
+            "usd_per_b": 0.06503228235920167,
+            "reason": null,
+            "fee_over_allowance": 0.000392156862745098,
+            "blended_usd_per_b": 165.83232001596426,
+            "measured_at": "2026-10-26T17:16:50.039Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
+          },
+          {
+            "ref": "gemini-3.8-flash",
+            "shape": "cache_heavy",
+            "usd_per_b": 0.05854897840100016,
+            "reason": null,
+            "fee_over_allowance": 0.000392156862745098,
+            "blended_usd_per_b": 149.2998949225504,
+            "measured_at": "2026-10-26T17:16:50.039Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
+          },
+          {
+            "ref": "claude-haiku-5.5",
+            "shape": "interactive",
+            "usd_per_b": 0.04008867858199093,
+            "reason": null,
+            "fee_over_allowance": 0.000392156862745098,
+            "blended_usd_per_b": 102.22613038407688,
+            "measured_at": "2026-10-26T17:16:50.039Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
+          },
+          {
+            "ref": "claude-haiku-5.5",
+            "shape": "agent",
+            "usd_per_b": 0.007882700892024445,
+            "reason": null,
+            "fee_over_allowance": 0.000392156862745098,
+            "blended_usd_per_b": 20.100887274662337,
+            "measured_at": "2026-10-26T17:16:50.039Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
+          },
+          {
+            "ref": "claude-haiku-5.5",
+            "shape": "cache_heavy",
+            "usd_per_b": 0.0070968458667878985,
+            "reason": null,
+            "fee_over_allowance": 0.000392156862745098,
+            "blended_usd_per_b": 18.096956960309143,
+            "measured_at": "2026-10-26T17:16:50.039Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
+          },
+          {
+            "ref": "gpt-6-luna",
+            "shape": "interactive",
+            "usd_per_b": 0.04008867858199093,
+            "reason": null,
+            "fee_over_allowance": 0.000392156862745098,
+            "blended_usd_per_b": 102.22613038407688,
+            "measured_at": "2026-10-26T17:16:50.039Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
+          },
+          {
+            "ref": "gpt-6-luna",
+            "shape": "agent",
+            "usd_per_b": 0.007882700892024445,
+            "reason": null,
+            "fee_over_allowance": 0.000392156862745098,
+            "blended_usd_per_b": 20.100887274662337,
+            "measured_at": "2026-10-26T17:16:50.039Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
+          },
+          {
+            "ref": "gpt-6-luna",
+            "shape": "cache_heavy",
+            "usd_per_b": 0.0070968458667878985,
+            "reason": null,
+            "fee_over_allowance": 0.000392156862745098,
+            "blended_usd_per_b": 18.096956960309143,
+            "measured_at": "2026-10-26T17:16:50.039Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
+          }
+        ],
+        "range_agent": [
+          0.007882700892024445,
+          0.06503228235920167
+        ],
+        "measured_at": "2026-10-26T17:16:50.039Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
       },
       "measured_at": "2026-10-26T16:42:50.215Z",
@@ -1716,13 +2053,14 @@
       "exclusion_reason": null,
       "price_note": "Annual $1,536 ÷ 12. The official migration page shows $1,536/yr as the current discounted annual price; its 50%-off example applies only to eligible legacy migrants.",
       "allowance": [],
+      "allowance_reason": "weekly token allowance; no dollar amount published",
       "estimate": {
         "status": "unavailable",
-        "reason": "no published usage-dollar allowance (token, credit or window allowance only)",
+        "reason": "weekly token allowance; no dollar amount published",
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-26T17:11:50.035Z",
+        "measured_at": "2026-10-26T17:16:50.039Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
       },
       "measured_at": "2026-10-26T17:00:00Z",
@@ -1758,13 +2096,14 @@
       "exclusion_reason": null,
       "price_note": "Owner-confirmed price ($672/yr). The official migration page says auto-renew for eligible legacy plans was turned off from 2026-04-30; this row records the price the owner pays.",
       "allowance": [],
+      "allowance_reason": "weekly token allowance; no dollar amount published",
       "estimate": {
         "status": "unavailable",
-        "reason": "no published usage-dollar allowance (token, credit or window allowance only)",
+        "reason": "weekly token allowance; no dollar amount published",
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-26T17:11:50.035Z",
+        "measured_at": "2026-10-26T17:16:50.039Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices (models.json)"
       },
       "measured_at": "2026-10-26T17:00:00Z",
@@ -1782,6 +2121,6 @@
       ]
     }
   ],
-  "measured_at": "2026-10-26T17:11:46.781Z",
+  "measured_at": "2026-10-26T17:16:47.542Z",
   "source": "public pricing pages, public posts and owner confirmations, read 2026-10-26"
 }
