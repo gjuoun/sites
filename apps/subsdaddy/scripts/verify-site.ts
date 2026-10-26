@@ -21,7 +21,7 @@ const problems: string[] = [];
 const fail = (m: string) => problems.push(m);
 const read = (f: string) => JSON.parse(readFileSync(join(APP, "data", f), "utf8"));
 
-const lanes = read("lanes.json").lanes as Array<{ lane: string; measured: { p50_output_tps: number | null; p50_ttft_ms: number | null } }>;
+const lanes = read("lanes.json").lanes as Array<{ lane: string; usd_per_b_basis: string | null; measured: { p50_output_tps: number | null; p50_ttft_ms: number | null } }>;
 const catalog = read("catalog.json").rows as Array<{ plan_id: string; status: string; offered_models: string[]; estimate: { status: string; values: Array<{ ref: string; shape: string; usd_per_b: number | null }> } | null }>;
 const official = read("official.json").providers as Array<{ provider: string }>;
 const pages = { index: join(client, "index.html"), methodology: join(client, "methodology", "index.html"), catalog: join(client, "catalog", "index.html") };
@@ -74,6 +74,15 @@ if (/\b[ABC] · /.test(idx)) fail("a section letter is on the front page");
 if (!/href="\/methodology"/.test(idx)) fail("front page has no link to /methodology");
 if (!/Estimates assume the whole allowance runs one model\. Details, sources and allowances: /.test(text(idx))) fail("the one footnote line is missing or changed");
 
+// 4b. derived $/B: the star appears on exactly the derived Measured rows, with its footnote; the basis line is one line
+const derivedCount = lanes.filter((l) => l.usd_per_b_basis === "derived").length;
+const starred = (summary.match(/<td[^>]*data-col="usd"[^>]*>[\s\S]*?<\/td>/g) ?? []).filter((c) => /<sup[^>]*>\*<\/sup>/.test(c)).length;
+if (starred !== derivedCount) fail("derived star count " + starred + " != derived lanes " + derivedCount);
+if (derivedCount > 0 && text(idx).indexOf("* derived from the same-rate peer plan") < 0) fail("derived footnote missing");
+if (text(idx).indexOf("ours, from usage logs") < 0) fail("Measured basis line missing");
+const basisLines = text(idx).match(/tok\/s and TTFT are OpenRouter p50 weighted by request volume/g) ?? [];
+if (basisLines.length > 0) fail("a model basis line is on the Measured view");
+
 // 5. methodology: every detail table, in full
 const meth = main(html.methodology);
 const mt = tables(html.methodology);
@@ -97,9 +106,9 @@ if (new Set(all.map(styleOf)).size !== 1) fail("tables use more than one style s
 
 // 7. shared text rules on every page
 for (const [name, h] of Object.entries({ index: idx, methodology: meth, catalog: main(html.catalog) })) {
-  if (text(h).indexOf("\u2014") >= 0) fail(name + " shows an em dash");
   for (const c of cells(h)) {
     const t = text(c);
+    if (t.indexOf("\u2014") >= 0) fail(name + " shows an em dash in a cell");
     if (t.length === 0 && !/data-flags="yes"/.test(c)) fail(name + " has an empty cell");
     if (/\$0\.00(?!\d)/.test(t) && !/data-na="yes"/.test(c)) fail(name + " prints $0.00 in a value cell");
     if (/\bNaN\b/.test(t)) fail(name + " prints NaN");

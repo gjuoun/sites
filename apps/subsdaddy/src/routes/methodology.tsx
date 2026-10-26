@@ -55,6 +55,12 @@ function MethodologyPage() {
           <li>No quality score is published; the dataset has no quality field.</li>
         </ul>
       </section>
+      <section className="space-y-2">
+        <h2 className="text-lg font-medium">Speed on the front page</h2>
+        <p>Model view: weighted median over endpoints by request volume, not the unweighted median or the best endpoint. Measured view: our own usage logs, p50. Every speed cell shows one value, rounded to two significant figures.</p>
+        <p>weighted median over endpoints by request volume, not the unweighted median or the best endpoint</p>
+        <p>Derived $/B (marked *): a plan whose own window is saturated takes the $/B of a same-rate peer plan, and says so on the front page.</p>
+      </section>
       <DetailTables />
       <SiteFooter />
     </main>

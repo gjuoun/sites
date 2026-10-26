@@ -49,7 +49,7 @@ export function orModelOf(ds: DS, ref: RefId): string | null {
   return ds.models.reference.find((r) => r.ref === ref)?.openrouter ?? null;
 }
 
-type ViewRow = { key: string; label: string; fee: number; capacity: string | null; capacityReason: string; usd: number | null; usdTitle: string; tps: number | null; tpsTitle: string; ttft: number | null; ttftTitle: string };
+type ViewRow = { key: string; label: string; fee: number; capacity: string | null; capacityReason: string; usd: number | null; usdTitle: string; derived: boolean; tps: number | null; tpsTitle: string; ttft: number | null; ttftTitle: string };
 
 /** OpenRouter's traffic-weighted p50 for one model: tok/s and TTFT, one value each. */
 export function orWeighted(ds: DS, ref: RefId): { tps: number | null; ttft: number | null; title: string; reason: string | null } {
@@ -72,7 +72,8 @@ function measuredRows(ds: DS): ViewRow[] {
     capacity: l.capacity.tokens_per_week === null ? null : (l.capacity.tokens_per_week / 1e9).toFixed(2) + "B/wk",
     capacityReason: l.capacity.reason ?? "no capacity reading",
     usd: l.usd_per_b,
-    usdTitle: l.usd_per_b === null ? (l.capacity.reason ?? "no measured $/B") : (l.usd_per_b_source ?? "measured $/B"),
+    usdTitle: l.usd_per_b === null ? (l.capacity.reason ?? "no measured $/B") : (l.usd_per_b_basis === "derived" ? "derived: " : "") + (l.usd_per_b_source ?? "measured $/B"),
+    derived: l.usd_per_b_basis === "derived",
     tps: l.measured.p50_output_tps,
     tpsTitle: "our usage logs, p50 output tok/s",
     ttft: l.measured.p50_ttft_ms,
@@ -96,6 +97,7 @@ function modelRows(ds: DS, ref: RefId): ViewRow[] {
       capacityReason: "",
       usd: v.usd_per_b,
       usdTitle: "estimate: fee ÷ allowance × blended list $/B for " + REF_NAMES[ref],
+      derived: false,
       tps: or.tps,
       tpsTitle: or.title || (or.reason ?? "no OpenRouter data"),
       ttft: or.ttft,
@@ -122,17 +124,28 @@ export function viewChips(ds: DS): Chip[] {
 
 const naShort = (reason: string): Cell => ({ ...na(reason), reason: "" });
 
-export function summaryTable(ds: DS, view: ViewId): Table & { rows: Array<{ key: string; cells: Record<string, Cell> }> } {
+/** The speed basis, one line under the switch. */
+export function basisLine(ds: DS, view: ViewId): string {
+  if (view === MEASURED) return "ours, from usage logs";
+  return "tok/s and TTFT are OpenRouter p50 weighted by request volume for " + (orModelOf(ds, view) ?? "") + " (30-minute window)";
+}
+
+export const DERIVED_FOOTNOTE = "* derived from the same-rate peer plan — this plan's own window is saturated";
+
+export type SummaryTable = Table & { rows: Array<{ key: string; cells: Record<string, Cell> }>; footnote: string | null; basisLine: string };
+
+export function summaryTable(ds: DS, view: ViewId): SummaryTable {
   const rows = viewRows(ds, view).map((r) => ({
     key: r.key,
     cells: {
       plan: value(r.label),
       fee: value(money(r.fee) + "/mo"),
       capacity: r.capacity === null ? naShort(r.capacityReason) : value(r.capacity),
-      usd: r.usd === null ? naShort(r.usdTitle) : value(usd(r.usd), [], r.usdTitle),
+      usd: r.usd === null ? naShort(r.usdTitle) : value(usd(r.usd) + (r.derived ? "*" : ""), [], r.usdTitle),
       tps: r.tps === null ? naShort("no speed data") : value("~" + sig2(r.tps), [], r.tpsTitle),
       ttft: r.ttft === null ? naShort("no latency data") : value("~" + sig2(r.ttft) + " ms", [], r.ttftTitle),
     },
   }));
-  return { columns: SUMMARY_COLUMNS, rows };
+  const anyDerived = viewRows(ds, view).some((r) => r.derived);
+  return { columns: SUMMARY_COLUMNS, rows, footnote: anyDerived ? DERIVED_FOOTNOTE : null, basisLine: basisLine(ds, view) };
 }

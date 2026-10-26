@@ -3,7 +3,7 @@ import { dataset } from "./dataset";
 import { catalogFileSchema } from "../data/catalog";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { MEASURED, orWeighted, sig2, summaryTable, viewChips, viewRows, weightedMedian, type ViewId } from "./summary";
+import { DERIVED_FOOTNOTE, MEASURED, basisLine, orWeighted, sig2, summaryTable, viewChips, viewRows, weightedMedian, type ViewId } from "./summary";
 import type { DS } from "./sections";
 
 const ds = dataset as unknown as DS;
@@ -135,5 +135,55 @@ describe("weighted median", () => {
   test("no weight gives no median, never zero", () => {
     expect(weightedMedian([])).toBeNull();
     expect(weightedMedian([{ value: 5, weight: 0 }])).toBeNull();
+  });
+});
+
+describe("derived $/B is marked, and only derived $/B", () => {
+  const derivedLanes = ds.lanes.lanes.filter((l) => l.usd_per_b_basis === "derived").map((l) => l.label);
+
+  test("the derived Measured row carries the star; no other Measured row does", () => {
+    const rows = summaryTable(ds, MEASURED).rows;
+    for (const r of rows) {
+      const isDerived = derivedLanes.includes(r.cells.plan.text);
+      expect(r.cells.usd.text.endsWith("*")).toBe(isDerived);
+    }
+    expect(derivedLanes.length).toBeGreaterThan(0);
+  });
+
+  test("the footnote is the one derived line, and it appears only when a row is derived", () => {
+    expect(summaryTable(ds, MEASURED).footnote).toBe(DERIVED_FOOTNOTE);
+    expect(DERIVED_FOOTNOTE.startsWith("* derived from the same-rate peer plan")).toBe(true);
+  });
+
+  test("model views have no derived $/B and no star and no footnote", () => {
+    for (const ref of ["deepseek-v4.1-flash", "claude-haiku-5.5", "gpt-6-luna", "glm-5.3-flash"] as const) {
+      const t = summaryTable(ds, ref);
+      expect(t.footnote).toBeNull();
+      for (const r of t.rows) expect(r.cells.usd.text.endsWith("*")).toBe(false);
+    }
+  });
+
+  test("the stars sit on the value, not in the plan label", () => {
+    for (const r of summaryTable(ds, MEASURED).rows) expect(r.cells.plan.text.endsWith("*")).toBe(false);
+  });
+});
+
+describe("speed basis line, one line under the switch", () => {
+  test("Measured reads ours, from usage logs", () => {
+    expect(basisLine(ds, MEASURED)).toBe("ours, from usage logs");
+  });
+
+  test("a model view names the OpenRouter model it read, with the 30-minute window, and no sample sizes", () => {
+    const line = basisLine(ds, "deepseek-v4.1-flash");
+    expect(line).toBe("tok/s and TTFT are OpenRouter p50 weighted by request volume for deepseek/deepseek-v4.1-flash (30-minute window)");
+    expect(line).not.toMatch(/endpoint|request_count|\d+ requests/);
+  });
+});
+
+describe("weighting: the heavy endpoint decides, not the middle one", () => {
+  test("a weighted median is neither the unweighted median nor the best endpoint", () => {
+    const pts = [{ value: 10, weight: 1 }, { value: 20, weight: 1 }, { value: 30, weight: 98 }];
+    expect(weightedMedian(pts)).toBe(30);
+    expect(weightedMedian(pts)).not.toBe(20);
   });
 });
