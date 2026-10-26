@@ -1,0 +1,51 @@
+{
+  "plans": [
+    {
+      "lane": "cc",
+      "label": "CommandCode",
+      "provider": "commandcode",
+      "price_month_usd": 35,
+      "badge": "plan_spec",
+      "measured_at": "2026-10-26T06:06:22Z",
+      "source": "plan.md Decision 3 (JW-295 round); codexbar loginMethod 'GOAT · $35.00 of $70.00' — unconfirmed against the console"
+    },
+    {
+      "lane": "go-1",
+      "label": "OpenCode Go (jun1)",
+      "provider": "opencodego",
+      "price_month_usd": 10,
+      "badge": "plan_spec",
+      "measured_at": "2026-10-26T06:06:22Z",
+      "source": "plan.md Decision 3 (JW-295 round)"
+    },
+    {
+      "lane": "go-2",
+      "label": "OpenCode Go (jun2)",
+      "provider": "opencodego",
+      "price_month_usd": 10,
+      "badge": "plan_spec",
+      "measured_at": "2026-10-26T06:06:22Z",
+      "source": "plan.md Decision 3 (JW-295 round); assumed_same_plan as go-1"
+    },
+    {
+      "lane": "zai",
+      "label": "z.ai GLM plan",
+      "provider": "zai",
+      "price_month_usd": 56,
+      "badge": "plan_spec",
+      "measured_at": "2026-10-26T06:06:22Z",
+      "source": "plan.md Decision 3 (JW-295 round): $672/yr"
+    },
+    {
+      "lane": "qwen",
+      "label": "QwenCloud token plan",
+      "provider": "qwencloud",
+      "price_month_usd": 10,
+      "badge": "plan_spec",
+      "measured_at": "2026-10-26T06:06:22Z",
+      "source": "plan.md Decision 3 (JW-295 round)"
+    }
+  ],
+  "measured_at": "2026-10-26T06:06:22Z",
+  "source": "plan.md Decision 3 (JW-295 round)"
+}
