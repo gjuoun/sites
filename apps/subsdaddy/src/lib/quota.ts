@@ -13,6 +13,8 @@ export type QuotaReading =
       resets_at: string;
       source: string;
       plan_level?: string | null;
+      credits_used?: number | null;
+      credits_total?: number | null;
     }
   | { lane: string; unavailable: string };
 
@@ -60,6 +62,19 @@ export function zaiFromCodexbar(lane: string, json: string): QuotaReading {
     level = null;
   }
   return { ...base, plan_level: level };
+}
+
+/** Credits consumed and the pool size from codexbar's reset description, e.g. "14,041.65 / 25,500 credits used". */
+export function creditsFromCodexbar(json: string): { credits_used: number; credits_total: number } | null {
+  try {
+    const entry = (JSON.parse(json) as Array<{ usage?: { primary?: { resetDescription?: unknown } } }>)[0];
+    const text = typeof entry?.usage?.primary?.resetDescription === "string" ? entry.usage.primary.resetDescription : "";
+    const m = /([\d,]+(?:\.\d+)?)\s*\/\s*([\d,]+(?:\.\d+)?)\s*credits used/i.exec(text);
+    if (!m) return null;
+    return { credits_used: Number(m[1].replace(/,/g, "")), credits_total: Number(m[2].replace(/,/g, "")) };
+  } catch {
+    return null;
+  }
 }
 
 /** The child env that gives codexbar its key: ZAI_API_KEY (from opk) is copied to Z_AI_API_KEY. Null when the key is absent. */

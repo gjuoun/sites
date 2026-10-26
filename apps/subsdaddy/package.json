@@ -19,7 +19,8 @@
     "refresh": "bun run scripts/refresh.ts",
     "collect:catalog": "bun run scripts/collect-catalog.ts",
     "check:catalog": "bun run scripts/check-catalog.ts",
-    "estimate:catalog": "bun run scripts/estimate-catalog.ts"
+    "estimate:catalog": "bun run scripts/estimate-catalog.ts",
+    "derive:credit-value": "bun run scripts/derive-credit-value.ts"
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.3.0",

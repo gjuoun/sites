@@ -83,7 +83,8 @@ export const catalogRowSchema = z
     price_annual_usd: z.number().positive().nullable(),
     allowance_model: z.enum(ALLOWANCE_MODELS),
     allowance_detail: z.string().min(1),
-    credits_to_usd: z.strictObject({ usd_per_credit: z.number().positive(), basis: z.string().min(1) }).nullable(),
+    // paid_price: fee ÷ credits (what a credit costs). usage_value: list-price usage a credit buys (measured)
+    credits_to_usd: z.strictObject({ usd_per_credit: z.number().positive(), basis: z.string().min(1), meaning: z.enum(["paid_price", "usage_value"]).default("paid_price") }).nullable(),
     cli_compat: z.string().min(1),
     heat_samples: z.number().int().nonnegative().nullable(),
     exclusion_reason: z.string().min(1).nullable(),
@@ -214,7 +215,7 @@ function estimateDisplay(e: Estimate | null): Pick<CatalogDisplay, "estimate_sta
     const v = e.values.find((x) => x.ref === ref && x.shape === "agent");
     if (!v) return { ref, name: REF_NAMES[ref], text: null, reason: "not evaluated", basis: null };
     if (v.usd_per_b === null) return { ref, name: REF_NAMES[ref], text: null, reason: v.reason, basis: null };
-    const basis = v.fee_over_allowance === null ? null : "fee/allowance = " + Number(v.fee_over_allowance.toPrecision(3)) + " × blended " + v.blended_usd_per_b.toFixed(2) + " per B tokens (agent mix)";
+    const basis = v.fee_over_allowance === null ? null : "fee/allowance = " + Number(v.fee_over_allowance.toPrecision(3)) + " × blended " + Number(v.blended_usd_per_b.toPrecision(3)) + " per B tokens (agent mix)";
     return { ref, name: REF_NAMES[ref], text: formatEstimate(v.usd_per_b), reason: null, basis };
   });
   return { estimate_status: "estimated", estimate_text: text, estimate_reason: null, estimate_basis: e.basis, estimate_models };

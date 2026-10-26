@@ -52,5 +52,39 @@
       "out_per_m": 0.5,
       "cache_per_m": 0.01
     }
+  ],
+  "usage_models": [
+    {
+      "upstream_model": "deepseek-v4.1-flash-1017",
+      "openrouter": "deepseek/deepseek-v4.1-flash-1017",
+      "unmapped_reason": null,
+      "in_per_m": 0.15,
+      "out_per_m": 0.6,
+      "cache_per_m": 0.003
+    },
+    {
+      "upstream_model": "deepseek-v4.1-flash",
+      "openrouter": "deepseek/deepseek-v4.1-flash",
+      "unmapped_reason": null,
+      "in_per_m": 0.02,
+      "out_per_m": 1.0,
+      "cache_per_m": 0.015
+    },
+    {
+      "upstream_model": "qwen3.8-flash",
+      "openrouter": "qwen/qwen3.8-flash",
+      "unmapped_reason": null,
+      "in_per_m": 0.15,
+      "out_per_m": 0.47,
+      "cache_per_m": 0.016
+    },
+    {
+      "upstream_model": "qwen3.8-max",
+      "openrouter": null,
+      "in_per_m": null,
+      "out_per_m": null,
+      "cache_per_m": null,
+      "unmapped_reason": "OpenRouter lists only dated snapshots (qwen/qwen3.8-max-0902, qwen/qwen3.8-max-prime); neither is an unambiguous match for qwen3.8-max, and no official list price was read"
+    }
   ]
 }

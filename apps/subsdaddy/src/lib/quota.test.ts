@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { fromCodexbar, zaiEnvFor, zaiFromCodexbar } from "./quota";
+import { creditsFromCodexbar, fromCodexbar, zaiEnvFor, zaiFromCodexbar } from "./quota";
 
 // zai sample, shape as returned by codexbar's quota source (2026-10-26)
 const ZAI = JSON.stringify([
@@ -42,6 +42,13 @@ describe("zai via codexbar", () => {
   test("the key is handed to codexbar under its own name, and only when present", () => {
     expect(zaiEnvFor({ ZAI_API_KEY: "k-123", PATH: "/bin" })).toEqual({ ZAI_API_KEY: "k-123", PATH: "/bin", Z_AI_API_KEY: "k-123" });
     expect(zaiEnvFor({ PATH: "/bin" })).toBeNull();
+  });
+
+  test("credits used and the pool size are read from the reset description, and nothing else is guessed", () => {
+    const q = JSON.stringify([{ usage: { primary: { usedPercent: 55.07, windowMinutes: 43200, resetsAt: "2026-11-24T16:00:00Z", resetDescription: "14,041.65 / 25,500 credits used" } } }]);
+    expect(creditsFromCodexbar(q)).toEqual({ credits_used: 14041.65, credits_total: 25500 });
+    const none = JSON.stringify([{ usage: { primary: { usedPercent: 55, windowMinutes: 43200, resetsAt: "2026-11-24T16:00:00Z", resetDescription: "monthly" } } }]);
+    expect(creditsFromCodexbar(none)).toBeNull();
   });
 
   test("the generic codexbar parser keeps its behaviour for the other plans", () => {

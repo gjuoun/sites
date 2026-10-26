@@ -1,8 +1,9 @@
 /**
  * Local identifiers that must never reach committed data or dist/: the two OpenCode subscription
  * account labels and the pre-plan lane ids. Plan ids (e.g. "zai-glm-max") are public and pass.
+ * A match that sits inside a public model namespace (e.g. "qwen/qwen3.8-flash") is not an identifier.
  */
-const LOCAL_IDENTIFIERS = [/(?<![\w-])(?:jun1|jun2)(?![\w-])/g, /(?<![\w-])(?:go-1|go-2|cc|qwen|zai)(?![\w-])/g];
+const LOCAL_IDENTIFIERS = [/(?<![\w/-])(?:jun1|jun2)(?![\w/-])/g, /(?<![\w/-])(?:go-1|go-2|cc|qwen|zai)(?![\w/-])/g];
 
 export function findLocalIdentifiers(text: string): string[] {
   const hits: string[] = [];

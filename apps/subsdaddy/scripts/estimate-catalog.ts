@@ -45,7 +45,7 @@ function estimateRow(row: CatalogRow) {
         shape,
       });
       values.push({ ref, shape, usd_per_b: e.usd_per_b, reason: e.reason, fee_over_allowance: e.fee_over_allowance, blended_usd_per_b: e.blended_usd_per_b, measured_at: now, source: SOURCE });
-      if (shape === "agent" && e.fee_over_allowance !== null) ratios.push(ref + " " + e.fee_over_allowance.toFixed(3));
+      if (shape === "agent" && e.fee_over_allowance !== null) ratios.push(ref + " " + Number(e.fee_over_allowance.toPrecision(3)));
     }
   }
   const agent = values.filter((v) => v.shape === "agent" && v.usd_per_b !== null).map((v) => v.usd_per_b as number);
@@ -67,5 +67,5 @@ const checked = catalogFileSchema.parse(file);
 writeFileSync(join(dataDir, "catalog.json"), JSON.stringify(checked, null, 2) + "\n");
 
 const est = checked.rows.filter((r) => r.estimate?.status === "estimated");
-for (const r of est) console.log(r.label.padEnd(40) + " " + r.estimate!.range_agent!.map((v) => v.toFixed(2)).join(" .. "));
+for (const r of est) console.log(r.label.padEnd(40) + " " + r.estimate!.range_agent!.map((v) => String(Number(v.toPrecision(3)))).join(" .. "));
 console.log("catalog=" + checked.rows.length + " estimated=" + est.length + " unavailable=" + (checked.rows.length - est.length) + " mix_output=" + mix.output_share.toFixed(4) + " mix_agent_cache=" + mix.agent_cache_share.toFixed(4));

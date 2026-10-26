@@ -66,7 +66,7 @@ export function excluded(): LaneRecord[] {
 
 export const fmt = {
   num: (v: number | null | undefined, digits = 0) => (v === null || v === undefined ? "—" : v.toLocaleString("en-US", { maximumFractionDigits: digits })),
-  usd: (v: number | null | undefined) => (v === null || v === undefined ? "—" : "$" + v.toFixed(2)),
+  usd: (v: number | null | undefined) => (v === null || v === undefined ? "—" : "$" + (Math.abs(v) < 0.1 && v !== 0 ? String(Number(v.toPrecision(3))) : v.toFixed(2))),
   pct: (v: number | null | undefined) => (v === null || v === undefined ? "—" : (v * 100).toFixed(1) + "%"),
   tokensWeek: (v: number | null | undefined) => (v === null || v === undefined ? "—" : (v / 1e9).toFixed(3) + "B/wk"),
 };

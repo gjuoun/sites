@@ -80,6 +80,8 @@ export const quotaObservationSchema = z.object({
   used_pct: z.number().min(0).max(100),
   resets_at: z.iso.datetime(),
   plan_level: z.string().nullable().optional(),
+  credits_used: z.number().nonnegative().nullable().optional(),
+  credits_total: z.number().positive().nullable().optional(),
   ...provenance,
 });
 export type QuotaObservation = z.infer<typeof quotaObservationSchema>;
@@ -182,6 +184,19 @@ export const modelsFileSchema = z.object({
       }),
     )
     .length(4),
+  // the upstream models the QwenCloud lane actually bills, with OpenRouter list prices where one exists
+  usage_models: z
+    .array(
+      z.object({
+        upstream_model: z.string().min(1),
+        openrouter: z.string().min(1).nullable(),
+        in_per_m: z.number().nonnegative().nullable(),
+        out_per_m: z.number().nonnegative().nullable(),
+        cache_per_m: z.number().nonnegative().nullable(),
+        unmapped_reason: z.string().min(1).nullable(),
+      }),
+    )
+    .default([]),
   ...provenance,
 });
 
