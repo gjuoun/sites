@@ -66,6 +66,8 @@ const RULES = [
 	"The accent family is the palette's own in both modes (ruling 2026-10-24): a light page shows the vivid hues on paper.",
 	"Accents are not text-safe on paper: link, success, info and danger text, and the lime and yellow family, measure below AA. Read on their deepened plates they clear 4.5:1 (the accents table). Body ink and muted text keep AA.",
 	"The primary ink (links and rings) follows the accent, so it measures 2.27:1 on paper. Whether a readable light ink returns is parked for Jun.",
+	"The ink on the primary fill is each mode's own darkest readable value: light fg (5.29:1), dark canvas (6.08:1). Dark fg would measure 1.98:1 on the fill.",
+	"Surfaces (card, popover, secondary, subtle, frame, solid) read the panel tier: 5% of fg mixed into the canvas, in each mode.",
 	"Stock shadcn classes are not restyled: bg-black/10 and bg-white resolve through the palette ends.",
 ];
 
