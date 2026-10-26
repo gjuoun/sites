@@ -58,12 +58,12 @@ export const REQUIRED = [
  * Two-tier primary, the business ruling: the FILL is bigface's native blue (#00b0ff in both modes) with the
  * ink on top: the light ink in light mode (5.29:1 on the fill, the one ink of the light scope, ruling 2026-10-26), and the dark canvas in dark mode. TEXT and rings follow the accent blue in both modes (ruling 2026-10-24: 2.27:1 on paper, parked for Jun).
  * black and white are the palette's own darkest and lightest: the stock scrim (bg-black/10) and the stock
- * slider thumb (bg-white) resolve through them, so no stock class has to change. White is paper, never #fff.
+ * slider thumb (bg-white) resolve through them, so no stock class has to change. White is the canvas, never #fff.
  */
 export const COLOURS: ThemeRoles = {
 	canvas: { color: "bg" },
 	ink: { color: "fg" },
-	heading: { color: "paper" },
+	heading: { color: "fg" },
 	primary: { color: "blue", palette: "dark" },
 	"primary-fill": { color: "blue", palette: "dark" },
 	"primary-ink": { color: "blue" },
@@ -106,7 +106,7 @@ export const COLOURS: ThemeRoles = {
 	"chart-3": { color: "yellow" },
 	"chart-4": { color: "burntOrange" },
 	"chart-5": { color: "purple" },
-	overlay: { mix: ["bg", 75, "paper"] },
+	overlay: { color: "bg" },
 	solid: { color: "panel" },
 	"on-solid": { color: "fg" },
 	// The accent family as text colours, and a deepened plate for each: a vivid accent is read on its own plate, not on

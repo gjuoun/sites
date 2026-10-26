@@ -5,7 +5,7 @@
 [data-theme="business"] {
   --theme-canvas: #f8f8f0;
   --theme-ink: #2f332f;
-  --theme-heading: #f8f8f0;
+  --theme-heading: #2f332f;
   --theme-primary: #00b0ff;
   --theme-on-primary: #2f332f;
   --theme-primary-edge: #60c1fd;
@@ -77,7 +77,7 @@
 [data-mode="dark"] [data-theme="business"]:not([data-mode="light"]) {
   --theme-canvas: #252925;
   --theme-ink: #e8e9e1;
-  --theme-heading: #f8f8f0;
+  --theme-heading: #e8e9e1;
   --theme-primary: #00b0ff;
   --theme-on-primary: #252925;
   --theme-primary-edge: #2490ca;
@@ -117,7 +117,7 @@
   --theme-chart-3: #e5e500;
   --theme-chart-4: #fc5d23;
   --theme-chart-5: #ae81ff;
-  --theme-overlay: #535752;
+  --theme-overlay: #252925;
   --theme-solid: #2d312d;
   --theme-on-solid: #e8e9e1;
   --theme-accent-blue: #00b0ff;

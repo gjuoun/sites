@@ -135,7 +135,15 @@ describe("bigface-business-ui: colour only", () => {
 		}
 	});
 
-	test("black and white are the palette's own ends, per mode; white is paper, not #fff", () => {
+	test("heading is the ink, not the canvas, in both modes: it clears AA on the canvas (the paper retirement, 2026-10-26)", () => {
+		const b = blocks();
+		for (const mode of ["light", "dark"] as const) {
+			const read = (k: string) => evaluate(b[mode]["--theme-" + k] as string);
+			expect(contrastRatio(read("heading"), read("canvas")), mode + " heading on canvas").toBeGreaterThanOrEqual(4.5);
+		}
+	});
+
+	test("black and white are the palette's own ends, per mode; white is the canvas, not #fff", () => {
 		const b = blocks();
 		expect(b.light["--theme-black"]).toBe(light.colors.fg.hex); // the light ink is the derived fg (neutral collapse)
 		expect(b.light["--theme-white"]).toBe("#f8f8f0");
