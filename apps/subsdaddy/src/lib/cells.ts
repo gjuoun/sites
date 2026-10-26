@@ -16,7 +16,6 @@ export const BADGE_VARIANT = {
   seed: "status",
   window: "status",
   single_account_reading: "status",
-  window_saturated: "status",
 } as const;
 export type BadgeKind = keyof typeof BADGE_VARIANT;
 export type BadgeVariant = "source" | "confidence" | "status";

@@ -1,4 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SiteFooter } from "@/components/site-footer";
+import { PAGE_TITLE } from "@/components/layout";
 
 export const Route = createFileRoute("/methodology")({
   component: MethodologyPage,
@@ -8,7 +10,7 @@ function MethodologyPage() {
   return (
     <main className="mx-auto max-w-3xl space-y-5 p-6 text-sm leading-6">
       <Link to="/" className="underline">← ranking</Link>
-      <h1 className="text-2xl font-semibold">Methodology</h1>
+      <h1 className={PAGE_TITLE}>Methodology</h1>
       <section className="space-y-2">
         <h2 className="text-lg font-medium">Tokens</h2>
         <p>tokens = input + cache creation + cache read + output, per row. Cache share = cache read ÷ (input + cache creation + cache read).</p>
@@ -44,6 +46,7 @@ function MethodologyPage() {
           <li>No quality score is published; the dataset has no quality field.</li>
         </ul>
       </section>
+      <SiteFooter />
     </main>
   );
 }

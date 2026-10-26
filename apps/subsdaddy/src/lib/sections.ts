@@ -9,6 +9,7 @@ export type Column = { key: string; label: string; width: string; numeric?: bool
 export type Table = { columns: Column[]; rows: Array<{ key: string; cells: Record<string, Cell> }> };
 
 const usd = (v: number) => "$" + (v < 0.1 ? String(Number(v.toPrecision(3))) : v.toFixed(2));
+const money = (v: number) => "$" + v.toFixed(2);
 const ms = (v: number) => Math.round(v).toLocaleString("en-US") + " ms";
 const count = (n: number, noun: string) => n.toLocaleString("en-US") + " " + noun + (n === 1 ? "" : "s");
 
@@ -36,7 +37,6 @@ export function measuredTable(ds: DS): Table & { footnote: string } {
     if (l.capacity.badge === "single_account_reading") flags.push("single_account_reading");
     if (l.capacity.confidence === "low") flags.push("low confidence");
     if (l.capacity.seeded) flags.push("seed");
-    if (l.capacity.reason?.includes("window_saturated")) flags.push("window_saturated");
 
     const usdCell =
       l.usd_per_b === null
@@ -61,7 +61,7 @@ export function measuredTable(ds: DS): Table & { footnote: string } {
       key: l.lane,
       cells: {
         plan: value(l.label),
-        fee: value("$" + l.price_month_usd + "/mo"),
+        fee: value(money(l.price_month_usd) + "/mo"),
         capacity: capCell,
         usd: usdCell,
         tps: l.measured.p50_output_tps === null ? na("no measured output speed for this plan") : value(Math.round(l.measured.p50_output_tps).toLocaleString("en-US"), ["measured"]),
@@ -116,7 +116,7 @@ export function modelTable(ds: DS, ref: RefId): Table & { subtitle: string; orNo
       key: r.plan_id,
       cells: {
         plan: value(r.label, unverified),
-        fee: r.price_month_usd !== null ? value("$" + r.price_month_usd + "/mo") : na("no USD fee published"),
+        fee: r.price_month_usd !== null ? value(money(r.price_month_usd) + "/mo") : na("no USD fee published"),
         est: estCell,
         tps: speed(or.summary?.tps ? formatRange(or.summary.tps) : null, or.reason),
         ttft: speed(or.summary?.latency_ms ? formatRange(or.summary.latency_ms) + " ms" : null, or.reason),
@@ -163,7 +163,7 @@ export function catalogTable(ds: DS): Table {
       key: r.plan_id,
       cells: {
         plan: value(r.label),
-        fee: r.price_month_usd !== null ? value("$" + r.price_month_usd + "/mo") : d.fee === "unverified" ? na("no verified USD price") : value(d.fee),
+        fee: r.price_month_usd !== null ? value(money(r.price_month_usd) + "/mo") : d.fee === "unverified" ? na("no verified USD price") : value(d.fee),
         credits: r.credits_to_usd ? value(formatUsdPerCredit(r.credits_to_usd.usd_per_credit), [], r.credits_to_usd.basis) : na(r.allowance_reason ?? "no credit conversion published"),
         allowance: r.allowance.length > 0 ? value(r.allowance_detail) : na(r.allowance_reason ?? "no published usage-dollar allowance"),
         est,

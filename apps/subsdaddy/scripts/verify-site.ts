@@ -133,6 +133,11 @@ for (const [name, html] of [["index", index], ["catalog", catalogHtml]] as const
 }
 const speedCellsOk = [...index.matchAll(/<td[^>]*data-col="(tps|ttft)"[\s\S]*?<\/td>/g)].every((m) => (m[0].match(/data-badge="/g) ?? []).length <= 1);
 if (!speedCellsOk) fail("a speed cell carries more than one badge");
+// 9. one footer on every page; a capacity state is never repeated as a badge
+for (const [name, html] of [["index", index], ["catalog", catalogHtml]] as const) {
+  if (!html.includes('data-footer="links"')) fail(name + " has no footer");
+}
+if (/data-badge="window_saturated"/.test(index + catalogHtml)) fail("window_saturated repeated as a badge; the capacity cell already states it");
 console.log(
   "pages=" + [indexPath, catalogPath].filter(existsSync).length +
     " sectionA_rows=" + measuredRows +

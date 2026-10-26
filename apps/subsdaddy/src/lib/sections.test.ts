@@ -48,7 +48,8 @@ describe("badges and names", () => {
       expect(c.badges.some((b) => /flag/.test(b))).toBe(false);
     }
     const cc = t.rows.find((r) => r.key === "commandcode-goat")!;
-    expect(cc.cells.badges.badges).toContain("window_saturated");
+    expect(cc.cells.badges.badges).toEqual([]);
+    expect(cc.cells.capacity.reason).toContain("window_saturated");
     const opencode = t.rows.find((r) => r.key === "opencode-go")!;
     expect(opencode.cells.badges.badges).toContain("single_account_reading");
   });
