@@ -115,10 +115,17 @@
       "name": "@sites/subsdaddy",
       "version": "0.1.0",
       "dependencies": {
+        "@fontsource-variable/geist": "^5.3.0",
         "@tanstack/react-router": "1.170.46",
         "@tanstack/react-start": "1.169.4",
+        "class-variance-authority": "^0.7.1",
+        "cn": "^0.5.0",
+        "lucide-react": "^1.61.0",
+        "radix-ui": "^1.8.1",
         "react": "19.3.1",
         "react-dom": "19.3.1",
+        "shadcn": "^4.22.1",
+        "tw-animate-css": "^1.4.0",
         "zod": "4.1.11",
       },
       "devDependencies": {
@@ -570,6 +577,8 @@
     "@floating-ui/react-dom": ["@floating-ui/react-dom@2.1.9", "", { "dependencies": { "@floating-ui/dom": "^1.8.0" }, "peerDependencies": { "react": ">=16.8.0", "react-dom": ">=16.8.0" } }, "sha512-JDjEFGCpImxDCA7JJKviA0M9+RtmJdj0m/NVU5IMgBK+AmZouAQQ7/+2GLH0GXXY0YMw9oXPB8hKdbPYg5QLYg=="],
 
     "@floating-ui/utils": ["@floating-ui/utils@0.2.12", "", {}, "sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww=="],
+
+    "@fontsource-variable/geist": ["@fontsource-variable/geist@5.3.0", "", {}, "sha512-j0m+vLQuG5XAYoHtGCVu0spvlGreR3EzpECUVzkFmI1mTVnAO38l/NEPDCFgZ177JxzYJCLSmTQibIiYPilGrA=="],
 
     "@fortawesome/fontawesome-free": ["@fortawesome/fontawesome-free@6.7.2", "", {}, "sha512-JUOtgFW6k9u4Y+xeIaEiLr3+cjoUPiAuLXoyKOJSia6Duzb7pq+A76P9ZdPDoAoxHdHzq6gE9/jKBGXlZT8FbA=="],
 
