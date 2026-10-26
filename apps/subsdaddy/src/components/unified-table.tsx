@@ -35,7 +35,7 @@ export function CellView({ cell, numeric = false, clip = false }: { cell: Cell; 
   const shown = cell.na ? cell.reason : cell.note;
   return (
     <span className="block min-w-0" data-na={cell.na ? "yes" : undefined} data-flags={cell.flags ? "yes" : undefined} title={cell.title ?? undefined}>
-      <span className={"block h-5 truncate leading-5 " + (numeric ? "text-right " : "") + (cell.na ? "text-muted-foreground" : "font-medium")}>
+      <span className={"block h-5 leading-5 whitespace-nowrap " + (clip ? "truncate " : "") + (numeric ? "text-right " : "") + (cell.na ? "text-muted-foreground" : "font-medium")}>
         {cell.text}
       </span>
       <span className={"block h-4 truncate text-xs leading-4 text-muted-foreground " + (numeric ? "text-right" : "")} title={shown ?? undefined}>

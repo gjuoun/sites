@@ -9,6 +9,8 @@ export const Route = createRootRoute({
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "subsdaddy" },
     ],
+    // the site has no favicon file: an empty data icon stops the browser asking for /favicon.ico
+    links: [{ rel: "icon", href: "data:," }],
   }),
   component: RootComponent,
 });

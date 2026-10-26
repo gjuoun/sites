@@ -51,8 +51,8 @@ export function measuredTable(ds: DS): Table & { footnote: string } {
       const low = or.summary.low_confidence;
       orCellValue = orCell(
         formatRange(or.summary.tps),
-        orId + " · 30-minute window",
-        displayName(ds, orId) + " · " + count(or.summary.endpoints, "endpoint") + (low > 0 ? ", " + low.toLocaleString("en-US") + " low confidence" : ""),
+        orId + " · " + count(or.summary.endpoints, "endpoint") + (low > 0 ? ", " + low.toLocaleString("en-US") + " low confidence" : "") + " · 30-minute window",
+        displayName(ds, orId),
       );
     } else {
       orCellValue = na(or.reason ?? "no OpenRouter data");
@@ -76,14 +76,14 @@ export function measuredTable(ds: DS): Table & { footnote: string } {
   return {
     footnote,
     columns: [
-      { key: "plan", label: "Plan", width: "20%" },
-      { key: "fee", label: "Fee/mo", width: "7%", numeric: true },
-      { key: "capacity", label: "Capacity", width: "9%", numeric: true },
-      { key: "usd", label: "$/B", width: "9%", numeric: true },
+      { key: "plan", label: "Plan", width: "24%" },
+      { key: "fee", label: "Fee/mo", width: "10%", numeric: true },
+      { key: "capacity", label: "Capacity", width: "8%", numeric: true },
+      { key: "usd", label: "$/B", width: "8%", numeric: true },
       { key: "tps", label: "tok/s", width: "8%", numeric: true },
-      { key: "ttft", label: "TTFT p50", width: "9%", numeric: true },
-      { key: "or", label: "OR p50 tok/s", width: "14%", numeric: true },
-      { key: "badges", label: "Badges", width: "24%" },
+      { key: "ttft", label: "TTFT p50", width: "10%", numeric: true },
+      { key: "or", label: "OR p50 tok/s", width: "16%", numeric: true },
+      { key: "badges", label: "Badges", width: "16%" },
     ],
     rows,
   };
@@ -111,7 +111,7 @@ export function modelTable(ds: DS, ref: RefId): Table & { subtitle: string; orNo
         : na(v?.reason ?? r.estimate?.reason ?? "no published allowance for this model in this plan");
     const unverified: BadgeKind[] = r.sources.some((s) => s.kind === "unverified") ? ["unverified"] : [];
     const speed = (formatted: string | null, reason: string | null) =>
-      formatted !== null && orId ? orCell(formatted, orId, speedNote) : na(reason ?? "no OpenRouter data");
+      formatted !== null && orId ? orCell(formatted, orId + " · " + (speedNote ?? "N/A") + " · 30-minute window", null) : na(reason ?? "no OpenRouter data");
     return {
       key: r.plan_id,
       cells: {
@@ -132,12 +132,12 @@ export function modelTable(ds: DS, ref: RefId): Table & { subtitle: string; orNo
     subtitle,
     orNote,
     columns: [
-      { key: "plan", label: "Plan", width: "19%" },
-      { key: "fee", label: "Fee/mo", width: "8%", numeric: true },
-      { key: "est", label: "Est. $/B", width: "12%", numeric: true },
-      { key: "tps", label: "tok/s", width: "13%", numeric: true },
-      { key: "ttft", label: "TTFT p50", width: "13%", numeric: true },
-      { key: "basis", label: "Basis", width: "35%", clip: true },
+      { key: "plan", label: "Plan", width: "24%" },
+      { key: "fee", label: "Fee/mo", width: "10%", numeric: true },
+      { key: "est", label: "Est. $/B", width: "10%", numeric: true },
+      { key: "tps", label: "tok/s", width: "16%", numeric: true },
+      { key: "ttft", label: "TTFT p50", width: "22%", numeric: true },
+      { key: "basis", label: "Basis", width: "18%", clip: true },
     ],
     rows,
   };
@@ -148,11 +148,18 @@ export function modelTables(ds: DS) {
   return REF_IDS.map((ref) => ({ ref, name: ds.models.reference.find((x) => x.ref === ref)!.name, table: modelTable(ds, ref) }));
 }
 
+/** A native-currency price: the amount is the value; the rest of the sentence is the secondary line, in full in title. */
+const nativeFee = (text: string): Cell => {
+  const m = /^([A-Z]{3} [\d.,]+)(.*)$/.exec(text);
+  return m ? value(m[1], [], text, m[2].trim() || null) : value(text, [], text);
+};
+
 /** The catalog page: every catalog row, with its price, allowance, estimate range, and status flags. */
 export function catalogTable(ds: DS): Table {
   const rows = ds.catalog.rows.map((r) => {
     const d = catalogDisplayRow(r);
-    const flags: BadgeKind[] = ["unmeasured"];
+    // every catalog row is unmeasured by definition; the page says so, so no row repeats it
+    const flags: BadgeKind[] = [];
     if (d.status === "excluded") flags.push("excluded");
     if (d.source_badge === "unverified") flags.push("unverified");
     const est =
@@ -163,24 +170,24 @@ export function catalogTable(ds: DS): Table {
       key: r.plan_id,
       cells: {
         plan: value(r.label),
-        fee: r.price_month_usd !== null ? value(money(r.price_month_usd) + "/mo") : d.fee === "unverified" ? na("no verified USD price") : value(d.fee),
+        fee: r.price_month_usd !== null ? value(money(r.price_month_usd) + "/mo") : d.fee === "unverified" ? na("no verified USD price") : nativeFee(d.fee),
         credits: r.credits_to_usd ? value(formatUsdPerCredit(r.credits_to_usd.usd_per_credit), [], r.credits_to_usd.basis) : na(r.allowance_reason ?? "no credit conversion published"),
-        allowance: r.allowance.length > 0 ? value(r.allowance_detail) : na(r.allowance_reason ?? "no published usage-dollar allowance"),
+        allowance: r.allowance.length > 0 ? value(r.allowance_detail, [], r.allowance_detail) : na(r.allowance_reason ?? "no published usage-dollar allowance"),
         est,
-        cli: value(r.cli_compat),
+        cli: value(r.cli_compat, [], r.cli_compat),
         badges: flagCell(flags),
       },
     };
   });
   return {
     columns: [
-      { key: "plan", label: "Plan", width: "16%" },
-      { key: "fee", label: "Fee/mo", width: "7%", numeric: true },
-      { key: "credits", label: "Credits → $", width: "10%", numeric: true },
-      { key: "allowance", label: "Allowance", width: "19%", clip: true },
-      { key: "est", label: "Est. $/B (range)", width: "10%", numeric: true },
-      { key: "cli", label: "CLI", width: "16%", clip: true },
-      { key: "badges", label: "Badges", width: "22%" },
+      { key: "plan", label: "Plan", width: "28%" },
+      { key: "fee", label: "Fee/mo", width: "10%", numeric: true },
+      { key: "credits", label: "Credits → $", width: "14%", numeric: true },
+      { key: "allowance", label: "Allowance", width: "10%", clip: true },
+      { key: "est", label: "Est. $/B (range)", width: "11%", numeric: true },
+      { key: "cli", label: "CLI", width: "9%", clip: true },
+      { key: "badges", label: "Badges", width: "18%" },
     ],
     rows,
   };

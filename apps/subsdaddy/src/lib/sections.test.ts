@@ -112,9 +112,9 @@ describe("regression: Section A shows each plan's own measured values", () => {
       expect(r.cells.or.note).toBeTruthy();
     }
     const cc = t.rows.find((r) => r.key === "commandcode-goat")!;
-    expect(cc.cells.or.note!.startsWith("DeepSeek V4.1 Flash · ")).toBe(true);
+    expect(cc.cells.or.note).toBe("DeepSeek V4.1 Flash");
     const qwen = t.rows.find((r) => r.key === "qwen-cloud-token")!;
-    expect(qwen.cells.or.note!.startsWith("DeepSeek V4.1 Flash (1017) · ")).toBe(true);
+    expect(qwen.cells.or.note).toBe("DeepSeek V4.1 Flash (1017)");
   });
 });
 

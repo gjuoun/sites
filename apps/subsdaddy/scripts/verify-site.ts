@@ -138,6 +138,15 @@ for (const [name, html] of [["index", index], ["catalog", catalogHtml]] as const
   if (!html.includes('data-footer="links"')) fail(name + " has no footer");
 }
 if (/data-badge="window_saturated"/.test(index + catalogHtml)) fail("window_saturated repeated as a badge; the capacity cell already states it");
+// 10. primary values never truncate; only the descriptive columns (basis, allowance, cli) clip, and they carry their full text in title
+const CLIP_COLS = ["basis", "allowance", "cli"];
+for (const [name, html] of [["index", index], ["catalog", catalogHtml]] as const) {
+  for (const m of html.matchAll(/<td[^>]*data-col="([^"]+)"[^>]*><span[^>]*><span class="([^"]*)"/g)) {
+    const col = m[1];
+    const cls = m[2];
+    if (!CLIP_COLS.includes(col) && cls.includes("truncate")) fail(name + " truncates the primary value of column " + col);
+  }
+}
 console.log(
   "pages=" + [indexPath, catalogPath].filter(existsSync).length +
     " sectionA_rows=" + measuredRows +
