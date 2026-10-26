@@ -14,9 +14,9 @@ const groups: [string, string, string[]][] = [
   [
     "surfaces",
     "Surfaces",
-    ["bg", "cursorLine", "braceMatch", "selection", "border", "borderMuted"],
+    ["bg", "paper", "highlight", "border"],
   ],
-  ["text", "Text", ["fg", "comment", "fgDim", "caret"]],
+  ["text", "Text", ["fg", "fgDim"]],
   [
     "accents",
     "Accents",
@@ -54,9 +54,7 @@ const swatches = "grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-[0.7r
       Every theme in the repo is generated from <code>palette/bigface.json</code>, and every colour
       in it is <strong>byte-for-byte from the 2018 JetBrains scheme</strong> — each labelled with the
       exact <code>OPTION#FIELD</code> it came from and checked against the original XML by a test.
-      Nothing is blended or invented: when a tool needs a surface the scheme never defined, it gets
-      one of the scheme's own surfaces (the caret-row background, the matched-brace block, a border
-      grey) instead of a new colour.
+      The accents are the scheme's own bytes. The neutrals are derived from the background by one formula, so a tool that needs a surface gets a neutral from that formula, never an invented colour.
     </p>
     <div class="mt-[1.4rem] mb-0 flex flex-wrap gap-2">
       <span class={count}><strong class="font-code text-foreground">{Object.keys(palette.colors).length}</strong> colours</span>
