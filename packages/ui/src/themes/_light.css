@@ -3,13 +3,11 @@
    value can reach a paper surface. */
 [data-mode="light"] {
   --bf-bg: #f8f8f0;
-  --bf-fg: #252925;
-  --bf-fg-dim: #6e6b68;
-  --bf-border: #d7d8d0;
-  --bf-border-muted: #e5e5de;
-  --bf-selection: #c5c6bf;
-  --bf-cursor-line: #ecece5;
-  --bf-brace-match: #dedfd7;
+  --bf-paper: #f8f8f0;
+  --bf-fg: #2f332f;
+  --bf-fg-dim: #70736e;
+  --bf-border: #d9dad2;
+  --bf-highlight: #c7c9c1;
   --bf-blue: #00b0ff;
   --bf-light-blue: #40c4ff;
   --bf-pale-blue: #b3e5fc;
@@ -20,23 +18,21 @@
   --bf-bright-yellow: #ffeb3b;
   --bf-burnt-orange: #fc5d23;
   --bf-purple: #ae81ff;
-  --bf-comment: #75715e;
-  --bf-caret: #252925;
-  --bf-ansi-black: #d7d8d0;
+  --bf-ansi-black: #d9dad2;
   --bf-ansi-red: #fc5d23;
   --bf-ansi-green: #00c853;
   --bf-ansi-yellow: #e5e500;
   --bf-ansi-blue: #00b0ff;
   --bf-ansi-magenta: #ae81ff;
   --bf-ansi-cyan: #66d9ef;
-  --bf-ansi-white: #252925;
-  --bf-ansi-bright-black: #6e6b68;
+  --bf-ansi-white: #2f332f;
+  --bf-ansi-bright-black: #70736e;
   --bf-ansi-bright-red: #fc5d23;
   --bf-ansi-bright-green: #c6ff00;
   --bf-ansi-bright-yellow: #ffeb3b;
   --bf-ansi-bright-blue: #40c4ff;
   --bf-ansi-bright-magenta: #ae81ff;
   --bf-ansi-bright-cyan: #b3e5fc;
-  --bf-ansi-bright-white: #252925;
-  --ink-on-bright: #252925;
+  --bf-ansi-bright-white: #f8f8f0;
+  --ink-on-bright: #2f332f;
 }
