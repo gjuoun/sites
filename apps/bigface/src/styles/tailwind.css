@@ -69,7 +69,7 @@
 @utility bf-grad {
   background: linear-gradient(
     100deg,
-    var(--bf-caret) 6%,
+    var(--bf-fg) 6%,
     var(--bf-pale-blue) 30%,
     var(--bf-blue) 55%,
     var(--bf-lime) 96%
@@ -286,7 +286,7 @@
   }
 
   pre {
-    background: color-mix(in srgb, var(--bf-border-muted) 72%, transparent);
+    background: color-mix(in srgb, var(--bf-border) 72%, transparent);
     border: 1px solid var(--bf-border);
     border-radius: 10px;
     padding: 1rem 1.1rem;

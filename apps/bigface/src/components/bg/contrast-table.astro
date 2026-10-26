@@ -5,7 +5,7 @@ import { palette } from "../../data/palette.ts";
 // Every palette colour's contrast on the background, with its WCAG band. Informational only.
 const rows = contrastReport(palette as never);
 const label = (r: number) => (r >= 7 ? "AAA" : r >= 4.5 ? "AA" : r >= 3 ? "large text" : "below 3");
-const cell = "border-b border-bf-border-muted px-[0.6rem] py-[0.4rem]";
+const cell = "border-b border-bf-border px-[0.6rem] py-[0.4rem]";
 ---
 
 <table class="w-full border-collapse text-[0.9rem]">

@@ -8,7 +8,7 @@ interface Props {
 const { steps } = Astro.props;
 ---
 
-<details class="my-[1.2rem] rounded-[14px] border border-bf-border bg-bf-border-muted/55 px-4 py-[0.9rem]">
+<details class="my-[1.2rem] rounded-[14px] border border-bf-border bg-bf-border/55 px-4 py-[0.9rem]">
   <summary class="cursor-pointer font-code text-[0.8rem] text-bf-fg-muted">Or do it by hand</summary>
   <ol class="my-[1em] grid list-decimal gap-2 pl-[1.4rem] marker:font-bold marker:text-bf-lime">
     {steps.map((s) => <li set:html={inline(s)} />)}
