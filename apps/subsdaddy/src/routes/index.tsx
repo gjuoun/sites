@@ -63,6 +63,11 @@ function IndexPage() {
                     <TableCell className="text-right">{fmt.usd(l.price_month_usd)}</TableCell>
                     <TableCell>
                       {fmt.tokensWeek(l.capacity.tokens_per_week)} <LayerBadge layer="window" />
+                      {l.capacity.confidence === "low" && (
+                        <Badge variant="secondary" data-confidence="low" title={l.capacity.confidence_reason ?? undefined}>
+                          low confidence
+                        </Badge>
+                      )}
                     </TableCell>
                     <TableCell className="text-right font-medium" data-layer="measured">{fmt.usd(l.usd_per_b)}</TableCell>
                     <TableCell className="text-right" data-layer="measured">

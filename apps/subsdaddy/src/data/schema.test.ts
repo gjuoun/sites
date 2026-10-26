@@ -50,6 +50,8 @@ describe("provenance", () => {
         coverage: null,
         seeded: false,
         reason: "no window reading",
+        confidence: null,
+        confidence_reason: null,
         measured_at: stamp,
         source: "codexbar usage",
       },

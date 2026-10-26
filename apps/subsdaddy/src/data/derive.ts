@@ -68,6 +68,18 @@ export function usdB(price_month_usd: number, tokens_per_week: number): number |
   return (price_month_usd / (tokens_per_week * WEEKS_PER_MONTH)) * 1e9;
 }
 
+/**
+ * Confidence of a capacity reading from the used percentage. Providers report whole percents, so a
+ * reading near 0% carries roughly 1/used_pct relative error: below 10% it is flagged low.
+ */
+export function capacityConfidence(used_pct: number | null | undefined): { confidence: "low" | "normal"; reason: string | null } | null {
+  if (used_pct === null || used_pct === undefined || !Number.isFinite(used_pct)) return null;
+  if (used_pct < 10) {
+    return { confidence: "low", reason: `used_pct ${used_pct} is an integer percent: error about 1/used_pct` };
+  }
+  return { confidence: "normal", reason: null };
+}
+
 export type PricedRow = {
   tokens: TokenCounts;
   total_cost: number;

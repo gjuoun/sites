@@ -52,7 +52,16 @@ if (mixed > 0) problems.push(`${mixed} element(s) mix layers`);
 const zeroed = (index.match(/\$0\.00/g) ?? []).length;
 if (zeroed > 0) problems.push(`${zeroed} zero price(s) rendered`);
 
-const summary = `pages=${pages.length} lanes=${seen.size} ranked=${ranked} excluded=${excluded} mixed_layers=${mixed} zeroed=${zeroed}`;
+// a low-confidence capacity must be visible on its ranked row; it does not fail the gate by itself
+const lanesFile = JSON.parse(readFileSync(join(APP, "data", "lanes.json"), "utf8")) as { lanes: Array<{ lane: string; usd_per_b: number | null; capacity: { confidence: string | null } }> };
+const lowRanked = lanesFile.lanes.filter((l) => l.usd_per_b !== null && l.capacity.confidence === "low");
+for (const l of lowRanked) {
+  const row = index.match(new RegExp(`<tr[^>]*data-lane-row="${l.lane}"[\\s\\S]*?</tr>`));
+  if (!row || !row[0].includes('data-confidence="low"')) problems.push(`low-confidence badge missing on the ranked row for ${l.lane}`);
+}
+const lowBadges = (index.match(/data-confidence="low"/g) ?? []).length;
+
+const summary = `pages=${pages.length} lanes=${seen.size} ranked=${ranked} excluded=${excluded} low_confidence=${lowBadges} mixed_layers=${mixed} zeroed=${zeroed}`;
 if (problems.length) {
   for (const p of problems) console.error("FAIL " + p);
   console.log(summary);

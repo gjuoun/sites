@@ -18,6 +18,7 @@ import {
   type QuotaObservationOrGap,
 } from "../src/data/schema";
 import {
+  capacityConfidence,
   capacityFromDelta,
   capacityFromSnapshot,
   elapsedCoverage,
@@ -176,6 +177,8 @@ const lanes: LaneRecord[] = LANES.map((lane) => {
       coverage,
       seeded,
       reason: seeded ? (SEED[lane]?.source ?? "seed") : reason,
+      confidence: cap.ok && !seeded ? (capacityConfidence(obs && !("unavailable" in obs) ? obs.used_pct : null)?.confidence ?? null) : null,
+      confidence_reason: cap.ok && !seeded ? (capacityConfidence(obs && !("unavailable" in obs) ? obs.used_pct : null)?.reason ?? null) : null,
       measured_at: now,
       source: seeded ? (SEED[lane]?.source ?? "seed") : obs ? obs.source : "codexbar (no reading)",
     },

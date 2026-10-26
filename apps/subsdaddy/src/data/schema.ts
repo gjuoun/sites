@@ -164,6 +164,8 @@ export const laneRecordSchema = z.object({
     coverage: z.number().min(0).max(1).nullable(),
     seeded: z.boolean(),
     reason: z.string().nullable(),
+    confidence: z.enum(["low", "normal"]).nullable(),
+    confidence_reason: z.string().nullable(),
     ...provenance,
   }),
   usd_per_b: z.number().positive().nullable(),

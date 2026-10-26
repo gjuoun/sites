@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { LayerBadge } from "@/components/layer-badge";
@@ -30,6 +31,11 @@ function LanePage() {
           <p>Method: <code>{lane.capacity.method}</code> {lane.capacity.window && <LayerBadge layer="window" />} {lane.capacity.seeded && <LayerBadge layer="seed" />}</p>
           <p>Tokens per week: {fmt.tokensWeek(lane.capacity.tokens_per_week)}</p>
           <p>Log coverage of window: {fmt.pct(lane.capacity.coverage)}</p>
+          {lane.capacity.confidence === "low" && (
+            <p data-confidence="low">
+              <Badge variant="secondary">low confidence</Badge> {lane.capacity.confidence_reason}
+            </p>
+          )}
           <p>Reason: {lane.capacity.reason ?? "—"}</p>
           <p>Quota reading: {quota && "used_pct" in quota ? `${quota.used_pct.toFixed(2)}% (${quota.window}, resets ${quota.resets_at})` : quota && "unavailable" in quota ? `unavailable: ${quota.unavailable}` : "—"}</p>
         </CardContent>

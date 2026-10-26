@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import {
   WEEKS_PER_MONTH,
+  capacityConfidence,
   elapsedCoverage,
   cacheShare,
   capacityFromDelta,
@@ -73,6 +74,20 @@ describe("capacity", () => {
   test("coverage clamps to the documented range", () => {
     expect(windowCoverage({ coverage_start_ms: 0, now_ms: 0, window_ms: 604_800_000 })).toBe(0);
     expect(windowCoverage({ coverage_start_ms: 0, now_ms: 604_800_000 * 2, window_ms: 604_800_000 })).toBe(1);
+  });
+});
+
+describe("capacity confidence", () => {
+  test("a window reading below 10% is low confidence: integer percent granularity gives ~1/used_pct error", () => {
+    expect(capacityConfidence(1)).toEqual({ confidence: "low", reason: "used_pct 1 is an integer percent: error about 1/used_pct" });
+    expect(capacityConfidence(9.9)?.confidence).toBe("low");
+  });
+
+  test("at 10% and above the reading is normal; with no reading there is no confidence at all", () => {
+    expect(capacityConfidence(10)).toEqual({ confidence: "normal", reason: null });
+    expect(capacityConfidence(52.9)?.confidence).toBe("normal");
+    expect(capacityConfidence(null)).toBeNull();
+    expect(capacityConfidence(undefined)).toBeNull();
   });
 });
 
