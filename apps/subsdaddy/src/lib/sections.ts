@@ -111,7 +111,7 @@ function measuredFor(ds: DS, row: CatalogRow): { value: number | null; reason: s
 }
 
 /** Section B for one reference model: only the plans that offer the model; the same table style; OpenRouter's numbers for the model. */
-export function modelTable(ds: DS, ref: RefId): Table & { subtitle: string; orNote: string } {
+export function modelTable(ds: DS, ref: RefId): Table & { subtitle: string; orNote: string; tierNote: string | null } {
   const orId = refModelOf(ds, ref);
   const or = orId ? orForModel(ds.benchmark, orId) : { summary: null, reason: "no OpenRouter id for this model" };
   const speedNote = or.summary ? count(or.summary.endpoints, "endpoint") + (or.summary.low_confidence > 0 ? ", " + or.summary.low_confidence.toLocaleString("en-US") + " low confidence" : "") : null;
@@ -152,9 +152,16 @@ export function modelTable(ds: DS, ref: RefId): Table & { subtitle: string; orNo
   const orNote = or.summary
     ? "OpenRouter " + orId + ": " + count(or.summary.endpoints, "endpoint") + ", p50 over the last 30 minutes."
     : "OpenRouter " + (orId ?? "") + ": N/A (" + (or.reason ?? "no data") + ").";
+  const tierNote = (() => {
+    const parts = byModelRows(ds)
+      .filter((r) => r.offered_models.includes(ref) && r.estimate?.basis?.includes("; prices: "))
+      .map((r) => r.label + ": " + r.estimate!.basis!.split("; prices: ")[1].replace(/\.$/, ""));
+    return parts.length > 0 ? "Official tiers used for this plan's price: " + parts.join("; ") + "." : null;
+  })();
   return {
     subtitle,
     orNote,
+    tierNote,
     columns: [
       { key: "plan", label: "Plan", width: "21%" },
       { key: "fee", label: "Fee/mo", width: "10%", numeric: true },

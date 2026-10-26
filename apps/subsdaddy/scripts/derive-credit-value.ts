@@ -9,6 +9,7 @@ import { join, resolve } from "node:path";
 import { catalogFileSchema } from "../src/data/catalog";
 import { creditUsageValue, formatSmall, type CreditRow, type ListPrice } from "../src/data/credits";
 import { modelsFileSchema, quotaFileSchema, usageFileSchema } from "../src/data/schema";
+import { averagePrice, tierBasis } from "../src/data/peak-offpeak";
 
 const APP = resolve(import.meta.dir, "..");
 const dataDir = join(APP, "data");
@@ -24,7 +25,14 @@ const row = catalog.rows.find((r) => r.plan_id === ROW);
 if (!row) throw new Error("catalog row missing: " + ROW);
 
 const prices: Record<string, ListPrice | undefined> = {};
+const tierNotes: string[] = [];
 for (const m of models.usage_models) {
+  if (m.peak_offpeak) {
+    const tiers = { peak: m.peak_offpeak.peak_usd_per_m, offpeak: m.peak_offpeak.offpeak_usd_per_m };
+    prices[m.upstream_model] = averagePrice(tiers);
+    tierNotes.push(tierBasis(m.upstream_model, tiers));
+    continue;
+  }
   prices[m.upstream_model] = m.in_per_m !== null && m.out_per_m !== null && m.cache_per_m !== null
     ? { in_per_m: m.in_per_m, out_per_m: m.out_per_m, cache_per_m: m.cache_per_m }
     : null;
@@ -57,13 +65,14 @@ if (!obs || !("used_pct" in obs)) {
     coverage_start_ms: Date.parse(usage.coverage_start),
     rows,
     prices,
+    price_basis: "official QwenCloud prices, hour-weighted average of peak (14h) and off-peak (10h)",
   });
 }
 
 const pool = obs && "used_pct" in obs ? obs.credits_total ?? null : null;
 const keepSources = row.sources.filter((s) => s.kind !== "unverified");
 if (result.ok && pool !== null) {
-  row.credits_to_usd = { usd_per_credit: result.usd_per_credit, basis: result.basis, meaning: "usage_value" };
+  row.credits_to_usd = { usd_per_credit: result.usd_per_credit, basis: result.basis + " Tiers: " + tierNotes.join("; ") + ".", meaning: "usage_value" };
   row.allowance = [{ ref: "*", usd: pool * result.usd_per_credit, basis: "credit pool " + pool.toLocaleString("en-US") + " credits × measured usage value $" + formatSmall(result.usd_per_credit) + " per credit (see credits_to_usd basis)" }];
   row.allowance_reason = null;
   row.sources = keepSources;

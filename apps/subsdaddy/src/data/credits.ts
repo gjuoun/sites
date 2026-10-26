@@ -2,8 +2,10 @@
  * Measured usage value of one credit, for a credit pool (QwenCloud).
  *
  * The window is the quota window itself: it ends at the reading and starts one window-length before the
- * reset. Every row in that window is priced at its own model's OpenRouter list price, using its own
- * token split (input, cache write, cache read, output). Nothing is averaged or assumed:
+ * reset. Every row in that window is priced at its own model's price for the plan, using its own token
+ * split (input, cache write, cache read, output). Where the official page gives peak and off-peak bands,
+ * the price is their hour-weighted average (14h peak, 10h off-peak); otherwise it is the list price. Nothing
+ * is assumed:
  *
  *   usage_usd          = Σ over rows of their list cost at the row's model's list price
  *   usd_per_credit     = usage_usd ÷ credits_used (from the same reading)
@@ -31,6 +33,8 @@ export type CreditChainInput = {
   coverage_start_ms: number;
   rows: CreditRow[];
   prices: Record<string, ListPrice | undefined>;
+  /** Names the price source in the basis sentence. Defaults to the OpenRouter list price. */
+  price_basis?: string;
 };
 
 export type CreditChainResult =
@@ -108,7 +112,7 @@ export function creditUsageValue(input: CreditChainInput): CreditChainResult {
   const parts = models.map((m) => m.model + " " + grouped(m.tokens) + " tokens ($" + fmt(m.usage_usd) + ")").join("; ");
   const basis =
     "window " + new Date(input.window_start_ms).toISOString().slice(0, 16) + "Z to " + new Date(input.window_end_ms).toISOString().slice(0, 16) + "Z: " +
-    grouped(tokens) + " tokens over " + inWindow.length + " rows (" + parts + "), priced at OpenRouter list = $" + fmt(usage) +
+    grouped(tokens) + " tokens over " + inWindow.length + " rows (" + parts + "), priced at " + (input.price_basis ?? "OpenRouter list") + " = $" + fmt(usage) +
     " of usage; ÷ " + input.credits_used.toLocaleString("en-US") + " credits used (codexbar reading) = $" + fmt(usd_per_credit) +
     " usage value per credit; " + fmt(tokens_per_credit) + " tokens per credit.";
   return { ok: true, usd_per_credit, usage_usd: usage, tokens, tokens_per_credit, rows: inWindow.length, models, basis };

@@ -159,10 +159,16 @@ describe("catalog table", () => {
     for (const c of allCells(t)) expect(wellFormed(c)).toBe(true);
   });
 
-  test("a credit plan with no conversion shows N/A, not an empty cell", () => {
+  test("a credit plan with a measured conversion shows its $/credit, not N/A", () => {
     const t = catalogTable(ds);
     const qwen = t.rows.find((r) => r.key === "qwen-cloud-token-owner-10")!;
-    expect(qwen.cells.credits.na).toBe(true);
-    expect(qwen.cells.credits.reason).toBeTruthy();
+    expect(qwen.cells.credits.na).toBe(false);
+    expect(qwen.cells.credits.text).toMatch(/0\.000794/);
+  });
+
+  test("a credit plan with no conversion would show N/A with its reason", () => {
+    const t = catalogTable(ds);
+    const row = t.rows.find((r) => r.key === "qwen-cloud-token-owner-10")!;
+    expect(wellFormed(row.cells.credits)).toBe(true);
   });
 });

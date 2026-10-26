@@ -53,6 +53,7 @@ function IndexPage() {
                 <p className={NOTE}>{s.table.subtitle}</p>
                 <UnifiedTable testId={"model-" + s.ref} columns={s.table.columns} rows={s.table.rows} />
                 <p className={SMALL_NOTE}>{s.table.orNote}</p>
+                {s.table.tierNote && <p className={SMALL_NOTE} data-tier-note="yes">{s.table.tierNote}</p>}
               </>
             )}
           </div>

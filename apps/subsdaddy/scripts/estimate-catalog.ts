@@ -10,6 +10,7 @@ import { join, resolve } from "node:path";
 import { catalogFileSchema, type CatalogRow } from "../src/data/catalog";
 import { REF_IDS, SHAPES, estimateOne, pooledMix, type RefId, type Shape } from "../src/data/estimate";
 import { modelsFileSchema, usageFileSchema } from "../src/data/schema";
+import { averagePrice, tierBasis } from "../src/data/peak-offpeak";
 
 const APP = resolve(import.meta.dir, "..");
 const dataDir = join(APP, "data");
@@ -26,6 +27,19 @@ for (const id of REF_IDS) if (!price.has(id)) throw new Error("missing reference
 
 const file = catalogFileSchema.parse(JSON.parse(readFileSync(join(dataDir, "catalog.json"), "utf8")));
 
+/** The price a plan pays for a reference model: its official peak/off-peak average where its lane has one, else the list price. */
+function priceFor(row: CatalogRow, ref: RefId): { price: { in_per_m: number; out_per_m: number; cache_per_m: number }; note: string | null } {
+  if (row.measured_lane) {
+    const laneModels = models.models.filter((m) => m.lane === row.measured_lane).map((m) => m.upstream_model);
+    const tier = models.usage_models.find((u) => laneModels.includes(u.upstream_model) && u.peak_offpeak?.ref === ref && u.peak_offpeak.provider === row.provider);
+    if (tier?.peak_offpeak) {
+      const tiers = { peak: tier.peak_offpeak.peak_usd_per_m, offpeak: tier.peak_offpeak.offpeak_usd_per_m };
+      return { price: averagePrice(tiers), note: tierBasis(tier.upstream_model, tiers) };
+    }
+  }
+  return { price: price.get(ref)!, note: null };
+}
+
 function estimateRow(row: CatalogRow) {
   const rowMix = row.measured_lane ? (laneMix.get(row.measured_lane) ?? mix) : mix;
   const fee = row.price_month_usd;
@@ -39,15 +53,18 @@ function estimateRow(row: CatalogRow) {
   }
   const values = [] as Array<{ ref: RefId; shape: Shape; usd_per_b: number | null; reason: string | null; fee_over_allowance: number | null; blended_usd_per_b: number; measured_at: string; source: string }>;
   const ratios: string[] = [];
+  const tierNotes = new Set<string>();
   for (const ref of REF_IDS) {
     if (!row.offered_models.includes(ref)) continue;
     const entry = row.allowance.find((a) => a.ref === ref) ?? row.allowance.find((a) => a.ref === "*") ?? null;
+    const pr = priceFor(row, ref);
+    if (pr.note) tierNotes.add(pr.note);
     for (const shape of SHAPES) {
       const e = estimateOne({
         fee_usd: fee,
         allowance_usd: entry ? entry.usd : null,
         allowance_reason: entry ? null : "no published allowance for this model in this plan",
-        price: price.get(ref)!,
+        price: pr.price,
         mix: rowMix,
         shape,
       });
@@ -63,7 +80,7 @@ function estimateRow(row: CatalogRow) {
   const high = Math.max(...agent);
   const basis =
     "fee $" + fee + "/mo ÷ published usage-dollar allowance (" + ratios.join(", ") + ") × blended list cost per billion tokens of each reference model; " +
-    (row.measured_lane ? "this plan's own measured" : "pooled measured") + " mix: output share " + (rowMix.output_share * 100).toFixed(2) + "%, agent cache share " + (rowMix.agent_cache_share * 100).toFixed(2) + "% (interactive 0%, cache_heavy 94%)";
+    (row.measured_lane ? "this plan's own measured" : "pooled measured") + " mix: output share " + (rowMix.output_share * 100).toFixed(2) + "%, agent cache share " + (rowMix.agent_cache_share * 100).toFixed(2) + "% (interactive 0%, cache_heavy 94%)" + (tierNotes.size > 0 ? "; prices: " + [...tierNotes].join("; ") : "") + ".";
   return { status: "estimated" as const, reason: null, basis, values, range_agent: [low, high] as [number, number] };
 }
 

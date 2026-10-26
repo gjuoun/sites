@@ -209,6 +209,21 @@ export const modelsFileSchema = z.object({
         out_per_m: z.number().nonnegative().nullable(),
         cache_per_m: z.number().nonnegative().nullable(),
         unmapped_reason: z.string().min(1).nullable(),
+        peak_offpeak: z
+          .object({
+            provider: z.string().min(1),
+            ref: z.string().min(1).nullable(),
+            peak_usd_per_m: z.object({ in_per_m: z.number().nonnegative(), out_per_m: z.number().nonnegative(), cache_per_m: z.number().nonnegative() }),
+            offpeak_usd_per_m: z.object({ in_per_m: z.number().nonnegative(), out_per_m: z.number().nonnegative(), cache_per_m: z.number().nonnegative() }),
+            peak_hours: z.literal(14),
+            offpeak_hours: z.literal(10),
+            timezone_note: z.string().min(1),
+            source: z.string().min(1),
+            measured_at: z.string().min(1),
+            note: z.string().min(1),
+          })
+          .nullable()
+          .default(null),
       }),
     )
     .default([]),

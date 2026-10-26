@@ -94,13 +94,17 @@ describe("estimate formula, recomputed from the stored data", () => {
       const prompt = t.input + t.cache_creation + t.cache_read;
       return { o: t.output / total, c: t.cache_read / prompt };
     };
+    const modelsAll = models.usage_models as Array<{ peak_offpeak: null | { provider: string; ref: string | null; peak_usd_per_m: Record<string, number>; offpeak_usd_per_m: Record<string, number> } }>;
     for (const row of catalog.rows) {
       if (row.estimate?.status !== "estimated") continue;
       const lane = row.measured_lane ? usage.lanes.find((l: { lane: string }) => l.lane === row.measured_lane) : null;
       const { o, c } = lane ? mixOf(lane.tokens) : mixOf(usage.lanes.reduce((a: { input: number; cache_creation: number; cache_read: number; output: number }, l: { tokens: typeof a }) => ({ input: a.input + l.tokens.input, cache_creation: a.cache_creation + l.tokens.cache_creation, cache_read: a.cache_read + l.tokens.cache_read, output: a.output + l.tokens.output }), { input: 0, cache_creation: 0, cache_read: 0, output: 0 }));
       for (const v of row.estimate.values) {
         if (v.shape !== "agent" || v.usd_per_b === null) continue;
-        const p = price.get(v.ref)!;
+        const tier = (row as { provider?: string }).provider === "qwen-cloud" ? modelsAll.find((u) => u.peak_offpeak?.provider === "qwen-cloud" && u.peak_offpeak?.ref === v.ref)?.peak_offpeak : null;
+        const p = tier
+          ? { in_per_m: (tier.peak_usd_per_m.in_per_m * 14 + tier.offpeak_usd_per_m.in_per_m * 10) / 24, out_per_m: (tier.peak_usd_per_m.out_per_m * 14 + tier.offpeak_usd_per_m.out_per_m * 10) / 24, cache_per_m: (tier.peak_usd_per_m.cache_per_m * 14 + tier.offpeak_usd_per_m.cache_per_m * 10) / 24 }
+          : price.get(v.ref)!;
         const blended = ((1 - o) * (1 - c) * p.in_per_m + (1 - o) * c * p.cache_per_m + o * p.out_per_m) / 1e6 * 1e9;
         expect(Math.abs(v.fee_over_allowance! * blended - v.usd_per_b)).toBeLessThan(1e-6);
       }
