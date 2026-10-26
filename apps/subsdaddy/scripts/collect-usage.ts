@@ -58,6 +58,8 @@ function laneSummary(lane: LaneId, rows: UsageRow[]) {
       p50_ttft_ms: percentile(mt, 50),
       p90_ttft_ms: percentile(mt, 90),
       p50_output_tps: percentile(mp, 50),
+      measured_at: measuredAt,
+      source: SOURCE,
     };
   });
   return {

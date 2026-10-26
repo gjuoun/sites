@@ -53,7 +53,11 @@ export type RawStats = {
 };
 
 /** Every stats block with the provider name and quantization written just before it in the same record. */
-export function extractEndpoints(html: string, model: string): { endpoints: OrEndpoint[]; blocks: number; stale: number } {
+export function extractEndpoints(
+  html: string,
+  model: string,
+  measuredAt = "1970-01-01T00:00:00.000Z",
+): { endpoints: OrEndpoint[]; blocks: number; stale: number } {
   const payload = flightPayload(html);
   const seen = new Set<string>();
   const endpoints: OrEndpoint[] = [];
@@ -86,6 +90,8 @@ export function extractEndpoints(html: string, model: string): { endpoints: OrEn
       request_count: reqs,
       window_minutes: win,
       confidence: reqs < 1000 ? "low_confidence" : "ok",
+      measured_at: measuredAt,
+      source: "openrouter.ai bare model page stats (unofficial)",
     });
     endpoints.push(parsed);
   }

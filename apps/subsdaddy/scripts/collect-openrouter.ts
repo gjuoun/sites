@@ -35,7 +35,7 @@ for (const slug of slugs) {
     writeFileSync(join(APP, "fixtures", "openrouter.deepseek-v4.1-flash.html"), html);
     fixtureSaved = true;
   }
-  const out = extractEndpoints(html, slug);
+  const out = extractEndpoints(html, slug, measuredAt);
   blocks += out.blocks;
   stale += out.stale;
   if (out.blocks === 0) {

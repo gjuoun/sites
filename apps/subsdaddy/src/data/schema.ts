@@ -94,6 +94,7 @@ export const modelUsageSchema = z.object({
   p50_ttft_ms: z.number().nullable(),
   p90_ttft_ms: z.number().nullable(),
   p50_output_tps: z.number().nullable(),
+  ...provenance,
 });
 
 export const laneUsageSchema = z.object({
@@ -129,6 +130,7 @@ export const orEndpointSchema = z.object({
   request_count: z.number().int().min(0),
   window_minutes: z.number().positive(),
   confidence: z.enum(["ok", "low_confidence", "stale"]),
+  ...provenance,
 });
 export type OrEndpoint = z.infer<typeof orEndpointSchema>;
 
@@ -161,6 +163,7 @@ export const laneRecordSchema = z.object({
     coverage: z.number().min(0).max(1).nullable(),
     seeded: z.boolean(),
     reason: z.string().nullable(),
+    ...provenance,
   }),
   usd_per_b: z.number().positive().nullable(),
   measured: z.object({
@@ -168,6 +171,7 @@ export const laneRecordSchema = z.object({
     p90_ttft_ms: z.number().nullable(),
     p50_output_tps: z.number().nullable(),
     n: z.number().int().min(0),
+    ...provenance,
   }),
   presets: z.array(
     z.union([

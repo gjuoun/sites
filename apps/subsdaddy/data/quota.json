@@ -6,28 +6,28 @@
       "window_minutes": 10080,
       "used_pct": 100,
       "resets_at": "2026-10-28T15:50:44Z",
-      "measured_at": "2026-10-26T06:31:39.871Z",
+      "measured_at": "2026-10-26T06:36:51.632Z",
       "source": "codexbar usage --provider commandcode"
     },
     {
       "lane": "go-1",
       "window": "weekly",
       "window_minutes": 10080,
-      "used_pct": 7.4714214000000005,
+      "used_pct": 7.585291666666667,
       "resets_at": "2026-11-01T23:59:59Z",
-      "measured_at": "2026-10-26T06:31:39.871Z",
+      "measured_at": "2026-10-26T06:36:51.632Z",
       "source": "codexbar usage --provider opencodego"
     },
     {
       "lane": "go-2",
       "unavailable": "no codexbar token account for opencodego (--all-accounts: 'No token accounts configured')",
-      "measured_at": "2026-10-26T06:31:39.871Z",
+      "measured_at": "2026-10-26T06:36:51.632Z",
       "source": "codexbar / plan.md"
     },
     {
       "lane": "zai",
       "unavailable": "no codexbar strategy for zai ('No available fetch strategy for zai.')",
-      "measured_at": "2026-10-26T06:31:39.871Z",
+      "measured_at": "2026-10-26T06:36:51.632Z",
       "source": "codexbar / plan.md"
     },
     {
@@ -36,10 +36,10 @@
       "window_minutes": 43200,
       "used_pct": 50.788278357002746,
       "resets_at": "2026-11-24T16:00:00Z",
-      "measured_at": "2026-10-26T06:31:39.871Z",
+      "measured_at": "2026-10-26T06:36:51.632Z",
       "source": "codexbar usage --provider qwen-cloud"
     }
   ],
-  "measured_at": "2026-10-26T06:31:39.871Z",
+  "measured_at": "2026-10-26T06:36:51.632Z",
   "source": "codexbar usage (probe-quota)"
 }

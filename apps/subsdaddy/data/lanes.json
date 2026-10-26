@@ -11,14 +11,18 @@
         "tokens_per_week": null,
         "coverage": null,
         "seeded": false,
-        "reason": "window_saturated+no_prior_observation"
+        "reason": "window_saturated+no_prior_observation",
+        "measured_at": "2026-10-26T06:36:59.043Z",
+        "source": "codexbar usage --provider commandcode"
       },
       "usd_per_b": null,
       "measured": {
         "p50_ttft_ms": 3700,
         "p90_ttft_ms": 8441,
         "p50_output_tps": 201.41116100064144,
-        "n": 11743
+        "n": 11743,
+        "measured_at": "2026-10-26T06:36:59.043Z",
+        "source": "usage_logs(7d) rows=11743"
       },
       "presets": [
         {
@@ -39,7 +43,7 @@
         "low_priced_share",
         "excluded_from_ranking"
       ],
-      "measured_at": "2026-10-26T06:32:46.762Z",
+      "measured_at": "2026-10-26T06:36:59.043Z",
       "source": "usage_logs(7d) + codexbar quota + plans.json"
     },
     {
@@ -50,17 +54,21 @@
       "capacity": {
         "method": "window_snapshot",
         "window": "weekly",
-        "tokens_per_week": 1600771173.2067475,
+        "tokens_per_week": 1579356684.8121638,
         "coverage": 1,
         "seeded": false,
-        "reason": null
+        "reason": null,
+        "measured_at": "2026-10-26T06:36:59.043Z",
+        "source": "codexbar usage --provider opencodego"
       },
-      "usd_per_b": 1.4367500128532165,
+      "usd_per_b": 1.456230898185856,
       "measured": {
         "p50_ttft_ms": 2561,
         "p90_ttft_ms": 12221,
-        "p50_output_tps": 213.68894601542416,
-        "n": 4685
+        "p50_output_tps": 213.7486573576799,
+        "n": 4687,
+        "measured_at": "2026-10-26T06:36:59.043Z",
+        "source": "usage_logs(7d) rows=4687"
       },
       "presets": [
         {
@@ -80,7 +88,7 @@
         "low_fit",
         "capacity_conflict"
       ],
-      "measured_at": "2026-10-26T06:32:46.762Z",
+      "measured_at": "2026-10-26T06:36:59.043Z",
       "source": "usage_logs(7d) + codexbar quota + plans.json"
     },
     {
@@ -94,14 +102,18 @@
         "tokens_per_week": null,
         "coverage": null,
         "seeded": false,
-        "reason": "no codexbar token account for opencodego (--all-accounts: 'No token accounts configured')"
+        "reason": "no codexbar token account for opencodego (--all-accounts: 'No token accounts configured')",
+        "measured_at": "2026-10-26T06:36:59.043Z",
+        "source": "codexbar / plan.md"
       },
       "usd_per_b": null,
       "measured": {
-        "p50_ttft_ms": 2765,
-        "p90_ttft_ms": 16846,
-        "p50_output_tps": 214.00705926063534,
-        "n": 4303
+        "p50_ttft_ms": 2772,
+        "p90_ttft_ms": 16841,
+        "p50_output_tps": 213.855421686747,
+        "n": 4317,
+        "measured_at": "2026-10-26T06:36:59.043Z",
+        "source": "usage_logs(7d) rows=4317"
       },
       "presets": [
         {
@@ -121,7 +133,7 @@
         "low_fit",
         "excluded_from_ranking"
       ],
-      "measured_at": "2026-10-26T06:32:46.762Z",
+      "measured_at": "2026-10-26T06:36:59.043Z",
       "source": "usage_logs(7d) + codexbar quota + plans.json"
     },
     {
@@ -135,14 +147,18 @@
         "tokens_per_week": 5700000000,
         "coverage": null,
         "seeded": true,
-        "reason": "JW-251 published allowance (flash weight), seed"
+        "reason": "JW-251 published allowance (flash weight), seed",
+        "measured_at": "2026-10-26T06:36:59.043Z",
+        "source": "JW-251 published allowance (flash weight), seed"
       },
       "usd_per_b": null,
       "measured": {
-        "p50_ttft_ms": 6857,
-        "p90_ttft_ms": 12674,
-        "p50_output_tps": 102.17917675544794,
-        "n": 597
+        "p50_ttft_ms": 6902,
+        "p90_ttft_ms": 12487,
+        "p50_output_tps": 98.10333551340746,
+        "n": 608,
+        "measured_at": "2026-10-26T06:36:59.043Z",
+        "source": "usage_logs(7d) rows=608"
       },
       "presets": [
         {
@@ -162,7 +178,7 @@
         "seed",
         "excluded_from_ranking"
       ],
-      "measured_at": "2026-10-26T06:32:46.762Z",
+      "measured_at": "2026-10-26T06:36:59.043Z",
       "source": "usage_logs(7d) + codexbar quota + plans.json"
     },
     {
@@ -176,14 +192,18 @@
         "tokens_per_week": 76854256.32852039,
         "coverage": 1,
         "seeded": false,
-        "reason": null
+        "reason": null,
+        "measured_at": "2026-10-26T06:36:59.043Z",
+        "source": "codexbar usage --provider qwen-cloud"
       },
       "usd_per_b": 29.92557749630275,
       "measured": {
         "p50_ttft_ms": 3820,
         "p90_ttft_ms": 9108,
         "p50_output_tps": 142.49578414839797,
-        "n": 2187
+        "n": 2187,
+        "measured_at": "2026-10-26T06:36:59.043Z",
+        "source": "usage_logs(7d) rows=2187"
       },
       "presets": [
         {
@@ -203,10 +223,10 @@
         "low_fit",
         "capacity_conflict"
       ],
-      "measured_at": "2026-10-26T06:32:46.762Z",
+      "measured_at": "2026-10-26T06:36:59.043Z",
       "source": "usage_logs(7d) + codexbar quota + plans.json"
     }
   ],
-  "measured_at": "2026-10-26T06:32:46.762Z",
+  "measured_at": "2026-10-26T06:36:59.043Z",
   "source": "build-dataset"
 }
