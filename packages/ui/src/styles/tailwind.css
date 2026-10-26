@@ -97,10 +97,10 @@
   --color-bf-fg: var(--bf-fg);
   --color-bf-fg-dim: var(--bf-fg-dim);
   --color-bf-border: var(--bf-border);
-  --color-bf-border-muted: var(--bf-border-muted);
-  --color-bf-selection: var(--bf-selection);
-  --color-bf-cursor-line: var(--bf-cursor-line);
-  --color-bf-brace-match: var(--bf-brace-match);
+  --color-bf-border: var(--bf-border);
+  --color-bf-highlight: var(--bf-highlight);
+  --color-bf-highlight: var(--bf-highlight);
+  --color-bf-highlight: var(--bf-highlight);
   --color-bf-blue: var(--bf-blue);
   --color-bf-light-blue: var(--bf-light-blue);
   --color-bf-pale-blue: var(--bf-pale-blue);
@@ -112,7 +112,7 @@
   --color-bf-burnt-orange: var(--bf-burnt-orange);
   --color-bf-purple: var(--bf-purple);
   --color-bf-comment: var(--bf-comment);
-  --color-bf-caret: var(--bf-caret);
+  --color-bf-paper: var(--bf-paper);
   --color-bf-fg-muted: var(--fg-muted);
   --color-bf-dim: var(--dim);
 
@@ -134,17 +134,17 @@
   --bf-shadow: color-mix(in srgb, var(--bf-bg) 70%, transparent);
   --background: var(--bf-bg);
   --foreground: var(--bf-fg);
-  --card: var(--bf-cursor-line);
+  --card: var(--bf-highlight);
   --card-foreground: var(--bf-fg);
-  --popover: var(--bf-cursor-line);
+  --popover: var(--bf-highlight);
   --popover-foreground: var(--bf-fg);
   --primary: var(--bf-blue);
   --primary-foreground: var(--ink-on-bright);
-  --secondary: var(--bf-border-muted);
+  --secondary: var(--bf-border);
   --secondary-foreground: var(--bf-fg);
-  --muted: var(--bf-border-muted);
+  --muted: var(--bf-border);
   --muted-foreground: var(--bf-fg-dim);
-  --accent: var(--bf-border-muted);
+  --accent: var(--bf-border);
   --accent-foreground: var(--bf-fg);
   --destructive: var(--bf-burnt-orange);
   --border: var(--bf-border);
@@ -156,11 +156,11 @@
   --chart-4: var(--bf-burnt-orange);
   --chart-5: var(--bf-purple);
   --radius: 0.625rem;
-  --sidebar: var(--bf-cursor-line);
+  --sidebar: var(--bf-highlight);
   --sidebar-foreground: var(--bf-fg);
   --sidebar-primary: var(--bf-blue);
   --sidebar-primary-foreground: var(--ink-on-bright);
-  --sidebar-accent: var(--bf-border-muted);
+  --sidebar-accent: var(--bf-border);
   --sidebar-accent-foreground: var(--bf-fg);
   --sidebar-border: var(--bf-border);
   --sidebar-ring: var(--bf-blue);
@@ -179,7 +179,7 @@
 @utility bf-grad {
   background: linear-gradient(
     100deg,
-    var(--bf-caret) 6%,
+    var(--bf-fg) 6%,
     var(--bf-pale-blue) 30%,
     var(--bf-blue) 55%,
     var(--bf-lime) 96%
@@ -411,7 +411,7 @@
   }
 
   pre {
-    background: color-mix(in srgb, var(--bf-border-muted) 72%, transparent);
+    background: color-mix(in srgb, var(--bf-border) 72%, transparent);
     border: 1px solid var(--bf-border);
     border-radius: 10px;
     padding: 1rem 1.1rem;

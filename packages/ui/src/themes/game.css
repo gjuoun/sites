@@ -47,7 +47,7 @@
   --theme-chart-5: #ae81ff;
   --theme-primary-fill: #00b0ff;
   --theme-primary-ink: #00b0ff;
-  --theme-primary-shadow: 0 8px 26px color-mix(in srgb, var(--bf-blue) 30%, transparent), inset 0 1px 0 color-mix(in srgb, var(--bf-caret) 50%, transparent);
+  --theme-primary-shadow: 0 8px 26px color-mix(in srgb, var(--bf-blue) 30%, transparent), inset 0 1px 0 color-mix(in srgb, var(--bf-paper) 50%, transparent);
   --theme-overlay: #f8f8f0;
   --theme-solid: #c7c9c1;
   --theme-on-solid: #2f332f;
@@ -114,7 +114,7 @@
   --theme-chart-5: #ae81ff;
   --theme-primary-fill: #00b0ff;
   --theme-primary-ink: #00b0ff;
-  --theme-primary-shadow: 0 8px 26px color-mix(in srgb, var(--bf-blue) 30%, transparent), inset 0 1px 0 color-mix(in srgb, var(--bf-caret) 50%, transparent);
+  --theme-primary-shadow: 0 8px 26px color-mix(in srgb, var(--bf-blue) 30%, transparent), inset 0 1px 0 color-mix(in srgb, var(--bf-paper) 50%, transparent);
   --theme-overlay: #535752;
   --theme-solid: #4b4e49;
   --theme-on-solid: #e8e9e1;
