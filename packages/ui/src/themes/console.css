@@ -9,9 +9,9 @@
   --theme-primary: #00b0ff;
   --theme-on-primary: #252925;
   --theme-primary-edge: #60c1fd;
-  --theme-frame: #c7c9c1;
+  --theme-frame: #edede5;
   --theme-on-frame: #2f332f;
-  --theme-gray-100: #d9dad2;
+  --theme-gray-100: #edede5;
   --theme-gray-200: #d9dad2;
   --theme-gray-300: #d9dad2;
   --theme-gray-400: #c7c9c1;
@@ -25,9 +25,9 @@
   --theme-radius: 0.125rem;
   --theme-font-sans: "Recursive", system-ui, -apple-system, "Segoe UI", sans-serif;
   --theme-font-mono: "Recursive", ui-monospace, "SF Mono", Menlo, monospace;
-  --theme-surface: #c7c9c1;
-  --theme-subtle: #d9dad2;
-  --theme-secondary: #d9dad2;
+  --theme-surface: #edede5;
+  --theme-subtle: #edede5;
+  --theme-secondary: #edede5;
   --theme-on-secondary: #2f332f;
   --theme-muted-ink: #70736e;
   --theme-border: #d9dad2;
@@ -50,7 +50,7 @@
   --theme-primary-ink: #00b0ff;
   --theme-primary-shadow: 0 8px 26px color-mix(in srgb, var(--bf-blue) 30%, transparent), inset 0 1px 0 color-mix(in srgb, var(--bf-paper) 50%, transparent);
   --theme-overlay: #f8f8f0;
-  --theme-solid: #c7c9c1;
+  --theme-solid: #edede5;
   --theme-on-solid: #2f332f;
   --theme-shadow-card: 0 1px 3px color-mix(in srgb, var(--theme-canvas) 22%, transparent);
   --theme-shadow-modal: 0 20px 60px color-mix(in srgb, var(--theme-canvas) 45%, transparent);
@@ -77,9 +77,9 @@
   --theme-primary: #00b0ff;
   --theme-on-primary: #252925;
   --theme-primary-edge: #2490ca;
-  --theme-frame: #4b4e49;
+  --theme-frame: #2d312d;
   --theme-on-frame: #e8e9e1;
-  --theme-gray-100: #3c403c;
+  --theme-gray-100: #2d312d;
   --theme-gray-200: #3c403c;
   --theme-gray-300: #3c403c;
   --theme-gray-400: #4b4e49;
@@ -93,9 +93,9 @@
   --theme-radius: 0.125rem;
   --theme-font-sans: "Recursive", system-ui, -apple-system, "Segoe UI", sans-serif;
   --theme-font-mono: "Recursive", ui-monospace, "SF Mono", Menlo, monospace;
-  --theme-surface: #4b4e49;
-  --theme-subtle: #3c403c;
-  --theme-secondary: #3c403c;
+  --theme-surface: #2d312d;
+  --theme-subtle: #2d312d;
+  --theme-secondary: #2d312d;
   --theme-on-secondary: #e8e9e1;
   --theme-muted-ink: #8c8f89;
   --theme-border: #3c403c;
@@ -118,7 +118,7 @@
   --theme-primary-ink: #00b0ff;
   --theme-primary-shadow: 0 8px 26px color-mix(in srgb, var(--bf-blue) 30%, transparent), inset 0 1px 0 color-mix(in srgb, var(--bf-paper) 50%, transparent);
   --theme-overlay: #535752;
-  --theme-solid: #4b4e49;
+  --theme-solid: #2d312d;
   --theme-on-solid: #e8e9e1;
   --theme-shadow-card: 0 1px 3px color-mix(in srgb, var(--theme-canvas) 22%, transparent);
   --theme-shadow-modal: 0 20px 60px color-mix(in srgb, var(--theme-canvas) 45%, transparent);

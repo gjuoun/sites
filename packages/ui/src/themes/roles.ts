@@ -83,9 +83,9 @@ export const COLOURS: ThemeRoles = {
 	"primary-ink": { color: "blue" },
 	"on-primary": { color: "bg", palette: "dark" },
 	"primary-edge": { mix: ["blue", 78, "bg"] },
-	frame: { color: "highlight" },
+	frame: { color: "panel" },
 	"on-frame": { color: "fg" },
-	"gray-100": { color: "border" },
+	"gray-100": { color: "panel" },
 	"gray-200": { color: "border" },
 	"gray-300": { color: "border" },
 	"gray-400": { color: "highlight" },
@@ -96,9 +96,9 @@ export const COLOURS: ThemeRoles = {
 	danger: { color: "burntOrange" },
 	info: { color: "cyan" },
 	highlight: { color: "purple" },
-	surface: { color: "highlight" },
-	subtle: { color: "border" },
-	secondary: { color: "border" },
+	surface: { color: "panel" },
+	subtle: { color: "panel" },
+	secondary: { color: "panel" },
 	"on-secondary": { color: "fg" },
 	// Native muted grey. It is 2.79:1 on the dark canvas — the palette's own long-standing choice, kept
 	// identical in all three themes and recorded as an exemption in themes.test.ts.
@@ -120,7 +120,7 @@ export const COLOURS: ThemeRoles = {
 	"chart-4": { color: "burntOrange" },
 	"chart-5": { color: "purple" },
 	overlay: { mix: ["bg", 75, "paper"] },
-	solid: { color: "highlight" },
+	solid: { color: "panel" },
 	"on-solid": { color: "fg" },
 };
 
