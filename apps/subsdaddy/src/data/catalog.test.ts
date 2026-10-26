@@ -101,7 +101,7 @@ describe("catalog file", () => {
 });
 
 describe("catalog display guard", () => {
-  test("an estimated row lists all four reference models, each with its value or its reason", () => {
+  test("an estimated row lists every reference model, each with its value or its reason", () => {
     const T2 = "2026-10-26T17:30:00Z";
     const values = REF_IDS.flatMap((ref) =>
       (["interactive", "agent", "cache_heavy"] as const).map((shape) => ({

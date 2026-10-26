@@ -68,8 +68,16 @@ describe("per-model matrix", () => {
     expect(e.reason).toBe("no published allowance for this model in this plan");
   });
 
-  test("the reference set is exactly the four models the page names", () => {
-    expect([...REF_IDS]).toEqual(["deepseek-v4.1-flash", "gemini-3.8-flash", "claude-haiku-5.5", "gpt-6-luna"]);
+  test("the reference set is exactly the five models the page names, in display order", () => {
+    expect([...REF_IDS]).toEqual(["deepseek-v4.1-flash", "gemini-3.8-flash", "claude-haiku-5.5", "gpt-6-luna", "glm-5.3-flash"]);
+  });
+
+  test("GLM-5.3-Flash has a cache price three times Haiku's, so it is higher than Haiku on the cache-heavy mix", () => {
+    const glm = { in_per_m: 0.15, out_per_m: 0.5, cache_per_m: 0.03 };
+    const haiku = { in_per_m: 0.1, out_per_m: 0.5, cache_per_m: 0.01 };
+    const heavy = { output_share: 0.0056, cache_share: 0.94 };
+    expect(blendedUsdPerB(glm, heavy)).toBeGreaterThan(blendedUsdPerB(haiku, heavy));
+    expect(glm.cache_per_m / haiku.cache_per_m).toBeCloseTo(3, 9);
   });
 });
 

@@ -51,6 +51,13 @@
       "in_per_m": 0.1,
       "out_per_m": 0.5,
       "cache_per_m": 0.01
+    },
+    {
+      "ref": "glm-5.3-flash",
+      "openrouter": "z-ai/glm-5.3-flash",
+      "in_per_m": 0.15,
+      "out_per_m": 0.5,
+      "cache_per_m": 0.03
     }
   ],
   "usage_models": [

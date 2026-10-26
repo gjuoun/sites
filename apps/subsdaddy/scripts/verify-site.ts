@@ -7,6 +7,7 @@
  */
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { formatUsdPerCredit } from "../src/data/catalog";
+import { REF_IDS } from "../src/data/estimate";
 import { join, resolve } from "node:path";
 
 const APP = resolve(import.meta.dir, "..");
@@ -122,7 +123,7 @@ for (const r of catalogJson.rows) {
     estimatedRows++;
     if (!rowHtml.includes('data-estimate="estimated"')) problems.push("estimated row " + r.plan_id + " shows no estimate");
     const modelLines = (rowHtml.match(/data-est-model="/g) ?? []).length;
-    if (modelLines !== 4) problems.push("estimated row " + r.plan_id + " lists " + modelLines + " models, expected 4");
+    if (modelLines !== REF_IDS.length) problems.push("estimated row " + r.plan_id + " lists " + modelLines + " models, expected " + REF_IDS.length);
   } else if (status === "unavailable") {
     if (!rowHtml.includes('data-estimate="unavailable"')) problems.push("unavailable row " + r.plan_id + " not marked unavailable");
   }
