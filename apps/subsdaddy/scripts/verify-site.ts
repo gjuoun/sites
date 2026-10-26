@@ -86,7 +86,9 @@ if (!catalogTable) {
   const section = catalogTable[0];
   catalogRendered = (section.match(/data-catalog-row="/g) ?? []).length;
   if (catalogRendered !== catalogFile.rows.length) problems.push(`catalog rows rendered ${catalogRendered} != ${catalogFile.rows.length}`);
-  if (/\$\/B/.test(section)) problems.push("catalog section shows $/B");
+  // the Est. $/B header carries the unit; value cells must not print "$/B"
+  const valueCells = section.match(/<td[\s\S]*?<\/td>/g) ?? [];
+  if (valueCells.some((c) => /\$\/B/.test(c))) problems.push("catalog value cell shows $/B");
   if (/data-layer="measured"/.test(section)) problems.push("catalog section carries the measured layer");
   if (/\$0(?![.\d])/.test(section)) problems.push("catalog section renders $0 for an unverified or absent price");
   if (/NaN/.test(section)) problems.push("catalog section renders NaN");
@@ -108,7 +110,22 @@ if (!catalogTable) {
   }
 }
 
-const summary = `pages=${pages.length} lanes=${seen.size} ranked=${ranked} excluded=${excluded} catalog=${catalogRendered} derived=${derivedRows} low_confidence=${lowRows} mixed_layers=${mixed} zeroed=${zeroed}`;
+// estimates: never on the ranked table; each catalog row's estimate state matches its data
+const rankedHtml = (index.match(/<table[^>]*data-testid="ranking"[\s\S]*?<\/table>/) ?? [""])[0];
+if (/data-estimate=|data-badge="estimated"|>estimated</.test(rankedHtml)) problems.push("estimate leaked into the ranked table");
+const catalogJson = JSON.parse(readFileSync(join(APP, "data", "catalog.json"), "utf8")) as { rows: Array<{ plan_id: string; estimate: { status: string } | null }> };
+let estimatedRows = 0;
+for (const r of catalogJson.rows) {
+  const rowHtml = (index.match(new RegExp('<tr[^>]*data-catalog-row="' + r.plan_id + '"[\\s\\S]*?</tr>')) ?? [""])[0];
+  const status = r.estimate?.status ?? "none";
+  if (status === "estimated") {
+    estimatedRows++;
+    if (!rowHtml.includes('data-estimate="estimated"')) problems.push("estimated row " + r.plan_id + " shows no estimate");
+  } else if (status === "unavailable") {
+    if (!rowHtml.includes('data-estimate="unavailable"')) problems.push("unavailable row " + r.plan_id + " not marked unavailable");
+  }
+}
+const summary = `pages=${pages.length} lanes=${seen.size} ranked=${ranked} excluded=${excluded} catalog=${catalogRendered} derived=${derivedRows} estimated=${estimatedRows} low_confidence=${lowRows} mixed_layers=${mixed} zeroed=${zeroed}`;
 if (problems.length) {
   for (const p of problems) console.error("FAIL " + p);
   console.log(summary);

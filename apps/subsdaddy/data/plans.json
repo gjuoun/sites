@@ -10,11 +10,11 @@
     },
     {
       "plan_id": "opencode-go",
-      "label": "OpenCode Go - Max",
+      "label": "OpenCode Go",
       "price_month_usd": 10,
       "badge": "plan_spec",
       "measured_at": "2026-10-26T06:06:22Z",
-      "source": "published plan price: $10/mo (Max tier); two subscriptions merged"
+      "source": "published plan price: Go $10/mo (official docs)"
     },
     {
       "plan_id": "zai-glm-max",
@@ -22,15 +22,15 @@
       "price_month_usd": 56,
       "badge": "plan_spec",
       "measured_at": "2026-10-26T06:06:22Z",
-      "source": "published plan price: $672/yr legacy v2 Max plan"
+      "source": "owner-confirmed plan fee $56/mo ($672/yr), Legacy v2 structure"
     },
     {
       "plan_id": "qwen-cloud-token",
-      "label": "QwenCloud - Essential",
+      "label": "QwenCloud - Token Plan Individual",
       "price_month_usd": 10,
       "badge": "plan_spec",
       "measured_at": "2026-10-26T06:06:22Z",
-      "source": "published plan price: $10/mo (Essential tier)"
+      "source": "owner-confirmed plan fee $10/mo (Token Plan Individual); console reading 14,041.65 / 25,500 credits"
     }
   ],
   "measured_at": "2026-10-26T06:06:22Z",

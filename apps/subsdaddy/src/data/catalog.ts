@@ -24,11 +24,55 @@ const windowReadingSchema = z.strictObject({
   source: z.string().min(1),
 });
 
+const REF_LITERALS = ["deepseek-v4-flash", "claude-haiku-5.5", "gpt-6-luna"] as const;
+
+/** A published usage-dollar allowance: "*" applies to every reference model, otherwise one reference model. */
+export const allowanceEntrySchema = z.strictObject({
+  ref: z.enum([...REF_LITERALS, "*"]),
+  usd: z.number().positive(),
+  basis: z.string().min(1),
+});
+
+const estimateValueSchema = z.strictObject({
+  ref: z.enum(REF_LITERALS),
+  shape: z.enum(["interactive", "agent", "cache_heavy"]),
+  usd_per_b: z.number().positive().nullable(),
+  reason: z.string().min(1).nullable(),
+  fee_over_allowance: z.number().positive().nullable(),
+  blended_usd_per_b: z.number().positive(),
+  measured_at: z.iso.datetime(),
+  source: z.string().min(1),
+});
+
+/** A catalog estimate. Status "unavailable" carries a reason and no values; "estimated" carries at least one value. */
+export const estimateSchema = z
+  .strictObject({
+    status: z.enum(["estimated", "unavailable"]),
+    reason: z.string().min(1).nullable(),
+    basis: z.string().min(1).nullable(),
+    values: z.array(estimateValueSchema),
+    range_agent: z.tuple([z.number().positive(), z.number().positive()]).nullable(),
+    measured_at: z.iso.datetime(),
+    source: z.string().min(1),
+  })
+  .superRefine((e, ctx) => {
+    const add = (message: string) => ctx.addIssue({ code: "custom", message, path: [] });
+    if (e.status === "unavailable") {
+      if (!e.reason) add("an unavailable estimate needs a reason");
+      if (e.values.length > 0 || e.range_agent !== null) add("an unavailable estimate carries no values");
+    } else {
+      if (!e.basis) add("an estimated value needs its basis");
+      if (!e.values.some((v) => v.usd_per_b !== null)) add("an estimated row needs at least one value");
+      if (e.range_agent === null) add("an estimated row needs its agent range");
+    }
+  });
+export type Estimate = z.infer<typeof estimateSchema>;
+
 export const catalogRowSchema = z
   .strictObject({
     plan_id: z.string().regex(/^[a-z0-9-]+$/),
     product: z.string().min(1),
-    tier: z.string().min(1),
+    tier: z.string(),
     label: z.string().min(1),
     status: z.enum(["catalog", "excluded"]),
     provider: z.string().min(1).nullable(),
@@ -43,6 +87,8 @@ export const catalogRowSchema = z
     heat_samples: z.number().int().nonnegative().nullable(),
     exclusion_reason: z.string().min(1).nullable(),
     price_note: z.string().min(1).nullable(),
+    allowance: z.array(allowanceEntrySchema).default([]),
+    estimate: estimateSchema.nullable().optional(),
     window_readings: z.array(windowReadingSchema).optional(),
     reading_error: z.string().min(1).nullable().optional(),
     measured_at: z.iso.datetime(),
@@ -50,7 +96,9 @@ export const catalogRowSchema = z
   })
   .superRefine((r, ctx) => {
     const add = (message: string) => ctx.addIssue({ code: "custom", message, path: [] });
-    if (r.label !== `${r.product} - ${r.tier}`) add(`label must be "Product - Tier" (got "${r.label}")`);
+    // a product whose name is the product itself has an empty tier and a label equal to the product
+    const expectedLabel = r.tier === "" ? r.product : `${r.product} - ${r.tier}`;
+    if (r.label !== expectedLabel) add(`label must be "Product - Tier", or the product alone when tier is empty (got "${r.label}")`);
     // a USD price must come from a published page, or from the owner's own confirmation (labelled as such)
     const officialKinds = r.sources.some((s) => s.kind === "official_page" || s.kind === "official_post" || s.kind === "owner_confirmed");
     const hasPrice = r.price_month_usd !== null || r.price_native !== null;
@@ -107,7 +155,17 @@ export type CatalogDisplay = {
   source_badge: "official" | "post" | "owner" | "unverified";
   reason: string | null;
   price_note: string | null;
+  estimate_status: "estimated" | "unavailable" | "none";
+  estimate_text: string;
+  estimate_reason: string | null;
+  estimate_basis: string | null;
+  estimate_by_model: string | null;
 };
+
+/** Two significant figures, dollars, no unit: 3.6 -> "$3.6", 19.07 -> "$19", 0.0004 -> "$0.00040". */
+export function formatEstimate(v: number): string {
+  return "$" + Number(v.toPrecision(2)).toString();
+}
 
 /** The only shape the site renders for catalog rows: fee text, allowance text, no measured or per-B fields. */
 export function catalogDisplayRow(r: CatalogRow): CatalogDisplay {
@@ -141,5 +199,19 @@ export function catalogDisplayRow(r: CatalogRow): CatalogDisplay {
     source_badge,
     reason: r.exclusion_reason,
     price_note: r.price_note,
+    ...estimateDisplay(r.estimate ?? null),
   };
+}
+
+function estimateDisplay(e: Estimate | null): Pick<CatalogDisplay, "estimate_status" | "estimate_text" | "estimate_reason" | "estimate_basis" | "estimate_by_model"> {
+  if (!e) return { estimate_status: "none", estimate_text: "—", estimate_reason: null, estimate_basis: null, estimate_by_model: null };
+  if (e.status === "unavailable") return { estimate_status: "unavailable", estimate_text: "—", estimate_reason: e.reason, estimate_basis: null, estimate_by_model: null };
+  const [low, high] = e.range_agent!;
+  const text = low === high ? formatEstimate(low) : formatEstimate(low) + " – " + formatEstimate(high);
+  const NAMES: Record<string, string> = { "deepseek-v4-flash": "DeepSeek V4 Flash", "claude-haiku-5.5": "Claude Haiku 5.5", "gpt-6-luna": "GPT-6 Luna" };
+  const byModel = e.values
+    .filter((v) => v.shape === "agent")
+    .map((v) => NAMES[v.ref] + " " + (v.usd_per_b === null ? "n/a" : formatEstimate(v.usd_per_b)))
+    .join(" · ");
+  return { estimate_status: "estimated", estimate_text: text, estimate_reason: null, estimate_basis: e.basis, estimate_by_model: byModel };
 }

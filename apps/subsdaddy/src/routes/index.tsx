@@ -101,10 +101,9 @@ function IndexPage() {
       <div className="relative left-1/2 w-[min(96vw,88rem)] -translate-x-1/2">
       <Card>
         <CardHeader>
-          <CardTitle>Plans catalog — price and published allowance</CardTitle>
+          <CardTitle>Plans catalog — price, allowance and estimate</CardTitle>
           <CardDescription>
-            Published prices and allowance models only. No local token measurement, so these plans are not ranked and carry no $/B.
-            On narrow screens the table scrolls sideways.
+            Published prices and allowances. No local token measurement, so these plans are not ranked. The Est. $/B column is an estimate for the three reference models (see methodology); it is never ranked. On narrow screens the table scrolls sideways.
           </CardDescription>
         </CardHeader>
         <CardContent className="overflow-x-auto">
@@ -114,8 +113,8 @@ function IndexPage() {
                 <TableHead className="min-w-[12rem]">Plan</TableHead>
                 <TableHead className="min-w-[6rem] text-right">Fee / mo</TableHead>
                 <TableHead className="min-w-[11rem]">Credits → $</TableHead>
-                <TableHead className="min-w-[7rem]">Allowance model</TableHead>
-                <TableHead className="min-w-[16rem]">Allowance detail</TableHead>
+                <TableHead className="min-w-[13rem]">Est. $/B</TableHead>
+                <TableHead className="min-w-[16rem]">Allowance</TableHead>
                 <TableHead className="min-w-[9rem]">CLI</TableHead>
                 <TableHead className="min-w-[8rem]">Badges</TableHead>
               </TableRow>
@@ -139,8 +138,14 @@ function IndexPage() {
                         <div className="text-xs text-muted-foreground" data-credits="unverified">unverified</div>
                       )}
                     </TableCell>
-                    <TableCell className="whitespace-normal">{c.allowance_model}</TableCell>
-                    <TableCell className="whitespace-normal break-words">
+                    <TableCell className="whitespace-normal align-top" data-estimate={c.estimate_status}>
+                      <span className="font-medium" title={c.estimate_basis ?? undefined}>{c.estimate_text}</span>
+                      {c.estimate_status === "estimated" && <Badge variant="outline" className="ml-1" data-badge="estimated">estimated</Badge>}
+                      {c.estimate_by_model && <div className="max-w-[16rem] whitespace-normal break-words text-xs text-muted-foreground">{c.estimate_by_model}</div>}
+                      {c.estimate_reason && <div className="max-w-[16rem] whitespace-normal break-words text-xs text-muted-foreground">{c.estimate_reason}</div>}
+                    </TableCell>
+                    <TableCell className="whitespace-normal break-words align-top">
+                      <div className="font-medium">{c.allowance_model}</div>
                       {c.allowance_detail}
                       {windows && <div className="text-xs text-muted-foreground">{windows}</div>}
                       {c.reason && <div className="text-xs text-muted-foreground">excluded — {c.reason}</div>}

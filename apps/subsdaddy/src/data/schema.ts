@@ -170,6 +170,18 @@ export const modelsFileSchema = z.object({
       openrouter: z.string().regex(/^[^/]+\/[^/]+$/),
     }),
   ),
+  // reference list prices used only for catalog estimates (never for the ranking)
+  reference: z
+    .array(
+      z.object({
+        ref: z.enum(["deepseek-v4-flash", "claude-haiku-5.5", "gpt-6-luna"]),
+        openrouter: z.string().min(1),
+        in_per_m: z.number().nonnegative(),
+        out_per_m: z.number().nonnegative(),
+        cache_per_m: z.number().nonnegative(),
+      }),
+    )
+    .length(3),
   ...provenance,
 });
 

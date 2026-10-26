@@ -21,6 +21,29 @@
       "openrouter": "deepseek/deepseek-v4.1-flash-1017"
     }
   ],
-  "measured_at": "2026-10-26T06:06:22Z",
-  "source": "OpenRouter model ids for each plan's dominant upstream model"
+  "measured_at": "2026-10-26T17:00:00Z",
+  "source": "openrouter.ai/api/v1/models, fetched 2026-10-26 (list price, USD per 1M tokens); lane model mapping as before",
+  "reference": [
+    {
+      "ref": "deepseek-v4-flash",
+      "openrouter": "deepseek/deepseek-v4-flash",
+      "in_per_m": 0.091,
+      "out_per_m": 0.182,
+      "cache_per_m": 0.0182
+    },
+    {
+      "ref": "claude-haiku-5.5",
+      "openrouter": "anthropic/claude-haiku-5.5",
+      "in_per_m": 0.1,
+      "out_per_m": 0.5,
+      "cache_per_m": 0.01
+    },
+    {
+      "ref": "gpt-6-luna",
+      "openrouter": "openai/gpt-6-luna",
+      "in_per_m": 0.1,
+      "out_per_m": 0.5,
+      "cache_per_m": 0.01
+    }
+  ]
 }
