@@ -207,6 +207,17 @@ export function presetsFor(input: {
   return out;
 }
 
+/**
+ * Share of the elapsed part of a quota window that the usage log covers.
+ * The log must start at or before the window start for the coverage to be full.
+ */
+export function elapsedCoverage(input: { coverage_start_ms: number; window_start_ms: number; now_ms: number }): number {
+  const elapsed = input.now_ms - input.window_start_ms;
+  if (!(elapsed > 0)) return 0;
+  const covered = input.now_ms - Math.max(input.coverage_start_ms, input.window_start_ms);
+  return Math.max(0, Math.min(1, covered / elapsed));
+}
+
 /** Share of the quota window that the usage log actually covers. */
 export function windowCoverage(input: { coverage_start_ms: number; now_ms: number; window_ms: number }): number {
   const covered = input.now_ms - input.coverage_start_ms;

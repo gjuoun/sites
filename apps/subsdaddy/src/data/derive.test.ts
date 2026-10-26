@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import {
   WEEKS_PER_MONTH,
+  elapsedCoverage,
   cacheShare,
   capacityFromDelta,
   capacityFromSnapshot,
@@ -72,6 +73,16 @@ describe("capacity", () => {
   test("coverage clamps to the documented range", () => {
     expect(windowCoverage({ coverage_start_ms: 0, now_ms: 0, window_ms: 604_800_000 })).toBe(0);
     expect(windowCoverage({ coverage_start_ms: 0, now_ms: 604_800_000 * 2, window_ms: 604_800_000 })).toBe(1);
+  });
+});
+
+describe("elapsed window coverage", () => {
+  test("a log that predates the window start covers all of its elapsed part", () => {
+    expect(elapsedCoverage({ coverage_start_ms: 0, window_start_ms: 100, now_ms: 200 })).toBe(1);
+  });
+
+  test("a log that starts mid-window covers only the part after its start", () => {
+    expect(elapsedCoverage({ coverage_start_ms: 150, window_start_ms: 100, now_ms: 200 })).toBeCloseTo(0.5, 5);
   });
 });
 

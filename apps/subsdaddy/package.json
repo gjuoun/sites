@@ -8,7 +8,8 @@
     "build": "vite build",
     "typecheck": "tsc --noEmit",
     "test": "bun test src",
-    "collect:usage": "bun run scripts/collect-usage.ts"
+    "collect:usage": "bun run scripts/collect-usage.ts",
+    "probe:quota": "bun run scripts/collect-quota.ts"
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.3.0",

@@ -66,8 +66,8 @@ export const quotaObservationOrGapSchema = z.union([
   quotaObservationSchema,
   z.object({
     lane: laneSchema,
-    window: z.enum(["5h", "weekly", "monthly"]),
-    ...unavailable,
+    window: z.enum(["5h", "weekly", "monthly"]).optional(),
+    ...unavailable.shape,
     ...provenance,
   }),
 ]);
