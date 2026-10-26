@@ -6,16 +6,16 @@
       "window_minutes": 10080,
       "used_pct": 100,
       "resets_at": "2026-10-28T15:50:44Z",
-      "measured_at": "2026-10-26T23:20:46.480Z",
+      "measured_at": "2026-10-26T23:23:40.995Z",
       "source": "codexbar quota reading"
     },
     {
       "lane": "opencode-go",
       "window": "weekly",
       "window_minutes": 10080,
-      "used_pct": 20.38966506666667,
+      "used_pct": 20.4114512,
       "resets_at": "2026-11-01T23:59:59Z",
-      "measured_at": "2026-10-26T23:20:46.480Z",
+      "measured_at": "2026-10-26T23:23:40.995Z",
       "source": "codexbar quota reading"
     },
     {
@@ -25,7 +25,7 @@
       "used_pct": 1,
       "resets_at": "2026-11-02T04:43:38Z",
       "plan_level": "max",
-      "measured_at": "2026-10-26T23:20:46.480Z",
+      "measured_at": "2026-10-26T23:23:40.995Z",
       "source": "codexbar quota reading"
     },
     {
@@ -36,10 +36,10 @@
       "resets_at": "2026-11-24T16:00:00Z",
       "credits_used": 14041.65,
       "credits_total": 25500,
-      "measured_at": "2026-10-26T23:20:46.480Z",
+      "measured_at": "2026-10-26T23:23:40.995Z",
       "source": "codexbar quota reading"
     }
   ],
-  "measured_at": "2026-10-26T23:20:46.480Z",
+  "measured_at": "2026-10-26T23:23:40.995Z",
   "source": "codexbar usage (probe-quota)"
 }
