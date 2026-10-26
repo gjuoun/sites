@@ -14,7 +14,7 @@ const APP = resolve(import.meta.dir, "..");
 const dataDir = join(APP, "data");
 const started = Date.parse(process.env.SUBSDADDY_REFRESH_START ?? "") || 0;
 const READING = ["used_pct", "p50_throughput", "p50_latency_ms", "tokens_per_week", "usd_per_b", "p50_ttft_ms", "p50_output_tps", "usd_per_b_obs"];
-const REFRESHED = new Set(["usage.json", "quota.json", "lanes.json", "benchmark.json"]);
+const REFRESHED = new Set(["usage.json", "quota.json", "lanes.json", "benchmark.json", "catalog.json"]);
 const problems: string[] = [];
 let provenanceMissing = 0;
 let zeroed = 0;
@@ -38,7 +38,9 @@ function walk(node: unknown, file: string, path: string): void {
     }
   }
   for (const [k, v] of Object.entries(o)) {
-    if (v === 0 && READING.includes(k)) {
+    // a 0% that carries a window name, a measured_at and a source is a real reading, not a coerced null
+    const realZeroPct = k === "used_pct" && typeof o.window === "string" && typeof o.measured_at === "string" && typeof o.source === "string";
+    if (v === 0 && READING.includes(k) && !realZeroPct) {
       zeroed++;
       problems.push(`${file}${path}.${k} is 0 (unavailable must be explicit)`);
     }

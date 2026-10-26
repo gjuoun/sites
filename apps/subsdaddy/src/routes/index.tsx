@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { LayerBadge } from "@/components/layer-badge";
-import { dataset, excluded, fmt, orEndpointsFor, orModelFor, ranked } from "@/lib/dataset";
+import { catalogRows, catalogWindowText, dataset, excluded, fmt, orEndpointsFor, orModelFor, ranked } from "@/lib/dataset";
 
 export const Route = createFileRoute("/")({
   component: IndexPage,
@@ -89,6 +89,57 @@ function IndexPage() {
                     </TableCell>
                     <TableCell>
                       <LayerBadge layer="plan" />
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Plans catalog — price and published allowance</CardTitle>
+          <CardDescription>
+            Published prices and allowance models only. No local token measurement, so these plans are not ranked and carry no $/B.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="overflow-x-auto">
+          <Table data-catalog="rows">
+            <TableHeader>
+              <TableRow>
+                <TableHead>Plan</TableHead>
+                <TableHead className="text-right">Fee / mo</TableHead>
+                <TableHead>Allowance model</TableHead>
+                <TableHead>Allowance detail</TableHead>
+                <TableHead>Credits → $</TableHead>
+                <TableHead>CLI</TableHead>
+                <TableHead>Badges</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {catalogRows().map((c) => {
+                const windows = catalogWindowText(c.plan_id);
+                return (
+                  <TableRow key={c.plan_id} data-catalog-row={c.plan_id} data-status={c.status}>
+                    <TableCell>{c.label}</TableCell>
+                    <TableCell className="text-right">
+                      {c.fee}
+                      {c.price_note && <div className="text-xs text-muted-foreground">{c.price_note}</div>}
+                    </TableCell>
+                    <TableCell>{c.allowance_model}</TableCell>
+                    <TableCell>
+                      {c.allowance_detail}
+                      {windows && <div className="text-xs text-muted-foreground">{windows}</div>}
+                      {c.reason && <div className="text-xs text-muted-foreground">excluded — {c.reason}</div>}
+                    </TableCell>
+                    <TableCell>{c.credits_text}</TableCell>
+                    <TableCell>{c.cli_compat}</TableCell>
+                    <TableCell className="space-x-1">
+                      <Badge variant="outline" data-badge="unmeasured">unmeasured</Badge>
+                      <Badge variant="outline" data-source={c.source_badge}>{c.source_badge}</Badge>
+                      {c.status === "excluded" && <Badge variant="secondary" data-status="excluded">excluded</Badge>}
                     </TableCell>
                   </TableRow>
                 );

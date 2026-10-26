@@ -1,0 +1,652 @@
+{
+  "rows": [
+    {
+      "plan_id": "claude-code-max-20x",
+      "product": "Claude Code",
+      "tier": "Max 20x",
+      "label": "Claude Code - Max 20x",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 200,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "window_percent",
+      "allowance_detail": "5h and weekly usage windows; no published token count",
+      "credits_to_usd": null,
+      "cli_compat": "Claude Code (first-party)",
+      "heat_samples": 142,
+      "exclusion_reason": null,
+      "price_note": null,
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://claude.com/pricing",
+          "note": "Max 20x $200/month on pricing page"
+        },
+        {
+          "kind": "official_post",
+          "url": "https://x.com/i/status/2093742321473065266",
+          "note": "ClaudeDevs: weekly limit in Claude Code +25% from 2026-09-14"
+        }
+      ]
+    },
+    {
+      "plan_id": "claude-code-max-5x",
+      "product": "Claude Code",
+      "tier": "Max 5x",
+      "label": "Claude Code - Max 5x",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 100,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "window_percent",
+      "allowance_detail": "5h and weekly usage windows; 5x of Pro per page wording",
+      "credits_to_usd": null,
+      "cli_compat": "Claude Code (first-party)",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": null,
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://claude.com/pricing",
+          "note": "Max 5x $100/month on pricing page"
+        }
+      ]
+    },
+    {
+      "plan_id": "claude-code-pro",
+      "product": "Claude Code",
+      "tier": "Pro",
+      "label": "Claude Code - Pro",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 20,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "window_percent",
+      "allowance_detail": "5h and weekly usage windows; Pro is the base tier",
+      "credits_to_usd": null,
+      "cli_compat": "Claude Code (first-party)",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": null,
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://claude.com/pricing",
+          "note": "Pro $20 on pricing page"
+        }
+      ]
+    },
+    {
+      "plan_id": "codex-plus",
+      "product": "OpenAI Codex",
+      "tier": "Plus",
+      "label": "OpenAI Codex - Plus",
+      "status": "catalog",
+      "provider": "codex",
+      "price_month_usd": null,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "window_percent",
+      "allowance_detail": "5h and weekly windows read by codexbar; reset credits are granted separately (codexbar codexResetCredits)",
+      "credits_to_usd": null,
+      "cli_compat": "Codex CLI (first-party); not re-verified this round",
+      "heat_samples": 91,
+      "exclusion_reason": null,
+      "price_note": "Brief states 20 USD/month; openai.com, chatgpt.com and help pages returned 403 on 2026-10-26, so the price is not confirmed",
+      "window_readings": [
+        {
+          "window": "5h",
+          "used_pct": 0,
+          "resets_at": "2026-10-26T21:35:44Z",
+          "measured_at": "2026-10-26T16:35:42.689Z",
+          "source": "codexbar usage --provider codex"
+        },
+        {
+          "window": "weekly",
+          "used_pct": 0,
+          "resets_at": "2026-11-02T16:35:44Z",
+          "measured_at": "2026-10-26T16:35:42.689Z",
+          "source": "codexbar usage --provider codex"
+        }
+      ],
+      "reading_error": null,
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "unverified",
+          "url": null,
+          "note": "unverified: openai pricing pages returned 403 on 2026-10-26; codexbar reads loginMethod plus but carries no price"
+        }
+      ]
+    },
+    {
+      "plan_id": "cursor-ultra",
+      "product": "Cursor",
+      "tier": "Ultra",
+      "label": "Cursor - Ultra",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 200,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "usd_usage",
+      "allowance_detail": "shared AI usage pool (Cursor and Grok); larger pools on higher tiers, per pricing page",
+      "credits_to_usd": null,
+      "cli_compat": "IDE; CLI not verified",
+      "heat_samples": 58,
+      "exclusion_reason": null,
+      "price_note": null,
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://cursor.com/pricing",
+          "note": "Ultra $200 shown on pricing page"
+        }
+      ]
+    },
+    {
+      "plan_id": "cursor-pro-plus",
+      "product": "Cursor",
+      "tier": "Pro+",
+      "label": "Cursor - Pro+",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": null,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "usd_usage",
+      "allowance_detail": "usage pool; amount not read",
+      "credits_to_usd": null,
+      "cli_compat": "IDE; CLI not verified",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": "One X user says the tier was 60 USD/month; the pricing page read did not map a Pro+ price",
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "x_post",
+          "url": "https://x.com/i/status/2114384333129543757",
+          "note": "one user reports moving from a 60 USD tier to Ultra (2026-10-25)"
+        },
+        {
+          "kind": "unverified",
+          "url": null,
+          "note": "unverified: Pro+ price not mapped on the pricing page read"
+        }
+      ]
+    },
+    {
+      "plan_id": "github-copilot-pro",
+      "product": "GitHub Copilot",
+      "tier": "Pro",
+      "label": "GitHub Copilot - Pro",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 10,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "premium_requests",
+      "allowance_detail": "monthly premium-request allowance; amount not read this round",
+      "credits_to_usd": null,
+      "cli_compat": "VS Code and Copilot CLI; not verified this round",
+      "heat_samples": 17,
+      "exclusion_reason": null,
+      "price_note": null,
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://github.com/features/copilot/plans",
+          "note": "Pro $10 per month on plans page"
+        }
+      ]
+    },
+    {
+      "plan_id": "github-copilot-pro-plus",
+      "product": "GitHub Copilot",
+      "tier": "Pro+",
+      "label": "GitHub Copilot - Pro+",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 39,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "premium_requests",
+      "allowance_detail": "larger premium-request allowance; amount not read this round",
+      "credits_to_usd": null,
+      "cli_compat": "VS Code and Copilot CLI; not verified this round",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": null,
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://github.com/features/copilot/plans",
+          "note": "Pro+ $39 per month on plans page"
+        }
+      ]
+    },
+    {
+      "plan_id": "factory-droid-pro",
+      "product": "Factory Droid",
+      "tier": "Pro",
+      "label": "Factory Droid - Pro",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 20,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "tier_multiple",
+      "allowance_detail": "base tier (1x)",
+      "credits_to_usd": null,
+      "cli_compat": "Droid agent; external CLI not verified",
+      "heat_samples": 29,
+      "exclusion_reason": null,
+      "price_note": null,
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://factory.ai/pricing",
+          "note": "Pro $20 on pricing page"
+        }
+      ]
+    },
+    {
+      "plan_id": "factory-droid-100",
+      "product": "Factory Droid",
+      "tier": "$100 tier (name unverified)",
+      "label": "Factory Droid - $100 tier (name unverified)",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 100,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "tier_multiple",
+      "allowance_detail": "about 5x Pro usage, per pricing page",
+      "credits_to_usd": null,
+      "cli_compat": "Droid agent; external CLI not verified",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": null,
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://factory.ai/pricing",
+          "note": "$100 tier, Everything in Pro plus about 5x usage"
+        }
+      ]
+    },
+    {
+      "plan_id": "factory-droid-max",
+      "product": "Factory Droid",
+      "tier": "Max",
+      "label": "Factory Droid - Max",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 200,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "tier_multiple",
+      "allowance_detail": "about 10x Pro usage, per pricing page",
+      "credits_to_usd": null,
+      "cli_compat": "Droid agent; external CLI not verified",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": null,
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://factory.ai/pricing",
+          "note": "Max $200, about 10x Pro usage"
+        }
+      ]
+    },
+    {
+      "plan_id": "trae-pro",
+      "product": "Trae",
+      "tier": "Pro",
+      "label": "Trae - Pro",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 20,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "usd_usage",
+      "allowance_detail": "20 USD usage per month, per pricing page",
+      "credits_to_usd": null,
+      "cli_compat": "IDE; CLI not verified",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": null,
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://www.trae.ai/pricing",
+          "note": "Pro $20 per month, 20 USD usage"
+        }
+      ]
+    },
+    {
+      "plan_id": "trae-pro-plus",
+      "product": "Trae",
+      "tier": "Pro+",
+      "label": "Trae - Pro+",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 60,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "usd_usage",
+      "allowance_detail": "60 USD usage per month, 3x Pro per pricing page",
+      "credits_to_usd": null,
+      "cli_compat": "IDE; CLI not verified",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": null,
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://www.trae.ai/pricing",
+          "note": "Pro+ $60, 60 USD usage, 3x Pro"
+        }
+      ]
+    },
+    {
+      "plan_id": "trae-ultra",
+      "product": "Trae",
+      "tier": "Ultra",
+      "label": "Trae - Ultra",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 200,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "usd_usage",
+      "allowance_detail": "200 USD usage per month, per pricing page",
+      "credits_to_usd": null,
+      "cli_compat": "IDE; CLI not verified",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": null,
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://www.trae.ai/pricing",
+          "note": "Ultra $200, 200 USD usage"
+        }
+      ]
+    },
+    {
+      "plan_id": "nanogpt-open-source",
+      "product": "NanoGPT",
+      "tier": "Open-source subscription",
+      "label": "NanoGPT - Open-source subscription",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 8,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "unverified",
+      "allowance_detail": "200+ open-source models per launch post; usage limits not read",
+      "credits_to_usd": null,
+      "cli_compat": "API compatibility not verified",
+      "heat_samples": 20,
+      "exclusion_reason": null,
+      "price_note": "Price from the 2025-09-01 launch post; the subscription page returned 404 on 2026-10-26",
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_post",
+          "url": "https://x.com/i/status/1962398659602985454",
+          "note": "launch post: just 8 USD a month"
+        },
+        {
+          "kind": "unverified",
+          "url": null,
+          "note": "unverified: nano-gpt.com subscription page returned 404; limits not read"
+        }
+      ]
+    },
+    {
+      "plan_id": "kimi-k3-1-pro",
+      "product": "Kimi",
+      "tier": "K3.1 Pro subscription",
+      "label": "Kimi - K3.1 Pro subscription",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": null,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "window_percent",
+      "allowance_detail": "5h window plus monthly quota; official one-time reset of 25% on 2026-10-25",
+      "credits_to_usd": null,
+      "cli_compat": "not verified",
+      "heat_samples": 108,
+      "exclusion_reason": null,
+      "price_note": "Kimi pricing pages are JS-rendered and were not readable; no price taken from posts",
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_post",
+          "url": "https://x.com/i/status/2114450610724708492",
+          "note": "Kimi official: apology for K3.1 Pro subscription limits and reset"
+        },
+        {
+          "kind": "unverified",
+          "url": null,
+          "note": "unverified: kimi.com pricing page not readable (JS-rendered) on 2026-10-26"
+        }
+      ]
+    },
+    {
+      "plan_id": "minimax-coding-plan",
+      "product": "MiniMax",
+      "tier": "Coding Plan",
+      "label": "MiniMax - Coding Plan",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": null,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "unverified",
+      "allowance_detail": "not read",
+      "credits_to_usd": null,
+      "cli_compat": "not verified",
+      "heat_samples": 45,
+      "exclusion_reason": null,
+      "price_note": "Docs pricing URL returned 404 and the platform page was not read; mention counts are mostly model posts",
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "unverified",
+          "url": null,
+          "note": "unverified: minimax pricing docs returned 404 on 2026-10-26; no subscription page read"
+        }
+      ]
+    },
+    {
+      "plan_id": "volc-ark-coding-lite",
+      "product": "Volcengine Ark",
+      "tier": "Coding Plan Lite",
+      "label": "Volcengine Ark - Coding Plan Lite",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": null,
+      "price_native": "CNY 9.9 first month (limited-time, official); regular CNY 40 per month (reported on X)",
+      "currency": "CNY",
+      "price_annual_usd": null,
+      "allowance_model": "tier_multiple",
+      "allowance_detail": "Lite and Pro tiers; Pro gives 5x Lite usage (official activity page)",
+      "credits_to_usd": null,
+      "cli_compat": "official page: tools not restricted; specific tools not checked",
+      "heat_samples": 29,
+      "exclusion_reason": null,
+      "price_note": null,
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://www.volcengine.com/activity/codingplan",
+          "note": "limited-time 9.9 CNY start; Pro 5x Lite"
+        },
+        {
+          "kind": "x_post",
+          "url": "https://x.com/i/status/2012519336788009241",
+          "note": "regular Lite CNY 40 reported (2026-01-17)"
+        }
+      ]
+    },
+    {
+      "plan_id": "kilo-teams",
+      "product": "Kilo",
+      "tier": "Teams",
+      "label": "Kilo - Teams",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": null,
+      "price_native": "USD 15 per user per month (Teams)",
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "unverified",
+      "allowance_detail": "Teams per-user pricing; individual pass not read",
+      "credits_to_usd": null,
+      "cli_compat": "not verified",
+      "heat_samples": 8,
+      "exclusion_reason": null,
+      "price_note": null,
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://kilo.ai/pricing",
+          "note": "Teams $15 per user per month"
+        }
+      ]
+    },
+    {
+      "plan_id": "synthetic-subscription",
+      "product": "Synthetic",
+      "tier": "Subscription",
+      "label": "Synthetic - Subscription",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": null,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "unverified",
+      "allowance_detail": "not read",
+      "credits_to_usd": null,
+      "cli_compat": "not verified",
+      "heat_samples": 1,
+      "exclusion_reason": null,
+      "price_note": "Pricing page read without dollar amounts; one post mentions a 20 USD plan for another model (not confirmed as this product)",
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "unverified",
+          "url": null,
+          "note": "unverified: synthetic.new pricing page has no readable dollar amounts (JS-rendered)"
+        },
+        {
+          "kind": "x_post",
+          "url": "https://x.com/i/status/2017627299844178268",
+          "note": "user mentions a 20 USD plan; product not confirmed"
+        }
+      ]
+    },
+    {
+      "plan_id": "deepseek-api",
+      "product": "DeepSeek",
+      "tier": "API pay-as-you-go",
+      "label": "DeepSeek - API pay-as-you-go",
+      "status": "excluded",
+      "provider": null,
+      "price_month_usd": null,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "unverified",
+      "allowance_detail": "per-token billing; no allowance",
+      "credits_to_usd": null,
+      "cli_compat": "API",
+      "heat_samples": 67,
+      "exclusion_reason": "pay-as-you-go API, not a flat-rate subscription (project rule)",
+      "price_note": null,
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "unverified",
+          "url": null,
+          "note": "unverified: not fetched this round; excluded by rule regardless of price"
+        }
+      ]
+    },
+    {
+      "plan_id": "chutes-monthly",
+      "product": "Chutes",
+      "tier": "Monthly plan (no longer sold)",
+      "label": "Chutes - Monthly plan (no longer sold)",
+      "status": "excluded",
+      "provider": null,
+      "price_month_usd": null,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "unverified",
+      "allowance_detail": "monthly plans no longer sold; usage is top-up pay-as-you-go",
+      "credits_to_usd": null,
+      "cli_compat": "API",
+      "heat_samples": 4,
+      "exclusion_reason": "monthly plans no longer sold on chutes.ai; now pay-as-you-go",
+      "price_note": null,
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://chutes.ai/pricing",
+          "note": "Monthly plans are no longer sold; billing is pay-as-you-go"
+        },
+        {
+          "kind": "unverified",
+          "url": null,
+          "note": "unverified: last monthly price not read"
+        }
+      ]
+    }
+  ],
+  "measured_at": "2026-10-26T16:35:42.689Z",
+  "source": "public pricing pages and public posts, read 2026-10-26"
+}

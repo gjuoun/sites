@@ -6,16 +6,16 @@
       "window_minutes": 10080,
       "used_pct": 100,
       "resets_at": "2026-10-28T15:50:44Z",
-      "measured_at": "2026-10-26T13:41:50.016Z",
+      "measured_at": "2026-10-26T16:35:45.147Z",
       "source": "codexbar quota reading"
     },
     {
       "lane": "opencode-go",
       "window": "weekly",
       "window_minutes": 10080,
-      "used_pct": 10.603279266666666,
+      "used_pct": 12.1504053,
       "resets_at": "2026-11-01T23:59:59Z",
-      "measured_at": "2026-10-26T13:41:50.016Z",
+      "measured_at": "2026-10-26T16:35:45.147Z",
       "source": "codexbar quota reading"
     },
     {
@@ -25,19 +25,19 @@
       "used_pct": 1,
       "resets_at": "2026-11-02T04:43:38Z",
       "plan_level": "max",
-      "measured_at": "2026-10-26T13:41:50.016Z",
+      "measured_at": "2026-10-26T16:35:45.147Z",
       "source": "codexbar quota reading"
     },
     {
       "lane": "qwen-cloud-token",
       "window": "monthly",
       "window_minutes": 43200,
-      "used_pct": 54.49554541282235,
+      "used_pct": 55.06530853025255,
       "resets_at": "2026-11-24T16:00:00Z",
-      "measured_at": "2026-10-26T13:41:50.016Z",
+      "measured_at": "2026-10-26T16:35:45.147Z",
       "source": "codexbar quota reading"
     }
   ],
-  "measured_at": "2026-10-26T13:41:50.016Z",
+  "measured_at": "2026-10-26T16:35:45.147Z",
   "source": "codexbar usage (probe-quota)"
 }

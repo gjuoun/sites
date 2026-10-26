@@ -4,6 +4,8 @@ import modelsRaw from "../../data/models.json";
 import plansRaw from "../../data/plans.json";
 import quotaRaw from "../../data/quota.json";
 import usageRaw from "../../data/usage.json";
+import catalogRaw from "../../data/catalog.json";
+import { catalogDisplayRow, catalogFileSchema, type CatalogDisplay } from "../data/catalog";
 import {
   benchmarkFileSchema,
   lanesFileSchema,
@@ -23,7 +25,21 @@ export const dataset = {
   plans: plansFileSchema.parse(plansRaw),
   benchmark: benchmarkFileSchema.parse(benchmarkRaw),
   models: modelsFileSchema.parse(modelsRaw),
+  catalog: catalogFileSchema.parse(catalogRaw),
 };
+
+/** Catalog rows for display only: published price and allowance, never ranked, never per-B. */
+export function catalogRows(): CatalogDisplay[] {
+  return dataset.catalog.rows
+    .map(catalogDisplayRow)
+    .sort((a, b) => (a.status === b.status ? 0 : a.status === "catalog" ? -1 : 1));
+}
+
+export function catalogWindowText(plan_id: string): string | null {
+  const row = dataset.catalog.rows.find((r) => r.plan_id === plan_id);
+  if (!row?.window_readings?.length) return null;
+  return row.window_readings.map((w) => w.window + " " + w.used_pct + "%").join(" · ") + " (codexbar, " + row.window_readings[0].measured_at.slice(0, 16).replace("T", " ") + " UTC)";
+}
 
 export function laneById(id: string): LaneRecord | undefined {
   return dataset.lanes.lanes.find((l) => l.lane === id);

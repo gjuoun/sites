@@ -71,7 +71,29 @@ for (const l of lanesFile.lanes) {
   }
 }
 
-const summary = `pages=${pages.length} lanes=${seen.size} ranked=${ranked} excluded=${excluded} derived=${derivedRows} low_confidence=${lowRows} mixed_layers=${mixed} zeroed=${zeroed}`;
+// catalog: every catalog row once, no per-B figure, no measured layer, an unmeasured badge on each row,
+// and no catalog plan appears in the ranking table
+const catalogFile = JSON.parse(readFileSync(join(APP, "data", "catalog.json"), "utf8")) as { rows: Array<{ plan_id: string; status: string }> };
+const catalogTable = index.match(/<table[^>]*data-catalog="rows"[\s\S]*?<\/table>/);
+let catalogRendered = 0;
+if (!catalogTable) {
+  problems.push("catalog table missing from the index");
+} else {
+  const section = catalogTable[0];
+  catalogRendered = (section.match(/data-catalog-row="/g) ?? []).length;
+  if (catalogRendered !== catalogFile.rows.length) problems.push(`catalog rows rendered ${catalogRendered} != ${catalogFile.rows.length}`);
+  if (/\$\/B/.test(section)) problems.push("catalog section shows $/B");
+  if (/data-layer="measured"/.test(section)) problems.push("catalog section carries the measured layer");
+  if (/\$0(?![.\d])/.test(section)) problems.push("catalog section renders $0 for an unverified or absent price");
+  const unmeasured = (section.match(/data-badge="unmeasured"/g) ?? []).length;
+  if (unmeasured !== catalogFile.rows.length) problems.push(`unmeasured badge on ${unmeasured} of ${catalogFile.rows.length} catalog rows`);
+  const rankingTable = index.match(/<table[^>]*data-testid="ranking"[\s\S]*?<\/table>/)?.[0] ?? "";
+  for (const r of catalogFile.rows) {
+    if (rankingTable.includes(`data-lane-row="${r.plan_id}"`)) problems.push(`catalog plan ${r.plan_id} appears in the ranking`);
+  }
+}
+
+const summary = `pages=${pages.length} lanes=${seen.size} ranked=${ranked} excluded=${excluded} catalog=${catalogRendered} derived=${derivedRows} low_confidence=${lowRows} mixed_layers=${mixed} zeroed=${zeroed}`;
 if (problems.length) {
   for (const p of problems) console.error("FAIL " + p);
   console.log(summary);
