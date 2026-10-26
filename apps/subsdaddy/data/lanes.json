@@ -3,7 +3,7 @@
     {
       "lane": "cc",
       "label": "CommandCode",
-      "price_month_usd": 35,
+      "price_month_usd": 10,
       "price_badge": "plan_spec",
       "capacity": {
         "method": "unavailable",
@@ -11,8 +11,8 @@
         "tokens_per_week": null,
         "coverage": null,
         "seeded": false,
-        "reason": "window_saturated+no_prior_observation",
-        "measured_at": "2026-10-26T06:42:30.158Z",
+        "reason": "window_saturated+used_pct_did_not_advance",
+        "measured_at": "2026-10-26T12:55:16.545Z",
         "source": "codexbar usage --provider commandcode"
       },
       "usd_per_b": null,
@@ -21,7 +21,7 @@
         "p90_ttft_ms": 8441,
         "p50_output_tps": 201.41116100064144,
         "n": 11743,
-        "measured_at": "2026-10-26T06:42:30.158Z",
+        "measured_at": "2026-10-26T12:55:16.545Z",
         "source": "usage_logs(7d) rows=11743"
       },
       "presets": [
@@ -43,7 +43,7 @@
         "low_priced_share",
         "excluded_from_ranking"
       ],
-      "measured_at": "2026-10-26T06:42:30.158Z",
+      "measured_at": "2026-10-26T12:55:16.545Z",
       "source": "usage_logs(7d) + codexbar quota + plans.json"
     },
     {
@@ -54,21 +54,21 @@
       "capacity": {
         "method": "window_snapshot",
         "window": "weekly",
-        "tokens_per_week": 1488618273.2591124,
+        "tokens_per_week": 1278897528.2729611,
         "coverage": 1,
         "seeded": false,
         "reason": null,
-        "measured_at": "2026-10-26T06:42:30.158Z",
+        "measured_at": "2026-10-26T12:55:16.545Z",
         "source": "codexbar usage --provider opencodego"
       },
-      "usd_per_b": 1.5449951441510525,
+      "usd_per_b": 1.798352059359812,
       "measured": {
-        "p50_ttft_ms": 2559,
-        "p90_ttft_ms": 12084,
-        "p50_output_tps": 213.80160197165742,
-        "n": 4687,
-        "measured_at": "2026-10-26T06:42:30.158Z",
-        "source": "usage_logs(7d) rows=4687"
+        "p50_ttft_ms": 2587,
+        "p90_ttft_ms": 12015,
+        "p50_output_tps": 213.903743315508,
+        "n": 4155,
+        "measured_at": "2026-10-26T12:55:16.545Z",
+        "source": "usage_logs(7d) rows=4155"
       },
       "presets": [
         {
@@ -88,7 +88,7 @@
         "low_fit",
         "capacity_conflict"
       ],
-      "measured_at": "2026-10-26T06:42:30.158Z",
+      "measured_at": "2026-10-26T12:55:16.545Z",
       "source": "usage_logs(7d) + codexbar quota + plans.json"
     },
     {
@@ -103,17 +103,17 @@
         "coverage": null,
         "seeded": false,
         "reason": "no codexbar token account for opencodego (--all-accounts: 'No token accounts configured')",
-        "measured_at": "2026-10-26T06:42:30.158Z",
+        "measured_at": "2026-10-26T12:55:16.545Z",
         "source": "codexbar usage"
       },
       "usd_per_b": null,
       "measured": {
-        "p50_ttft_ms": 2779,
-        "p90_ttft_ms": 16846,
-        "p50_output_tps": 213.95523993974606,
-        "n": 4314,
-        "measured_at": "2026-10-26T06:42:30.158Z",
-        "source": "usage_logs(7d) rows=4314"
+        "p50_ttft_ms": 2748,
+        "p90_ttft_ms": 15536,
+        "p50_output_tps": 215.8273381294964,
+        "n": 3654,
+        "measured_at": "2026-10-26T12:55:16.545Z",
+        "source": "usage_logs(7d) rows=3654"
       },
       "presets": [
         {
@@ -133,7 +133,7 @@
         "low_fit",
         "excluded_from_ranking"
       ],
-      "measured_at": "2026-10-26T06:42:30.158Z",
+      "measured_at": "2026-10-26T12:55:16.545Z",
       "source": "usage_logs(7d) + codexbar quota + plans.json"
     },
     {
@@ -148,17 +148,17 @@
         "coverage": null,
         "seeded": true,
         "reason": "published allowance, flash weight (seed, unverified against console)",
-        "measured_at": "2026-10-26T06:42:30.158Z",
+        "measured_at": "2026-10-26T12:55:16.545Z",
         "source": "published allowance, flash weight (seed, unverified against console)"
       },
       "usd_per_b": null,
       "measured": {
-        "p50_ttft_ms": 6902,
-        "p90_ttft_ms": 12487,
-        "p50_output_tps": 96.77419354838709,
-        "n": 609,
-        "measured_at": "2026-10-26T06:42:30.158Z",
-        "source": "usage_logs(7d) rows=609"
+        "p50_ttft_ms": 7158,
+        "p90_ttft_ms": 13166,
+        "p50_output_tps": 86.31713554987212,
+        "n": 675,
+        "measured_at": "2026-10-26T12:55:16.545Z",
+        "source": "usage_logs(7d) rows=675"
       },
       "presets": [
         {
@@ -178,7 +178,7 @@
         "seed",
         "excluded_from_ranking"
       ],
-      "measured_at": "2026-10-26T06:42:30.158Z",
+      "measured_at": "2026-10-26T12:55:16.545Z",
       "source": "usage_logs(7d) + codexbar quota + plans.json"
     },
     {
@@ -189,21 +189,21 @@
       "capacity": {
         "method": "window_snapshot",
         "window": "monthly",
-        "tokens_per_week": 77214259.78852609,
+        "tokens_per_week": 79958932.71328299,
         "coverage": 1,
         "seeded": false,
         "reason": null,
-        "measured_at": "2026-10-26T06:42:30.158Z",
+        "measured_at": "2026-10-26T12:55:16.545Z",
         "source": "codexbar usage --provider qwen-cloud"
       },
-      "usd_per_b": 29.786052601926457,
+      "usd_per_b": 28.763615591604637,
       "measured": {
-        "p50_ttft_ms": 3831,
-        "p90_ttft_ms": 9193,
-        "p50_output_tps": 142.58232431820755,
-        "n": 2193,
-        "measured_at": "2026-10-26T06:42:30.158Z",
-        "source": "usage_logs(7d) rows=2193"
+        "p50_ttft_ms": 3867,
+        "p90_ttft_ms": 9351,
+        "p50_output_tps": 142.77305078396748,
+        "n": 2214,
+        "measured_at": "2026-10-26T12:55:16.545Z",
+        "source": "usage_logs(7d) rows=2214"
       },
       "presets": [
         {
@@ -223,10 +223,10 @@
         "low_fit",
         "capacity_conflict"
       ],
-      "measured_at": "2026-10-26T06:42:30.158Z",
+      "measured_at": "2026-10-26T12:55:16.545Z",
       "source": "usage_logs(7d) + codexbar quota + plans.json"
     }
   ],
-  "measured_at": "2026-10-26T06:42:30.158Z",
+  "measured_at": "2026-10-26T12:55:16.545Z",
   "source": "build-dataset"
 }

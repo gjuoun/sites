@@ -4,10 +4,10 @@
       "lane": "cc",
       "label": "CommandCode",
       "provider": "commandcode",
-      "price_month_usd": 35,
+      "price_month_usd": 10,
       "badge": "plan_spec",
       "measured_at": "2026-10-26T06:06:22Z",
-      "source": "pricing decision 2026-10-26; codexbar loginMethod 'GOAT · $35.00 of $70.00' — unconfirmed against the console"
+      "source": "Jun 2026-10-26: CC GOAT is $10/mo (codexbar loginMethod '$35.00 of $70.00' is credit consumption, not the plan fee)"
     },
     {
       "lane": "go-1",
