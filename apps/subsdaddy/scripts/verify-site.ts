@@ -6,6 +6,7 @@
  * visible on its row, and a derived dollar figure is visible as derived.
  */
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { formatUsdPerCredit } from "../src/data/catalog";
 import { join, resolve } from "node:path";
 
 const APP = resolve(import.meta.dir, "..");
@@ -50,7 +51,8 @@ for (const l of LANES) {
 const mixed = [...index.matchAll(/<[^>]*data-layer="([^"]*)"[^>]*>/g)].filter((m) => m[1].includes(" ") || m[1].includes(",")).length;
 if (mixed > 0) problems.push(`${mixed} element(s) mix layers`);
 
-const zeroed = (index.match(/\$0\.00/g) ?? []).length;
+// a zero price is "$0.00" exactly; per-credit values such as "$0.000392" are not zero prices
+const zeroed = (index.match(/\$0\.00(?!\d)/g) ?? []).length;
 if (zeroed > 0) problems.push(`${zeroed} zero price(s) rendered`);
 if (/NaN/.test(index)) problems.push("NaN rendered on the index");
 
@@ -91,7 +93,7 @@ if (!catalogTable) {
   // every published conversion shows its per-credit dollar value; every credit row without one says unverified
   for (const r of catalogFile.rows) {
     const rowHtml = section.match(new RegExp('<tr[^>]*data-catalog-row="' + r.plan_id + '"[\\s\\S]*?</tr>'))?.[0] ?? "";
-    if (r.credits_to_usd && !rowHtml.includes("$" + r.credits_to_usd.usd_per_credit + " / credit")) {
+    if (r.credits_to_usd && !rowHtml.includes(formatUsdPerCredit(r.credits_to_usd.usd_per_credit))) {
       problems.push("credits value missing on the catalog row for " + r.plan_id);
     }
     if (r.allowance_model === "credits" && !r.credits_to_usd && !rowHtml.includes('data-credits="unverified"')) {

@@ -108,15 +108,15 @@
         {
           "window": "5h",
           "used_pct": 0,
-          "resets_at": "2026-10-26T21:42:52Z",
-          "measured_at": "2026-10-26T16:42:50.215Z",
+          "resets_at": "2026-10-26T21:49:55Z",
+          "measured_at": "2026-10-26T16:49:54.009Z",
           "source": "codexbar usage --provider codex"
         },
         {
           "window": "weekly",
           "used_pct": 0,
-          "resets_at": "2026-11-02T16:42:52Z",
-          "measured_at": "2026-10-26T16:42:50.215Z",
+          "resets_at": "2026-11-02T16:49:55Z",
+          "measured_at": "2026-10-26T16:49:54.009Z",
           "source": "codexbar usage --provider codex"
         }
       ],
@@ -803,8 +803,43 @@
           "note": "unverified: credits per tier not published on the pages read; codexbar's 25,500-credit figure is not tied to a confirmed tier or price"
         }
       ]
+    },
+    {
+      "plan_id": "qwen-cloud-token-owner-10",
+      "product": "QwenCloud",
+      "tier": "Token Plan $10 (owner plan)",
+      "label": "QwenCloud - Token Plan $10 (owner plan)",
+      "status": "catalog",
+      "provider": "qwen-cloud",
+      "price_month_usd": 10,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "credits",
+      "allowance_detail": "25,500 credits in the monthly window (console reading); window resets monthly",
+      "credits_to_usd": {
+        "usd_per_credit": 0.000392156862745098,
+        "basis": "codexbar console reading: 25,500 credits in the monthly window; plan fee $10/mo (owner-confirmed)"
+      },
+      "cli_compat": "Agent tools via Token Plan; CLI not verified",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": "This is the owner's own plan and is not on a published price page. The official pages read show Token Plan Individual from $6/month, which is a different tier.",
+      "measured_at": "2026-10-26T16:42:50.215Z",
+      "sources": [
+        {
+          "kind": "owner_confirmed",
+          "url": null,
+          "note": "owner-confirmed plan fee $10/mo (2026-10-26)"
+        },
+        {
+          "kind": "console_reading",
+          "url": null,
+          "note": "codexbar qwen-cloud reading 2026-10-26: 14,041.65 / 25,500 credits used, monthly window, resets 2026-11-24"
+        }
+      ]
     }
   ],
-  "measured_at": "2026-10-26T16:42:50.215Z",
-  "source": "public pricing pages and public posts, read 2026-10-26; credit bases from official pages"
+  "measured_at": "2026-10-26T16:49:54.009Z",
+  "source": "public pricing pages and public posts, read 2026-10-26; credit bases from official pages; QwenCloud $10 tier from owner-confirmed fee and a console reading"
 }

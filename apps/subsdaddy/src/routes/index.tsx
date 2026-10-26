@@ -98,24 +98,26 @@ function IndexPage() {
         </CardContent>
       </Card>
 
+      <div className="relative left-1/2 w-[min(96vw,88rem)] -translate-x-1/2">
       <Card>
         <CardHeader>
           <CardTitle>Plans catalog — price and published allowance</CardTitle>
           <CardDescription>
             Published prices and allowance models only. No local token measurement, so these plans are not ranked and carry no $/B.
+            On narrow screens the table scrolls sideways.
           </CardDescription>
         </CardHeader>
         <CardContent className="overflow-x-auto">
           <Table data-catalog="rows">
             <TableHeader>
               <TableRow>
-                <TableHead>Plan</TableHead>
-                <TableHead className="text-right">Fee / mo</TableHead>
-                <TableHead>Allowance model</TableHead>
-                <TableHead>Allowance detail</TableHead>
-                <TableHead>Credits → $</TableHead>
-                <TableHead>CLI</TableHead>
-                <TableHead>Badges</TableHead>
+                <TableHead className="min-w-[12rem]">Plan</TableHead>
+                <TableHead className="min-w-[6rem] text-right">Fee / mo</TableHead>
+                <TableHead className="min-w-[11rem]">Credits → $</TableHead>
+                <TableHead className="min-w-[7rem]">Allowance model</TableHead>
+                <TableHead className="min-w-[16rem]">Allowance detail</TableHead>
+                <TableHead className="min-w-[9rem]">CLI</TableHead>
+                <TableHead className="min-w-[8rem]">Badges</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -123,16 +125,10 @@ function IndexPage() {
                 const windows = catalogWindowText(c.plan_id);
                 return (
                   <TableRow key={c.plan_id} data-catalog-row={c.plan_id} data-status={c.status}>
-                    <TableCell>{c.label}</TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="whitespace-normal break-words">{c.label}</TableCell>
+                    <TableCell className="whitespace-normal break-words text-right">
                       {c.fee}
-                      {c.price_note && <div className="text-xs text-muted-foreground">{c.price_note}</div>}
-                    </TableCell>
-                    <TableCell className="whitespace-normal">{c.allowance_model}</TableCell>
-                    <TableCell className="min-w-[18rem] whitespace-normal break-words">
-                      {c.allowance_detail}
-                      {windows && <div className="text-xs text-muted-foreground">{windows}</div>}
-                      {c.reason && <div className="text-xs text-muted-foreground">excluded — {c.reason}</div>}
+                      {c.price_note && <div className="max-w-[14rem] whitespace-normal break-words text-xs text-muted-foreground">{c.price_note}</div>}
                     </TableCell>
                     <TableCell className="whitespace-normal align-top">
                       <span className="font-medium">{c.credits_text}</span>
@@ -143,8 +139,14 @@ function IndexPage() {
                         <div className="text-xs text-muted-foreground" data-credits="unverified">unverified</div>
                       )}
                     </TableCell>
-                    <TableCell>{c.cli_compat}</TableCell>
-                    <TableCell className="space-x-1">
+                    <TableCell className="whitespace-normal">{c.allowance_model}</TableCell>
+                    <TableCell className="whitespace-normal break-words">
+                      {c.allowance_detail}
+                      {windows && <div className="text-xs text-muted-foreground">{windows}</div>}
+                      {c.reason && <div className="text-xs text-muted-foreground">excluded — {c.reason}</div>}
+                    </TableCell>
+                    <TableCell className="whitespace-normal break-words">{c.cli_compat}</TableCell>
+                    <TableCell className="space-x-1 whitespace-normal">
                       <Badge variant="outline" data-badge="unmeasured">unmeasured</Badge>
                       <Badge variant="outline" data-source={c.source_badge}>{c.source_badge}</Badge>
                       {c.status === "excluded" && <Badge variant="secondary" data-status="excluded">excluded</Badge>}
@@ -156,6 +158,7 @@ function IndexPage() {
           </Table>
         </CardContent>
       </Card>
+      </div>
 
       {excludedLanes.length > 0 && (
         <Card>

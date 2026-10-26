@@ -11,7 +11,7 @@ export const ALLOWANCE_MODELS = ["credits", "usd_usage", "window_percent", "wind
 export type AllowanceModel = (typeof ALLOWANCE_MODELS)[number];
 
 const sourceSchema = z.strictObject({
-  kind: z.enum(["official_page", "official_post", "x_post", "unverified"]),
+  kind: z.enum(["official_page", "official_post", "x_post", "owner_confirmed", "console_reading", "unverified"]),
   url: z.string().regex(/^https?:\/\//).nullable(),
   note: z.string().min(1),
 });
@@ -51,7 +51,8 @@ export const catalogRowSchema = z
   .superRefine((r, ctx) => {
     const add = (message: string) => ctx.addIssue({ code: "custom", message, path: [] });
     if (r.label !== `${r.product} - ${r.tier}`) add(`label must be "Product - Tier" (got "${r.label}")`);
-    const officialKinds = r.sources.some((s) => s.kind === "official_page" || s.kind === "official_post");
+    // a USD price must come from a published page, or from the owner's own confirmation (labelled as such)
+    const officialKinds = r.sources.some((s) => s.kind === "official_page" || s.kind === "official_post" || s.kind === "owner_confirmed");
     const hasPrice = r.price_month_usd !== null || r.price_native !== null;
     if (r.price_month_usd !== null && !officialKinds) add("a USD price needs an official source");
     if (r.price_native !== null && !officialKinds) add("a native-currency price needs an official source");
@@ -87,6 +88,11 @@ export const catalogFileSchema = z
   });
 export type CatalogFile = z.infer<typeof catalogFileSchema>;
 
+/** Per-credit dollars at three significant figures: 0.125 -> "$0.125", 10/25500 -> "$0.000392". */
+export function formatUsdPerCredit(v: number): string {
+  return "$" + Number(v.toPrecision(3)).toString() + " / credit";
+}
+
 export type CatalogDisplay = {
   plan_id: string;
   label: string;
@@ -98,7 +104,7 @@ export type CatalogDisplay = {
   credits_basis: string | null;
   cli_compat: string;
   badge: "unmeasured";
-  source_badge: "official" | "post" | "unverified";
+  source_badge: "official" | "post" | "owner" | "unverified";
   reason: string | null;
   price_note: string | null;
 };
@@ -112,8 +118,15 @@ export function catalogDisplayRow(r: CatalogRow): CatalogDisplay {
         ? r.price_native
         : "unverified";
   const official = r.sources.find((s) => s.kind === "official_page" || s.kind === "official_post");
+  const owner = r.sources.some((s) => s.kind === "owner_confirmed");
   const source_badge: CatalogDisplay["source_badge"] =
-    r.price_month_usd === null && r.price_native === null ? "unverified" : official?.kind === "official_post" ? "post" : "official";
+    r.price_month_usd === null && r.price_native === null
+      ? "unverified"
+      : owner && !official
+        ? "owner"
+        : official?.kind === "official_post"
+          ? "post"
+          : "official";
   return {
     plan_id: r.plan_id,
     label: r.label,
@@ -121,7 +134,7 @@ export function catalogDisplayRow(r: CatalogRow): CatalogDisplay {
     fee,
     allowance_model: r.allowance_model,
     allowance_detail: r.allowance_detail,
-    credits_text: r.credits_to_usd ? `$${r.credits_to_usd.usd_per_credit} / credit` : "—",
+    credits_text: r.credits_to_usd ? formatUsdPerCredit(r.credits_to_usd.usd_per_credit) : "—",
     credits_basis: r.credits_to_usd ? r.credits_to_usd.basis : null,
     cli_compat: r.cli_compat,
     badge: "unmeasured",

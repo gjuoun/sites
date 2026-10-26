@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { catalogDisplayRow, catalogFileSchema, catalogRowSchema } from "./catalog";
+import { catalogDisplayRow, catalogFileSchema, catalogRowSchema, formatUsdPerCredit } from "./catalog";
 
 const T = "2026-10-26T16:00:00Z";
 const official = { kind: "official_page", url: "https://claude.com/pricing", note: "pricing page" };
@@ -113,6 +113,18 @@ describe("catalog display guard", () => {
     const d = catalogDisplayRow(row);
     expect(d.fee).toBe("unverified");
     expect(d.fee).not.toContain("0");
+  });
+
+  test("per-credit values keep three significant figures, including very small ones", () => {
+    expect(formatUsdPerCredit(0.125)).toBe("$0.125 / credit");
+    expect(formatUsdPerCredit(10 / 25500)).toBe("$0.000392 / credit");
+  });
+
+  test("an owner-confirmed price is accepted, labelled as owner, and never shown as official", () => {
+    const owner = { kind: "owner_confirmed", url: null, note: "owner-confirmed plan fee $10/mo" };
+    const row = catalogRowSchema.parse({ ...base, price_month_usd: 10, sources: [owner] });
+    expect(catalogDisplayRow(row).source_badge).toBe("owner");
+    expect(catalogDisplayRow(row).source_badge).not.toBe("official");
   });
 
   test("a published conversion renders as dollars per credit with its basis kept", () => {
