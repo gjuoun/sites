@@ -73,7 +73,9 @@ for (const l of lanesFile.lanes) {
 
 // catalog: every catalog row once, no per-B figure, no measured layer, an unmeasured badge on each row,
 // and no catalog plan appears in the ranking table
-const catalogFile = JSON.parse(readFileSync(join(APP, "data", "catalog.json"), "utf8")) as { rows: Array<{ plan_id: string; status: string }> };
+const catalogFile = JSON.parse(readFileSync(join(APP, "data", "catalog.json"), "utf8")) as {
+  rows: Array<{ plan_id: string; status: string; allowance_model: string; credits_to_usd: { usd_per_credit: number } | null }>;
+};
 const catalogTable = index.match(/<table[^>]*data-catalog="rows"[\s\S]*?<\/table>/);
 let catalogRendered = 0;
 if (!catalogTable) {
@@ -85,6 +87,17 @@ if (!catalogTable) {
   if (/\$\/B/.test(section)) problems.push("catalog section shows $/B");
   if (/data-layer="measured"/.test(section)) problems.push("catalog section carries the measured layer");
   if (/\$0(?![.\d])/.test(section)) problems.push("catalog section renders $0 for an unverified or absent price");
+  if (/NaN/.test(section)) problems.push("catalog section renders NaN");
+  // every published conversion shows its per-credit dollar value; every credit row without one says unverified
+  for (const r of catalogFile.rows) {
+    const rowHtml = section.match(new RegExp('<tr[^>]*data-catalog-row="' + r.plan_id + '"[\\s\\S]*?</tr>'))?.[0] ?? "";
+    if (r.credits_to_usd && !rowHtml.includes("$" + r.credits_to_usd.usd_per_credit + " / credit")) {
+      problems.push("credits value missing on the catalog row for " + r.plan_id);
+    }
+    if (r.allowance_model === "credits" && !r.credits_to_usd && !rowHtml.includes('data-credits="unverified"')) {
+      problems.push("credit row " + r.plan_id + " shows no unverified marker");
+    }
+  }
   const unmeasured = (section.match(/data-badge="unmeasured"/g) ?? []).length;
   if (unmeasured !== catalogFile.rows.length) problems.push(`unmeasured badge on ${unmeasured} of ${catalogFile.rows.length} catalog rows`);
   const rankingTable = index.match(/<table[^>]*data-testid="ranking"[\s\S]*?<\/table>/)?.[0] ?? "";

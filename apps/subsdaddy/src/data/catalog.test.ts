@@ -1,4 +1,6 @@
 import { describe, expect, test } from "bun:test";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { catalogDisplayRow, catalogFileSchema, catalogRowSchema } from "./catalog";
 
 const T = "2026-10-26T16:00:00Z";
@@ -63,11 +65,22 @@ describe("catalog row schema", () => {
     expect(() => catalogRowSchema.parse({ ...base, exclusion_reason: "x" })).toThrow(/exclusion_reason/);
   });
 
-  test("credits to dollars needs a formula, and only for credit-based allowances", () => {
-    expect(() => catalogRowSchema.parse({ ...base, credits_to_usd: { value: 0.125, formula: "" } })).toThrow();
-    expect(() => catalogRowSchema.parse({ ...base, credits_to_usd: { value: 0.125, formula: "10 / 80" } })).toThrow(/credits/);
-    const ok = catalogRowSchema.parse({ ...base, allowance_model: "credits", credits_to_usd: { value: 0.125, formula: "$10 / $80 credits" } });
-    expect(ok.credits_to_usd?.value).toBe(0.125);
+  test("a conversion needs a basis, and only credit-based allowances may carry one", () => {
+    expect(() => catalogRowSchema.parse({ ...base, credits_to_usd: { usd_per_credit: 0.125, basis: "" } })).toThrow();
+    expect(() => catalogRowSchema.parse({ ...base, credits_to_usd: { usd_per_credit: 0.125, basis: "$10/mo / $80" } })).toThrow(/credits/);
+    const ok = catalogRowSchema.parse({ ...base, allowance_model: "credits", credits_to_usd: { usd_per_credit: 0.125, basis: "$10/mo / $80 of usage" } });
+    expect(ok.credits_to_usd?.usd_per_credit).toBe(0.125);
+  });
+
+  test("a credit-based row with no published conversion must carry an unverified note", () => {
+    const credits = { ...base, allowance_model: "credits", sources: [official] };
+    expect(() => catalogRowSchema.parse(credits)).toThrow(/unverified source note/);
+    const ok = catalogRowSchema.parse({ ...credits, sources: [official, unverified] });
+    expect(ok.credits_to_usd).toBeNull();
+  });
+
+  test("a non-credit row with no conversion needs no credits note", () => {
+    expect(catalogRowSchema.parse({ ...base, sources: [official] }).credits_to_usd).toBeNull();
   });
 
   test("native-currency price is kept as the displayed text and carries no USD figure", () => {
@@ -100,5 +113,20 @@ describe("catalog display guard", () => {
     const d = catalogDisplayRow(row);
     expect(d.fee).toBe("unverified");
     expect(d.fee).not.toContain("0");
+  });
+
+  test("a published conversion renders as dollars per credit with its basis kept", () => {
+    const d = catalogDisplayRow(catalogRowSchema.parse({ ...base, allowance_model: "credits", credits_to_usd: { usd_per_credit: 0.125, basis: "$10/mo / $80" } }));
+    expect(d.credits_text).toBe("$0.125 / credit");
+    expect(d.credits_basis).toBe("$10/mo / $80");
+  });
+
+  test("the shipped catalog file keeps every guard: no per-B key, no per-B text on any row", () => {
+    const file = JSON.parse(readFileSync(join(import.meta.dir, "..", "..", "data", "catalog.json"), "utf8"));
+    const parsed = catalogFileSchema.parse(file);
+    for (const r of parsed.rows) {
+      expect(Object.keys(r).some((k) => /usd_per_b|per_b/i.test(k))).toBe(false);
+      expect(JSON.stringify(catalogDisplayRow(r))).not.toContain("$/B");
+    }
   });
 });

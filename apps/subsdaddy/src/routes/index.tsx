@@ -128,13 +128,21 @@ function IndexPage() {
                       {c.fee}
                       {c.price_note && <div className="text-xs text-muted-foreground">{c.price_note}</div>}
                     </TableCell>
-                    <TableCell>{c.allowance_model}</TableCell>
-                    <TableCell>
+                    <TableCell className="whitespace-normal">{c.allowance_model}</TableCell>
+                    <TableCell className="min-w-[18rem] whitespace-normal break-words">
                       {c.allowance_detail}
                       {windows && <div className="text-xs text-muted-foreground">{windows}</div>}
                       {c.reason && <div className="text-xs text-muted-foreground">excluded — {c.reason}</div>}
                     </TableCell>
-                    <TableCell>{c.credits_text}</TableCell>
+                    <TableCell className="whitespace-normal align-top">
+                      <span className="font-medium">{c.credits_text}</span>
+                      {c.credits_basis && (
+                        <div className="max-w-[18rem] whitespace-normal break-words text-xs text-muted-foreground">{c.credits_basis}</div>
+                      )}
+                      {c.credits_text === "—" && c.allowance_model === "credits" && (
+                        <div className="text-xs text-muted-foreground" data-credits="unverified">unverified</div>
+                      )}
+                    </TableCell>
                     <TableCell>{c.cli_compat}</TableCell>
                     <TableCell className="space-x-1">
                       <Badge variant="outline" data-badge="unmeasured">unmeasured</Badge>

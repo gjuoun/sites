@@ -4,7 +4,7 @@ import { LANES } from "./schema";
 /**
  * The plans catalog: published prices and published allowance models only.
  * Catalog rows have no local token measurement, so they are never ranked and never carry a
- * dollars-per-billion figure. Schema is strict: a per-B key is a parse error, by construction.
+ * dollars-per-billion figure. The schema is strict: a per-B key is a parse error, by construction.
  */
 
 export const ALLOWANCE_MODELS = ["credits", "usd_usage", "window_percent", "window_tokens", "premium_requests", "tier_multiple", "unverified"] as const;
@@ -38,7 +38,7 @@ export const catalogRowSchema = z
     price_annual_usd: z.number().positive().nullable(),
     allowance_model: z.enum(ALLOWANCE_MODELS),
     allowance_detail: z.string().min(1),
-    credits_to_usd: z.strictObject({ value: z.number().positive(), formula: z.string().min(1) }).nullable(),
+    credits_to_usd: z.strictObject({ usd_per_credit: z.number().positive(), basis: z.string().min(1) }).nullable(),
     cli_compat: z.string().min(1),
     heat_samples: z.number().int().nonnegative().nullable(),
     exclusion_reason: z.string().min(1).nullable(),
@@ -63,6 +63,10 @@ export const catalogRowSchema = z
     if (r.status === "excluded" && !r.exclusion_reason) add("an excluded row needs exclusion_reason");
     if (r.status === "catalog" && r.exclusion_reason) add("a catalog row cannot carry exclusion_reason");
     if (r.credits_to_usd && r.allowance_model !== "credits") add("credits_to_usd is only for credit-based allowances");
+    // a credit-based allowance without a published conversion must say why, as an unverified source
+    if (r.allowance_model === "credits" && r.credits_to_usd === null && !r.sources.some((s) => s.kind === "unverified" && s.note.startsWith("unverified:"))) {
+      add("a credit-based row without a conversion needs an unverified source note");
+    }
   });
 export type CatalogRow = z.infer<typeof catalogRowSchema>;
 
@@ -91,6 +95,7 @@ export type CatalogDisplay = {
   allowance_model: AllowanceModel;
   allowance_detail: string;
   credits_text: string;
+  credits_basis: string | null;
   cli_compat: string;
   badge: "unmeasured";
   source_badge: "official" | "post" | "unverified";
@@ -116,7 +121,8 @@ export function catalogDisplayRow(r: CatalogRow): CatalogDisplay {
     fee,
     allowance_model: r.allowance_model,
     allowance_detail: r.allowance_detail,
-    credits_text: r.credits_to_usd ? `${r.credits_to_usd.value} USD per credit (${r.credits_to_usd.formula})` : "—",
+    credits_text: r.credits_to_usd ? `$${r.credits_to_usd.usd_per_credit} / credit` : "—",
+    credits_basis: r.credits_to_usd ? r.credits_to_usd.basis : null,
     cli_compat: r.cli_compat,
     badge: "unmeasured",
     source_badge,

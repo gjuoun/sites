@@ -108,15 +108,15 @@
         {
           "window": "5h",
           "used_pct": 0,
-          "resets_at": "2026-10-26T21:35:44Z",
-          "measured_at": "2026-10-26T16:35:42.689Z",
+          "resets_at": "2026-10-26T21:42:52Z",
+          "measured_at": "2026-10-26T16:42:50.215Z",
           "source": "codexbar usage --provider codex"
         },
         {
           "window": "weekly",
           "used_pct": 0,
-          "resets_at": "2026-11-02T16:35:44Z",
-          "measured_at": "2026-10-26T16:35:42.689Z",
+          "resets_at": "2026-11-02T16:42:52Z",
+          "measured_at": "2026-10-26T16:42:50.215Z",
           "source": "codexbar usage --provider codex"
         }
       ],
@@ -645,8 +645,166 @@
           "note": "unverified: last monthly price not read"
         }
       ]
+    },
+    {
+      "plan_id": "commandcode-goat-published",
+      "product": "CommandCode",
+      "tier": "GOAT",
+      "label": "CommandCode - GOAT",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 10,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "credits",
+      "allowance_detail": "$80 of usage per month on 29+ models (published); monthly credit bucket",
+      "credits_to_usd": {
+        "usd_per_credit": 0.125,
+        "basis": "$10/mo ÷ $80 of usage included. Pricing page: \"($10) ... $80 of usage on 29+ models\"; X post by @CommandCodeAI 2026-10-23: \"$80 credits in $10 GOAT plan\". USD paid per credit, not a list price."
+      },
+      "cli_compat": "CommandCode agent; CLI compatibility not re-verified this round",
+      "heat_samples": 27,
+      "exclusion_reason": null,
+      "price_note": "Published price basis for the ranked CommandCode GOAT plan above; the ranked row uses the measured mix.",
+      "measured_at": "2026-10-26T16:38:14.752Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://commandcode.ai/pricing",
+          "note": "GOAT $10/mo, $80 of usage"
+        },
+        {
+          "kind": "official_post",
+          "url": "https://x.com/i/status/2113505248727773682",
+          "note": "$80 credits in $10 GOAT plan (2026-10-23)"
+        }
+      ]
+    },
+    {
+      "plan_id": "opencode-go-go",
+      "product": "OpenCode Go",
+      "tier": "Go",
+      "label": "OpenCode Go - Go",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 10,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "usd_usage",
+      "allowance_detail": "Monthly dollar limit per model. Each model has 5h = 20%, weekly = 50%, monthly = 100% of its monthly limit (official docs). No single credit figure is published, so no conversion.",
+      "credits_to_usd": null,
+      "cli_compat": "Any agent (official page); CLI-specific checks not re-run this round",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": "Published price basis for the ranked OpenCode Go plan above.",
+      "measured_at": "2026-10-26T16:38:14.752Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://opencode.ai/docs/go/",
+          "note": "Go $10/month; per-model monthly dollar limits"
+        }
+      ]
+    },
+    {
+      "plan_id": "opencode-go-plus",
+      "product": "OpenCode Go",
+      "tier": "Go Plus",
+      "label": "OpenCode Go - Go Plus",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 40,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "usd_usage",
+      "allowance_detail": "Higher monthly dollar limits per model than Go (official docs). Per-model amounts are on the official limits table.",
+      "credits_to_usd": null,
+      "cli_compat": "Any agent (official page)",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": null,
+      "measured_at": "2026-10-26T16:38:14.752Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://opencode.ai/docs/go/",
+          "note": "Go Plus $40/month"
+        }
+      ]
+    },
+    {
+      "plan_id": "zai-glm-coding-max-current",
+      "product": "Z.ai GLM Coding Plan",
+      "tier": "Max (current standard price)",
+      "label": "Z.ai GLM Coding Plan - Max (current standard price)",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 160,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "window_tokens",
+      "allowance_detail": "Estimated weekly token allowance for GLM-5.3: 676–1,352M per week at 95% cache hit (official table); lower at lower cache hit rates",
+      "credits_to_usd": null,
+      "cli_compat": "Claude Code, Kilo Code, Cline, OpenCode, OpenClaw (official devpack overview)",
+      "heat_samples": 103,
+      "exclusion_reason": null,
+      "price_note": "The ranked Z.ai row uses $56/mo, a legacy price. This is the current standard price on the same official migration page.",
+      "measured_at": "2026-10-26T16:38:14.752Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://docs.z.ai/devpack/transition",
+          "note": "Current standard monthly price: Lite $18, Pro $72, Max $160"
+        },
+        {
+          "kind": "official_page",
+          "url": "https://docs.z.ai/devpack/overview",
+          "note": "Plans from $18/month; token allowance table"
+        }
+      ]
+    },
+    {
+      "plan_id": "qwen-cloud-token-individual",
+      "product": "QwenCloud",
+      "tier": "Token Plan Individual (from)",
+      "label": "QwenCloud - Token Plan Individual (from)",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 6,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "credits",
+      "allowance_detail": "Monthly credits covering Qwen, GLM, DeepSeek and others. Credit count per tier was not found on the pages read.",
+      "credits_to_usd": null,
+      "cli_compat": "Agent tools via Token Plan (official post lists agent use); CLI not verified",
+      "heat_samples": 50,
+      "exclusion_reason": null,
+      "price_note": "\"from\" price: the starting tier. The ranked QwenCloud row uses a $10 plan price that is not confirmed by any page read.",
+      "measured_at": "2026-10-26T16:38:14.752Z",
+      "sources": [
+        {
+          "kind": "official_post",
+          "url": "https://x.com/i/status/2079120830618116366",
+          "note": "Token Plan Individual starting at $6/month (2026-07-20)"
+        },
+        {
+          "kind": "official_page",
+          "url": "https://www.qwencloud.com/",
+          "note": "Token Plan Individual from $6/month"
+        },
+        {
+          "kind": "unverified",
+          "url": null,
+          "note": "unverified: credits per tier not published on the pages read; codexbar's 25,500-credit figure is not tied to a confirmed tier or price"
+        }
+      ]
     }
   ],
-  "measured_at": "2026-10-26T16:35:42.689Z",
-  "source": "public pricing pages and public posts, read 2026-10-26"
+  "measured_at": "2026-10-26T16:42:50.215Z",
+  "source": "public pricing pages and public posts, read 2026-10-26; credit bases from official pages"
 }
