@@ -13,6 +13,8 @@
     "build:dataset": "bun run scripts/build-dataset.ts",
     "collect:openrouter": "bun run scripts/collect-openrouter.ts",
     "collect:official": "bun run scripts/collect-official.ts",
+    "collect:context": "bun run scripts/collect-session-context.ts",
+    "collect:prices": "bun run scripts/collect-prices.ts",
     "verify:site": "bun run scripts/verify-site.ts",
     "verify:data": "bun run scripts/verify-data.ts",
     "verify:public": "bun run scripts/verify-public.ts",

@@ -21,16 +21,27 @@
       "openrouter": "deepseek/deepseek-v4.1-flash-1017"
     }
   ],
-  "measured_at": "2026-10-26T17:30:00Z",
+  "measured_at": "2026-10-26T23:49:17.274Z",
   "source": "openrouter.ai/api/v1/models, fetched 2026-10-26 (list price, USD per 1M tokens); lane model mapping as before",
   "reference": [
     {
       "ref": "deepseek-v4.1-flash",
       "openrouter": "deepseek/deepseek-v4.1-flash",
       "in_per_m": 0.02,
-      "out_per_m": 1.0,
+      "out_per_m": 1,
       "cache_per_m": 0.015,
-      "name": "DeepSeek V4.1 Flash"
+      "name": "DeepSeek V4.1 Flash",
+      "official_status": "unavailable: official pricing page renders its price table client-side; the static document has model details but no prices (api-docs.deepseek.com/quick_start/pricing, read 2026-10-26)",
+      "source_priority": "official > openrouter",
+      "openrouter_listed": {
+        "in_per_m": 0.043156,
+        "out_per_m": 0.01,
+        "cache_per_m": 0.034002,
+        "cache_write_per_m": null
+      },
+      "price_status": "anomaly",
+      "price_anomaly": "price_anomaly: listing shows completion < prompt (0.01 < 0.043156 per M); using last verified snapshot 2026-10-26",
+      "last_verified_at": "2026-10-26T17:30:00Z"
     },
     {
       "ref": "gemini-3.8-flash",
@@ -38,7 +49,21 @@
       "in_per_m": 0.825,
       "out_per_m": 4.125,
       "cache_per_m": 0.0825,
-      "name": "Gemini 3.8 Flash"
+      "name": "Gemini 3.8 Flash",
+      "official_status": "not checked",
+      "source_priority": "official > openrouter",
+      "openrouter_listed": {
+        "in_per_m": 0.825,
+        "out_per_m": 4.125,
+        "cache_per_m": 0.0825,
+        "cache_write_per_m": 0.041666667
+      },
+      "cache_write_per_m": 0.041666667,
+      "overrides": [],
+      "price_status": "verified",
+      "price_anomaly": null,
+      "last_verified_at": "2026-10-26T23:49:17.274Z",
+      "source": "openrouter.ai/api/v1/models, 2026-10-26; official: not checked"
     },
     {
       "ref": "claude-haiku-5.5",
@@ -55,9 +80,21 @@
           "out_per_m": 2.5,
           "cache_per_m": 0.05,
           "cache_write_per_m": 0.625,
-          "source": "openrouter.ai/api/v1/models, read 2026-10-26 (prompt-length override and cache-write price)"
+          "source": "openrouter listing"
         }
-      ]
+      ],
+      "official_status": "not checked",
+      "source_priority": "official > openrouter",
+      "openrouter_listed": {
+        "in_per_m": 0.1,
+        "out_per_m": 0.5,
+        "cache_per_m": 0.01,
+        "cache_write_per_m": 0.125
+      },
+      "price_status": "verified",
+      "price_anomaly": null,
+      "last_verified_at": "2026-10-26T23:49:17.274Z",
+      "source": "openrouter.ai/api/v1/models, 2026-10-26; official: not checked"
     },
     {
       "ref": "gpt-6-luna",
@@ -74,9 +111,21 @@
           "out_per_m": 0.75,
           "cache_per_m": 0.02,
           "cache_write_per_m": 0.25,
-          "source": "openrouter.ai/api/v1/models, read 2026-10-26 (prompt-length override and cache-write price)"
+          "source": "openrouter listing"
         }
-      ]
+      ],
+      "official_status": "not checked",
+      "source_priority": "official > openrouter",
+      "openrouter_listed": {
+        "in_per_m": 0.1,
+        "out_per_m": 0.5,
+        "cache_per_m": 0.01,
+        "cache_write_per_m": 0.125
+      },
+      "price_status": "verified",
+      "price_anomaly": null,
+      "last_verified_at": "2026-10-26T23:49:17.274Z",
+      "source": "openrouter.ai/api/v1/models, 2026-10-26; official: not checked"
     },
     {
       "ref": "glm-5.3-flash",
@@ -84,7 +133,21 @@
       "in_per_m": 0.15,
       "out_per_m": 0.5,
       "cache_per_m": 0.03,
-      "name": "GLM-5.3-Flash"
+      "name": "GLM-5.3-Flash",
+      "official_status": "not checked",
+      "source_priority": "official > openrouter",
+      "openrouter_listed": {
+        "in_per_m": 0.15,
+        "out_per_m": 0.5,
+        "cache_per_m": 0.03,
+        "cache_write_per_m": null
+      },
+      "cache_write_per_m": null,
+      "overrides": [],
+      "price_status": "verified",
+      "price_anomaly": null,
+      "last_verified_at": "2026-10-26T23:49:17.274Z",
+      "source": "openrouter.ai/api/v1/models, 2026-10-26; official: not checked"
     }
   ],
   "usage_models": [
@@ -124,7 +187,7 @@
       "openrouter": "deepseek/deepseek-v4.1-flash",
       "unmapped_reason": null,
       "in_per_m": 0.02,
-      "out_per_m": 1.0,
+      "out_per_m": 1,
       "cache_per_m": 0.015,
       "name": "DeepSeek V4.1 Flash",
       "peak_offpeak": {

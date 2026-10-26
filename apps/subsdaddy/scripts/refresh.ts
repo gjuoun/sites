@@ -18,6 +18,8 @@ process.env.SUBSDADDY_REFRESH_START = started;
 
 const stages: Array<[string, string[]]> = [
   ["collect:usage", ["bun", "run", "scripts/collect-usage.ts"]],
+  ["collect:context", ["bun", "run", "scripts/collect-session-context.ts"]],
+  ["collect:prices", ["bun", "run", "scripts/collect-prices.ts"]],
   ["collect:catalog", ["bun", "run", "scripts/collect-catalog.ts"]],
   // the probe stage gets ZAI_API_KEY from 1Password into the child env only; nothing is written to disk
   ["probe:quota", ["opk", "get", "ZAI_API_KEY", "--", "bun", "run", "scripts/collect-quota.ts"]],

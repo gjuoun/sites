@@ -77,11 +77,11 @@ describe("model view: only the plans that offer the model", () => {
     expect(row.cells.usd.text).toBe("N/A");
   });
 
-  test("a model-view $/B title names the prompt band it used at p50 and the p90 value", () => {
+  test("a model-view $/B title names the 100K context and the prompt band it used", () => {
     const t = summaryTable(ds, "claude-haiku-5.5");
     const oc = t.rows.find((r) => r.key === "opencode-go-go")!;
     expect(oc.cells.usd.title).toContain("≥100k ×5");
-    expect(oc.cells.usd.title).toContain("p90");
+    expect(oc.cells.usd.title).toContain("100K-token context");
   });
 
   test("DeepSeek V4.1 Flash shows four rows, sorted by $/B ascending, first three CommandCode, OpenCode Go, OpenCode Go Plus", () => {
@@ -184,10 +184,10 @@ describe("derived $/B is marked, and only derived $/B", () => {
     expect(DERIVED_FOOTNOTE.startsWith("* derived from the same-rate peer plan")).toBe(true);
   });
 
-  test("model views have no derived $/B and no star and no footnote", () => {
+  test("model views have no derived $/B and no star; a context footnote", () => {
     for (const ref of ["deepseek-v4.1-flash", "claude-haiku-5.5", "gpt-6-luna", "glm-5.3-flash"] as const) {
       const t = summaryTable(ds, ref);
-      expect(t.footnote).toBeNull();
+      expect(t.footnote).toContain("token context");
       for (const r of t.rows) expect(r.cells.usd.text.endsWith("*")).toBe(false);
     }
   });

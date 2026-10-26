@@ -1,26 +1,30 @@
 #!/usr/bin/env bun
 /**
  * Writes an estimate onto every catalog row:
- *   estimated_usd_per_b(plan, model, shape) = (fee_usd / allowance_usd) × blended_usd_per_b(model, shape, prompt length)
+ *   estimated_usd_per_b(plan, model, shape, context) = (fee_usd / allowance_usd) × blended_usd_per_b(model, shape, context)
  * The blend splits prompt tokens into input, cache write and cache read, and prices a request at the
- * prompt-length band its prompt reaches. Two prompt lengths are used: the measured p50 and p90 of
- * request prompts (raw usage export, pooled over the lanes). The table shows p50; p90 is kept beside it.
+ * prompt-length band its prompt reaches. Three contexts are computed for every value:
+ *   100K  the standard short context (LMC_CONTEXT_SHORT); the table shows this one
+ *   350K  the standard long context (LMC_CONTEXT_LONG)
+ *   p75   the sensitivity point: the p75 session-end context in data/context.json
  * Catalog rows only; the ranking never reads these values.
  */
-import { readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { catalogFileSchema, type CatalogRow } from "../src/data/catalog";
 import { REF_IDS, SHAPES, estimateOne, pooledMix, type RefId, type RefPrice, type Shape } from "../src/data/estimate";
 import { modelsFileSchema, usageFileSchema } from "../src/data/schema";
+import { contextFileSchema, LMC_CONTEXT_LONG, LMC_CONTEXT_SHORT } from "../src/data/context";
 import { averagePrice, tierBasis } from "../src/data/peak-offpeak";
 
 const APP = resolve(import.meta.dir, "..");
 const dataDir = join(APP, "data");
 const now = new Date().toISOString();
-const SOURCE = "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json)";
+const SOURCE = "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)";
 
 const usage = usageFileSchema.parse(JSON.parse(readFileSync(join(dataDir, "usage.json"), "utf8")));
 const models = modelsFileSchema.parse(JSON.parse(readFileSync(join(dataDir, "models.json"), "utf8")));
+const context = contextFileSchema.parse(JSON.parse(readFileSync(join(dataDir, "context.json"), "utf8")));
 const mix = pooledMix(usage.lanes.map((l) => ({ tokens: l.tokens })));
 // each measured plan is estimated on its own measured token mix; the others on the pooled mix
 const laneMix = new Map(usage.lanes.map((l) => [l.lane, pooledMix([{ tokens: l.tokens }])] as const));
@@ -31,21 +35,10 @@ const price = new Map<RefId, RefPrice>(
   ]),
 );
 for (const id of REF_IDS) if (!price.has(id)) throw new Error("missing reference price for " + id);
+const refMeta = new Map(models.reference.map((r) => [r.ref, r]));
 
-/** The measured prompt length of a request (input + cache write + cache read), p50 and p90, pooled over the raw export. */
-function promptProfile(): { p50: number; p90: number; n: number } {
-  const dir = join(dataDir, "raw", "usage");
-  const latest = readdirSync(dir).filter((f) => f.endsWith(".json")).sort().at(-1);
-  if (!latest) throw new Error("no raw usage export for the prompt profile");
-  const rows = JSON.parse(readFileSync(join(dir, latest), "utf8")).rows as Array<{ input: number; cache_creation: number; cache_read: number }>;
-  const xs = rows.map((r) => r.input + r.cache_creation + r.cache_read).sort((a, b) => a - b);
-  if (xs.length === 0) throw new Error("empty raw usage export");
-  const mid = Math.floor(xs.length / 2);
-  const p50 = xs.length % 2 === 1 ? xs[mid] : (xs[mid - 1] + xs[mid]) / 2;
-  const p90 = xs[Math.min(xs.length - 1, Math.round(0.9 * (xs.length - 1)))];
-  return { p50, p90, n: xs.length };
-}
-const PROFILE = promptProfile();
+const P75 = context.quantiles.p75;
+const kTok = (n: number) => Math.round(n / 1000) + "K";
 
 const file = catalogFileSchema.parse(JSON.parse(readFileSync(join(dataDir, "catalog.json"), "utf8")));
 
@@ -62,7 +55,10 @@ function priceFor(row: CatalogRow, ref: RefId): { price: RefPrice; note: string 
   return { price: price.get(ref)!, note: null };
 }
 
-type Value = { ref: RefId; shape: Shape; usd_per_b: number | null; reason: string | null; fee_over_allowance: number | null; blended_usd_per_b: number; measured_at: string; source: string; usd_per_b_p90: number | null; band_p50: string; band_p90: string | null };
+type Value = {
+  ref: RefId; shape: Shape; usd_per_b: number | null; reason: string | null; fee_over_allowance: number | null; blended_usd_per_b: number;
+  measured_at: string; source: string; usd_per_b_long: number | null; usd_per_b_p75: number | null; band_short: string; band_long: string; band_p75: string;
+};
 
 function estimateRow(row: CatalogRow) {
   const rowMix = row.measured_lane ? (laneMix.get(row.measured_lane) ?? mix) : mix;
@@ -78,29 +74,25 @@ function estimateRow(row: CatalogRow) {
   const values: Value[] = [];
   const ratios: string[] = [];
   const tierNotes = new Set<string>();
+  const anomalies = new Set<string>();
   for (const ref of REF_IDS) {
     if (!row.offered_models.includes(ref)) continue;
     const entry = row.allowance.find((a) => a.ref === ref) ?? row.allowance.find((a) => a.ref === "*") ?? null;
     const pr = priceFor(row, ref);
     if (pr.note) tierNotes.add(pr.note);
+    const meta = refMeta.get(ref);
+    if (meta?.price_status === "anomaly" && meta.price_anomaly) anomalies.add(ref + " " + meta.price_anomaly);
     for (const shape of SHAPES) {
       const base = { fee_usd: fee, allowance_usd: entry ? entry.usd : null, allowance_reason: entry ? null : "no published allowance for this model in this plan", price: pr.price, mix: rowMix, shape };
-      const e50 = estimateOne({ ...base, prompt_tokens: PROFILE.p50 });
-      const e90 = shape === "agent" ? estimateOne({ ...base, prompt_tokens: PROFILE.p90 }) : null;
+      const s = estimateOne({ ...base, prompt_tokens: LMC_CONTEXT_SHORT });
+      const l = estimateOne({ ...base, prompt_tokens: LMC_CONTEXT_LONG });
+      const p = estimateOne({ ...base, prompt_tokens: P75 });
       values.push({
-        ref,
-        shape,
-        usd_per_b: e50.usd_per_b,
-        reason: e50.reason,
-        fee_over_allowance: e50.fee_over_allowance,
-        blended_usd_per_b: e50.blended_usd_per_b,
-        measured_at: now,
-        source: SOURCE,
-        usd_per_b_p90: e90 ? e90.usd_per_b : null,
-        band_p50: e50.band,
-        band_p90: e90 ? e90.band : null,
+        ref, shape, usd_per_b: s.usd_per_b, reason: s.reason, fee_over_allowance: s.fee_over_allowance, blended_usd_per_b: s.blended_usd_per_b,
+        measured_at: now, source: SOURCE, usd_per_b_long: l.usd_per_b, usd_per_b_p75: p.usd_per_b,
+        band_short: s.band, band_long: l.band, band_p75: p.band,
       });
-      if (shape === "agent" && e50.fee_over_allowance !== null) ratios.push(ref + " " + Number(e50.fee_over_allowance.toPrecision(3)));
+      if (shape === "agent" && s.fee_over_allowance !== null) ratios.push(ref + " " + Number(s.fee_over_allowance.toPrecision(3)));
     }
   }
   const agent = values.filter((v) => v.shape === "agent" && v.usd_per_b !== null).map((v) => v.usd_per_b as number);
@@ -112,7 +104,8 @@ function estimateRow(row: CatalogRow) {
   const basis =
     "fee $" + fee + "/mo ÷ published usage-dollar allowance (" + ratios.join(", ") + ") × blended list cost per billion tokens of each reference model; " +
     (row.measured_lane ? "this plan's own measured" : "pooled measured") + " mix: output share " + (rowMix.output_share * 100).toFixed(2) + "%, agent cache share " + (rowMix.agent_cache_share * 100).toFixed(2) + "%, cache write share " + ((rowMix.cache_write_share ?? 0) * 100).toFixed(2) + "% (interactive 0%, cache_heavy 94%)" +
-    "; prompt-length bands at measured p50 " + PROFILE.p50.toLocaleString("en-US") + " and p90 " + PROFILE.p90.toLocaleString("en-US") + " tokens per request (" + PROFILE.n.toLocaleString("en-US") + " requests, pooled); the table shows p50" +
+    "; standard contexts: 100K (table) and 350K, with p75 " + kTok(P75) + " as sensitivity (session-end median " + kTok(context.quantiles.p50) + ", p90 " + kTok(context.quantiles.p90) + ", " + context.sample_sessions.toLocaleString("en-US") + " sessions)" +
+    (anomalies.size > 0 ? "; " + [...anomalies].join("; ") : "") +
     (tierNotes.size > 0 ? "; prices: " + [...tierNotes].join("; ") : "") + ".";
   return { status: "estimated" as const, reason: null, basis, values, range_agent: [low, high] as [number, number] };
 }
@@ -125,4 +118,4 @@ writeFileSync(join(dataDir, "catalog.json"), JSON.stringify(checked, null, 2) + 
 
 const est = checked.rows.filter((r) => r.estimate?.status === "estimated");
 for (const r of est) console.log(r.label.padEnd(40) + " " + r.estimate!.range_agent!.map((v) => String(Number(v.toPrecision(3)))).join(" .. "));
-console.log("catalog=" + checked.rows.length + " estimated=" + est.length + " unavailable=" + (checked.rows.length - est.length) + " prompt_p50=" + PROFILE.p50 + " prompt_p90=" + PROFILE.p90 + " mix_output=" + mix.output_share.toFixed(4) + " mix_agent_cache=" + mix.agent_cache_share.toFixed(4));
+console.log("catalog=" + checked.rows.length + " estimated=" + est.length + " unavailable=" + (checked.rows.length - est.length) + " contexts=100K/350K/p75:" + kTok(P75) + " mix_output=" + mix.output_share.toFixed(4) + " mix_agent_cache=" + mix.agent_cache_share.toFixed(4));

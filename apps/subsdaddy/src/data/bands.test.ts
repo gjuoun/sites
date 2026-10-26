@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { blendedUsdPerB, priceAt, type RefPrice } from "./estimate";
 import { catalogFileSchema, catalogRowSchema } from "./catalog";
 import { modelsFileSchema } from "./schema";
+import { LMC_CONTEXT_LONG, LMC_CONTEXT_SHORT } from "./context";
 
 const DATA = join(import.meta.dir, "..", "..", "data");
 const read = (f: string) => JSON.parse(readFileSync(join(DATA, f), "utf8"));
@@ -15,12 +16,17 @@ const ref = (id: string): RefPrice => {
 };
 const HAIKU = ref("claude-haiku-5.5");
 const LUNA = ref("gpt-6-luna");
-const P50 = 170836; // measured pooled prompt p50 (raw export)
-const P90 = 432512; // measured pooled prompt p90
+const SHORT = LMC_CONTEXT_SHORT; // 100K
+const LONG = LMC_CONTEXT_LONG; // 350K
 
-describe("prompt-length bands", () => {
-  test("Haiku at p50 is in the >=100k band, priced at 5x the base input", () => {
-    const a = priceAt(HAIKU, P50);
+describe("standard contexts select the price band", () => {
+  test("the standards are 100K and 350K", () => {
+    expect(SHORT).toBe(100_000);
+    expect(LONG).toBe(350_000);
+  });
+
+  test("Haiku at 100K is in the >=100k band: 5x base input, output, cache and cache write", () => {
+    const a = priceAt(HAIKU, SHORT);
     expect(a.band).toBe("band: ≥100k ×5");
     expect(a.price.in_per_m).toBe(0.5);
     expect(a.price.out_per_m).toBe(2.5);
@@ -28,57 +34,59 @@ describe("prompt-length bands", () => {
     expect(a.price.cache_write_per_m).toBe(0.625);
   });
 
-  test("Luna at p50 is still below its 272k band: base price", () => {
-    const a = priceAt(LUNA, P50);
+  test("Luna at 100K is still below its 272k band: base price", () => {
+    const a = priceAt(LUNA, SHORT);
     expect(a.band).toBe("band: <272k base");
     expect(a.price.in_per_m).toBe(0.1);
   });
 
-  test("Luna at p90 reaches the 272k band: 2x input, 1.5x output", () => {
-    const a = priceAt(LUNA, P90);
+  test("Luna at 350K reaches the 272k band: 2x input, 1.5x output", () => {
+    const a = priceAt(LUNA, LONG);
     expect(a.band).toBe("band: ≥272k ×2");
     expect(a.price.in_per_m).toBe(0.2);
     expect(a.price.out_per_m).toBe(0.75);
   });
 
-  test("a model with no override is priced at its base at any prompt length, and says so", () => {
+  test("at the 100K standard Haiku and Luna differ: the banded prices are not equal", () => {
+    expect(priceAt(HAIKU, SHORT).price.in_per_m).not.toBe(priceAt(LUNA, SHORT).price.in_per_m);
+    expect(priceAt(HAIKU, SHORT).price.in_per_m).toBeGreaterThan(priceAt(LUNA, SHORT).price.in_per_m);
+  });
+
+  test("a model with no override is priced at its base at any context, and says so", () => {
     const ds = ref("deepseek-v4.1-flash");
-    expect(priceAt(ds, P90).band).toBe("base price (no prompt-length band)");
-    expect(priceAt(ds, P90).price.in_per_m).toBe(ds.in_per_m);
+    expect(priceAt(ds, LONG).band).toBe("base price (no prompt-length band)");
+    expect(priceAt(ds, LONG).price.in_per_m).toBe(ds.in_per_m);
   });
 
   test("the two models are equal at base, and unequal in their banded prices", () => {
     expect(HAIKU.in_per_m).toBe(LUNA.in_per_m);
-    expect(priceAt(HAIKU, P50).price.in_per_m).not.toBe(priceAt(LUNA, P50).price.in_per_m);
-    expect(priceAt(HAIKU, P90).price.in_per_m).not.toBe(priceAt(LUNA, P90).price.in_per_m);
+    expect(priceAt(HAIKU, SHORT).price.in_per_m).not.toBe(priceAt(LUNA, SHORT).price.in_per_m);
+    expect(priceAt(HAIKU, LONG).price.in_per_m).not.toBe(priceAt(LUNA, LONG).price.in_per_m);
   });
 
-  test("the four measured numbers the report quotes: Haiku and Luna at p50 and p90 $/B on the same mix", () => {
-    const mix = { output_share: 0.0063, cache_share: 0.84, cache_write_share: 0 };
-    const hp50 = blendedUsdPerB(priceAt(HAIKU, P50).price, mix);
-    const hp90 = blendedUsdPerB(priceAt(HAIKU, P90).price, mix);
-    const lp50 = blendedUsdPerB(priceAt(LUNA, P50).price, mix);
-    const lp90 = blendedUsdPerB(priceAt(LUNA, P90).price, mix);
-    expect(hp50).toBeCloseTo(hp90, 9);
-    expect(lp90).toBeGreaterThan(lp50);
-    expect(hp50).toBeGreaterThan(lp90);
-  });
-
-  test("the shipped estimate for OpenCode Go: Haiku and Luna differ at p50 and p90", () => {
+  test("the shipped OpenCode Go estimate at 100K: Haiku banded at 5x and Luna at base, both stored with their band", () => {
     const oc = catalog.rows.find((r) => r.plan_id === "opencode-go-go")!;
     const h = oc.estimate!.values.find((v) => v.ref === "claude-haiku-5.5" && v.shape === "agent")!;
     const l = oc.estimate!.values.find((v) => v.ref === "gpt-6-luna" && v.shape === "agent")!;
-    expect(h.usd_per_b).not.toBeCloseTo(l.usd_per_b!, 3);
+    expect(h.band_short).toBe("band: ≥100k ×5");
+    expect(l.band_short).toBe("band: <272k base");
     expect(h.usd_per_b!).toBeGreaterThan(l.usd_per_b!);
-    expect(l.usd_per_b_p90!).toBeGreaterThan(l.usd_per_b!);
-    expect(h.band_p50).toContain("≥100k");
-    expect(l.band_p50).toContain("<272k");
-    expect(l.band_p90).toContain("≥272k");
   });
 
-  test("the basis of a shipped estimate names the prompt bands it used", () => {
+  test("the shipped 350K values: Luna moves to its 2x band, Haiku stays at 5x", () => {
     const oc = catalog.rows.find((r) => r.plan_id === "opencode-go-go")!;
-    expect(oc.estimate!.basis).toContain("prompt-length bands at measured p50");
+    const h = oc.estimate!.values.find((v) => v.ref === "claude-haiku-5.5" && v.shape === "agent")!;
+    const l = oc.estimate!.values.find((v) => v.ref === "gpt-6-luna" && v.shape === "agent")!;
+    expect(h.band_long).toBe("band: ≥100k ×5");
+    expect(l.band_long).toBe("band: ≥272k ×2");
+    expect(l.usd_per_b_long!).toBeGreaterThan(l.usd_per_b!);
+    expect(h.usd_per_b_long!).toBeCloseTo(h.usd_per_b!, 9);
+  });
+
+  test("the basis of a shipped estimate names the two standards and the p75 sensitivity point", () => {
+    const oc = catalog.rows.find((r) => r.plan_id === "opencode-go-go")!;
+    expect(oc.estimate!.basis).toContain("standard contexts: 100K (table) and 350K");
+    expect(oc.estimate!.basis).toContain("p75");
     expect(oc.estimate!.basis).toContain("cache write share");
   });
 });

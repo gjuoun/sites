@@ -43,10 +43,12 @@ const estimateValueSchema = z.strictObject({
   blended_usd_per_b: z.number().positive(),
   measured_at: z.iso.datetime(),
   source: z.string().min(1),
-  // the p90 prompt-length value and the bands used at p50 and p90
-  usd_per_b_p90: z.number().positive().nullable().optional(),
-  band_p50: z.string().min(1).optional(),
-  band_p90: z.string().min(1).nullable().optional(),
+  // the standard contexts: usd_per_b is at 100K; usd_per_b_long at 350K; usd_per_b_p75 is the sensitivity point
+  usd_per_b_long: z.number().positive().nullable().optional(),
+  usd_per_b_p75: z.number().positive().nullable().optional(),
+  band_short: z.string().min(1).optional(),
+  band_long: z.string().min(1).optional(),
+  band_p75: z.string().min(1).optional(),
 });
 
 /** A catalog estimate. Status "unavailable" carries a reason and no values; "estimated" carries at least one value. */

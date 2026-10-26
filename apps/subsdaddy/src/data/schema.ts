@@ -208,6 +208,16 @@ export const modelsFileSchema = z.object({
             }),
           )
           .default([]),
+        source: z.string().min(1).optional(),
+        source_priority: z.string().min(1).optional(),
+        last_verified_at: z.string().min(1).optional(),
+        price_status: z.enum(["verified", "anomaly", "unavailable"]).optional(),
+        price_anomaly: z.string().min(1).nullable().optional(),
+        official_status: z.string().min(1).optional(),
+        openrouter_listed: z
+          .object({ in_per_m: z.number(), out_per_m: z.number(), cache_per_m: z.number(), cache_write_per_m: z.number().nullable() })
+          .nullable()
+          .optional(),
       }),
     )
     .length(5),

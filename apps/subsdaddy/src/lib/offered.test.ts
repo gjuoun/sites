@@ -5,6 +5,7 @@ import { dataset } from "./dataset";
 import { catalogTable, modelTable, modelTables, officialTable, vsMeasuredText, type DS } from "./sections";
 import { REF_IDS } from "../data/estimate";
 import { priceAt, blendedUsdPerB } from "../data/estimate";
+import { LMC_CONTEXT_SHORT } from "../data/context";
 import { catalogFileSchema } from "../data/catalog";
 import { officialFileSchema } from "../data/official";
 import { wellFormed, type Cell } from "./cells";
@@ -106,7 +107,7 @@ describe("estimate formula, recomputed from the stored data", () => {
         const p = tier
           ? { in_per_m: (tier.peak_usd_per_m.in_per_m * 14 + tier.offpeak_usd_per_m.in_per_m * 10) / 24, out_per_m: (tier.peak_usd_per_m.out_per_m * 14 + tier.offpeak_usd_per_m.out_per_m * 10) / 24, cache_per_m: (tier.peak_usd_per_m.cache_per_m * 14 + tier.offpeak_usd_per_m.cache_per_m * 10) / 24 }
           : price.get(v.ref)!;
-        const p50 = Number(String(row.estimate.basis).match(/at measured p50 ([\d,]+)/)![1].replace(/,/g, ""));
+        const p50 = LMC_CONTEXT_SHORT;
         const banded = priceAt(p as never, p50).price;
         const blended = blendedUsdPerB(banded, { output_share: o, cache_share: c });
         expect(Math.abs(v.fee_over_allowance! * blended - v.usd_per_b)).toBeLessThan(1e-6);

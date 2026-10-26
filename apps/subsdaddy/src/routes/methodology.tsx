@@ -3,7 +3,8 @@ import { SiteFooter } from "@/components/site-footer";
 import { UnifiedTable } from "@/components/unified-table";
 import { MODEL_BLOCK, MODEL_TITLE, NOTE, PAGE_TITLE, SECTION_TITLE, SMALL_NOTE } from "@/components/layout";
 import { dataset } from "@/lib/dataset";
-import { catalogTable, dsRankingTable, measuredTable, modelTables, officialTable, type DS } from "@/lib/sections";
+import { catalogTable, contextCompareTable, contextDistributionTable, dsRankingTable, measuredTable, modelTables, officialTable, type DS } from "@/lib/sections";
+import { contextLabel } from "@/data/context";
 
 export const Route = createFileRoute("/methodology")({
   component: MethodologyPage,
@@ -57,10 +58,11 @@ function MethodologyPage() {
       </section>
       <section className="space-y-2">
         <h2 className="text-lg font-medium">Model prices by prompt length</h2>
-        <p>OpenRouter prices some models by prompt length. A request whose prompt reaches a threshold is priced at that band's rates for the whole request. Claude Haiku 5.5 moves to 5× the base input price from 100k prompt tokens; GPT-6 Luna moves to 2× from 272k. Estimates use the measured p50 prompt length of the refresh, and the p90 value is in the cell's title.</p>
+        <p>OpenRouter prices some models by prompt length. A request whose prompt reaches a threshold is priced at that band's rates for the whole request. Claude Haiku 5.5 moves to 5× the base input price from 100k prompt tokens; GPT-6 Luna moves to 2× from 272k. Estimates use two standard contexts, 100K and 350K (see Standard context below).</p>
         <p>Cache writes have their own price (1.25× input for Haiku and Luna). The measured traffic writes no cache, so this term is zero today; it is priced, not folded into input, so a future write share is counted.</p>
         <p>A plan with an offered model but no published dollar allowance shows N/A and its reason in the title. A third-party figure is used only with its link and date, labelled third-party. None is used on this site yet.</p>
       </section>
+      <ContextSection />
       <section className="space-y-2">
         <h2 className="text-lg font-medium">Speed on the front page</h2>
         <p>Model view: weighted median over endpoints by request volume, not the unweighted median or the best endpoint. Measured view: our own usage logs, p50. Every speed cell shows one value, rounded to two significant figures.</p>
@@ -70,6 +72,38 @@ function MethodologyPage() {
       <DetailTables />
       <SiteFooter />
     </main>
+  );
+}
+
+/** The standard context: why 100K, the distribution behind it, and what the two standards change. */
+function ContextSection() {
+  const ds = dataset as unknown as DS;
+  const c = dataset.context;
+  const q = c.quantiles;
+  const k = (n: number) => Math.round(n / 1000) + "K";
+  const dist = contextDistributionTable(ds);
+  const cmp = contextCompareTable(ds);
+  const dsRef = ds.models.reference.find((r) => r.ref === "deepseek-v4.1-flash")!;
+  return (
+    <section className="space-y-3" aria-labelledby="m-context">
+      <h2 id="m-context" className={SECTION_TITLE}>Standard context</h2>
+      <p>
+        Model prices are read at two standard prompt lengths, fixed in code: {contextLabel("short")} and {contextLabel("long")}. {contextLabel("short")} is the median
+        session-end context of our pi sessions ({k(q.p50)}, {c.sample_sessions.toLocaleString("en-US")} sessions in the last {c.window_days} days, measured at each session's last call).
+        {contextLabel("long")} is their p90 ({k(q.p90)}). The p75 ({k(q.p75)}) is a sensitivity check, not a third standard. The median is the context a typical session ends at.
+      </p>
+      <p>Session-end distribution, prompt tokens (input + cache read + cache write):</p>
+      <UnifiedTable testId="context-distribution" columns={dist.columns} rows={dist.rows} />
+      <p className={SMALL_NOTE}>
+        p50 {q.p50.toLocaleString("en-US")} · p75 {q.p75.toLocaleString("en-US")} · p90 {q.p90.toLocaleString("en-US")} · max {q.max.toLocaleString("en-US")} tokens. Method: {c.method}.
+      </p>
+      <p>$/B by standard context (agent shape). A value changes only where a prompt-length band is crossed, so a model with no band in the range does not move.</p>
+      <UnifiedTable testId="context-compare" columns={cmp.columns} rows={cmp.rows} />
+      <p className={SMALL_NOTE}>
+        DeepSeek V4.1 Flash list price used: {"$"}{dsRef.in_per_m} in / {"$"}{dsRef.out_per_m} out / {"$"}{dsRef.cache_per_m} cache per M tokens; status {dsRef.price_status ?? "unknown"}; last verified{" "}
+        {dsRef.last_verified_at ?? "unknown"}. {dsRef.price_anomaly ?? ""} Official: {dsRef.official_status ?? "not checked"}. Source priority: official above OpenRouter.
+      </p>
+    </section>
   );
 }
 
