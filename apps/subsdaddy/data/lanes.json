@@ -15,10 +15,10 @@
         "confidence": null,
         "confidence_reason": null,
         "badge": null,
-        "measured_at": "2026-10-26T18:05:52.747Z",
+        "measured_at": "2026-10-26T18:16:50.365Z",
         "source": "codexbar quota reading"
       },
-      "usd_per_b": 1.6808055970716629,
+      "usd_per_b": 1.6669204442079923,
       "usd_per_b_basis": "derived",
       "usd_per_b_derived_from": "opencode-go",
       "usd_per_b_source": "same-rate derivation (owner decision 2026-10-26); replaced by the measured value once the CommandCode weekly window resets on 2026-10-28",
@@ -27,7 +27,7 @@
         "p90_ttft_ms": 8441,
         "p50_output_tps": 201.41116100064144,
         "n": 11743,
-        "measured_at": "2026-10-26T18:05:52.747Z",
+        "measured_at": "2026-10-26T18:16:50.365Z",
         "source": "usage_logs(7d) rows=11743"
       },
       "presets": [
@@ -48,7 +48,7 @@
         "no_fit:too_few_priced_rows",
         "low_priced_share"
       ],
-      "measured_at": "2026-10-26T18:05:52.747Z",
+      "measured_at": "2026-10-26T18:16:50.365Z",
       "source": "usage_logs(7d) + quota reading + published price"
     },
     {
@@ -59,27 +59,27 @@
       "capacity": {
         "method": "window_snapshot",
         "window": "weekly",
-        "tokens_per_week": 1368336711.685637,
+        "tokens_per_week": 1379734714.7977498,
         "coverage": 1,
         "seeded": false,
         "reason": null,
         "confidence": "normal",
         "confidence_reason": null,
         "badge": "single_account_reading",
-        "measured_at": "2026-10-26T18:05:52.747Z",
+        "measured_at": "2026-10-26T18:16:50.365Z",
         "source": "codexbar quota reading"
       },
-      "usd_per_b": 1.6808055970716629,
+      "usd_per_b": 1.6669204442079923,
       "usd_per_b_basis": "measured",
       "usd_per_b_derived_from": null,
       "usd_per_b_source": "usage logs, quota reading, published price",
       "measured": {
-        "p50_ttft_ms": 2668,
-        "p90_ttft_ms": 12451,
-        "p50_output_tps": 209.60137162451778,
-        "n": 7413,
-        "measured_at": "2026-10-26T18:05:52.747Z",
-        "source": "usage_logs(7d) rows=7413"
+        "p50_ttft_ms": 2669,
+        "p90_ttft_ms": 12369,
+        "p50_output_tps": 209.02341519131926,
+        "n": 7440,
+        "measured_at": "2026-10-26T18:16:50.365Z",
+        "source": "usage_logs(7d) rows=7440"
       },
       "presets": [
         {
@@ -99,7 +99,7 @@
         "low_fit",
         "capacity_conflict"
       ],
-      "measured_at": "2026-10-26T18:05:52.747Z",
+      "measured_at": "2026-10-26T18:16:50.365Z",
       "source": "usage_logs(7d) + quota reading + published price"
     },
     {
@@ -110,27 +110,27 @@
       "capacity": {
         "method": "window_snapshot",
         "window": "weekly",
-        "tokens_per_week": 1516704100,
+        "tokens_per_week": 1530050600,
         "coverage": 1,
         "seeded": false,
         "reason": null,
         "confidence": "low",
         "confidence_reason": "used_pct 1 is an integer percent: error about 1/used_pct",
         "badge": null,
-        "measured_at": "2026-10-26T18:05:52.747Z",
+        "measured_at": "2026-10-26T18:16:50.365Z",
         "source": "codexbar quota reading"
       },
-      "usd_per_b": 8.491758425791277,
+      "usd_per_b": 8.417685546221266,
       "usd_per_b_basis": "measured",
       "usd_per_b_derived_from": null,
       "usd_per_b_source": "usage logs, quota reading, published price",
       "measured": {
-        "p50_ttft_ms": 7154,
-        "p90_ttft_ms": 13330,
-        "p50_output_tps": 79.03549899531144,
-        "n": 714,
-        "measured_at": "2026-10-26T18:05:52.747Z",
-        "source": "usage_logs(7d) rows=714"
+        "p50_ttft_ms": 7141,
+        "p90_ttft_ms": 13181,
+        "p50_output_tps": 78.4873349982162,
+        "n": 718,
+        "measured_at": "2026-10-26T18:16:50.365Z",
+        "source": "usage_logs(7d) rows=718"
       },
       "presets": [
         {
@@ -149,7 +149,7 @@
       "flags": [
         "capacity_conflict"
       ],
-      "measured_at": "2026-10-26T18:05:52.747Z",
+      "measured_at": "2026-10-26T18:16:50.365Z",
       "source": "usage_logs(7d) + quota reading + published price"
     },
     {
@@ -167,7 +167,7 @@
         "confidence": "normal",
         "confidence_reason": null,
         "badge": null,
-        "measured_at": "2026-10-26T18:05:52.747Z",
+        "measured_at": "2026-10-26T18:16:50.365Z",
         "source": "codexbar quota reading"
       },
       "usd_per_b": 28.09790095258739,
@@ -179,7 +179,7 @@
         "p90_ttft_ms": 9364,
         "p50_output_tps": 141.7395306028532,
         "n": 2285,
-        "measured_at": "2026-10-26T18:05:52.747Z",
+        "measured_at": "2026-10-26T18:16:50.365Z",
         "source": "usage_logs(7d) rows=2285"
       },
       "presets": [
@@ -200,10 +200,10 @@
         "low_fit",
         "capacity_conflict"
       ],
-      "measured_at": "2026-10-26T18:05:52.747Z",
+      "measured_at": "2026-10-26T18:16:50.365Z",
       "source": "usage_logs(7d) + quota reading + published price"
     }
   ],
-  "measured_at": "2026-10-26T18:05:52.747Z",
+  "measured_at": "2026-10-26T18:16:50.365Z",
   "source": "build-dataset"
 }

@@ -29,35 +29,40 @@
       "openrouter": "deepseek/deepseek-v4.1-flash",
       "in_per_m": 0.02,
       "out_per_m": 1.0,
-      "cache_per_m": 0.015
+      "cache_per_m": 0.015,
+      "name": "DeepSeek V4.1 Flash"
     },
     {
       "ref": "gemini-3.8-flash",
       "openrouter": "google/gemini-3.8-flash",
       "in_per_m": 0.825,
       "out_per_m": 4.125,
-      "cache_per_m": 0.0825
+      "cache_per_m": 0.0825,
+      "name": "Gemini 3.8 Flash"
     },
     {
       "ref": "claude-haiku-5.5",
       "openrouter": "anthropic/claude-haiku-5.5",
       "in_per_m": 0.1,
       "out_per_m": 0.5,
-      "cache_per_m": 0.01
+      "cache_per_m": 0.01,
+      "name": "Claude Haiku 5.5"
     },
     {
       "ref": "gpt-6-luna",
       "openrouter": "openai/gpt-6-luna",
       "in_per_m": 0.1,
       "out_per_m": 0.5,
-      "cache_per_m": 0.01
+      "cache_per_m": 0.01,
+      "name": "GPT-6 Luna"
     },
     {
       "ref": "glm-5.3-flash",
       "openrouter": "z-ai/glm-5.3-flash",
       "in_per_m": 0.15,
       "out_per_m": 0.5,
-      "cache_per_m": 0.03
+      "cache_per_m": 0.03,
+      "name": "GLM-5.3-Flash"
     }
   ],
   "usage_models": [
@@ -67,7 +72,8 @@
       "unmapped_reason": null,
       "in_per_m": 0.15,
       "out_per_m": 0.6,
-      "cache_per_m": 0.003
+      "cache_per_m": 0.003,
+      "name": "DeepSeek V4.1 Flash (1017)"
     },
     {
       "upstream_model": "deepseek-v4.1-flash",
@@ -75,7 +81,8 @@
       "unmapped_reason": null,
       "in_per_m": 0.02,
       "out_per_m": 1.0,
-      "cache_per_m": 0.015
+      "cache_per_m": 0.015,
+      "name": "DeepSeek V4.1 Flash"
     },
     {
       "upstream_model": "qwen3.8-flash",
@@ -83,7 +90,8 @@
       "unmapped_reason": null,
       "in_per_m": 0.15,
       "out_per_m": 0.47,
-      "cache_per_m": 0.016
+      "cache_per_m": 0.016,
+      "name": "Qwen3.8 Flash"
     },
     {
       "upstream_model": "qwen3.8-max",
@@ -91,7 +99,8 @@
       "in_per_m": null,
       "out_per_m": null,
       "cache_per_m": null,
-      "unmapped_reason": "OpenRouter lists only dated snapshots (qwen/qwen3.8-max-0902, qwen/qwen3.8-max-prime); neither is an unambiguous match for qwen3.8-max, and no official list price was read"
+      "unmapped_reason": "OpenRouter lists only dated snapshots (qwen/qwen3.8-max-0902, qwen/qwen3.8-max-prime); neither is an unambiguous match for qwen3.8-max, and no official list price was read",
+      "name": "Qwen3.8 Max"
     }
   ]
 }

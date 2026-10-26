@@ -96,7 +96,7 @@ for (const [name, html] of [["index", main(index)], ["catalog", main(catalogHtml
   if (text(html).includes("—")) fail(name + " shows a dash");
   for (const c of cells(html)) {
     const t = text(c);
-    if (t.length === 0) { fail(name + " has an empty cell"); continue; }
+    if (t.length === 0) { if (!/data-flags="yes"/.test(c)) fail(name + " has an empty cell"); continue; }
     if (/data-na="yes"/.test(c)) {
       na++;
       if (t === "N/A") fail(name + " has a bare N/A with no reason");
@@ -115,6 +115,24 @@ if (catalogRows !== catalog.length) fail("catalog page has " + catalogRows + " r
 const orCells = (index.match(/data-badge="OR p50"/g) ?? []).length;
 if (orCells === 0) fail("no OpenRouter values rendered");
 
+// 8. badges: three variants, one class base, flags named and never counted; raw ids never in table text
+const badgeRe = /data-badge="([^"]+)" data-badge-variant="([^"]+)"/g;
+const badges = [...index.matchAll(badgeRe), ...catalogHtml.matchAll(badgeRe)];
+const variants = new Set(badges.map((m) => m[2]));
+if (variants.size > 3 || [...variants].some((v) => !["source", "confidence", "status"].includes(v))) fail("badge variants are " + [...variants].join(", ") + "; expected at most source, confidence, status");
+const baseClass = "inline-flex h-5 items-center whitespace-nowrap rounded-md border px-1.5 text-[11px] font-medium leading-none";
+const baseCount = (index.split(baseClass).length - 1) + (catalogHtml.split(baseClass).length - 1);
+if (baseCount !== badges.length) fail("badges share one class base: " + baseCount + " of " + badges.length + " carry it");
+const RAW = /\b(deepseek|google|anthropic|openai|z-ai|qwen)\/[a-z0-9.-]+/;
+for (const [name, html] of [["index", index], ["catalog", catalogHtml]] as const) {
+  for (const c of cells(html)) {
+    const t = text(c);
+    if (/\b\d+ flags?\b/.test(t)) fail(name + " shows a flag count: " + t.slice(0, 60));
+    if (RAW.test(t)) fail(name + " shows a raw model id in a cell: " + t.slice(0, 60));
+  }
+}
+const speedCellsOk = [...index.matchAll(/<td[^>]*data-col="(tps|ttft)"[\s\S]*?<\/td>/g)].every((m) => (m[0].match(/data-badge="/g) ?? []).length <= 1);
+if (!speedCellsOk) fail("a speed cell carries more than one badge");
 console.log(
   "pages=" + [indexPath, catalogPath].filter(existsSync).length +
     " sectionA_rows=" + measuredRows +

@@ -190,6 +190,7 @@ export const modelsFileSchema = z.object({
     .array(
       z.object({
         ref: z.enum(["deepseek-v4.1-flash", "gemini-3.8-flash", "claude-haiku-5.5", "gpt-6-luna", "glm-5.3-flash"]),
+        name: z.string().min(1),
         openrouter: z.string().min(1),
         in_per_m: z.number().nonnegative(),
         out_per_m: z.number().nonnegative(),
@@ -202,6 +203,7 @@ export const modelsFileSchema = z.object({
     .array(
       z.object({
         upstream_model: z.string().min(1),
+        name: z.string().min(1),
         openrouter: z.string().min(1).nullable(),
         in_per_m: z.number().nonnegative().nullable(),
         out_per_m: z.number().nonnegative().nullable(),

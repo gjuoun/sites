@@ -2,9 +2,12 @@ import { describe, expect, test } from "bun:test";
 import { dataset } from "./dataset";
 import { catalogTable, measuredTable, modelTable, modelTables, type DS } from "./sections";
 import { wellFormed, type Cell } from "./cells";
-import { REF_IDS } from "../data/estimate";
+import { REF_IDS, REF_NAMES } from "../data/estimate";
+import { BADGE_KINDS, BADGE_VARIANT } from "./cells";
 
 const ds = dataset as unknown as DS;
+/** An OpenRouter model id: a known vendor, a slash, then the model. "fee/allowance" is not one. */
+const RAW_ID = /\b(deepseek|google|anthropic|openai|z-ai|qwen)\/[a-z0-9.-]+/;
 const allCells = (t: { rows: Array<{ cells: Record<string, Cell> }> }) => t.rows.flatMap((r) => Object.values(r.cells));
 
 describe("section A: measured plans", () => {
@@ -24,6 +27,49 @@ describe("section A: measured plans", () => {
         expect(or.reason).toBeTruthy();
       } else {
         expect(or.text).not.toBe("0");
+      }
+    }
+  });
+});
+
+describe("badges and names", () => {
+  test("the site uses three badge variants, and every badge kind maps to one of them", () => {
+    expect(new Set(Object.values(BADGE_VARIANT))).toEqual(new Set(["source", "confidence", "status"]));
+    for (const k of BADGE_KINDS) expect(["source", "confidence", "status"]).toContain(BADGE_VARIANT[k]);
+  });
+
+  test("Section A's badges column names each flag and is blank when there are none; it never shows a count", () => {
+    const t = measuredTable(ds);
+    for (const r of t.rows) {
+      const c = r.cells.badges;
+      expect(c.flags).toBe(true);
+      expect(c.text).toBe("");
+      for (const b of c.badges) expect(BADGE_KINDS).toContain(b);
+      expect(c.badges.some((b) => /flag/.test(b))).toBe(false);
+    }
+    const cc = t.rows.find((r) => r.key === "commandcode-goat")!;
+    expect(cc.cells.badges.badges).toContain("window_saturated");
+    const opencode = t.rows.find((r) => r.key === "opencode-go")!;
+    expect(opencode.cells.badges.badges).toContain("single_account_reading");
+  });
+
+  test("display names are the ones in data/models.json, and the reference names match the estimate names", () => {
+    for (const r of ds.models.reference) expect(r.name).toBe(REF_NAMES[r.ref as keyof typeof REF_NAMES]);
+  });
+
+  test("no visible cell shows a raw model id: ids with a slash are never cell text or secondary text", () => {
+    const tables = [measuredTable(ds), catalogTable(ds), ...modelTables(ds).map((m) => m.table)];
+    for (const t of tables) for (const c of allCells(t)) {
+      expect(RAW_ID.test(c.text)).toBe(false);
+      expect(RAW_ID.test(c.note ?? "")).toBe(false);
+    }
+  });
+
+  test("a speed cell carries one OR marker and no second badge", () => {
+    for (const m of modelTables(ds)) for (const r of m.table.rows) {
+      for (const k of ["tps", "ttft"] as const) {
+        const c = r.cells[k];
+        if (!c.na) expect(c.badges).toEqual(["OR p50"]);
       }
     }
   });
@@ -62,12 +108,12 @@ describe("regression: Section A shows each plan's own measured values", () => {
     const t = measuredTable(ds);
     for (const r of t.rows) {
       expect(r.cells.or.na).toBe(false);
-      expect(r.cells.or.note).toMatch(/^model: /);
+      expect(r.cells.or.note).toBeTruthy();
     }
     const cc = t.rows.find((r) => r.key === "commandcode-goat")!;
-    expect(cc.cells.or.note).toBe("model: DeepSeek V4.1 Flash");
+    expect(cc.cells.or.note!.startsWith("DeepSeek V4.1 Flash · ")).toBe(true);
     const qwen = t.rows.find((r) => r.key === "qwen-cloud-token")!;
-    expect(qwen.cells.or.note).toBe("model: deepseek/deepseek-v4.1-flash-1017");
+    expect(qwen.cells.or.note!.startsWith("DeepSeek V4.1 Flash (1017) · ")).toBe(true);
   });
 });
 

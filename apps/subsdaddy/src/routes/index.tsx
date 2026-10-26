@@ -36,6 +36,7 @@ function IndexPage() {
           Tok/s and TTFT come from our usage logs. The OR column is OpenRouter's p50 for each plan's lane model, shown beside ours.
         </p>
         <UnifiedTable testId="measured" columns={measured.columns} rows={measured.rows} />
+        <p className="text-xs text-muted-foreground">{measured.footnote}</p>
       </section>
 
       <section className="space-y-8" aria-labelledby="sec-b">

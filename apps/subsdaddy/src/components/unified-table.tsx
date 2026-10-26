@@ -1,59 +1,57 @@
-import type { ReactNode } from "react";
-import type { Badge, Cell } from "@/lib/cells";
+import type { Cell, BadgeKind, BadgeVariant } from "@/lib/cells";
+import { BADGE_VARIANT } from "@/lib/cells";
 
 /**
- * The single table style on the site. Every table renders through this component and these classes,
- * so headers, padding, numbers, currency and badges look the same in every section.
+ * The single table style and the single badge on the site. Every table renders through this file.
+ * Each cell has three fixed slots: the value, one secondary line, and the badges. The slots are always
+ * reserved, so every row on every table has the same height. Long text is cut to one line; the full
+ * text is in the title.
  */
 
 export const TABLE = "w-full table-fixed border-collapse text-sm";
 export const HEAD = "border-b border-border text-left text-xs font-medium uppercase tracking-wide text-muted-foreground";
-export const CELL = "border-b border-border px-3 py-2 align-top whitespace-normal break-words";
+export const CELL = "border-b border-border px-3 py-2 align-top";
 export const NUM = "text-right tabular-nums";
-export const BADGE_CLASS = "mr-1 mt-0.5 inline-block rounded border px-1.5 py-px text-[11px] leading-4 whitespace-nowrap";
 
-const BADGE_TONE: Record<Badge, string> = {
-  measured: "border-foreground/30 text-foreground",
-  "OR p50": "border-foreground/30 text-foreground",
-  estimated: "border-dashed border-foreground/40 text-muted-foreground",
-  derived: "border-dashed border-foreground/40 text-muted-foreground",
-  "low confidence": "border-foreground/40 text-foreground",
-  unverified: "border-dashed border-foreground/40 text-muted-foreground",
-  "single account": "border-foreground/30 text-muted-foreground",
-  window: "border-foreground/30 text-muted-foreground",
-  seed: "border-dashed border-foreground/40 text-muted-foreground",
-  unmeasured: "border-foreground/30 text-muted-foreground",
-  excluded: "border-foreground/40 text-muted-foreground",
+/** One badge: the same size, padding, radius and weight for every variant. Only the tone differs. */
+const BADGE_BASE = "inline-flex h-5 items-center whitespace-nowrap rounded-md border px-1.5 text-[11px] font-medium leading-none";
+const VARIANT_TONE: Record<BadgeVariant, string> = {
+  source: "border-foreground/40 bg-background text-foreground",
+  confidence: "border-foreground bg-muted text-foreground",
+  status: "border-border bg-background text-muted-foreground",
 };
 
-export function StatusBadge({ kind }: { kind: Badge }) {
+export function Badge({ kind }: { kind: BadgeKind }) {
+  const variant = BADGE_VARIANT[kind];
   return (
-    <span className={BADGE_CLASS + " " + BADGE_TONE[kind]} data-badge={kind}>
+    <span className={BADGE_BASE + " " + VARIANT_TONE[variant]} data-badge={kind} data-badge-variant={variant}>
       {kind}
     </span>
   );
 }
 
-/** A cell's value, its badges, and its reason when it is N/A. */
-export function CellView({ cell, numeric = false }: { cell: Cell; numeric?: boolean }) {
+/** A cell's three slots: the value, its secondary line (reason or note), and its badges. */
+export function CellView({ cell, numeric = false, clip = false }: { cell: Cell; numeric?: boolean; clip?: boolean }) {
+  const shown = cell.na ? cell.reason : cell.note;
   return (
-    <span className={numeric ? "block " + NUM : "block"} data-na={cell.na ? "yes" : undefined} title={cell.title ?? undefined}>
-      <span className={cell.na ? "text-muted-foreground" : "font-medium"}>{cell.text}</span>
-      {cell.na && cell.reason && <span className="mt-0.5 block text-xs text-muted-foreground">{cell.reason}</span>}
-      {!cell.na && cell.note && <span className="mt-0.5 block text-xs text-muted-foreground">{cell.note}</span>}
-      {cell.badges.length > 0 && (
-        <span className="mt-0.5 block">
-          {cell.badges.map((b) => (
-            <StatusBadge key={b} kind={b} />
-          ))}
-        </span>
-      )}
+    <span className="block min-w-0" data-na={cell.na ? "yes" : undefined} data-flags={cell.flags ? "yes" : undefined} title={cell.title ?? undefined}>
+      <span className={"block h-5 truncate leading-5 " + (numeric ? "text-right " : "") + (cell.na ? "text-muted-foreground" : "font-medium")}>
+        {cell.text}
+      </span>
+      <span className={"block h-4 truncate text-xs leading-4 text-muted-foreground " + (numeric ? "text-right" : "")} title={shown ?? undefined}>
+        {shown ?? ""}
+      </span>
+      <span className={"mt-1 flex h-5 flex-nowrap items-center gap-1 overflow-hidden " + (numeric ? "justify-end" : "")}>
+        {cell.badges.map((b) => (
+          <Badge key={b} kind={b} />
+        ))}
+      </span>
     </span>
   );
 }
 
-export type Column = { key: string; label: string; width: string; numeric?: boolean };
-export type Row = { key: string; cells: Record<string, Cell>; extra?: ReactNode };
+export type Column = { key: string; label: string; width: string; numeric?: boolean; clip?: boolean };
+export type Row = { key: string; cells: Record<string, Cell> };
 
 export function UnifiedTable({ testId, columns, rows }: { testId: string; columns: Column[]; rows: Row[] }) {
   return (
@@ -77,7 +75,7 @@ export function UnifiedTable({ testId, columns, rows }: { testId: string; column
           <tr key={r.key} data-row={r.key}>
             {columns.map((c) => (
               <td key={c.key} className={CELL + " " + (c.numeric ? NUM : "")} data-col={c.key}>
-                <CellView cell={r.cells[c.key]} numeric={c.numeric} />
+                <CellView cell={r.cells[c.key]} numeric={c.numeric} clip={c.clip} />
               </td>
             ))}
           </tr>

@@ -1,33 +1,43 @@
 import type { dataset as DatasetValue } from "./dataset";
 import { catalogDisplayRow, formatEstimate, formatUsdPerCredit, type CatalogRow } from "../data/catalog";
-import { REF_IDS, REF_NAMES, type RefId } from "../data/estimate";
-import { na, orCell, value, type Cell } from "./cells";
+import { REF_IDS, type RefId } from "../data/estimate";
+import { flagCell, na, orCell, value, type BadgeKind, type Cell } from "./cells";
 import { formatRange, orForModel } from "./or-stats";
 
 export type DS = typeof DatasetValue;
-
-export type Table = { columns: Array<{ key: string; label: string; width: string; numeric?: boolean }>; rows: Array<{ key: string; cells: Record<string, Cell> }> };
+export type Column = { key: string; label: string; width: string; numeric?: boolean; clip?: boolean };
+export type Table = { columns: Column[]; rows: Array<{ key: string; cells: Record<string, Cell> }> };
 
 const usd = (v: number) => "$" + (v < 0.1 ? String(Number(v.toPrecision(3))) : v.toFixed(2));
 const ms = (v: number) => Math.round(v).toLocaleString("en-US") + " ms";
+const count = (n: number, noun: string) => n.toLocaleString("en-US") + " " + noun + (n === 1 ? "" : "s");
+
+/** The display name of an OpenRouter model id, from data/models.json. The raw id is never the label. */
+export function displayName(ds: DS, orId: string): string {
+  const ref = ds.models.reference.find((r) => r.openrouter === orId);
+  if (ref) return ref.name;
+  const usage = ds.models.usage_models.find((u) => u.openrouter === orId);
+  if (usage) return usage.name;
+  return orId;
+}
+
 const orModelOf = (ds: DS, lane: string) => ds.models.models.find((m) => m.lane === lane)?.openrouter ?? null;
-/** The reference name of an OpenRouter model id, so the cell says which model it read. */
-const orModelName = (ds: DS, id: string) => {
-  const ref = ds.models.reference.find((r) => r.openrouter === id);
-  return ref ? REF_NAMES[ref.ref as RefId] : id;
-};
 const refModelOf = (ds: DS, ref: RefId) => ds.models.reference.find((r) => r.ref === ref)?.openrouter ?? null;
 
-/** Section A: the four measured plans, our own traffic, with OpenRouter's p50 for the plan's lane model beside it. */
-export function measuredTable(ds: DS): Table {
+/** Section A: the four measured plans, our own traffic, with OpenRouter's p50 for each plan's lane model. */
+export function measuredTable(ds: DS): Table & { footnote: string } {
+  const footIds = new Map<string, string>();
   const rows = ds.lanes.lanes.map((l) => {
     const orId = orModelOf(ds, l.lane);
     const or = orId ? orForModel(ds.benchmark, orId) : { summary: null, reason: "no OpenRouter model mapped to this plan" };
-    const planBadges = [] as Cell["badges"];
-    if (l.usd_per_b_basis === "derived") planBadges.push("derived");
-    if (l.capacity.badge === "single_account_reading") planBadges.push("single account");
-    if (l.capacity.confidence === "low") planBadges.push("low confidence");
-    if (l.capacity.seeded) planBadges.push("seed");
+    if (orId) footIds.set(orId, displayName(ds, orId));
+
+    const flags: BadgeKind[] = [];
+    if (l.capacity.badge === "single_account_reading") flags.push("single_account_reading");
+    if (l.capacity.confidence === "low") flags.push("low confidence");
+    if (l.capacity.seeded) flags.push("seed");
+    if (l.capacity.reason?.includes("window_saturated")) flags.push("window_saturated");
+
     const usdCell =
       l.usd_per_b === null
         ? na(l.capacity.reason ?? "no capacity reading")
@@ -35,39 +45,45 @@ export function measuredTable(ds: DS): Table {
     const capCell =
       l.capacity.tokens_per_week === null
         ? na(l.capacity.reason ?? "no capacity reading")
-        : value((l.capacity.tokens_per_week / 1e9).toFixed(2) + "B/wk", l.capacity.window ? ["window"] : []);
+        : value((l.capacity.tokens_per_week / 1e9).toFixed(2) + "B/wk");
+    let orCellValue: Cell;
+    if (or.summary?.tps && orId) {
+      const low = or.summary.low_confidence;
+      orCellValue = orCell(
+        formatRange(or.summary.tps),
+        orId + " · 30-minute window",
+        displayName(ds, orId) + " · " + count(or.summary.endpoints, "endpoint") + (low > 0 ? ", " + low.toLocaleString("en-US") + " low confidence" : ""),
+      );
+    } else {
+      orCellValue = na(or.reason ?? "no OpenRouter data");
+    }
     return {
       key: l.lane,
       cells: {
         plan: value(l.label),
-        badges: planBadges.length > 0 ? value(planBadges.length + (planBadges.length === 1 ? " flag" : " flags"), planBadges) : value("none"),
         fee: value("$" + l.price_month_usd + "/mo"),
         capacity: capCell,
         usd: usdCell,
-        tps:
-          l.measured.p50_output_tps === null
-            ? na("no measured output speed for this plan")
-            : value(Math.round(l.measured.p50_output_tps).toLocaleString("en-US"), ["measured"]),
-        ttft:
-          l.measured.p50_ttft_ms === null
-            ? na("no measured time to first token for this plan")
-            : value(ms(l.measured.p50_ttft_ms), ["measured"]),
-        or: or.summary?.tps
-          ? orCell(formatRange(or.summary.tps), (orId ?? "") + " · " + or.summary.endpoints + " endpoints · 30-min window", (or.summary.low_confidence ?? 0) > 0, "model: " + (orId ? orModelName(ds, orId) : "none"))
-          : na(or.reason ?? "no OpenRouter data"),
+        tps: l.measured.p50_output_tps === null ? na("no measured output speed for this plan") : value(Math.round(l.measured.p50_output_tps).toLocaleString("en-US"), ["measured"]),
+        ttft: l.measured.p50_ttft_ms === null ? na("no measured time to first token for this plan") : value(ms(l.measured.p50_ttft_ms), ["measured"]),
+        or: orCellValue,
+        badges: flagCell(flags),
       },
     };
   });
+  const footnote =
+    "OR p50 reads each plan's lane model: " + [...footIds.entries()].map(([id, name]) => name + " (" + id + ")").join("; ") + ".";
   return {
+    footnote,
     columns: [
-      { key: "plan", label: "Plan", width: "17%" },
-      { key: "fee", label: "Fee/mo", width: "8%", numeric: true },
-      { key: "capacity", label: "Capacity", width: "10%", numeric: true },
-      { key: "usd", label: "$/B", width: "10%", numeric: true },
+      { key: "plan", label: "Plan", width: "20%" },
+      { key: "fee", label: "Fee/mo", width: "7%", numeric: true },
+      { key: "capacity", label: "Capacity", width: "9%", numeric: true },
+      { key: "usd", label: "$/B", width: "9%", numeric: true },
       { key: "tps", label: "tok/s", width: "8%", numeric: true },
-      { key: "ttft", label: "TTFT p50", width: "10%", numeric: true },
-      { key: "or", label: "OR p50 tok/s", width: "15%", numeric: true },
-      { key: "badges", label: "Badges", width: "10%" },
+      { key: "ttft", label: "TTFT p50", width: "9%", numeric: true },
+      { key: "or", label: "OR p50 tok/s", width: "14%", numeric: true },
+      { key: "badges", label: "Badges", width: "24%" },
     ],
     rows,
   };
@@ -82,6 +98,7 @@ export function byModelRows(ds: DS): CatalogRow[] {
 export function modelTable(ds: DS, ref: RefId): Table & { subtitle: string; orNote: string } {
   const orId = refModelOf(ds, ref);
   const or = orId ? orForModel(ds.benchmark, orId) : { summary: null, reason: "no OpenRouter id for this model" };
+  const speedNote = or.summary ? count(or.summary.endpoints, "endpoint") + (or.summary.low_confidence > 0 ? ", " + or.summary.low_confidence.toLocaleString("en-US") + " low confidence" : "") : null;
   const rows = byModelRows(ds).map((r) => {
     const v = r.estimate?.status === "estimated" ? r.estimate.values.find((x) => x.ref === ref && x.shape === "agent") : undefined;
     const estCell =
@@ -91,37 +108,36 @@ export function modelTable(ds: DS, ref: RefId): Table & { subtitle: string; orNo
     const basis =
       v && v.fee_over_allowance !== null
         ? value("fee/allowance " + Number(v.fee_over_allowance.toPrecision(3)) + " × blended " + Number(v.blended_usd_per_b.toPrecision(3)) + " per B tokens", [], r.estimate?.basis ?? null)
-        : na(v?.reason ?? r.estimate?.reason ?? "no published allowance for this model in this plan", r.sources.some((s) => s.kind === "unverified") ? ["unverified"] : []);
+        : na(v?.reason ?? r.estimate?.reason ?? "no published allowance for this model in this plan");
+    const unverified: BadgeKind[] = r.sources.some((s) => s.kind === "unverified") ? ["unverified"] : [];
+    const speed = (formatted: string | null, reason: string | null) =>
+      formatted !== null && orId ? orCell(formatted, orId, speedNote) : na(reason ?? "no OpenRouter data");
     return {
       key: r.plan_id,
       cells: {
-        plan: value(r.label, r.sources.some((s) => s.kind === "unverified") ? ["unverified"] : []),
+        plan: value(r.label, unverified),
         fee: r.price_month_usd !== null ? value("$" + r.price_month_usd + "/mo") : na("no USD fee published"),
         est: estCell,
-        tps: or.summary?.tps
-          ? orCell(formatRange(or.summary.tps), (orId ?? "") + " · " + or.summary.endpoints + " endpoints · 30-min window", (or.summary.low_confidence ?? 0) > 0)
-          : na(or.reason ?? "no OpenRouter data"),
-        ttft: or.summary?.latency_ms
-          ? orCell(formatRange(or.summary.latency_ms) + " ms", "OpenRouter latency metric, p50, 30-min window", (or.summary.low_confidence ?? 0) > 0)
-          : na(or.reason ?? "no OpenRouter data"),
+        tps: speed(or.summary?.tps ? formatRange(or.summary.tps) : null, or.reason),
+        ttft: speed(or.summary?.latency_ms ? formatRange(or.summary.latency_ms) + " ms" : null, or.reason),
         basis,
       },
     };
   });
-  const subtitle = "This table assumes the whole allowance is spent on " + REF_NAMES[ref] + ". Other models are in their own tables.";
+  const subtitle = "This table assumes the whole allowance is spent on " + ds.models.reference.find((x) => x.ref === ref)!.name + ". Other models are in their own tables.";
   const orNote = or.summary
-    ? "OpenRouter " + orId + ": " + or.summary.endpoints + " endpoints, p50 over the last 30 minutes; " + or.summary.low_confidence + " under 1,000 requests."
+    ? "OpenRouter " + orId + ": " + count(or.summary.endpoints, "endpoint") + ", p50 over the last 30 minutes."
     : "OpenRouter " + (orId ?? "") + ": N/A (" + (or.reason ?? "no data") + ").";
   return {
     subtitle,
     orNote,
     columns: [
-      { key: "plan", label: "Plan", width: "20%" },
-      { key: "fee", label: "Fee/mo", width: "9%", numeric: true },
+      { key: "plan", label: "Plan", width: "19%" },
+      { key: "fee", label: "Fee/mo", width: "8%", numeric: true },
       { key: "est", label: "Est. $/B", width: "12%", numeric: true },
-      { key: "tps", label: "tok/s", width: "14%", numeric: true },
-      { key: "ttft", label: "TTFT p50", width: "14%", numeric: true },
-      { key: "basis", label: "Basis", width: "31%" },
+      { key: "tps", label: "tok/s", width: "13%", numeric: true },
+      { key: "ttft", label: "TTFT p50", width: "13%", numeric: true },
+      { key: "basis", label: "Basis", width: "35%", clip: true },
     ],
     rows,
   };
@@ -129,16 +145,16 @@ export function modelTable(ds: DS, ref: RefId): Table & { subtitle: string; orNo
 
 /** Every reference model, in display order. */
 export function modelTables(ds: DS) {
-  return REF_IDS.map((ref) => ({ ref, name: REF_NAMES[ref], table: modelTable(ds, ref) }));
+  return REF_IDS.map((ref) => ({ ref, name: ds.models.reference.find((x) => x.ref === ref)!.name, table: modelTable(ds, ref) }));
 }
 
-/** The catalog page: every catalog row, with its price, allowance, estimate range and status. */
+/** The catalog page: every catalog row, with its price, allowance, estimate range, and status flags. */
 export function catalogTable(ds: DS): Table {
   const rows = ds.catalog.rows.map((r) => {
     const d = catalogDisplayRow(r);
-    const badges: Cell["badges"] = ["unmeasured"];
-    if (d.status === "excluded") badges.push("excluded");
-    if (d.source_badge === "unverified") badges.push("unverified");
+    const flags: BadgeKind[] = ["unmeasured"];
+    if (d.status === "excluded") flags.push("excluded");
+    if (d.source_badge === "unverified") flags.push("unverified");
     const est =
       r.estimate?.status === "estimated" && r.estimate.range_agent
         ? value(formatEstimate(r.estimate.range_agent[0]) + (r.estimate.range_agent[0] === r.estimate.range_agent[1] ? "" : " – " + formatEstimate(r.estimate.range_agent[1])), ["estimated"], r.estimate.basis)
@@ -146,23 +162,25 @@ export function catalogTable(ds: DS): Table {
     return {
       key: r.plan_id,
       cells: {
-        plan: value(r.label, badges),
+        plan: value(r.label),
         fee: r.price_month_usd !== null ? value("$" + r.price_month_usd + "/mo") : d.fee === "unverified" ? na("no verified USD price") : value(d.fee),
         credits: r.credits_to_usd ? value(formatUsdPerCredit(r.credits_to_usd.usd_per_credit), [], r.credits_to_usd.basis) : na(r.allowance_reason ?? "no credit conversion published"),
         allowance: r.allowance.length > 0 ? value(r.allowance_detail) : na(r.allowance_reason ?? "no published usage-dollar allowance"),
         est,
         cli: value(r.cli_compat),
+        badges: flagCell(flags),
       },
     };
   });
   return {
     columns: [
-      { key: "plan", label: "Plan", width: "19%" },
-      { key: "fee", label: "Fee/mo", width: "9%", numeric: true },
-      { key: "credits", label: "Credits → $", width: "11%", numeric: true },
-      { key: "allowance", label: "Allowance", width: "23%" },
-      { key: "est", label: "Est. $/B (range)", width: "11%", numeric: true },
-      { key: "cli", label: "CLI", width: "27%" },
+      { key: "plan", label: "Plan", width: "16%" },
+      { key: "fee", label: "Fee/mo", width: "7%", numeric: true },
+      { key: "credits", label: "Credits → $", width: "10%", numeric: true },
+      { key: "allowance", label: "Allowance", width: "19%", clip: true },
+      { key: "est", label: "Est. $/B (range)", width: "10%", numeric: true },
+      { key: "cli", label: "CLI", width: "16%", clip: true },
+      { key: "badges", label: "Badges", width: "22%" },
     ],
     rows,
   };
