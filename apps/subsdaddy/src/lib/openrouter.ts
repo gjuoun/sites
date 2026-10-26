@@ -71,9 +71,8 @@ export function extractEndpoints(html: string, model: string): { endpoints: OrEn
     const before = payload.slice(Math.max(0, (m.index ?? 0) - 3000), m.index ?? 0);
     const name = lastCapture(before, /"provider_display_name":"([^"]+)"/g);
     const quant = lastCapture(before, /"quantization":"([^"]+)"/g);
-    const complete =
-      name !== null && st.p50_latency !== null && st.p50_throughput !== null && st.request_count !== null && st.window_minutes !== null;
-    if (!complete) {
+    const { p50_latency: lat, p50_throughput: tput, request_count: reqs, window_minutes: win } = st;
+    if (name === null || lat === null || tput === null || reqs === null || win === null) {
       stale++; // a missing stat marks the row stale and excludes it; it is never written as 0
       continue;
     }
@@ -81,12 +80,12 @@ export function extractEndpoints(html: string, model: string): { endpoints: OrEn
       model,
       provider_display_name: name,
       quantization: quant ?? "unknown",
-      p50_latency_ms: st.p50_latency,
-      p50_throughput: st.p50_throughput,
+      p50_latency_ms: lat,
+      p50_throughput: tput,
       p90_throughput: st.p90_throughput,
-      request_count: st.request_count,
-      window_minutes: st.window_minutes,
-      confidence: st.request_count < 1000 ? "low_confidence" : "ok",
+      request_count: reqs,
+      window_minutes: win,
+      confidence: reqs < 1000 ? "low_confidence" : "ok",
     });
     endpoints.push(parsed);
   }

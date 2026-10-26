@@ -20,12 +20,14 @@
       "@/*": [
         "./src/*"
       ]
-    }
+    },
+    "resolveJsonModule": true
   },
   "include": [
     "src",
     "vite.config.ts",
-    "scripts"
+    "scripts",
+    "data"
   ],
   "exclude": [
     "dist",
