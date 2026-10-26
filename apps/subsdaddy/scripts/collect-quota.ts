@@ -17,7 +17,7 @@ const resolved: Resolved[] = LANES.map((l) => probeOne(l));
 
 const observations: QuotaObservationOrGap[] = resolved.map((r) =>
   "unavailable" in r
-    ? { lane: r.lane as QuotaObservationOrGap["lane"], unavailable: r.unavailable, measured_at: measuredAt, source: "codexbar / plan.md" }
+    ? { lane: r.lane as QuotaObservationOrGap["lane"], unavailable: r.unavailable, measured_at: measuredAt, source: "codexbar usage" }
     : { ...r, lane: r.lane as QuotaObservationOrGap["lane"], measured_at: measuredAt } as QuotaObservationOrGap,
 );
 

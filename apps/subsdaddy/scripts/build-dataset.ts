@@ -80,9 +80,9 @@ if (existsSync(rawQuotaDir)) {
   }
 }
 
-// zai has no codexbar strategy; its seed is the plan's published allowance (JW-251), badged seed
+// zai has no codexbar strategy; its seed is a published allowance (unverified), badged seed
 const SEED: Partial<Record<LaneId, { tokens_per_week: number; source: string }>> = {
-  zai: { tokens_per_week: 5.7e9, source: "JW-251 published allowance (flash weight), seed" },
+  zai: { tokens_per_week: 5.7e9, source: "published allowance, flash weight (seed, unverified against console)" },
 };
 
 function capacityFor(lane: LaneId, obs: QuotaObservationOrGap | undefined): { cap: Capacity; method: LaneRecord["capacity"]["method"]; window: "weekly" | "monthly" | null; coverage: number | null; seeded: boolean; cost_in_window: number } {

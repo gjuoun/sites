@@ -22,13 +22,13 @@
       "lane": "go-2",
       "unavailable": "no codexbar token account for opencodego (--all-accounts: 'No token accounts configured')",
       "measured_at": "2026-10-26T06:36:51.632Z",
-      "source": "codexbar / plan.md"
+      "source": "codexbar usage"
     },
     {
       "lane": "zai",
       "unavailable": "no codexbar strategy for zai ('No available fetch strategy for zai.')",
       "measured_at": "2026-10-26T06:36:51.632Z",
-      "source": "codexbar / plan.md"
+      "source": "codexbar usage"
     },
     {
       "lane": "qwen",

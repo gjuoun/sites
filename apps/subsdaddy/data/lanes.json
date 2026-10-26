@@ -12,7 +12,7 @@
         "coverage": null,
         "seeded": false,
         "reason": "window_saturated+no_prior_observation",
-        "measured_at": "2026-10-26T06:36:59.043Z",
+        "measured_at": "2026-10-26T06:39:24.511Z",
         "source": "codexbar usage --provider commandcode"
       },
       "usd_per_b": null,
@@ -21,7 +21,7 @@
         "p90_ttft_ms": 8441,
         "p50_output_tps": 201.41116100064144,
         "n": 11743,
-        "measured_at": "2026-10-26T06:36:59.043Z",
+        "measured_at": "2026-10-26T06:39:24.511Z",
         "source": "usage_logs(7d) rows=11743"
       },
       "presets": [
@@ -43,7 +43,7 @@
         "low_priced_share",
         "excluded_from_ranking"
       ],
-      "measured_at": "2026-10-26T06:36:59.043Z",
+      "measured_at": "2026-10-26T06:39:24.511Z",
       "source": "usage_logs(7d) + codexbar quota + plans.json"
     },
     {
@@ -58,7 +58,7 @@
         "coverage": 1,
         "seeded": false,
         "reason": null,
-        "measured_at": "2026-10-26T06:36:59.043Z",
+        "measured_at": "2026-10-26T06:39:24.511Z",
         "source": "codexbar usage --provider opencodego"
       },
       "usd_per_b": 1.456230898185856,
@@ -67,7 +67,7 @@
         "p90_ttft_ms": 12221,
         "p50_output_tps": 213.7486573576799,
         "n": 4687,
-        "measured_at": "2026-10-26T06:36:59.043Z",
+        "measured_at": "2026-10-26T06:39:24.511Z",
         "source": "usage_logs(7d) rows=4687"
       },
       "presets": [
@@ -88,7 +88,7 @@
         "low_fit",
         "capacity_conflict"
       ],
-      "measured_at": "2026-10-26T06:36:59.043Z",
+      "measured_at": "2026-10-26T06:39:24.511Z",
       "source": "usage_logs(7d) + codexbar quota + plans.json"
     },
     {
@@ -103,8 +103,8 @@
         "coverage": null,
         "seeded": false,
         "reason": "no codexbar token account for opencodego (--all-accounts: 'No token accounts configured')",
-        "measured_at": "2026-10-26T06:36:59.043Z",
-        "source": "codexbar / plan.md"
+        "measured_at": "2026-10-26T06:39:24.511Z",
+        "source": "codexbar usage"
       },
       "usd_per_b": null,
       "measured": {
@@ -112,7 +112,7 @@
         "p90_ttft_ms": 16841,
         "p50_output_tps": 213.855421686747,
         "n": 4317,
-        "measured_at": "2026-10-26T06:36:59.043Z",
+        "measured_at": "2026-10-26T06:39:24.511Z",
         "source": "usage_logs(7d) rows=4317"
       },
       "presets": [
@@ -133,7 +133,7 @@
         "low_fit",
         "excluded_from_ranking"
       ],
-      "measured_at": "2026-10-26T06:36:59.043Z",
+      "measured_at": "2026-10-26T06:39:24.511Z",
       "source": "usage_logs(7d) + codexbar quota + plans.json"
     },
     {
@@ -147,9 +147,9 @@
         "tokens_per_week": 5700000000,
         "coverage": null,
         "seeded": true,
-        "reason": "JW-251 published allowance (flash weight), seed",
-        "measured_at": "2026-10-26T06:36:59.043Z",
-        "source": "JW-251 published allowance (flash weight), seed"
+        "reason": "published allowance, flash weight (seed, unverified against console)",
+        "measured_at": "2026-10-26T06:39:24.511Z",
+        "source": "published allowance, flash weight (seed, unverified against console)"
       },
       "usd_per_b": null,
       "measured": {
@@ -157,7 +157,7 @@
         "p90_ttft_ms": 12487,
         "p50_output_tps": 98.10333551340746,
         "n": 608,
-        "measured_at": "2026-10-26T06:36:59.043Z",
+        "measured_at": "2026-10-26T06:39:24.511Z",
         "source": "usage_logs(7d) rows=608"
       },
       "presets": [
@@ -178,7 +178,7 @@
         "seed",
         "excluded_from_ranking"
       ],
-      "measured_at": "2026-10-26T06:36:59.043Z",
+      "measured_at": "2026-10-26T06:39:24.511Z",
       "source": "usage_logs(7d) + codexbar quota + plans.json"
     },
     {
@@ -193,7 +193,7 @@
         "coverage": 1,
         "seeded": false,
         "reason": null,
-        "measured_at": "2026-10-26T06:36:59.043Z",
+        "measured_at": "2026-10-26T06:39:24.511Z",
         "source": "codexbar usage --provider qwen-cloud"
       },
       "usd_per_b": 29.92557749630275,
@@ -202,7 +202,7 @@
         "p90_ttft_ms": 9108,
         "p50_output_tps": 142.49578414839797,
         "n": 2187,
-        "measured_at": "2026-10-26T06:36:59.043Z",
+        "measured_at": "2026-10-26T06:39:24.511Z",
         "source": "usage_logs(7d) rows=2187"
       },
       "presets": [
@@ -223,10 +223,10 @@
         "low_fit",
         "capacity_conflict"
       ],
-      "measured_at": "2026-10-26T06:36:59.043Z",
+      "measured_at": "2026-10-26T06:39:24.511Z",
       "source": "usage_logs(7d) + codexbar quota + plans.json"
     }
   ],
-  "measured_at": "2026-10-26T06:36:59.043Z",
+  "measured_at": "2026-10-26T06:39:24.511Z",
   "source": "build-dataset"
 }

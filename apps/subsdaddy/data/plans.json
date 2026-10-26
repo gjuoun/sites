@@ -7,7 +7,7 @@
       "price_month_usd": 35,
       "badge": "plan_spec",
       "measured_at": "2026-10-26T06:06:22Z",
-      "source": "plan.md Decision 3 (JW-295 round); codexbar loginMethod 'GOAT · $35.00 of $70.00' — unconfirmed against the console"
+      "source": "pricing decision 2026-10-26; codexbar loginMethod 'GOAT · $35.00 of $70.00' — unconfirmed against the console"
     },
     {
       "lane": "go-1",
@@ -16,7 +16,7 @@
       "price_month_usd": 10,
       "badge": "plan_spec",
       "measured_at": "2026-10-26T06:06:22Z",
-      "source": "plan.md Decision 3 (JW-295 round)"
+      "source": "pricing decision 2026-10-26"
     },
     {
       "lane": "go-2",
@@ -25,7 +25,7 @@
       "price_month_usd": 10,
       "badge": "plan_spec",
       "measured_at": "2026-10-26T06:06:22Z",
-      "source": "plan.md Decision 3 (JW-295 round); assumed_same_plan as go-1"
+      "source": "pricing decision 2026-10-26; assumed_same_plan as go-1"
     },
     {
       "lane": "zai",
@@ -34,7 +34,7 @@
       "price_month_usd": 56,
       "badge": "plan_spec",
       "measured_at": "2026-10-26T06:06:22Z",
-      "source": "plan.md Decision 3 (JW-295 round): $672/yr"
+      "source": "pricing decision 2026-10-26: $672/yr"
     },
     {
       "lane": "qwen",
@@ -43,9 +43,9 @@
       "price_month_usd": 10,
       "badge": "plan_spec",
       "measured_at": "2026-10-26T06:06:22Z",
-      "source": "plan.md Decision 3 (JW-295 round)"
+      "source": "pricing decision 2026-10-26"
     }
   ],
   "measured_at": "2026-10-26T06:06:22Z",
-  "source": "plan.md Decision 3 (JW-295 round)"
+  "source": "pricing decision 2026-10-26"
 }
