@@ -1,0 +1,194 @@
+{
+  "models": [
+    {
+      "lane": "commandcode-goat",
+      "upstream_model": "deepseek-v4.1-flash",
+      "openrouter": "deepseek/deepseek-v4.1-flash"
+    },
+    {
+      "lane": "opencode-go",
+      "upstream_model": "deepseek-v4.1-flash",
+      "openrouter": "deepseek/deepseek-v4.1-flash"
+    },
+    {
+      "lane": "zai-glm-max",
+      "upstream_model": "glm-5.3-flash",
+      "openrouter": "z-ai/glm-5.3-flash"
+    },
+    {
+      "lane": "qwen-cloud-token",
+      "upstream_model": "deepseek-v4.1-flash-1017",
+      "openrouter": "deepseek/deepseek-v4.1-flash-1017"
+    }
+  ],
+  "measured_at": "2026-10-26T17:30:00Z",
+  "source": "openrouter.ai/api/v1/models, fetched 2026-10-26 (list price, USD per 1M tokens); lane model mapping as before",
+  "reference": [
+    {
+      "ref": "deepseek-v4.1-flash",
+      "openrouter": "deepseek/deepseek-v4.1-flash",
+      "in_per_m": 0.02,
+      "out_per_m": 1.0,
+      "cache_per_m": 0.015,
+      "name": "DeepSeek V4.1 Flash"
+    },
+    {
+      "ref": "gemini-3.8-flash",
+      "openrouter": "google/gemini-3.8-flash",
+      "in_per_m": 0.825,
+      "out_per_m": 4.125,
+      "cache_per_m": 0.0825,
+      "name": "Gemini 3.8 Flash"
+    },
+    {
+      "ref": "claude-haiku-5.5",
+      "openrouter": "anthropic/claude-haiku-5.5",
+      "in_per_m": 0.1,
+      "out_per_m": 0.5,
+      "cache_per_m": 0.01,
+      "name": "Claude Haiku 5.5"
+    },
+    {
+      "ref": "gpt-6-luna",
+      "openrouter": "openai/gpt-6-luna",
+      "in_per_m": 0.1,
+      "out_per_m": 0.5,
+      "cache_per_m": 0.01,
+      "name": "GPT-6 Luna"
+    },
+    {
+      "ref": "glm-5.3-flash",
+      "openrouter": "z-ai/glm-5.3-flash",
+      "in_per_m": 0.15,
+      "out_per_m": 0.5,
+      "cache_per_m": 0.03,
+      "name": "GLM-5.3-Flash"
+    }
+  ],
+  "usage_models": [
+    {
+      "upstream_model": "deepseek-v4.1-flash-1017",
+      "openrouter": "deepseek/deepseek-v4.1-flash-1017",
+      "unmapped_reason": null,
+      "in_per_m": 0.15,
+      "out_per_m": 0.6,
+      "cache_per_m": 0.003,
+      "name": "DeepSeek V4.1 Flash (1017)",
+      "peak_offpeak": {
+        "ref": "deepseek-v4.1-flash",
+        "peak_usd_per_m": {
+          "in_per_m": 0.3,
+          "out_per_m": 1.2,
+          "cache_per_m": 0.03
+        },
+        "offpeak_usd_per_m": {
+          "in_per_m": 0.15,
+          "out_per_m": 0.6,
+          "cache_per_m": 0.015
+        },
+        "peak_hours": 14,
+        "offpeak_hours": 10,
+        "timezone_note": "Beijing time: peak 08:00-22:00, off-peak 22:00-08:00 (= Montreal 10:00-20:00 off-peak)",
+        "source": "qwencloud.com/pricing/api (read 2026-10-26)",
+        "measured_at": "2026-10-26",
+        "note": "no -1017 row on the official page; priced as the deepseek-v4.1-flash row",
+        "provider": "qwen-cloud",
+        "band_inherited_from": null,
+        "priced_as": "deepseek-v4.1-flash"
+      }
+    },
+    {
+      "upstream_model": "deepseek-v4.1-flash",
+      "openrouter": "deepseek/deepseek-v4.1-flash",
+      "unmapped_reason": null,
+      "in_per_m": 0.02,
+      "out_per_m": 1.0,
+      "cache_per_m": 0.015,
+      "name": "DeepSeek V4.1 Flash",
+      "peak_offpeak": {
+        "ref": "deepseek-v4.1-flash",
+        "peak_usd_per_m": {
+          "in_per_m": 0.3,
+          "out_per_m": 1.2,
+          "cache_per_m": 0.03
+        },
+        "offpeak_usd_per_m": {
+          "in_per_m": 0.15,
+          "out_per_m": 0.6,
+          "cache_per_m": 0.015
+        },
+        "peak_hours": 14,
+        "offpeak_hours": 10,
+        "timezone_note": "Beijing time: peak 08:00-22:00, off-peak 22:00-08:00 (= Montreal 10:00-20:00 off-peak)",
+        "source": "qwencloud.com/pricing/api (read 2026-10-26)",
+        "measured_at": "2026-10-26",
+        "note": "exact row on the official page: peak 08:00-22:00, off-peak 22:00-08:00 Beijing time",
+        "provider": "qwen-cloud",
+        "band_inherited_from": null,
+        "priced_as": null
+      }
+    },
+    {
+      "upstream_model": "qwen3.8-flash",
+      "openrouter": "qwen/qwen3.8-flash",
+      "unmapped_reason": null,
+      "in_per_m": 0.15,
+      "out_per_m": 0.47,
+      "cache_per_m": 0.016,
+      "name": "Qwen3.8 Flash",
+      "peak_offpeak": {
+        "ref": null,
+        "peak_usd_per_m": {
+          "in_per_m": 0.15,
+          "out_per_m": 0.47,
+          "cache_per_m": 0.016
+        },
+        "offpeak_usd_per_m": {
+          "in_per_m": 0.09,
+          "out_per_m": 0.282,
+          "cache_per_m": 0.0096
+        },
+        "peak_hours": 14,
+        "offpeak_hours": 10,
+        "timezone_note": "Beijing time: peak 08:00-22:00, off-peak 22:00-08:00 (= Montreal 10:00-20:00 off-peak)",
+        "source": "qwencloud.com/pricing/api (read 2026-10-26)",
+        "measured_at": "2026-10-26",
+        "note": "flat page price taken as peak; off-peak = 0.6 x peak; the page gives no band for qwen3.8 rows, so the deepseek-v4.1-flash band is inherited",
+        "provider": "qwen-cloud",
+        "band_inherited_from": "deepseek-v4.1-flash",
+        "priced_as": null
+      }
+    },
+    {
+      "upstream_model": "qwen3.8-max",
+      "openrouter": null,
+      "in_per_m": null,
+      "out_per_m": null,
+      "cache_per_m": null,
+      "unmapped_reason": "OpenRouter lists only dated snapshots (qwen/qwen3.8-max-0902, qwen/qwen3.8-max-prime); neither is an unambiguous match for qwen3.8-max, and no official list price was read",
+      "name": "Qwen3.8 Max",
+      "peak_offpeak": {
+        "ref": null,
+        "peak_usd_per_m": {
+          "in_per_m": 2,
+          "out_per_m": 6,
+          "cache_per_m": 0.25
+        },
+        "offpeak_usd_per_m": {
+          "in_per_m": 1.2,
+          "out_per_m": 3.6,
+          "cache_per_m": 0.15
+        },
+        "peak_hours": 14,
+        "offpeak_hours": 10,
+        "timezone_note": "Beijing time: peak 08:00-22:00, off-peak 22:00-08:00 (= Montreal 10:00-20:00 off-peak)",
+        "source": "qwencloud.com/pricing/api (read 2026-10-26)",
+        "measured_at": "2026-10-26",
+        "note": "flat page price taken as peak; off-peak = 0.6 x peak; the page gives no band for qwen3.8 rows, so the deepseek-v4.1-flash band is inherited",
+        "provider": "qwen-cloud",
+        "band_inherited_from": "deepseek-v4.1-flash",
+        "priced_as": null
+      }
+    }
+  ]
+}

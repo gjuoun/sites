@@ -1,0 +1,81 @@
+{
+  "window_days": 7,
+  "measured_at": "2026-10-26T19:37:00.477Z",
+  "source": "local Codex and Claude Code session logs, read-only, aggregated; codexbar windows",
+  "providers": [
+    {
+      "provider": "codex",
+      "plan": "OpenAI Codex - Plus",
+      "fee_usd": null,
+      "fee_claimed_usd": 20,
+      "fee_status": "unverified",
+      "fee_reason": "$20/mo is claimed in the brief and not read from a confirmed source",
+      "window": {
+        "five_hour_pct": 0,
+        "weekly_pct": 0,
+        "resets_at": "2026-11-02T19:37:01Z"
+      },
+      "window_reason": null,
+      "tokens_7d": {
+        "calls": 0,
+        "input": 0,
+        "cache_read": 0,
+        "cache_write": 0,
+        "output": 0
+      },
+      "speed_7d": null,
+      "speed_reason": "no session in the last 7 days (last session day 2026-09-16); speed not measured in the window",
+      "ttft_reason": "the rollout logs one first-message time per turn, not a first-token time; TTFT is not measured",
+      "all_time": {
+        "calls": 6,
+        "input": 32735,
+        "cache_read": 112384,
+        "cache_write": 0,
+        "output": 1080,
+        "first_day": "2026-09-16",
+        "last_day": "2026-09-16",
+        "speed": {
+          "tps_p50": 45.957237650528384,
+          "n": 3
+        }
+      },
+      "measured_at": "2026-10-26T19:37:00.477Z",
+      "source": "local ~/.codex session rollouts (read-only, aggregated); codexbar windows"
+    },
+    {
+      "provider": "claude-code",
+      "plan": "Claude Code - tier not readable",
+      "fee_usd": null,
+      "fee_claimed_usd": null,
+      "fee_status": "unverified",
+      "fee_reason": "tier not readable: the session logs carry no plan field, and codexbar returns no plan window",
+      "window": null,
+      "window_reason": "codexbar returned no 5h or weekly window for claude (web source, no plan window)",
+      "tokens_7d": {
+        "calls": 0,
+        "input": 0,
+        "cache_read": 0,
+        "cache_write": 0,
+        "output": 0
+      },
+      "speed_7d": null,
+      "speed_reason": "no session in the last 7 days (last session day 2026-10-07); speed not measured in the window",
+      "ttft_reason": "the session logs carry no first-token time; TTFT is not measured",
+      "all_time": {
+        "calls": 68,
+        "input": 136,
+        "cache_read": 5541675,
+        "cache_write": 235158,
+        "output": 45355,
+        "first_day": "2026-10-07",
+        "last_day": "2026-10-07",
+        "speed": {
+          "tps_p50": 230.12910440497257,
+          "n": 58
+        }
+      },
+      "measured_at": "2026-10-26T19:37:00.477Z",
+      "source": "local ~/.claude session logs (read-only, aggregated)"
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+# raw per-row exports stay local; the aggregated data/*.json files are committed
+data/raw/*/*.json
