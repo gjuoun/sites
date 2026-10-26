@@ -1,5 +1,8 @@
 import type { dataset as DatasetValue } from "./dataset";
 import { catalogDisplayRow, formatEstimate, formatUsdPerCredit, type CatalogRow } from "../data/catalog";
+import { dsRanking, type DsLane, type DsModels } from "./ds-ranking";
+import { fmtPrice } from "../data/peak-offpeak";
+import type { RefPrice } from "../data/estimate";
 import { REF_IDS, type RefId } from "../data/estimate";
 import { flagCell, na, orCell, value, type BadgeKind, type Cell } from "./cells";
 import { formatRange, orForModel } from "./or-stats";
@@ -143,7 +146,9 @@ export function modelTable(ds: DS, ref: RefId): Table & { subtitle: string; orNo
           est: estCell,
           vs,
           tps: speed(or.summary?.tps ? formatRange(or.summary.tps) : null, or.reason),
-          ttft: speed(or.summary?.latency_ms ? formatRange(or.summary.latency_ms) + " ms" : null, or.reason),
+          ttft: or.summary?.latency_ms && orId
+            ? orCell(Math.round(or.summary.latency_ms.median).toLocaleString("en-US") + " ms", orId + " · TTFT p50 median across endpoints · " + (speedNote ?? "N/A") + " · 30-minute window", formatRange(or.summary.latency_ms) + " ms range")
+            : na(or.reason ?? "no OpenRouter data"),
           basis,
         },
       };
@@ -283,5 +288,40 @@ export function catalogTable(ds: DS): Table {
       { key: "badges", label: "Badges", width: "18%" },
     ],
     rows,
+  };
+}
+
+/** The DeepSeek value ranking: the convertible plans that list DeepSeek V4.1 Flash, sorted by the QwenCloud-basis est $/B. */
+export function dsRankingTable(ds: DS): Table & { subtitle: string; excludedLines: string[] } {
+  const k = dsRanking(ds.catalog.rows as CatalogRow[], ds.models as unknown as DsModels, ds.usage.lanes as unknown as DsLane[]);
+  const price = (p: RefPrice) => "$" + fmtPrice(p.in_per_m) + " / $" + fmtPrice(p.out_per_m) + " / $" + fmtPrice(p.cache_per_m) + " per M";
+  const rows = k.ranked.map((e) => ({
+    key: e.plan_id,
+    cells: {
+      plan: value(e.label),
+      fee: value(money(e.fee_usd) + "/mo"),
+      allowance: value(money(e.allowance_usd), [], e.allowance_basis),
+      estQw: value(usd(e.est_qw), [], "QwenCloud average prices for DeepSeek V4.1 Flash"),
+      estList: e.est_list === null ? na(e.list_reason ?? "no OpenRouter list basis") : value(usd(e.est_list), [], "OpenRouter list price for DeepSeek V4.1 Flash"),
+      tokens: value(e.tokens_b_qw.toFixed(2) + "B", [], "QwenCloud basis; list basis: " + (e.tokens_b_list === null ? "N/A" : e.tokens_b_list.toFixed(2) + "B") + " tokens per month"),
+      basis: value("agent shape, " + e.mix_source, [], e.allowance_basis),
+    },
+  }));
+  return {
+    subtitle: "Est. $/B of running the whole allowance on DeepSeek V4.1 Flash, agent shape (the plan's own measured mix where it has one). QwenCloud basis: " + price(k.qw_price) + ". OpenRouter basis: " + price(k.list_price) + ". Sorted by the QwenCloud basis.",
+    columns: [
+      { key: "plan", label: "Plan", width: "27%" },
+      { key: "fee", label: "Fee/mo", width: "9%", numeric: true },
+      { key: "allowance", label: "Allowance ($ of usage)", width: "11%", numeric: true },
+      { key: "estQw", label: "Est. $/B · QwenCloud", width: "12%", numeric: true },
+      { key: "estList", label: "Est. $/B · OpenRouter", width: "12%", numeric: true },
+      { key: "tokens", label: "DeepSeek tokens/mo", width: "12%", numeric: true },
+      { key: "basis", label: "Basis", width: "16%", clip: true },
+    ],
+    rows,
+    excludedLines: [
+      "Not ranked, convertible: " + k.excluded.map((x) => x.label + " (" + x.reason + ")").join("; ") + ".",
+      "Not ranked, no dollar allowance: " + k.counts.needs_anchor + " plans. Each shows its price and the anchor needed; none gets a $/B.",
+    ],
   };
 }

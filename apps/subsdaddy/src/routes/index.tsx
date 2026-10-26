@@ -3,7 +3,7 @@ import { UnifiedTable } from "@/components/unified-table";
 import { SiteFooter } from "@/components/site-footer";
 import { MODEL_BLOCK, MODEL_GAP, MODEL_TITLE, NOTE, PAGE, PAGE_TITLE, SECTION, SECTION_TITLE, SMALL_NOTE } from "@/components/layout";
 import { dataset } from "@/lib/dataset";
-import { measuredTable, modelTables, officialTable, type DS } from "@/lib/sections";
+import { dsRankingTable, measuredTable, modelTables, officialTable, type DS } from "@/lib/sections";
 
 export const Route = createFileRoute("/")({
   component: IndexPage,
@@ -13,6 +13,7 @@ function IndexPage() {
   const ds = dataset as unknown as DS;
   const measured = measuredTable(ds);
   const models = modelTables(ds);
+  const dsRank = dsRankingTable(ds);
   return (
     <main className={PAGE}>
       <header className="space-y-2">
@@ -34,6 +35,17 @@ function IndexPage() {
         </p>
         <UnifiedTable testId="measured" columns={measured.columns} rows={measured.rows} />
         <p className={SMALL_NOTE}>{measured.footnote}</p>
+      </section>
+
+      <section className={MODEL_GAP} aria-labelledby="sec-ds">
+        <div className={SECTION}>
+          <h2 id="sec-ds" className={SECTION_TITLE}>DeepSeek value ranking</h2>
+          <p className={NOTE}>{dsRank.subtitle}</p>
+        </div>
+        <UnifiedTable testId="ds-ranking" columns={dsRank.columns} rows={dsRank.rows} />
+        {dsRank.excludedLines.map((l) => (
+          <p key={l} className={SMALL_NOTE}>{l}</p>
+        ))}
       </section>
 
       <section className={MODEL_GAP} aria-labelledby="sec-b">
