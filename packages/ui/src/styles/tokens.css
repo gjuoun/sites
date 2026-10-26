@@ -2,7 +2,6 @@
    Bigface's dark theme: import it after theme.css, or skip it and set your own --bf-* values. */
 :root {
   --bf-bg: #252925;
-  --bf-paper: #f8f8f0;
   --bf-panel: #2d312d;
   --bf-fg: #e8e9e1;
   --bf-fg-dim: #8c8f89;
@@ -33,6 +32,6 @@
   --bf-ansi-bright-blue: #40c4ff;
   --bf-ansi-bright-magenta: #ae81ff;
   --bf-ansi-bright-cyan: #b3e5fc;
-  --bf-ansi-bright-white: #f8f8f0;
+  --bf-ansi-bright-white: #e8e9e1;
   --ink-on-bright: var(--bf-bg);
 }

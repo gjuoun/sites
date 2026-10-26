@@ -74,7 +74,7 @@ export const REQUIRED = [
 export const COLOURS: ThemeRoles = {
 	canvas: { color: "bg" },
 	ink: { color: "fg" },
-	heading: { color: "paper" },
+	heading: { color: "fg" },
 	// Two-tier primary, Jun's ruling: the FILL is bigface's native blue with dark ink on top (the same
 	// construction the dark theme's buttons already use, 6.08:1 as ink-on-fill); TEXT/links keep the
 	// readable derived blue. Both name the palette, never a hex.
@@ -119,7 +119,7 @@ export const COLOURS: ThemeRoles = {
 	"chart-3": { color: "yellow" },
 	"chart-4": { color: "burntOrange" },
 	"chart-5": { color: "purple" },
-	overlay: { mix: ["bg", 75, "paper"] },
+	overlay: { color: "bg" },
 	solid: { color: "panel" },
 	"on-solid": { color: "fg" },
 };
@@ -186,7 +186,7 @@ export const THEMES: Theme[] = [
 				press: "0.99",
 				weight: "600",
 				// Business light: the blue plate carries no dark drop at all; dark keeps bigface's glow.
-				"primary-shadow": { light: "none", dark: "0 8px 26px color-mix(in srgb, var(--bf-blue) 30%, transparent), inset 0 1px 0 color-mix(in srgb, var(--bf-paper) 50%, transparent)" },
+				"primary-shadow": { light: "none", dark: "0 8px 26px color-mix(in srgb, var(--bf-blue) 30%, transparent), inset 0 1px 0 color-mix(in srgb, var(--bf-fg) 50%, transparent)" },
 			}),
 		},
 	},
@@ -215,7 +215,7 @@ export const THEMES: Theme[] = [
 				hover: "1",
 				press: "0.975",
 				weight: "500",
-				"primary-shadow": "0 8px 26px color-mix(in srgb, var(--bf-blue) 30%, transparent), inset 0 1px 0 color-mix(in srgb, var(--bf-paper) 50%, transparent)",
+				"primary-shadow": { light: "0 8px 26px color-mix(in srgb, var(--bf-blue) 30%, transparent), inset 0 1px 0 color-mix(in srgb, var(--bf-bg) 50%, transparent)", dark: "0 8px 26px color-mix(in srgb, var(--bf-blue) 30%, transparent), inset 0 1px 0 color-mix(in srgb, var(--bf-fg) 50%, transparent)" },
 			}),
 		},
 	},
@@ -244,7 +244,7 @@ export const THEMES: Theme[] = [
 				hover: "1.04",
 				press: "0.9",
 				weight: "800",
-				"primary-shadow": "0 8px 26px color-mix(in srgb, var(--bf-blue) 30%, transparent), inset 0 1px 0 color-mix(in srgb, var(--bf-paper) 50%, transparent)",
+				"primary-shadow": { light: "0 8px 26px color-mix(in srgb, var(--bf-blue) 30%, transparent), inset 0 1px 0 color-mix(in srgb, var(--bf-bg) 50%, transparent)", dark: "0 8px 26px color-mix(in srgb, var(--bf-blue) 30%, transparent), inset 0 1px 0 color-mix(in srgb, var(--bf-fg) 50%, transparent)" },
 			}),
 		},
 	},

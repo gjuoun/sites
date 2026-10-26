@@ -4,7 +4,7 @@
 [data-theme="game"] {
   --theme-canvas: #f8f8f0;
   --theme-ink: #2f332f;
-  --theme-heading: #f8f8f0;
+  --theme-heading: #2f332f;
   --theme-primary: #00b0ff;
   --theme-on-primary: #252925;
   --theme-primary-edge: #60c1fd;
@@ -47,7 +47,7 @@
   --theme-chart-5: #ae81ff;
   --theme-primary-fill: #00b0ff;
   --theme-primary-ink: #00b0ff;
-  --theme-primary-shadow: 0 8px 26px color-mix(in srgb, var(--bf-blue) 30%, transparent), inset 0 1px 0 color-mix(in srgb, var(--bf-paper) 50%, transparent);
+  --theme-primary-shadow: 0 8px 26px color-mix(in srgb, var(--bf-blue) 30%, transparent), inset 0 1px 0 color-mix(in srgb, var(--bf-bg) 50%, transparent);
   --theme-overlay: #f8f8f0;
   --theme-solid: #edede5;
   --theme-on-solid: #2f332f;
@@ -71,7 +71,7 @@
 [data-mode="dark"] [data-theme="game"]:not([data-mode="light"]) {
   --theme-canvas: #252925;
   --theme-ink: #e8e9e1;
-  --theme-heading: #f8f8f0;
+  --theme-heading: #e8e9e1;
   --theme-primary: #00b0ff;
   --theme-on-primary: #252925;
   --theme-primary-edge: #2490ca;
@@ -114,8 +114,8 @@
   --theme-chart-5: #ae81ff;
   --theme-primary-fill: #00b0ff;
   --theme-primary-ink: #00b0ff;
-  --theme-primary-shadow: 0 8px 26px color-mix(in srgb, var(--bf-blue) 30%, transparent), inset 0 1px 0 color-mix(in srgb, var(--bf-paper) 50%, transparent);
-  --theme-overlay: #535752;
+  --theme-primary-shadow: 0 8px 26px color-mix(in srgb, var(--bf-blue) 30%, transparent), inset 0 1px 0 color-mix(in srgb, var(--bf-fg) 50%, transparent);
+  --theme-overlay: #252925;
   --theme-solid: #2d312d;
   --theme-on-solid: #e8e9e1;
   --theme-shadow-card: 0 1px 3px color-mix(in srgb, var(--theme-canvas) 22%, transparent);

@@ -3,7 +3,6 @@
    value can reach a paper surface. */
 [data-mode="light"] {
   --bf-bg: #f8f8f0;
-  --bf-paper: #f8f8f0;
   --bf-panel: #edede5;
   --bf-fg: #2f332f;
   --bf-fg-dim: #70736e;
