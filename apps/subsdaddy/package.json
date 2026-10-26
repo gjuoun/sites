@@ -10,7 +10,8 @@
     "test": "bun test src",
     "collect:usage": "bun run scripts/collect-usage.ts",
     "probe:quota": "bun run scripts/collect-quota.ts",
-    "build:dataset": "bun run scripts/build-dataset.ts"
+    "build:dataset": "bun run scripts/build-dataset.ts",
+    "collect:openrouter": "bun run scripts/collect-openrouter.ts"
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.3.0",
