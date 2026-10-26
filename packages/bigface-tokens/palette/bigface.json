@@ -10,6 +10,10 @@
       "hex": "#f8f8f0",
       "source": "jetbrains:colors#CARET_COLOR"
     },
+    "panel": {
+      "hex": "#2d312d",
+      "source": "derived:panel"
+    },
     "fg": {
       "hex": "#e8e9e1",
       "source": "derived:fg"

@@ -10,6 +10,10 @@
       "hex": "#f8f8f0",
       "source": "dark:paper"
     },
+    "panel": {
+      "hex": "#edede5",
+      "source": "derived:panel"
+    },
     "fg": {
       "hex": "#2f332f",
       "source": "derived:fg"
