@@ -1,22 +1,21 @@
 import { na, value, type Cell } from "./cells";
 import { REF_IDS, REF_NAMES, type RefId } from "../data/estimate";
+import { contextLabel, type ContextId } from "../data/context";
 import { orForModel } from "./or-stats";
 import { money, usd, type Column, type DS, type Table } from "./sections";
 
 /**
  * The front page: one table for one view at a time. The views are Measured (our own traffic) and one
- * per reference model that some plan offers. Every number is a single value; a missing value is N/A.
- *
- *   Measured view   $/B = the lane's own measured $/B; tok/s and TTFT p50 = our usage logs.
- *   Model view      $/B = the plan's catalog estimate for that model (agent shape); a plan that does
- *                   not offer the model is not a row. tok/s and TTFT p50 = OpenRouter, for that model,
- *                   weighted by request_count across its endpoints (the median by traffic).
- *   Rows are sorted by $/B ascending. Speeds show two significant figures with a leading "~".
+ * per reference model that some plan offers. The context switch (100K or 350K) sets the prompt length
+ * the model prices are read at; Measured $/B is what the plan delivered, so it does not depend on it.
+ * Every number is a single value; a missing value is N/A.
  */
 
 export const MEASURED = "measured" as const;
 export type ViewId = typeof MEASURED | RefId;
 export type Chip = { id: ViewId; label: string; rows: number };
+
+export const DERIVED_FOOTNOTE = "* derived from the same-rate peer plan — this plan's own window is saturated";
 
 export const SUMMARY_COLUMNS: Column[] = [
   { key: "plan", label: "Plan", width: "30%" },
@@ -49,7 +48,11 @@ export function orModelOf(ds: DS, ref: RefId): string | null {
   return ds.models.reference.find((r) => r.ref === ref)?.openrouter ?? null;
 }
 
-type ViewRow = { key: string; label: string; fee: number; capacity: string | null; capacityReason: string; usd: number | null; usdTitle: string; derived: boolean; tps: number | null; tpsTitle: string; ttft: number | null; ttftTitle: string };
+type ViewRow = {
+  key: string; label: string; fee: number; capacity: string | null; capacityReason: string;
+  usd: number | null; usdTitle: string; derived: boolean;
+  tps: number | null; tpsTitle: string; ttft: number | null; ttftTitle: string;
+};
 
 /** OpenRouter's traffic-weighted p50 for one model: tok/s and TTFT, one value each. */
 export function orWeighted(ds: DS, ref: RefId): { tps: number | null; ttft: number | null; title: string; reason: string | null } {
@@ -81,22 +84,24 @@ function measuredRows(ds: DS): ViewRow[] {
   }));
 }
 
-function modelRows(ds: DS, ref: RefId): ViewRow[] {
+function modelRows(ds: DS, ref: RefId, ctx: ContextId): ViewRow[] {
   const or = orWeighted(ds, ref);
   const out: ViewRow[] = [];
   for (const r of ds.catalog.rows) {
     if (r.status !== "catalog" || !r.offered_models.includes(ref) || r.price_month_usd === null) continue;
-    if (r.estimate?.status !== "estimated") continue;
-    const v = r.estimate.values.find((x) => x.ref === ref && x.shape === "agent");
-    if (!v || v.usd_per_b === null) continue;
+    // a plan that offers the model but has no dollar allowance is a row with N/A and its reason
+    const v = r.estimate?.status === "estimated" ? r.estimate.values.find((x) => x.ref === ref && x.shape === "agent") : undefined;
+    const usdVal = !v ? null : ctx === "short" ? v.usd_per_b : (v.usd_per_b_long ?? null);
+    const band = !v ? null : ctx === "short" ? (v.band_short ?? null) : (v.band_long ?? null);
+    const reason = r.estimate?.reason ?? "no estimate for this model";
     out.push({
       key: r.plan_id,
       label: r.label,
       fee: r.price_month_usd,
-      capacity: (r.price_month_usd / v.usd_per_b).toFixed(2) + "B/mo",
-      capacityReason: "",
-      usd: v.usd_per_b,
-      usdTitle: "estimate: fee ÷ allowance × blended list $/B for " + REF_NAMES[ref],
+      capacity: usdVal === null ? null : (r.price_month_usd / usdVal).toFixed(2) + "B/mo",
+      capacityReason: reason,
+      usd: usdVal,
+      usdTitle: usdVal === null ? reason : "estimate at a " + contextLabel(ctx) + "-token context: fee ÷ allowance × blended $/B for " + REF_NAMES[ref] + (band ? "; prices " + band : ""),
       derived: false,
       tps: or.tps,
       tpsTitle: or.title || (or.reason ?? "no OpenRouter data"),
@@ -107,12 +112,12 @@ function modelRows(ds: DS, ref: RefId): ViewRow[] {
   return out;
 }
 
-export function viewRows(ds: DS, view: ViewId): ViewRow[] {
-  const rows = view === MEASURED ? measuredRows(ds) : modelRows(ds, view);
+export function viewRows(ds: DS, view: ViewId, ctx: ContextId = "short"): ViewRow[] {
+  const rows = view === MEASURED ? measuredRows(ds) : modelRows(ds, view, ctx);
   return rows.sort((a, b) => (a.usd ?? Infinity) - (b.usd ?? Infinity) || a.label.localeCompare(b.label));
 }
 
-/** The chips: Measured, then each reference model that at least one plan offers with a $/B. */
+/** The chips: Measured, then each reference model that at least one plan offers with a row. */
 export function viewChips(ds: DS): Chip[] {
   const chips: Chip[] = [{ id: MEASURED, label: "Measured (own traffic)", rows: ds.lanes.lanes.length }];
   for (const ref of REF_IDS) {
@@ -122,20 +127,19 @@ export function viewChips(ds: DS): Chip[] {
   return chips;
 }
 
-const naShort = (reason: string): Cell => ({ ...na(reason), reason: "" });
-
 /** The speed basis, one line under the switch. */
 export function basisLine(ds: DS, view: ViewId): string {
   if (view === MEASURED) return "ours, from usage logs";
   return "tok/s and TTFT are OpenRouter p50 weighted by request volume for " + (orModelOf(ds, view) ?? "") + " (30-minute window)";
 }
 
-export const DERIVED_FOOTNOTE = "* derived from the same-rate peer plan — this plan's own window is saturated";
-
 export type SummaryTable = Table & { rows: Array<{ key: string; cells: Record<string, Cell> }>; footnote: string | null; basisLine: string };
 
-export function summaryTable(ds: DS, view: ViewId): SummaryTable {
-  const rows = viewRows(ds, view).map((r) => ({
+const naShort = (reason: string): Cell => ({ ...na(reason), reason: "" });
+
+export function summaryTable(ds: DS, view: ViewId, ctx: ContextId = "short"): SummaryTable {
+  const data = viewRows(ds, view, ctx);
+  const rows = data.map((r) => ({
     key: r.key,
     cells: {
       plan: value(r.label),
@@ -146,6 +150,9 @@ export function summaryTable(ds: DS, view: ViewId): SummaryTable {
       ttft: r.ttft === null ? naShort("no latency data") : value("~" + sig2(r.ttft) + " ms", [], r.ttftTitle),
     },
   }));
-  const anyDerived = viewRows(ds, view).some((r) => r.derived);
-  return { columns: SUMMARY_COLUMNS, rows, footnote: anyDerived ? DERIVED_FOOTNOTE : null, basisLine: basisLine(ds, view) };
+  const footnote =
+    view === MEASURED
+      ? data.some((r) => r.derived) ? DERIVED_FOOTNOTE : null
+      : "Prices assume a " + contextLabel(ctx) + "-token context";
+  return { columns: SUMMARY_COLUMNS, rows, footnote, basisLine: basisLine(ds, view) };
 }

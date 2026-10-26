@@ -4,7 +4,8 @@ import { SummaryView } from "@/components/summary-view";
 import { NOTE, PAGE, PAGE_TITLE, SMALL_NOTE } from "@/components/layout";
 import { dataset } from "@/lib/dataset";
 import type { DS } from "@/lib/sections";
-import { MEASURED, summaryTable, viewChips } from "@/lib/summary";
+import { MEASURED, summaryTable, viewChips, type SummaryTable } from "@/lib/summary";
+import { CONTEXT_IDS } from "@/data/context";
 
 export const Route = createFileRoute("/")({
   component: IndexPage,
@@ -13,7 +14,8 @@ export const Route = createFileRoute("/")({
 function IndexPage() {
   const ds = dataset as unknown as DS;
   const chips = viewChips(ds);
-  const tables = Object.fromEntries(chips.map((c) => [c.id, summaryTable(ds, c.id)]));
+  const tables: Record<string, SummaryTable> = {};
+  for (const c of chips) for (const k of CONTEXT_IDS) tables[c.id + "|" + k] = summaryTable(ds, c.id, k);
   return (
     <main className={PAGE}>
       <header className="space-y-2">

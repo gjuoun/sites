@@ -83,6 +83,12 @@ if (text(idx).indexOf("ours, from usage logs") < 0) fail("Measured basis line mi
 const basisLines = text(idx).match(/tok\/s and TTFT are OpenRouter p50 weighted by request volume/g) ?? [];
 if (basisLines.length > 0) fail("a model basis line is on the Measured view");
 
+// 4c. the context switch: two standards on the front page; the standard context and both comparison tables on methodology
+const ctxChips = [...html.index.matchAll(/data-context="(short|long)"/g)].map((m) => m[1]);
+if (new Set(ctxChips).size !== 2) fail("context switch has " + new Set(ctxChips).size + " options, expected 2 (short, long)");
+if (!/data-testid="context-distribution"/.test(html.methodology)) fail("methodology has no context distribution table");
+if (!/data-testid="context-compare"/.test(html.methodology)) fail("methodology has no 100K vs 350K comparison table");
+
 // 5. methodology: every detail table, in full
 const meth = main(html.methodology);
 const mt = tables(html.methodology);

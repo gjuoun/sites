@@ -3,7 +3,7 @@ import { catalogDisplayRow, formatEstimate, formatUsdPerCredit, type CatalogRow 
 import { dsRanking, type DsLane, type DsModels } from "./ds-ranking";
 import { fmtPrice } from "../data/peak-offpeak";
 import type { RefPrice } from "../data/estimate";
-import { REF_IDS, type RefId } from "../data/estimate";
+import { REF_IDS, REF_NAMES, type RefId } from "../data/estimate";
 import { flagCell, na, orCell, value, type BadgeKind, type Cell } from "./cells";
 import { formatRange, orForModel } from "./or-stats";
 
@@ -323,5 +323,56 @@ export function dsRankingTable(ds: DS): Table & { subtitle: string; excludedLine
       "Not ranked, convertible: " + k.excluded.map((x) => x.label + " (" + x.reason + ")").join("; ") + ".",
       "Not ranked, no dollar allowance: " + k.counts.needs_anchor + " plans. Each shows its price and the anchor needed; none gets a $/B.",
     ],
+  };
+}
+
+/** The standard context: the distribution of session-end contexts in the pi sample. */
+export function contextDistributionTable(ds: DS): Table {
+  const total = ds.context.histogram.reduce((a, h) => a + h.sessions, 0);
+  return {
+    columns: [
+      { key: "bucket", label: "Session-end context", width: "40%" },
+      { key: "sessions", label: "Sessions", width: "30%", numeric: true },
+      { key: "share", label: "Share", width: "30%", numeric: true },
+    ],
+    rows: ds.context.histogram.map((h) => ({
+      key: h.bucket,
+      cells: { bucket: value(h.bucket), sessions: value(h.sessions.toLocaleString("en-US")), share: value(((100 * h.sessions) / total).toFixed(1) + "%") },
+    })),
+  };
+}
+
+/** $/B of each estimated plan and reference model at the 100K standard, the 350K standard and the p75 sensitivity point. */
+export function contextCompareTable(ds: DS): Table {
+  const p75 = Math.round(ds.context.quantiles.p75 / 1000) + "K";
+  const cell = (v: number | null | undefined, title: string): Cell => (v === null || v === undefined ? na("no estimate at this context") : value(usd(v), [], title));
+  const rows: Array<{ key: string; cells: Record<string, Cell> }> = [];
+  for (const r of ds.catalog.rows) {
+    const est = r.estimate;
+    if (r.status !== "catalog" || !est || est.status !== "estimated") continue;
+    for (const ref of REF_IDS) {
+      const v = est.values.find((x) => x.ref === ref && x.shape === "agent");
+      if (!v || v.usd_per_b === null) continue;
+      rows.push({
+        key: r.plan_id + "|" + ref,
+        cells: {
+          plan: value(r.label),
+          model: value(REF_NAMES[ref]),
+          short: cell(v.usd_per_b, v.band_short ?? ""),
+          long: cell(v.usd_per_b_long, v.band_long ?? ""),
+          p75: cell(v.usd_per_b_p75, v.band_p75 ?? ""),
+        },
+      });
+    }
+  }
+  return {
+    columns: [
+      { key: "plan", label: "Plan", width: "34%" },
+      { key: "model", label: "Model", width: "22%" },
+      { key: "short", label: "$/B at 100K", width: "14%", numeric: true },
+      { key: "long", label: "$/B at 350K", width: "14%", numeric: true },
+      { key: "p75", label: "$/B at p75 " + p75, width: "16%", numeric: true },
+    ],
+    rows,
   };
 }
