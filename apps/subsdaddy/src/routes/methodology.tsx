@@ -1,6 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteFooter } from "@/components/site-footer";
-import { PAGE_TITLE } from "@/components/layout";
+import { UnifiedTable } from "@/components/unified-table";
+import { MODEL_BLOCK, MODEL_TITLE, NOTE, PAGE_TITLE, SECTION_TITLE, SMALL_NOTE } from "@/components/layout";
+import { dataset } from "@/lib/dataset";
+import { catalogTable, dsRankingTable, measuredTable, modelTables, officialTable, type DS } from "@/lib/sections";
 
 export const Route = createFileRoute("/methodology")({
   component: MethodologyPage,
@@ -8,7 +11,7 @@ export const Route = createFileRoute("/methodology")({
 
 function MethodologyPage() {
   return (
-    <main className="mx-auto max-w-3xl space-y-5 p-6 text-sm leading-6">
+    <main className="mx-auto max-w-6xl space-y-5 p-6 text-sm leading-6">
       <Link to="/" className="underline">← ranking</Link>
       <h1 className={PAGE_TITLE}>Methodology</h1>
       <section className="space-y-2">
@@ -39,10 +42,10 @@ function MethodologyPage() {
       </section>
       <section className="space-y-2">
         <h2 className="text-lg font-medium">Est. $/B and measured $/B differ on purpose</h2>
-        <p>Est. $/B (section B) is fee ÷ allowance × the list-price cost per billion tokens of one model: what a billion tokens of that model would cost if the whole allowance were spent on it. Measured $/B (section A) is fee ÷ the tokens actually delivered in our traffic. The vs measured column shows the gap. It is mostly model mix: the estimate prices a whole allowance at one model's list cost, while measured traffic also carries cheaper models, so a costly model such as Claude Haiku 5.5 shows a large positive gap. Each plan uses its own measured mix for the cache and output shares when it has one, and the pooled mix otherwise.</p>
+        <p>Est. $/B (per-model estimates below) is fee ÷ allowance × the list-price cost per billion tokens of one model: what a billion tokens of that model would cost if the whole allowance were spent on it. Measured $/B (section A) is fee ÷ the tokens actually delivered in our traffic. The vs measured column shows the gap. It is mostly model mix: the estimate prices a whole allowance at one model's list cost, while measured traffic also carries cheaper models, so a costly model such as Claude Haiku 5.5 shows a large positive gap. Each plan uses its own measured mix for the cache and output shares when it has one, and the pooled mix otherwise.</p>
         <p>Each plan appears only under the models its official model list names (offered_models). A model no plan lists has no table. A missing value says N/A with its reason; a model we could not read is never filled in.</p>
         <p>When a provider publishes a time-of-day discount without naming the band, the DeepSeek band is used.</p>
-        <h2 className="text-lg font-medium">Official subscriptions (section C)</h2>
+        <h2 className="text-lg font-medium">Official subscriptions (table below)</h2>
         <p>Codex and Claude Code token counts are read from this machine's session logs, read only, and reduced to counts, call numbers and per-turn speed. Session ids, paths, prompts and account details are never kept. The plan fee is shown as unverified unless a confirmed source names it.</p>
         <h2 className="text-lg font-medium">Limits</h2>
         <ul className="list-disc pl-5">
@@ -52,7 +55,70 @@ function MethodologyPage() {
           <li>No quality score is published; the dataset has no quality field.</li>
         </ul>
       </section>
+      <section className="space-y-2">
+        <h2 className="text-lg font-medium">Speed on the front page</h2>
+        <p>Model view: weighted median over endpoints by request volume, not the unweighted median or the best endpoint. Measured view: our own usage logs, p50. Every speed cell shows one value, rounded to two significant figures.</p>
+        <p>weighted median over endpoints by request volume, not the unweighted median or the best endpoint</p>
+        <p>Derived $/B (marked *): a plan whose own window is saturated takes the $/B of a same-rate peer plan, and says so on the front page.</p>
+      </section>
+      <DetailTables />
       <SiteFooter />
     </main>
+  );
+}
+
+/** Every table the front page used to carry, kept here with its full columns and sources. */
+function DetailTables() {
+  const ds = dataset as unknown as DS;
+  const measured = measuredTable(ds);
+  const models = modelTables(ds);
+  const dsRank = dsRankingTable(ds);
+  const official = officialTable(ds);
+  const catalog = catalogTable(ds);
+  return (
+    <>
+      <section className="space-y-3" aria-labelledby="m-measured">
+        <h2 id="m-measured" className={SECTION_TITLE}>Measured lanes, with OpenRouter p50</h2>
+        <p className={NOTE}>Our own traffic beside OpenRouter's p50 for each plan's lane model.</p>
+        <UnifiedTable testId="measured-full" columns={measured.columns} rows={measured.rows} />
+        <p className={SMALL_NOTE}>{measured.footnote}</p>
+      </section>
+      <section className="space-y-3" aria-labelledby="m-ds">
+        <h2 id="m-ds" className={SECTION_TITLE}>DeepSeek value ranking</h2>
+        <p className={NOTE}>{dsRank.subtitle}</p>
+        <UnifiedTable testId="ds-ranking" columns={dsRank.columns} rows={dsRank.rows} />
+        {dsRank.excludedLines.map((l) => (
+          <p key={l} className={SMALL_NOTE}>{l}</p>
+        ))}
+      </section>
+      <section className="space-y-6" aria-labelledby="m-models">
+        <h2 id="m-models" className={SECTION_TITLE}>Per-model estimates</h2>
+        {models.map((m) => (
+          <div key={m.ref} className={MODEL_BLOCK} data-model={m.ref}>
+            <h3 className={MODEL_TITLE}>{m.name}</h3>
+            {m.table.rows.length === 0 ? (
+              <p className={NOTE} data-no-plan={m.ref}>No plan on this site lists {m.name} on its published model list, so there is no table for it.</p>
+            ) : (
+              <>
+                <p className={NOTE}>{m.table.subtitle}</p>
+                <UnifiedTable testId={"model-" + m.ref} columns={m.table.columns} rows={m.table.rows} />
+                <p className={SMALL_NOTE}>{m.table.orNote}</p>
+                {m.table.tierNote && <p className={SMALL_NOTE} data-tier-note="yes">{m.table.tierNote}</p>}
+              </>
+            )}
+          </div>
+        ))}
+      </section>
+      <section className="space-y-3" aria-labelledby="m-official">
+        <h2 id="m-official" className={SECTION_TITLE}>Official subscriptions (local logs)</h2>
+        <p className={NOTE}>Token counts and speeds from this machine's Codex and Claude Code session logs, read only and aggregated. No session ids, paths or prompts are kept.</p>
+        <UnifiedTable testId="official" columns={official.columns} rows={official.rows} />
+        <p className={SMALL_NOTE}>{dataset.official.source} · measured {dataset.official.measured_at}</p>
+      </section>
+      <section className="space-y-3" aria-labelledby="m-catalog">
+        <h2 id="m-catalog" className={SECTION_TITLE}>Plans catalog: allowances and sources</h2>
+        <UnifiedTable testId="catalog-full" columns={catalog.columns} rows={catalog.rows} />
+      </section>
+    </>
   );
 }

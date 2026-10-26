@@ -11,8 +11,8 @@ export type DS = typeof DatasetValue;
 export type Column = { key: string; label: string; width: string; numeric?: boolean; clip?: boolean };
 export type Table = { columns: Column[]; rows: Array<{ key: string; cells: Record<string, Cell> }> };
 
-const usd = (v: number) => "$" + (v < 0.1 ? String(Number(v.toPrecision(3))) : v.toFixed(2));
-const money = (v: number) => "$" + v.toFixed(2);
+export const usd = (v: number) => "$" + (v < 0.1 ? String(Number(v.toPrecision(3))) : v.toFixed(2));
+export const money = (v: number) => "$" + v.toFixed(2);
 const ms = (v: number) => Math.round(v).toLocaleString("en-US") + " ms";
 const count = (n: number, noun: string) => n.toLocaleString("en-US") + " " + noun + (n === 1 ? "" : "s");
 
