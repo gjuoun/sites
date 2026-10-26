@@ -2,8 +2,10 @@ import { type OrEndpoint, orEndpointSchema } from "../data/schema";
 
 /**
  * Parses the endpoint stats that the bare OpenRouter model page embeds in its
- * self.__next_f.push flight payload. This is an unofficial, server-rendered shape:
- * the parser extracts what it can, validates every row, and never invents a value.
+ * self.__next_f.push flight payload. This is an unofficial, server-rendered shape.
+ * Each stats block belongs to an endpoint object that also carries provider_display_name and
+ * quantization; the parser reads those from the enclosing object itself, never from a fixed
+ * distance in the text. A row whose enclosing object cannot be read is stale, never zero.
  */
 
 export function flightPayload(html: string): string {
@@ -20,12 +22,13 @@ export function flightPayload(html: string): string {
   return out;
 }
 
-/** Balanced-brace scan starting at an opening brace; string-aware. */
-export function objectAt(s: string, start: number): string | null {
+/** Balanced-brace scan starting at an opening brace; string-aware. Optionally bounded. */
+export function objectAt(s: string, start: number, maxLength = Number.POSITIVE_INFINITY): string | null {
   let depth = 0;
   let inStr = false;
   let esc = false;
-  for (let i = start; i < s.length; i++) {
+  const limit = Math.min(s.length, start + maxLength);
+  for (let i = start; i < limit; i++) {
     const ch = s[i];
     if (inStr) {
       if (esc) esc = false;
@@ -52,7 +55,31 @@ export type RawStats = {
   window_minutes: number | null;
 };
 
-/** Every stats block with the provider name and quantization written just before it in the same record. */
+const ENCLOSING_SEARCH = 60_000;
+const ENCLOSING_MAX_OBJECT = 40_000;
+
+/**
+ * The endpoint object that contains a stats block: the nearest enclosing object that has a
+ * provider_display_name and parses as JSON. Returns null when there is none.
+ */
+export function enclosingEndpoint(s: string, statsStart: number, statsEnd: number): Record<string, unknown> | null {
+  const floor = Math.max(0, statsStart - ENCLOSING_SEARCH);
+  for (let p = statsStart - 1; p >= floor; p--) {
+    if (s[p] !== "{") continue;
+    const raw = objectAt(s, p, ENCLOSING_MAX_OBJECT);
+    if (raw === null || p + raw.length < statsEnd) continue;
+    if (!raw.includes('"provider_display_name"')) continue;
+    try {
+      const obj = JSON.parse(raw) as Record<string, unknown>;
+      if (obj && typeof obj.provider_display_name === "string") return obj;
+    } catch {
+      // not a complete endpoint object; keep looking outward
+    }
+  }
+  return null;
+}
+
+/** Every stats block with its own endpoint's provider name and quantization. */
 export function extractEndpoints(
   html: string,
   model: string,
@@ -72,18 +99,18 @@ export function extractEndpoints(
     if (seen.has(st.endpoint_id)) continue; // the flight payload repeats records; one endpoint, one row
     seen.add(st.endpoint_id);
 
-    const before = payload.slice(Math.max(0, (m.index ?? 0) - 3000), m.index ?? 0);
-    const name = lastCapture(before, /"provider_display_name":"([^"]+)"/g);
-    const quant = lastCapture(before, /"quantization":"([^"]+)"/g);
+    const ep = enclosingEndpoint(payload, m.index ?? 0, start + raw.length);
+    const name = ep && typeof ep.provider_display_name === "string" ? ep.provider_display_name : null;
+    const quant = ep && typeof ep.quantization === "string" ? ep.quantization : "unknown";
     const { p50_latency: lat, p50_throughput: tput, request_count: reqs, window_minutes: win } = st;
     if (name === null || lat === null || tput === null || reqs === null || win === null) {
-      stale++; // a missing stat marks the row stale and excludes it; it is never written as 0
+      stale++; // a missing stat or name marks the row stale and excludes it; it is never written as 0
       continue;
     }
     const parsed = orEndpointSchema.parse({
       model,
       provider_display_name: name,
-      quantization: quant ?? "unknown",
+      quantization: quant,
       p50_latency_ms: lat,
       p50_throughput: tput,
       p90_throughput: st.p90_throughput,
@@ -96,10 +123,4 @@ export function extractEndpoints(
     endpoints.push(parsed);
   }
   return { endpoints, blocks, stale };
-}
-
-function lastCapture(s: string, re: RegExp): string | null {
-  let last: string | null = null;
-  for (const m of s.matchAll(re)) last = m[1];
-  return last;
 }

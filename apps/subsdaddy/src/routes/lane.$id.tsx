@@ -30,15 +30,15 @@ function LanePage() {
         <CardContent className="space-y-1 text-sm">
           <p>Method: <code>{lane.capacity.method}</code> {lane.capacity.window && <LayerBadge layer="window" />} {lane.capacity.seeded && <LayerBadge layer="seed" />}</p>
           <p>Tokens per week: {fmt.tokensWeek(lane.capacity.tokens_per_week)} {lane.capacity.badge && <Badge variant="outline">{lane.capacity.badge}</Badge>}</p>
-          <p data-basis={lane.usd_per_b_basis ?? "none"}>$/B: {fmt.usd(lane.usd_per_b)} {lane.usd_per_b_basis === "derived" ? <Badge variant="outline" title={lane.usd_per_b_source ?? undefined}>derived</Badge> : null}{lane.usd_per_b_basis === "derived" ? ` — ${lane.usd_per_b_source}` : ""}</p>
+          <p data-basis={lane.usd_per_b_basis ?? "none"}>$/B: {fmt.usd(lane.usd_per_b)} {lane.usd_per_b_basis === "derived" ? <Badge variant="outline" title={lane.usd_per_b_source ?? undefined}>derived</Badge> : null}{lane.usd_per_b_basis === "derived" ? `: ${lane.usd_per_b_source}` : ""}</p>
           <p>Log coverage of window: {fmt.pct(lane.capacity.coverage)}</p>
           {lane.capacity.confidence === "low" && (
             <p data-confidence="low">
               <Badge variant="secondary">low confidence</Badge> {lane.capacity.confidence_reason}
             </p>
           )}
-          <p>Reason: {lane.capacity.reason ?? "—"}</p>
-          <p>Quota reading: {quota && "used_pct" in quota ? `${quota.used_pct.toFixed(2)}% (${quota.window}, resets ${quota.resets_at})` : quota && "unavailable" in quota ? `unavailable: ${quota.unavailable}` : "—"}</p>
+          <p>Reason: {lane.capacity.reason ?? "N/A"}</p>
+          <p>Quota reading: {quota && "used_pct" in quota ? `${quota.used_pct.toFixed(2)}% (${quota.window}, resets ${quota.resets_at})` : quota && "unavailable" in quota ? `unavailable: ${quota.unavailable}` : "N/A"}</p>
         </CardContent>
       </Card>
 
@@ -68,11 +68,11 @@ function LanePage() {
       <Card>
         <CardHeader><CardTitle>Price vector and shape presets</CardTitle></CardHeader>
         <CardContent className="space-y-1 text-sm">
-          <p>Flags: {lane.flags.length ? lane.flags.join(", ") : "—"}</p>
+          <p>Flags: {lane.flags.length ? lane.flags.join(", ") : "N/A"}</p>
           <ul className="list-disc pl-5">
             {lane.presets.map((p) => (
               <li key={p.shape}>
-                {p.shape}: {"usd_per_b" in p ? `${fmt.usd(p.usd_per_b)} per B` : `unavailable — ${p.unavailable}`}
+                {p.shape}: {"usd_per_b" in p ? `${fmt.usd(p.usd_per_b)} per B` : `unavailable: ${p.unavailable}`}
               </li>
             ))}
           </ul>

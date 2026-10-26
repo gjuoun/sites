@@ -1,9 +1,8 @@
 #!/usr/bin/env bun
 /**
- * Fetches the BARE model page for each mapped OpenRouter model (no /providers suffix: only the
- * bare page carries the stats payload), saves the fetched HTML as the parser fixture, and writes
- * data/benchmark.json. A failed fetch keeps the previous benchmark and prints PARTIAL; the
- * freshness gate (verify:all) then sees the old measured_at and refuses to pass.
+ * Fetches the BARE model page for every model we show a speed for: each plan's lane model and the five
+ * reference models. Each model gets a status: ok (endpoints parsed) or unavailable (with the reason).
+ * A model that fails is reported as unavailable and carries no endpoints; nothing is written as zero.
  */
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -13,46 +12,53 @@ import { extractEndpoints } from "../src/lib/openrouter";
 const APP = resolve(import.meta.dir, "..");
 const dataDir = join(APP, "data");
 const measuredAt = new Date().toISOString();
-const models = modelsFileSchema.parse(JSON.parse(readFileSync(join(dataDir, "models.json"), "utf8"))).models;
-const slugs = [...new Set(models.map((m) => m.openrouter))];
+const SOURCE = "openrouter.ai bare model page stats payload (unofficial), 30-minute window";
+const models = modelsFileSchema.parse(JSON.parse(readFileSync(join(dataDir, "models.json"), "utf8")));
+const slugs = [...new Set([...models.models.map((m) => m.openrouter), ...models.reference.map((r) => r.openrouter)])];
 
-const all: OrEndpoint[] = [];
-let stale = 0;
+const endpoints: OrEndpoint[] = [];
+const status: Array<{ model: string; status: "ok" | "unavailable"; reason: string | null; endpoints: number; measured_at: string; source: string }> = [];
 let blocks = 0;
+let stale = 0;
 let fixtureSaved = false;
-let failed = false;
+
 for (const slug of slugs) {
   const url = `https://openrouter.ai/${slug}`;
-  const res = await fetch(url, { headers: { "user-agent": "subsdaddy-collector/0.1" } }).catch(() => null);
-  if (!res || !res.ok) {
-    console.error(`PARTIAL fetch failed: ${url} status=${res?.status ?? "network"}`);
-    failed = true;
+  let html: string | null = null;
+  let reason: string | null = null;
+  try {
+    const res = await fetch(url, { headers: { "user-agent": "subsdaddy-collector/0.1" } });
+    if (res.ok) html = await res.text();
+    else reason = `http ${res.status}`;
+  } catch (e) {
+    reason = "network: " + (e instanceof Error ? e.name : "error");
+  }
+  let parsed: OrEndpoint[] = [];
+  if (html !== null) {
+    if (!fixtureSaved && slug === "deepseek/deepseek-v4.1-flash") {
+      mkdirSync(join(APP, "fixtures"), { recursive: true });
+      writeFileSync(join(APP, "fixtures", "openrouter.deepseek-v4.1-flash.html"), html);
+      fixtureSaved = true;
+    }
+    const out = extractEndpoints(html, slug, measuredAt);
+    blocks += out.blocks;
+    stale += out.stale;
+    parsed = out.endpoints;
+    if (out.blocks === 0) reason = "payload has no stats blocks (page shape changed or no stats published)";
+    else if (parsed.length === 0) reason = "every stats row is stale (required fields missing)";
+  }
+  if (reason !== null) {
+    status.push({ model: slug, status: "unavailable", reason, endpoints: 0, measured_at: measuredAt, source: SOURCE });
+    console.log(`${slug} unavailable: ${reason}`);
     continue;
   }
-  const html = await res.text();
-  if (!fixtureSaved) {
-    mkdirSync(join(APP, "fixtures"), { recursive: true });
-    writeFileSync(join(APP, "fixtures", "openrouter.deepseek-v4.1-flash.html"), html);
-    fixtureSaved = true;
-  }
-  const out = extractEndpoints(html, slug, measuredAt);
-  blocks += out.blocks;
-  stale += out.stale;
-  if (out.blocks === 0) {
-    console.error(`PARTIAL zero stats blocks for ${slug}: payload shape changed`);
-    failed = true;
-    continue;
-  }
-  all.push(...out.endpoints);
-  console.log(`${slug} blocks=${out.blocks} endpoints=${out.endpoints.length} stale=${out.stale}`);
+  endpoints.push(...parsed);
+  status.push({ model: slug, status: "ok", reason: null, endpoints: parsed.length, measured_at: measuredAt, source: SOURCE });
+  console.log(`${slug} ok endpoints=${parsed.length}`);
 }
 
-if (failed) {
-  console.log(`PARTIAL: kept previous data/benchmark.json (measured_at unchanged)`);
-  process.exit(0);
-}
-
-const file = benchmarkFileSchema.parse({ endpoints: all, measured_at: measuredAt, source: "openrouter.ai bare model page stats payload (unofficial)" });
+const file = benchmarkFileSchema.parse({ endpoints, models_status: status, measured_at: measuredAt, source: SOURCE });
 writeFileSync(join(dataDir, "benchmark.json"), JSON.stringify(file, null, 2) + "\n");
-const zeroed = all.filter((e) => e.p50_throughput === 0 || e.p50_latency_ms === 0).length;
-console.log(`models=${slugs.length} endpoints=${all.length} stale=${stale} zeroed=${zeroed} blocks=${blocks}`);
+const zeroed = endpoints.filter((e) => e.p50_throughput === 0 || e.p50_latency_ms === 0).length;
+const ok = status.filter((s) => s.status === "ok").length;
+console.log(`models=${slugs.length} ok=${ok} unavailable=${slugs.length - ok} endpoints=${endpoints.length} stale=${stale} zeroed=${zeroed} blocks=${blocks}`);

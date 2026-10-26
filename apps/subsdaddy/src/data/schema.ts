@@ -161,6 +161,19 @@ export type OrEndpoint = z.infer<typeof orEndpointSchema>;
 
 export const benchmarkFileSchema = z.object({
   endpoints: z.array(orEndpointSchema),
+  // one entry per model fetched: ok with its endpoint count, or unavailable with the reason
+  models_status: z
+    .array(
+      z.object({
+        model: z.string().min(1),
+        status: z.enum(["ok", "unavailable"]),
+        reason: z.string().min(1).nullable(),
+        endpoints: z.number().int().nonnegative(),
+        measured_at: z.iso.datetime(),
+        source: z.string().min(1),
+      }),
+    )
+    .default([]),
   ...provenance,
 });
 

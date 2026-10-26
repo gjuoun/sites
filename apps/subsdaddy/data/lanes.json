@@ -15,10 +15,10 @@
         "confidence": null,
         "confidence_reason": null,
         "badge": null,
-        "measured_at": "2026-10-26T17:34:18.829Z",
+        "measured_at": "2026-10-26T17:59:50.958Z",
         "source": "codexbar quota reading"
       },
-      "usd_per_b": 1.6894010236555217,
+      "usd_per_b": 1.6507098703147085,
       "usd_per_b_basis": "derived",
       "usd_per_b_derived_from": "opencode-go",
       "usd_per_b_source": "same-rate derivation (owner decision 2026-10-26); replaced by the measured value once the CommandCode weekly window resets on 2026-10-28",
@@ -27,7 +27,7 @@
         "p90_ttft_ms": 8441,
         "p50_output_tps": 201.41116100064144,
         "n": 11743,
-        "measured_at": "2026-10-26T17:34:18.829Z",
+        "measured_at": "2026-10-26T17:59:50.958Z",
         "source": "usage_logs(7d) rows=11743"
       },
       "presets": [
@@ -48,7 +48,7 @@
         "no_fit:too_few_priced_rows",
         "low_priced_share"
       ],
-      "measured_at": "2026-10-26T17:34:18.829Z",
+      "measured_at": "2026-10-26T17:59:50.958Z",
       "source": "usage_logs(7d) + quota reading + published price"
     },
     {
@@ -59,27 +59,27 @@
       "capacity": {
         "method": "window_snapshot",
         "window": "weekly",
-        "tokens_per_week": 1361374813.603059,
+        "tokens_per_week": 1393284213.6827924,
         "coverage": 1,
         "seeded": false,
         "reason": null,
         "confidence": "normal",
         "confidence_reason": null,
         "badge": "single_account_reading",
-        "measured_at": "2026-10-26T17:34:18.829Z",
+        "measured_at": "2026-10-26T17:59:50.958Z",
         "source": "codexbar quota reading"
       },
-      "usd_per_b": 1.6894010236555217,
+      "usd_per_b": 1.6507098703147085,
       "usd_per_b_basis": "measured",
       "usd_per_b_derived_from": null,
       "usd_per_b_source": "usage logs, quota reading, published price",
       "measured": {
-        "p50_ttft_ms": 2661,
-        "p90_ttft_ms": 12505,
-        "p50_output_tps": 210.1721749455769,
-        "n": 7344,
-        "measured_at": "2026-10-26T17:34:18.829Z",
-        "source": "usage_logs(7d) rows=7344"
+        "p50_ttft_ms": 2668,
+        "p90_ttft_ms": 12466,
+        "p50_output_tps": 209.88175675675677,
+        "n": 7402,
+        "measured_at": "2026-10-26T17:59:50.958Z",
+        "source": "usage_logs(7d) rows=7402"
       },
       "presets": [
         {
@@ -99,7 +99,7 @@
         "low_fit",
         "capacity_conflict"
       ],
-      "measured_at": "2026-10-26T17:34:18.829Z",
+      "measured_at": "2026-10-26T17:59:50.958Z",
       "source": "usage_logs(7d) + quota reading + published price"
     },
     {
@@ -117,7 +117,7 @@
         "confidence": "low",
         "confidence_reason": "used_pct 1 is an integer percent: error about 1/used_pct",
         "badge": null,
-        "measured_at": "2026-10-26T17:34:18.829Z",
+        "measured_at": "2026-10-26T17:59:50.958Z",
         "source": "codexbar quota reading"
       },
       "usd_per_b": 8.491758425791277,
@@ -129,7 +129,7 @@
         "p90_ttft_ms": 13330,
         "p50_output_tps": 79.03549899531144,
         "n": 714,
-        "measured_at": "2026-10-26T17:34:18.829Z",
+        "measured_at": "2026-10-26T17:59:50.958Z",
         "source": "usage_logs(7d) rows=714"
       },
       "presets": [
@@ -149,7 +149,7 @@
       "flags": [
         "capacity_conflict"
       ],
-      "measured_at": "2026-10-26T17:34:18.829Z",
+      "measured_at": "2026-10-26T17:59:50.958Z",
       "source": "usage_logs(7d) + quota reading + published price"
     },
     {
@@ -167,7 +167,7 @@
         "confidence": "normal",
         "confidence_reason": null,
         "badge": null,
-        "measured_at": "2026-10-26T17:34:18.829Z",
+        "measured_at": "2026-10-26T17:59:50.958Z",
         "source": "codexbar quota reading"
       },
       "usd_per_b": 28.09790095258739,
@@ -179,7 +179,7 @@
         "p90_ttft_ms": 9364,
         "p50_output_tps": 141.7395306028532,
         "n": 2285,
-        "measured_at": "2026-10-26T17:34:18.829Z",
+        "measured_at": "2026-10-26T17:59:50.958Z",
         "source": "usage_logs(7d) rows=2285"
       },
       "presets": [
@@ -200,10 +200,10 @@
         "low_fit",
         "capacity_conflict"
       ],
-      "measured_at": "2026-10-26T17:34:18.829Z",
+      "measured_at": "2026-10-26T17:59:50.958Z",
       "source": "usage_logs(7d) + quota reading + published price"
     }
   ],
-  "measured_at": "2026-10-26T17:34:18.829Z",
+  "measured_at": "2026-10-26T17:59:50.958Z",
   "source": "build-dataset"
 }

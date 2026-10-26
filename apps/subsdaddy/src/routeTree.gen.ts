@@ -10,12 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CatalogRouteImport } from './routes/catalog'
 import { Route as MethodologyRouteImport } from './routes/methodology'
 import { Route as LaneIdRouteImport } from './routes/lane.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CatalogRoute = CatalogRouteImport.update({
+  id: '/catalog',
+  path: '/catalog',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MethodologyRoute = MethodologyRouteImport.update({
@@ -31,30 +37,34 @@ const LaneIdRoute = LaneIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/catalog': typeof CatalogRoute
   '/methodology': typeof MethodologyRoute
   '/lane/$id': typeof LaneIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/catalog': typeof CatalogRoute
   '/methodology': typeof MethodologyRoute
   '/lane/$id': typeof LaneIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/catalog': typeof CatalogRoute
   '/methodology': typeof MethodologyRoute
   '/lane/$id': typeof LaneIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/methodology' | '/lane/$id'
+  fullPaths: '/' | '/catalog' | '/methodology' | '/lane/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/methodology' | '/lane/$id'
-  id: '__root__' | '/' | '/methodology' | '/lane/$id'
+  to: '/' | '/catalog' | '/methodology' | '/lane/$id'
+  id: '__root__' | '/' | '/catalog' | '/methodology' | '/lane/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CatalogRoute: typeof CatalogRoute
   MethodologyRoute: typeof MethodologyRoute
   LaneIdRoute: typeof LaneIdRoute
 }
@@ -66,6 +76,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/catalog': {
+      id: '/catalog'
+      path: '/catalog'
+      fullPath: '/catalog'
+      preLoaderRoute: typeof CatalogRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/methodology': {
@@ -87,6 +104,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CatalogRoute: CatalogRoute,
   MethodologyRoute: MethodologyRoute,
   LaneIdRoute: LaneIdRoute,
 }

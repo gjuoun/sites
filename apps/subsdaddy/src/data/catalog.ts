@@ -195,7 +195,7 @@ export function catalogDisplayRow(r: CatalogRow): CatalogDisplay {
     fee,
     allowance_model: r.allowance_model,
     allowance_detail: r.allowance_detail,
-    credits_text: r.credits_to_usd ? formatUsdPerCredit(r.credits_to_usd.usd_per_credit) : "—",
+    credits_text: r.credits_to_usd ? formatUsdPerCredit(r.credits_to_usd.usd_per_credit) : "N/A",
     credits_basis: r.credits_to_usd ? r.credits_to_usd.basis : null,
     cli_compat: r.cli_compat,
     badge: "unmeasured",
@@ -207,8 +207,8 @@ export function catalogDisplayRow(r: CatalogRow): CatalogDisplay {
 }
 
 function estimateDisplay(e: Estimate | null): Pick<CatalogDisplay, "estimate_status" | "estimate_text" | "estimate_reason" | "estimate_basis" | "estimate_models"> {
-  if (!e) return { estimate_status: "none", estimate_text: "—", estimate_reason: null, estimate_basis: null, estimate_models: [] };
-  if (e.status === "unavailable") return { estimate_status: "unavailable", estimate_text: "—", estimate_reason: e.reason, estimate_basis: null, estimate_models: [] };
+  if (!e) return { estimate_status: "none", estimate_text: "N/A", estimate_reason: null, estimate_basis: null, estimate_models: [] };
+  if (e.status === "unavailable") return { estimate_status: "unavailable", estimate_text: "N/A", estimate_reason: e.reason, estimate_basis: null, estimate_models: [] };
   const [low, high] = e.range_agent!;
   const text = low === high ? formatEstimate(low) : formatEstimate(low) + " – " + formatEstimate(high);
   const estimate_models = REF_IDS.map((ref) => {
