@@ -195,6 +195,19 @@ export const modelsFileSchema = z.object({
         in_per_m: z.number().nonnegative(),
         out_per_m: z.number().nonnegative(),
         cache_per_m: z.number().nonnegative(),
+        cache_write_per_m: z.number().nonnegative().nullable().optional(),
+        overrides: z
+          .array(
+            z.object({
+              min_prompt_tokens: z.number().int().positive(),
+              in_per_m: z.number().nonnegative(),
+              out_per_m: z.number().nonnegative(),
+              cache_per_m: z.number().nonnegative(),
+              cache_write_per_m: z.number().nonnegative().nullable(),
+              source: z.string().min(1),
+            }),
+          )
+          .default([]),
       }),
     )
     .length(5),

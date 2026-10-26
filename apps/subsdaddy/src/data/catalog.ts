@@ -12,7 +12,7 @@ export const ALLOWANCE_MODELS = ["credits", "usd_usage", "window_percent", "wind
 export type AllowanceModel = (typeof ALLOWANCE_MODELS)[number];
 
 const sourceSchema = z.strictObject({
-  kind: z.enum(["official_page", "official_post", "x_post", "owner_confirmed", "console_reading", "unverified"]),
+  kind: z.enum(["official_page", "official_post", "x_post", "owner_confirmed", "console_reading", "unverified", "third_party_measured"]),
   url: z.string().regex(/^https?:\/\//).nullable(),
   note: z.string().min(1),
 });
@@ -43,6 +43,10 @@ const estimateValueSchema = z.strictObject({
   blended_usd_per_b: z.number().positive(),
   measured_at: z.iso.datetime(),
   source: z.string().min(1),
+  // the p90 prompt-length value and the bands used at p50 and p90
+  usd_per_b_p90: z.number().positive().nullable().optional(),
+  band_p50: z.string().min(1).optional(),
+  band_p90: z.string().min(1).nullable().optional(),
 });
 
 /** A catalog estimate. Status "unavailable" carries a reason and no values; "estimated" carries at least one value. */
@@ -116,6 +120,11 @@ export const catalogRowSchema = z
       add("a row without a price needs an unverified source note");
     }
     if (r.currency === "CNY" && r.price_month_usd !== null) add("a CNY row cannot carry a USD price");
+    // a third-party figure is labelled and linked, or it is not used at all
+    for (const s of r.sources) if (s.kind === "third_party_measured" && !s.url) add("a third-party figure needs its source link");
+    if (r.allowance.some((a) => /third-party/i.test(a.basis)) && !r.sources.some((s) => s.kind === "third_party_measured")) {
+      add("a third-party allowance needs a third_party_measured source");
+    }
     if (r.price_annual_usd !== null && r.price_month_usd === null) add("annual price needs a monthly price");
     if (r.status === "excluded" && !r.exclusion_reason) add("an excluded row needs exclusion_reason");
     if (r.status === "catalog" && r.exclusion_reason) add("a catalog row cannot carry exclusion_reason");

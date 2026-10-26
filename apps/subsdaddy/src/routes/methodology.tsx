@@ -56,6 +56,12 @@ function MethodologyPage() {
         </ul>
       </section>
       <section className="space-y-2">
+        <h2 className="text-lg font-medium">Model prices by prompt length</h2>
+        <p>OpenRouter prices some models by prompt length. A request whose prompt reaches a threshold is priced at that band's rates for the whole request. Claude Haiku 5.5 moves to 5× the base input price from 100k prompt tokens; GPT-6 Luna moves to 2× from 272k. Estimates use the measured p50 prompt length of the refresh, and the p90 value is in the cell's title.</p>
+        <p>Cache writes have their own price (1.25× input for Haiku and Luna). The measured traffic writes no cache, so this term is zero today; it is priced, not folded into input, so a future write share is counted.</p>
+        <p>A plan with an offered model but no published dollar allowance shows N/A and its reason in the title. A third-party figure is used only with its link and date, labelled third-party. None is used on this site yet.</p>
+      </section>
+      <section className="space-y-2">
         <h2 className="text-lg font-medium">Speed on the front page</h2>
         <p>Model view: weighted median over endpoints by request volume, not the unweighted median or the best endpoint. Measured view: our own usage logs, p50. Every speed cell shows one value, rounded to two significant figures.</p>
         <p>weighted median over endpoints by request volume, not the unweighted median or the best endpoint</p>

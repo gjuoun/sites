@@ -86,17 +86,21 @@ function modelRows(ds: DS, ref: RefId): ViewRow[] {
   const out: ViewRow[] = [];
   for (const r of ds.catalog.rows) {
     if (r.status !== "catalog" || !r.offered_models.includes(ref) || r.price_month_usd === null) continue;
-    if (r.estimate?.status !== "estimated") continue;
-    const v = r.estimate.values.find((x) => x.ref === ref && x.shape === "agent");
-    if (!v || v.usd_per_b === null) continue;
+    // a plan that offers the model but has no published dollar allowance is a row with N/A and its reason
+    const v = r.estimate?.status === "estimated" ? r.estimate.values.find((x) => x.ref === ref && x.shape === "agent") : undefined;
+    const usdVal = v && v.usd_per_b !== null ? v.usd_per_b : null;
+    const reason = r.estimate?.reason ?? "no estimate for this model";
     out.push({
       key: r.plan_id,
       label: r.label,
       fee: r.price_month_usd,
-      capacity: (r.price_month_usd / v.usd_per_b).toFixed(2) + "B/mo",
-      capacityReason: "",
-      usd: v.usd_per_b,
-      usdTitle: "estimate: fee ÷ allowance × blended list $/B for " + REF_NAMES[ref],
+      capacity: usdVal === null ? null : (r.price_month_usd / usdVal).toFixed(2) + "B/mo",
+      capacityReason: reason,
+      usd: usdVal,
+      usdTitle:
+        usdVal === null || !v
+          ? reason
+          : "estimate: fee ÷ allowance × blended $/B for " + REF_NAMES[ref] + "; prompt p50 " + (v.band_p50 ?? "") + " (shown); p90 " + (v.band_p90 ?? "") + ": " + usd(v.usd_per_b_p90 ?? 0),
       derived: false,
       tps: or.tps,
       tpsTitle: or.title || (or.reason ?? "no OpenRouter data"),

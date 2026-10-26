@@ -50,9 +50,38 @@ describe("model view: only the plans that offer the model", () => {
     }
   });
 
-  test("Claude Haiku 5.5 shows only OpenCode Go and OpenCode Go Plus; CommandCode is not a row", () => {
+  test("Claude Haiku 5.5 lists the plans whose model list names it: two OpenCode plans with a value, three Claude Code plans as N/A", () => {
     const keys = viewRows(ds, "claude-haiku-5.5").map((r) => r.key).sort();
-    expect(keys).toEqual(["opencode-go-go", "opencode-go-plus"]);
+    expect(keys).toEqual(["claude-code-max-20x", "claude-code-max-5x", "claude-code-pro", "opencode-go-go", "opencode-go-plus"]);
+    const na = viewRows(ds, "claude-haiku-5.5").filter((r) => r.usd === null).map((r) => r.key).sort();
+    expect(na).toEqual(["claude-code-max-20x", "claude-code-max-5x", "claude-code-pro"]);
+  });
+
+  test("CommandCode and QwenCloud do not list Haiku, so they are not rows in the Haiku view", () => {
+    const keys = viewRows(ds, "claude-haiku-5.5").map((r) => r.key);
+    expect(keys).not.toContain("commandcode-goat-published");
+    expect(keys).not.toContain("qwen-cloud-token-owner-10");
+  });
+
+  test("GPT-6 Luna lists the OpenCode plans with a value and the Codex plans as N/A", () => {
+    const rows = viewRows(ds, "gpt-6-luna");
+    expect(rows.map((r) => r.key).sort()).toEqual(["codex-go", "codex-plus", "codex-pro", "opencode-go-go", "opencode-go-plus"]);
+    expect(rows.filter((r) => r.usd === null).map((r) => r.key).sort()).toEqual(["codex-go", "codex-plus", "codex-pro"]);
+  });
+
+  test("an N/A official row names its reason in the title, and shows no value", () => {
+    const t = summaryTable(ds, "claude-haiku-5.5");
+    const row = t.rows.find((r) => r.key === "claude-code-pro")!;
+    expect(row.cells.usd.na).toBe(true);
+    expect(row.cells.usd.title).toContain("需一次基准实测");
+    expect(row.cells.usd.text).toBe("N/A");
+  });
+
+  test("a model-view $/B title names the prompt band it used at p50 and the p90 value", () => {
+    const t = summaryTable(ds, "claude-haiku-5.5");
+    const oc = t.rows.find((r) => r.key === "opencode-go-go")!;
+    expect(oc.cells.usd.title).toContain("≥100k ×5");
+    expect(oc.cells.usd.title).toContain("p90");
   });
 
   test("DeepSeek V4.1 Flash shows four rows, sorted by $/B ascending, first three CommandCode, OpenCode Go, OpenCode Go Plus", () => {
