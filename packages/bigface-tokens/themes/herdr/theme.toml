@@ -2,17 +2,17 @@
 # Paste into ~/.config/herdr/config.toml next to your [theme] table (keep `name`; this layers on top).
 [theme.custom]
 accent        = "#00b0ff" # links, focus rings
-text          = "#d9d9d4" # primary foreground
-subtext0      = "#75715e" # secondary foreground
-overlay1      = "#75715e" # dimmer tier
-overlay0      = "#6e6b68" # muted tokens, separators
+text          = "#e8e9e1" # primary foreground
+subtext0      = "#8c8f89" # secondary foreground
+overlay1      = "#8c8f89" # dimmer tier
+overlay0      = "#8c8f89" # muted tokens, separators
 panel_bg      = "#252925" # main pane background
-sidebar_bg    = "#333333" # sidebar, darker than panel
-active_row_bg = "#3b3c32" # focused / hovered sidebar row
-selection_bg  = "#646464" # text selection
-surface0      = "#3b3c32" # raised surface
-surface1      = "#3b3c32" # overlay surface
-surface_dim   = "#333333" # inset surface
+sidebar_bg    = "#3c403c" # sidebar, darker than panel
+active_row_bg = "#4b4e49" # focused / hovered sidebar row
+selection_bg  = "#4b4e49" # text selection
+surface0      = "#4b4e49" # raised surface
+surface1      = "#4b4e49" # overlay surface
+surface_dim   = "#3c403c" # inset surface
 green         = "#00c853" # success
 yellow        = "#e5e500" # attention
 red           = "#fc5d23" # danger

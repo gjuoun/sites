@@ -4,35 +4,27 @@
   "colors": {
     "bg": {
       "hex": "#f8f8f0",
-      "source": "dark:caret"
+      "source": "dark:paper"
+    },
+    "paper": {
+      "hex": "#f8f8f0",
+      "source": "dark:paper"
     },
     "fg": {
-      "hex": "#252925",
-      "source": "dark:bg"
+      "hex": "#2f332f",
+      "source": "derived:fg"
     },
     "fgDim": {
-      "hex": "#6e6b68",
+      "hex": "#70736e",
       "source": "derived:fgDim"
     },
     "border": {
-      "hex": "#d7d8d0",
+      "hex": "#d9dad2",
       "source": "derived:border"
     },
-    "borderMuted": {
-      "hex": "#e5e5de",
-      "source": "derived:borderMuted"
-    },
-    "selection": {
-      "hex": "#c5c6bf",
-      "source": "derived:selection"
-    },
-    "cursorLine": {
-      "hex": "#ecece5",
-      "source": "derived:cursorLine"
-    },
-    "braceMatch": {
-      "hex": "#dedfd7",
-      "source": "derived:braceMatch"
+    "highlight": {
+      "hex": "#c7c9c1",
+      "source": "derived:highlight"
     },
     "blue": {
       "hex": "#00b0ff",
@@ -73,19 +65,11 @@
     "purple": {
       "hex": "#ae81ff",
       "source": "dark:purple"
-    },
-    "comment": {
-      "hex": "#75715e",
-      "source": "derived:comment"
-    },
-    "caret": {
-      "hex": "#252925",
-      "source": "dark:bg"
     }
   },
   "ansi": {
     "black": {
-      "hex": "#d7d8d0",
+      "hex": "#d9dad2",
       "source": "alias:border"
     },
     "red": {
@@ -113,11 +97,11 @@
       "source": "alias:cyan"
     },
     "white": {
-      "hex": "#252925",
+      "hex": "#2f332f",
       "source": "alias:fg"
     },
     "brightBlack": {
-      "hex": "#6e6b68",
+      "hex": "#70736e",
       "source": "alias:fgDim"
     },
     "brightRed": {
@@ -145,12 +129,12 @@
       "source": "alias:paleBlue"
     },
     "brightWhite": {
-      "hex": "#252925",
-      "source": "alias:caret"
+      "hex": "#f8f8f0",
+      "source": "alias:paper"
     }
   },
   "syntax": {
-    "comment": "comment",
+    "comment": "fgDim",
     "keyword": "blue",
     "function": "lime",
     "variable": "green",

@@ -6,33 +6,25 @@
       "hex": "#252925",
       "source": "jetbrains:TEXT#BACKGROUND"
     },
+    "paper": {
+      "hex": "#f8f8f0",
+      "source": "jetbrains:colors#CARET_COLOR"
+    },
     "fg": {
-      "hex": "#d9d9d4",
-      "source": "jetbrains:TEXT#FOREGROUND"
+      "hex": "#e8e9e1",
+      "source": "derived:fg"
     },
     "fgDim": {
-      "hex": "#6e6b68",
-      "source": "jetbrains:colors#LINE_NUMBERS_COLOR"
+      "hex": "#8c8f89",
+      "source": "derived:fgDim"
     },
     "border": {
-      "hex": "#494848",
-      "source": "jetbrains:colors#INDENT_GUIDE"
+      "hex": "#3c403c",
+      "source": "derived:border"
     },
-    "borderMuted": {
-      "hex": "#333333",
-      "source": "jetbrains:colors#RIGHT_MARGIN_COLOR"
-    },
-    "selection": {
-      "hex": "#646464",
-      "source": "jetbrains:colors#SELECTION_BACKGROUND"
-    },
-    "cursorLine": {
-      "hex": "#3b3c32",
-      "source": "jetbrains:colors#CARET_ROW_COLOR"
-    },
-    "braceMatch": {
-      "hex": "#3b514d",
-      "source": "jetbrains:MATCHED_BRACE_ATTRIBUTES#BACKGROUND"
+    "highlight": {
+      "hex": "#4b4e49",
+      "source": "derived:highlight"
     },
     "blue": {
       "hex": "#00b0ff",
@@ -73,19 +65,11 @@
     "purple": {
       "hex": "#ae81ff",
       "source": "jetbrains:PHP_CONSTANT#FOREGROUND"
-    },
-    "comment": {
-      "hex": "#75715e",
-      "source": "jetbrains:OC.LINE_COMMENT#FOREGROUND"
-    },
-    "caret": {
-      "hex": "#f8f8f0",
-      "source": "jetbrains:colors#CARET_COLOR"
     }
   },
   "ansi": {
     "black": {
-      "hex": "#494848",
+      "hex": "#3c403c",
       "source": "alias:border"
     },
     "red": {
@@ -113,11 +97,11 @@
       "source": "alias:cyan"
     },
     "white": {
-      "hex": "#d9d9d4",
+      "hex": "#e8e9e1",
       "source": "alias:fg"
     },
     "brightBlack": {
-      "hex": "#6e6b68",
+      "hex": "#8c8f89",
       "source": "alias:fgDim"
     },
     "brightRed": {
@@ -146,11 +130,11 @@
     },
     "brightWhite": {
       "hex": "#f8f8f0",
-      "source": "alias:caret"
+      "source": "alias:paper"
     }
   },
   "syntax": {
-    "comment": "comment",
+    "comment": "fgDim",
     "keyword": "blue",
     "function": "lime",
     "variable": "green",
