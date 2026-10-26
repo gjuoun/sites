@@ -67,11 +67,13 @@ export const COLOURS: ThemeRoles = {
 	primary: { color: "blue", palette: "dark" },
 	"primary-fill": { color: "blue", palette: "dark" },
 	"primary-ink": { color: "blue" },
+	// The fill ink is the mode's own darkest readable value (ruling 2026-10-26, B1). Light: the light fg, #2f332f, 5.29:1 on
+	// the #00b0ff fill. Dark: the dark canvas, 6.08:1. Dark's fg (#e8e9e1) measures 1.98:1 on the fill, so it cannot be the ink.
 	"on-primary": { light: { color: "fg" }, dark: { color: "bg", palette: "dark" } },
 	"primary-edge": { mix: ["blue", 78, "bg"] },
-	frame: { color: "highlight" },
+	frame: { color: "panel" },
 	"on-frame": { color: "fg" },
-	"gray-100": { color: "border" },
+	"gray-100": { color: "panel" },
 	"gray-200": { color: "border" },
 	"gray-300": { color: "border" },
 	"gray-400": { color: "highlight" },
@@ -82,9 +84,9 @@ export const COLOURS: ThemeRoles = {
 	danger: { color: "burntOrange" },
 	info: { color: "cyan" },
 	highlight: { color: "purple" },
-	surface: { color: "highlight" },
-	subtle: { color: "border" },
-	secondary: { color: "border" },
+	surface: { color: "panel" },
+	subtle: { color: "panel" },
+	secondary: { color: "panel" },
 	"on-secondary": { color: "fg" },
 	// Native muted grey: 2.79:1 on the dark canvas, the palette's own long-standing choice.
 	"muted-ink": { color: "fgDim" },
@@ -105,7 +107,7 @@ export const COLOURS: ThemeRoles = {
 	"chart-4": { color: "burntOrange" },
 	"chart-5": { color: "purple" },
 	overlay: { mix: ["bg", 75, "paper"] },
-	solid: { color: "highlight" },
+	solid: { color: "panel" },
 	"on-solid": { color: "fg" },
 	// The accent family as text colours, and a deepened plate for each: a vivid accent is read on its own plate, not on
 	// the paper (ruling 2026-10-24: the colour itself is unchanged; the plate is the deepened tint it is read on).

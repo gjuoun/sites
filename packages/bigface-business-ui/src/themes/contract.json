@@ -6,7 +6,7 @@
     "--theme-ink": "Body text",
     "--theme-heading": "Titles, headings, KPI values",
     "--theme-primary": "Primary action AND the selected state (CTA, active nav, pressed toggles, current page)",
-    "--theme-on-primary": "Text/icons on primary",
+    "--theme-on-primary": "Text/icons on primary. The fill ink is the mode's own darkest readable value: light fg, dark canvas (ruling 2026-10-26)",
     "--theme-primary-edge": "Darker primary — the CTA's bottom edge, banner border",
     "--theme-frame": "App frame (sidebar), dark code boxes, showcase hero",
     "--theme-on-frame": "Text/icons on frame",
