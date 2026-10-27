@@ -19,7 +19,7 @@ const usdOf = (view: string, id: string, shape: (typeof SHAPES)[number]) => view
 describe("the shapes", () => {
   test("every shape's prompt shares sum to one, and the three are cache-heavy, agent and cold", () => {
     expect(SHAPES.map((s) => s.id)).toEqual(["cache_heavy", "agent", "cold"]);
-    for (const s of SHAPES) expect(s.cache_read_share_of_prompt + s.input_share_of_prompt).toBeCloseTo(1, 9);
+    for (const s of SHAPES) expect((s.cache_read_share_of_prompt ?? 0) + (s.input_share_of_prompt ?? 0)).toBeCloseTo(1, 9);
   });
 });
 

@@ -51,6 +51,8 @@ const estimateValueSchema = z.strictObject({
   band_p75: z.string().min(1).optional(),
   // the inputs of this value, so a Shape can be applied to it at render time
   allowance_usd: z.number().positive().nullable().optional(),
+  allowance_basis: z.string().nullable().optional(),
+  allowance_cycle_days: z.number().int().positive().nullable().optional(),
   fee_usd: z.number().positive().nullable().optional(),
   price_used: z.object({ in_per_m: z.number().nonnegative(), out_per_m: z.number().nonnegative(), cache_per_m: z.number().nonnegative(), cache_write_per_m: z.number().nonnegative().nullable().optional(), overrides: z.array(z.object({ min_prompt_tokens: z.number().int().positive(), in_per_m: z.number().nonnegative(), out_per_m: z.number().nonnegative(), cache_per_m: z.number().nonnegative(), cache_write_per_m: z.number().nonnegative().nullable().optional() })).optional() }).nullable().optional(),
 });

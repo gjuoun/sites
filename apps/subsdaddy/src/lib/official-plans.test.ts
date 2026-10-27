@@ -53,10 +53,10 @@ describe("Codex: messages per window converted to tokens", () => {
     expect(long.usd!).toBeLessThan(short.usd!);
   });
 
-  test("the Codex footnote on the Luna view is the second line, and the view has at most two lines", () => {
+  test("the Codex footnote on the Luna view is the second line, and the view has at most four lines", () => {
     const t = summaryTable(ds, "gpt-6-luna", "short");
     const lines = (t.footnote ?? "").split("\n");
-    expect(lines.length).toBe(2);
+    expect(lines.length).toBe(4);
     expect(lines[1]).toBe("† converted from vendor message limits at 100K context per message");
   });
 

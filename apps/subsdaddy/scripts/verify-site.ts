@@ -2,7 +2,7 @@
 /**
  * Reads the prerendered pages in dist/client and checks the public contract.
  *
- * Front page (/): one title line, one switch, one table of six columns (Plan, Fee/mo, Capacity, $/B,
+ * Front page (/): one title line, one switch, one table of seven columns (Plan, Fee/mo, Allowance, Capacity, $/B,
  * tok/s, TTFT p50), one footnote linking /methodology. No badges, no OR column, no sections. The first
  * (Measured) view is the one rendered. Speeds are one value with a leading "~". N/A carries no line.
  *
@@ -37,13 +37,13 @@ const cells = (h: string) => [...h.matchAll(/<td[^>]*>[\s\S]*?<\/td>/g)].map((m)
 const tableById = (h: string, id: string) => (h.match(new RegExp('<table[^>]*data-testid="' + id + '"[\\s\\S]*?<\\/table>')) ?? [""])[0];
 const rowsIn = (t: string) => (t.match(/data-row="/g) ?? []).length;
 
-// 1. the front page: one table, six columns, in order
+// 1. the front page: one table, seven columns, in order
 const idx = main(html.index);
 const summary = tableById(html.index, "summary");
 if (!summary) fail("front page has no summary table");
 if (tables(html.index).length !== 1) fail("front page has " + tables(html.index).length + " tables, expected 1");
 const heads = [...summary.matchAll(/<th[^>]*>([\s\S]*?)<\/th>/g)].map((m) => text(m[1]));
-const expectedHeads = ["Plan", "Fee/mo", "Capacity", "$/B", "tok/s", "TTFT p50"];
+const expectedHeads = ["Plan", "Fee/mo", "Allowance", "Capacity", "$/B", "tok/s", "TTFT p50"];
 if (JSON.stringify(heads) !== JSON.stringify(expectedHeads)) fail("front page columns are " + JSON.stringify(heads) + ", expected " + JSON.stringify(expectedHeads));
 
 // 2. the switch: Measured first and selected, the other chips present, no Gemini chip

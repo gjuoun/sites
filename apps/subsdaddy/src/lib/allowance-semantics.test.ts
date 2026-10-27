@@ -157,11 +157,11 @@ describe("Claude: archived prompt counts, the same convention as Codex", () => {
     expect(monthlyTokens({ low: 200, high: 800 }, CONTEXTS.short, 3) / 1e9).toBeCloseTo(1.8083160, 6);
   });
 
-  test("the prompt rows carry the double dagger and their own footnote line, and the view has two lines at most", () => {
+  test("the prompt rows carry the double dagger and their own footnote line, and the view has four lines at most", () => {
     const t = summaryTable(ds, "claude-haiku-5.5", "short");
     expect(t.rows.find((r) => r.key === "claude-code-pro")!.cells.usd.text.endsWith("‡")).toBe(true);
     const lines = (t.footnote ?? "").split("\n");
-    expect(lines.length).toBeLessThanOrEqual(2);
+    expect(lines.length).toBeLessThanOrEqual(4);
     expect(lines).toContain("‡ converted from vendor prompt-count guidance (2025 archive) at 100K context per prompt");
   });
 });

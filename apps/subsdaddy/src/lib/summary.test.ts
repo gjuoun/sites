@@ -27,11 +27,11 @@ describe("switch: the three states the page can show", () => {
   });
 });
 
-describe("the one table: six columns and nothing else", () => {
-  test("every view has exactly Plan, Fee/mo, Capacity, $/B, tok/s, TTFT p50", () => {
+describe("the one table: seven columns and nothing else", () => {
+  test("every view has exactly Plan, Fee/mo, Allowance, Capacity, $/B, tok/s, TTFT p50", () => {
     for (const c of viewChips(ds)) {
       const t = summaryTable(ds, c.id);
-      expect(t.columns.map((x) => x.label)).toEqual(["Plan", "Fee/mo", "Capacity", "$/B", "tok/s", "TTFT p50"]);
+      expect(t.columns.map((x) => x.label)).toEqual(["Plan", "Fee/mo", "Allowance", "Capacity", "$/B", "tok/s", "TTFT p50"]);
     }
   });
 

@@ -70,6 +70,7 @@ function MethodologyPage() {
       </section>
       <CacheShapeSection />
       <ShapeSection />
+      <AllowanceColumnSection />
       <AllowanceSection />
       <ClaudeSection />
       <ContextSection />
@@ -322,9 +323,8 @@ function ShapeSection() {
       </p>
       <UnifiedTable testId="shape-compare" columns={cols} rows={rows} />
       <p>
-        CommandCode and OpenCode Go have the same fee and the same blend under each shape, so their $/B differs only by their allowance. CommandCode uses its published {"$"}{cc.capacity.allowance_usd_per_cycle?.toFixed(2)} of usage;
-        OpenCode Go uses its derived {"$"}{go.capacity.allowance_usd_per_cycle?.toFixed(2)} per cycle. The ratio of the two $/B figures is the ratio of the allowances in every shape. OpenCode Go's catalog
-        also records an official $80 monthly limit for DeepSeek V4.1 Flash; with that figure in place of the derived one, the two would be equal under every shape.
+        CommandCode and OpenCode Go both carry a published {"$"}{cc.capacity.allowance_published_usd?.toFixed(2)} pool: CommandCode's published usage allowance, and Go's official DeepSeek V4.1 Flash monthly limit.
+        Their fee and blend match under each shape, so their $/B is equal in every shape and both contexts. Go's derived figure of {"$"}{go.capacity.allowance_derived_usd?.toFixed(2)} stays in its allowance tooltip for comparison.
       </p>
       {assumed.map((l) => (
         <p key={l.lane} className={SMALL_NOTE}>
@@ -333,6 +333,24 @@ function ShapeSection() {
       ))}
       <p className={SMALL_NOTE}>
         Codex message rows convert a message count to tokens at a fixed 100,462 per message, with no blended price, so Shape does not apply to them.
+      </p>
+    </section>
+  );
+}
+
+function AllowanceColumnSection() {
+  return (
+    <section className="space-y-3" aria-labelledby="m-allowance-column">
+      <h2 id="m-allowance-column" className={SECTION_TITLE}>The Allowance column and its sources</h2>
+      <p>
+        Allowance is the usage dollars a plan pays for in one cycle, with the cycle length. Each value carries one source marker: p published by the vendor, r the vendor's dashboard reading,
+        d derived from quota windows and list prices, c a credit value measured on the plan. Where a plan has more than one figure, the tooltip lists them all; the published figure is the one the model views price with.
+      </p>
+      <p className={SMALL_NOTE}>
+        The Measured view's Allowance does not depend on Shape or context. In a model view, the allowance is the same value under every shape: Shape changes only the price per token.
+      </p>
+      <p className={SMALL_NOTE}>
+        Bring your own shape: a local collector is planned; the site will price every plan against your own cache share. Its contract is written, and the custom shape stays disabled until it ships.
       </p>
     </section>
   );

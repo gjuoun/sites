@@ -59,7 +59,7 @@ function priceFor(row: CatalogRow, ref: RefId): { price: RefPrice; note: string 
 
 type Value = {
   ref: RefId; shape: Shape; usd_per_b: number | null; reason: string | null; fee_over_allowance: number | null; blended_usd_per_b: number;
-  measured_at: string; source: string; usd_per_b_long: number | null; usd_per_b_p75: number | null; band_short: string; band_long: string; band_p75: string; allowance_usd?: number | null; fee_usd?: number | null; price_used?: RefPrice | null;
+  measured_at: string; source: string; usd_per_b_long: number | null; usd_per_b_p75: number | null; band_short: string; band_long: string; band_p75: string; allowance_usd?: number | null; allowance_basis?: string | null; allowance_cycle_days?: number | null; fee_usd?: number | null; price_used?: RefPrice | null;
 };
 
 function estimateRow(row: CatalogRow) {
@@ -84,20 +84,26 @@ function estimateRow(row: CatalogRow) {
   const anomalies = new Set<string>();
   for (const ref of REF_IDS) {
     if (!row.offered_models.includes(ref)) continue;
-    const entry = row.allowance.find((a) => a.ref === ref) ?? row.allowance.find((a) => a.ref === "*") ?? null;
+    const refPub = row.allowance.find((a) => a.ref === ref) ?? null;
+    const wildcard = row.allowance.find((a) => a.ref === "*") ?? null;
+    const entry = refPub ?? wildcard;
+    // precedence: the official limit for this model, then the lane allowance (published, vendor pool or derived), then a wildcard
+    const allowanceUsd = refPub ? refPub.usd : measuredUsd ?? (wildcard ? wildcard.usd : null);
+    const allowanceBasis = refPub ? "vendor_published" : measured ? measured.allowance_basis : wildcard ? (row.allowance_model === "credits" ? "credits" : "vendor_published") : null;
+    const allowanceCycle = measured ? measured.cycle_days : 30;
     const pr = priceFor(row, ref);
     if (pr.note) tierNotes.add(pr.note);
     const meta = refMeta.get(ref);
     if (meta?.price_status === "anomaly" && meta.price_anomaly) anomalies.add(ref + " " + meta.price_anomaly);
     for (const shape of SHAPES) {
-      const base = { fee_usd: fee, allowance_usd: measuredUsd ?? (entry ? entry.usd : null), allowance_reason: measuredUsd !== null || entry ? null : "no published allowance for this model in this plan", price: pr.price, mix: rowMix, shape };
+      const base = { fee_usd: fee, allowance_usd: allowanceUsd, allowance_basis: allowanceBasis, allowance_cycle_days: allowanceCycle, allowance_reason: allowanceUsd !== null ? null : "no published allowance for this model in this plan", price: pr.price, mix: rowMix, shape };
       const s = estimateOne({ ...base, prompt_tokens: LMC_CONTEXT_SHORT });
       const l = estimateOne({ ...base, prompt_tokens: LMC_CONTEXT_LONG });
       const p = estimateOne({ ...base, prompt_tokens: P75 });
       values.push({
         ref, shape, usd_per_b: s.usd_per_b, reason: s.reason, fee_over_allowance: s.fee_over_allowance, blended_usd_per_b: s.blended_usd_per_b,
         measured_at: now, source: SOURCE, usd_per_b_long: l.usd_per_b, usd_per_b_p75: p.usd_per_b,
-        band_short: s.band, band_long: l.band, band_p75: p.band, allowance_usd: base.allowance_usd, fee_usd: base.fee_usd, price_used: base.price,
+        band_short: s.band, band_long: l.band, band_p75: p.band, allowance_usd: base.allowance_usd, allowance_basis: base.allowance_basis, allowance_cycle_days: base.allowance_cycle_days, fee_usd: base.fee_usd, price_used: base.price,
       });
       if (shape === "agent" && s.fee_over_allowance !== null) ratios.push(ref + " " + Number(s.fee_over_allowance.toPrecision(3)));
     }

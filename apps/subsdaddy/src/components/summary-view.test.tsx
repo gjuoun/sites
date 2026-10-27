@@ -68,7 +68,7 @@ describe('one chip style, no disabled state, one note style', () => {
     expect(note('basis')).toBe(note('footnote'));
   });
   test('the measured footnote says the context does not apply to it', () => {
-    expect(html).toContain('Measured $/B does not depend on the context size or the shape');
+    expect(html).toContain('Measured $/B is per plan and reflects that plans own cache share; use Shape to compare on equal terms.');
   });
 });
 

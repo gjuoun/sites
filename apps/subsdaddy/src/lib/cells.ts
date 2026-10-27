@@ -31,6 +31,8 @@ export type Cell = {
   title: string | null;
   note: string | null;
   flags: boolean;
+  /** A source marker shown as a superscript after the value (allowance: p, r, d, c). */
+  sup?: string | null;
 };
 
 export const na = (reason: string, badges: BadgeKind[] = []): Cell => ({ text: "N/A", na: true, reason, badges, title: reason, note: null, flags: false });
