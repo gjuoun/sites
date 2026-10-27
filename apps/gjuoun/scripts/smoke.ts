@@ -1,5 +1,6 @@
 // Rendered-DOM smoke in the locally installed Chrome (puppeteer-core, no browser download).
 // usage: bun run scripts/smoke.ts [url]   (no url: starts astro preview on 127.0.0.1:4321)
+// The built output is also scanned for the phone number, which the public site never carries.
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import puppeteer, { type Browser } from "puppeteer-core";
@@ -34,6 +35,21 @@ async function routesFromDist(): Promise<string[]> {
 	return routes.sort();
 }
 
+// The phone number in any form: separators, a country code, or none. It must not appear in the built output.
+const PHONE_RE = /263\D{0,3}688\D{0,3}5574/;
+async function phoneFailures(): Promise<string[]> {
+	const out: string[] = [];
+	let files = 0;
+	for await (const rel of new Bun.Glob("**/*").scan({ cwd: dist })) {
+		if (!/\.(?:html|xml|txt|css|js|json|svg)$/.test(rel)) continue;
+		files++;
+		if (PHONE_RE.test(await Bun.file(join(dist, rel)).text()))
+			out.push(`${rel} contains the phone number`);
+	}
+	if (files === 0) out.push("no text files in dist to scan");
+	return out;
+}
+
 async function waitForServer(base: string): Promise<void> {
 	for (let i = 0; i < 100; i++) {
 		try {
@@ -66,21 +82,31 @@ type Facts = {
 	headings: string[];
 	footerNotes: number;
 	starterInMain: number;
+	starterTags: number;
 	lessonLists: string[][];
 	lessonLinks: number;
 	lessonNavLinks: number;
 	buttonBgs: string[];
+	cardCount: number;
 	entryDisplays: string[];
 	entryDates: string[];
+	entryHeadings: string[];
+	bulletCount: number;
 	headline: string;
-	hrefs: string[];
-	starterTags: number;
-	placeholders: number;
+	contactHrefs: string[];
+	contactText: string;
+	bracketInMain: boolean;
+	skillsText: string;
+	resumeFacts: string;
 	canonical: string;
-	starterInHeadings: number;
-	starterLabels: number;
-	bullets: string[];
 	metaGaps: number[];
+};
+type Card = {
+	top: number;
+	left: number;
+	height: number;
+	bottom: number;
+	footerBottom: number;
 };
 type Geometry = {
 	lists: {
@@ -90,6 +116,9 @@ type Geometry = {
 		titles: number[];
 	}[];
 	footerGap: number;
+	cards: Card[];
+	gridDisplay: string;
+	gridTracks: number;
 };
 // Nav order is Home, then the page sections in the order the home page flows them.
 const NAV_LABELS = ["Home", "Portfolio", "Resume", "Posts"];
@@ -98,9 +127,28 @@ const DESKTOP = { width: 1440, height: 900 };
 const MOBILE = { width: 390, height: 844 };
 // Page bottom: the footer follows the last content at 3rem on every page.
 const FOOTER_GAP = 48;
-// Meta lines (home resume summary, resume contact) sit at least 1.5rem below the block above.
+// The contact line sits at least 1.5rem below the headline above it.
 const META_GAP_MIN = 24;
-const PAST_TENSE = /^(Built|Integrated|Applied) /;
+// The tailwind md breakpoint: two card columns at and above it, one below.
+const GRID_MD = 768;
+const PORTFOLIO_COUNT = 4;
+// The resume's facts, in the order they read. Mistplay keeps both of its roles.
+const EXPECT_ENTRIES = [
+	"Lead Software Developer, Mistplay",
+	"Senior Developer II, Mistplay",
+	"Senior Developer, Curbie Cars",
+	"Full-stack Developer, Affinio",
+	"Software Engineer, IBM",
+	"Dalhousie University",
+];
+const EXPECT_DATES = [
+	"Feb 2024 – Aug 2024",
+	"Aug 2024 – Present",
+	"May 2021 – Feb 2022",
+	"Jul 2020 – May 2021",
+	"Jun 2019 – Oct 2019",
+	"2014 – 2019",
+];
 const SECTION_NAV: Record<string, string> = {
 	"/": "Home",
 	"/projects/": "Portfolio",
@@ -108,18 +156,21 @@ const SECTION_NAV: Record<string, string> = {
 };
 const FRAME_BG = "rgb(237, 237, 229)"; // --theme-frame, light mode
 const PRIMARY_BG = "rgb(0, 176, 255)"; // --theme-primary, light mode
-const DATE_RE =
-	/^(?:[A-Z][a-z]{2}|\[Mon\]) \d{4} – (?:Present|(?:[A-Z][a-z]{2}|\[Mon\]) \d{4})$/;
 const pad2 = (n: number) => String(n).padStart(2, "0");
 const sequential = (xs: string[]) => xs.every((x, i) => x === pad2(i + 1));
 
 // Read on first load, before any toggle: the DOM facts that contractFailures checks.
 const readFacts = (): Facts => {
 	const txt = (el: Element | null) => (el?.textContent ?? "").trim();
+	const main = document.querySelector<HTMLElement>("main");
 	const navLinks = [
 		...document.querySelectorAll<HTMLAnchorElement>("header nav a"),
 	];
 	const active = navLinks.filter((a) => a.hasAttribute("aria-current"));
+	const skillsHeading = [...(main?.querySelectorAll("h2, h3") ?? [])].find(
+		(h) => txt(h) === "Skills",
+	);
+	const contact = main?.querySelector(".contact");
 	return {
 		navLabels: navLinks.map((a) => txt(a)),
 		activeLabels: active.map((a) => txt(a)),
@@ -130,34 +181,45 @@ const readFacts = (): Facts => {
 		starterInMain: document.querySelectorAll(
 			"main .starter-note, main .starter",
 		).length,
+		starterTags: document.querySelectorAll("main .starter-tag").length,
 		lessonLists: [...document.querySelectorAll("main ol.lesson-list")].map(
 			(ol) => [...ol.children].map((li) => txt(li.querySelector(".ordinal"))),
 		),
 		lessonLinks: document.querySelectorAll("main ol.lesson-list li a").length,
 		lessonNavLinks: document.querySelectorAll("nav.lesson-nav a").length,
-		buttonBgs: [...document.querySelectorAll("main a.button")].map(
+		buttonBgs: [...document.querySelectorAll("main [data-slot='button']")].map(
 			(a) => getComputedStyle(a).backgroundColor,
 		),
-		entryDisplays: [...document.querySelectorAll("li.entry")].map(
+		cardCount: document.querySelectorAll("main [data-slot='card']").length,
+		entryDisplays: [...document.querySelectorAll("main li.entry")].map(
 			(li) => getComputedStyle(li).display,
 		),
-		entryDates: [...document.querySelectorAll("time.entry-date")].map((t) =>
-			txt(t),
+		entryDates: [...document.querySelectorAll("main time.entry-date")].map(
+			(t) => txt(t),
 		),
-		headline: txt(document.querySelector("p.headline")),
-		hrefs: [...document.querySelectorAll<HTMLAnchorElement>("main a")].map(
-			(a) => a.href,
+		entryHeadings: [...document.querySelectorAll("main li.entry")].map((li) =>
+			txt(li.querySelector("h3, h4")),
 		),
-		starterTags: document.querySelectorAll("main .starter-tag").length,
-		placeholders: document.querySelectorAll("main .placeholder").length,
+		bulletCount: document.querySelectorAll("main ul.bullets > li").length,
+		headline: txt(document.querySelector("main p.headline")),
+		contactHrefs: [...(contact?.querySelectorAll("a") ?? [])].map(
+			(a) => a.getAttribute("href") ?? "",
+		),
+		contactText: txt(contact ?? null),
+		bracketInMain: /\[/.test(main?.textContent ?? ""),
+		skillsText: txt(skillsHeading?.nextElementSibling ?? null),
+		// Everything the resume says, as text: the home page and /resume/ must carry the same facts.
+		resumeFacts: JSON.stringify({
+			headline: txt(document.querySelector("main p.headline")),
+			contact: txt(contact ?? null),
+			entries: [...document.querySelectorAll("main li.entry")].map((li) =>
+				txt(li),
+			),
+			skills: txt(skillsHeading?.nextElementSibling ?? null),
+		}),
 		canonical:
 			document.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.href ??
 			"",
-		starterInHeadings: document.querySelectorAll("main h3 .starter-tag").length,
-		starterLabels: document.querySelectorAll("main .starter-label").length,
-		bullets: [...document.querySelectorAll("main ul.bullets > li")].map((li) =>
-			txt(li),
-		),
 		metaGaps: [
 			...document.querySelectorAll<HTMLElement>(
 				"main .meta-line, main .contact",
@@ -205,10 +267,47 @@ function contractFailures(route: string, f: Facts): string[] {
 			bad(`home sections ${f.headings.join("|")}`);
 		if (f.metaGaps.length !== 1 || f.metaGaps[0] < META_GAP_MIN)
 			bad(
-				`home meta line gap ${JSON.stringify(f.metaGaps)}, want >= ${META_GAP_MIN}`,
+				`home contact line gap ${JSON.stringify(f.metaGaps)}, want >= ${META_GAP_MIN}`,
 			);
 		if (!lists.some((l) => l.length >= 3 && sequential(l)))
 			bad("home has no numbered lesson list with 3+ ordinals");
+	}
+	if (route === "/" || route === "/resume/") {
+		// All four employers and all five positions, with their dates, in order.
+		if (f.entryHeadings.join("|") !== EXPECT_ENTRIES.join("|"))
+			bad(`resume entries ${f.entryHeadings.join(" | ")}`);
+		if (f.entryDates.join("|") !== EXPECT_DATES.join("|"))
+			bad(`resume dates ${f.entryDates.join(" | ")}`);
+		if (
+			f.entryDisplays.length !== 6 ||
+			f.entryDisplays.some((d) => d !== "grid")
+		)
+			bad(`resume entries not grid: ${JSON.stringify(f.entryDisplays)}`);
+		if (f.bulletCount !== 14) bad(`resume bullets ${f.bulletCount}, want 14`);
+		if (f.headline !== "Senior Software Engineer")
+			bad(`headline is ${f.headline}`);
+		for (const want of [
+			"mailto:gjuoun@gmail.com",
+			"https://github.com/gjuoun",
+			"https://linkedin.com/in/gjuoun",
+		])
+			if (!f.contactHrefs.includes(want)) bad(`contact line lacks ${want}`);
+		if (!f.contactText.includes("Montreal, Canada"))
+			bad("contact line lacks Montreal, Canada");
+		if (f.metaGaps.length !== 1 || f.metaGaps[0] < META_GAP_MIN)
+			bad(
+				`contact line gap ${JSON.stringify(f.metaGaps)}, want >= ${META_GAP_MIN}`,
+			);
+		if (!f.skillsText.includes("React") || !f.skillsText.includes("Db2"))
+			bad(`skills line ${f.skillsText}`);
+		if (f.starterTags !== 0)
+			bad(`starter tags on the resume: ${f.starterTags}`);
+	}
+	if (route === "/" || route === "/projects/") {
+		if (f.cardCount !== PORTFOLIO_COUNT)
+			bad(`portfolio cards ${f.cardCount}, want ${PORTFOLIO_COUNT}`);
+		if (f.buttonBgs.filter((b) => b === PRIMARY_BG).length < 3)
+			bad(`visit buttons not on theme primary: ${JSON.stringify(f.buttonBgs)}`);
 	}
 	if (route === "/posts/" || route === "/posts/effect-one-function/") {
 		if (lists.length !== 1 || lists[0].length !== 6 || !sequential(lists[0]))
@@ -223,48 +322,14 @@ function contractFailures(route: string, f: Facts): string[] {
 		bad("lesson navigation missing");
 	if (route === "/projects/") {
 		if (f.h1 !== "Portfolio") bad(`projects h1 is ${f.h1}, want Portfolio`);
-		if (f.buttonBgs.filter((b) => b === PRIMARY_BG).length < 3)
-			bad(`visit buttons not on theme primary: ${JSON.stringify(f.buttonBgs)}`);
 	}
-	if (route === "/resume/") {
-		if (
-			f.entryDisplays.length !== 5 ||
-			f.entryDisplays.some((d) => d !== "grid")
-		)
-			bad(`resume entries not grid: ${JSON.stringify(f.entryDisplays)}`);
-		if (
-			f.entryDates.length !== 5 ||
-			!f.entryDates.every((d) => DATE_RE.test(d))
-		)
-			bad(`resume dates: ${JSON.stringify(f.entryDates)}`);
-		if (f.headline.includes("Mistplay"))
-			bad(`headline repeats Mistplay: ${f.headline}`);
-		if (!f.hrefs.includes("https://github.com/gjuoun"))
-			bad("contact line lacks GitHub");
-		const origin = f.canonical ? new URL("/", f.canonical).href : "";
-		if (!origin || !f.hrefs.includes(origin))
-			bad(`contact line lacks the canonical site URL ${origin}`);
-		if (f.starterTags !== 2 || f.starterInHeadings !== 2)
-			bad(
-				`want one starter tag per role with bullets, got ${f.starterTags} (in headings ${f.starterInHeadings})`,
-			);
-		if (f.starterLabels !== 0) bad("inline starter label still present");
-		const real = f.bullets.filter((b) => !b.startsWith("["));
-		if (real.length < 3 || !real.every((b) => PAST_TENSE.test(b)))
-			bad(
-				`resume bullets are not past-tense action phrases: ${JSON.stringify(f.bullets)}`,
-			);
-		if (f.metaGaps.length !== 1 || f.metaGaps[0] < META_GAP_MIN)
-			bad(
-				`contact line gap ${JSON.stringify(f.metaGaps)}, want >= ${META_GAP_MIN}`,
-			);
-		if (f.placeholders < 2)
-			bad(`missing facts not marked as placeholders: ${f.placeholders}`);
+	if (route === "/" || route === "/resume/" || route === "/projects/") {
+		if (f.bracketInMain) bad("bracketed placeholder text in main");
 	}
 	return out;
 }
 
-// Geometry at one viewport: lesson rows (ordinal, label, title) and the footer distance from the last content.
+// Geometry at one viewport: lesson rows, the footer distance, and the portfolio card grid.
 const readGeometry = (): Geometry => {
 	const x = (els: Element[]) =>
 		els.map((el) => Math.round(el.getBoundingClientRect().left * 10) / 10);
@@ -285,7 +350,33 @@ const readGeometry = (): Geometry => {
 		footer && bottoms.length > 0
 			? Math.round(footer.getBoundingClientRect().top - Math.max(...bottoms))
 			: -1;
-	return { lists, footerGap };
+	const cardEls = [
+		...document.querySelectorAll<HTMLElement>("main [data-slot='card']"),
+	];
+	const grid = cardEls[0]?.parentElement?.parentElement;
+	const cards = cardEls.map((card) => {
+		const r = card.getBoundingClientRect();
+		const footerEl = card.querySelector<HTMLElement>(
+			"[data-slot='card-footer']",
+		);
+		return {
+			top: Math.round(r.top),
+			left: Math.round(r.left),
+			height: Math.round(r.height * 10) / 10,
+			bottom: r.bottom,
+			footerBottom: footerEl ? footerEl.getBoundingClientRect().bottom : -1,
+		};
+	});
+	const gridStyle = grid ? getComputedStyle(grid) : null;
+	return {
+		lists,
+		footerGap,
+		cards,
+		gridDisplay: gridStyle?.display ?? "",
+		gridTracks: gridStyle
+			? gridStyle.gridTemplateColumns.split(" ").filter(Boolean).length
+			: 0,
+	};
 };
 
 // Every numbered list on a page shares one ordinal x; labels and titles share one x, the text column.
@@ -302,6 +393,27 @@ function geometryFailures(route: string, width: number, g: Geometry): string[] {
 	}
 	if (Math.abs(g.footerGap - FOOTER_GAP) > 1)
 		bad(`footer ${g.footerGap}px below the last content, want ${FOOTER_GAP}`);
+	if (route === "/" || route === "/projects/") {
+		const wantTracks = width >= GRID_MD ? 2 : 1;
+		if (g.cards.length !== PORTFOLIO_COUNT)
+			bad(`card grid holds ${g.cards.length} cards, want ${PORTFOLIO_COUNT}`);
+		if (g.gridDisplay !== "grid")
+			bad(`card container display ${g.gridDisplay}, want grid`);
+		if (g.gridTracks !== wantTracks)
+			bad(`card grid has ${g.gridTracks} columns, want ${wantTracks}`);
+		const rows = new Map<number, Card[]>();
+		for (const c of g.cards) rows.set(c.top, [...(rows.get(c.top) ?? []), c]);
+		for (const row of rows.values()) {
+			const heights = row.map((c) => c.height);
+			if (Math.max(...heights) - Math.min(...heights) > 1)
+				bad(`card row heights differ: ${heights.join(",")}`);
+		}
+		for (const c of g.cards)
+			if (Math.abs(c.footerBottom - c.bottom) > 1)
+				bad(
+					`card actions not pinned to the bottom (${(c.bottom - c.footerBottom).toFixed(1)}px)`,
+				);
+	}
 	return out;
 }
 
@@ -314,9 +426,13 @@ let browser: Browser | undefined;
 let consoleErrors = 0;
 let routeCount = 0;
 let toggleTrail = "";
+let focusTrail = "";
+let motionTrail = "";
 const lessonCounts: string[] = [];
+const resumeSnapshots = new Map<string, string>();
 
 try {
+	failures.push(...(await phoneFailures()));
 	await waitForServer(base);
 	browser = await puppeteer.launch({
 		executablePath: chromePath,
@@ -373,6 +489,8 @@ try {
 
 		const facts = await page.evaluate(readFacts);
 		failures.push(...contractFailures(route, facts));
+		if (route === "/" || route === "/resume/")
+			resumeSnapshots.set(route, facts.resumeFacts);
 		failures.push(
 			...geometryFailures(
 				route,
@@ -384,6 +502,57 @@ try {
 			lessonCounts.push(
 				`${route}=${facts.lessonLists.map((l) => l.length).join("+")}`,
 			);
+		if (route === "/projects/") {
+			// Keyboard: Tab to the first Visit link; its focus ring must be a visible solid outline.
+			let onVisit = false;
+			for (let i = 0; i < 40 && !onVisit; i++) {
+				await page.keyboard.press("Tab");
+				onVisit = await page.evaluate(
+					() =>
+						document.activeElement?.getAttribute("data-slot") === "button" &&
+						document.activeElement?.textContent === "Visit",
+				);
+			}
+			const ring = await page.evaluate(() => {
+				const el = document.activeElement as HTMLElement | null;
+				if (!el) return null;
+				const cs = getComputedStyle(el);
+				return {
+					focusVisible: el.matches(":focus-visible"),
+					outline: cs.outlineStyle,
+					outlineWidth: parseFloat(cs.outlineWidth),
+					boxShadow: cs.boxShadow,
+				};
+			});
+			expect(onVisit, `${route} could not Tab to a Visit link`);
+			expect(
+				ring?.focusVisible === true &&
+					ring.outline === "solid" &&
+					ring.outlineWidth >= 2,
+				`${route} Visit link focus ring not visible: ${JSON.stringify(ring)}`,
+			);
+			focusTrail = ring
+				? `focus=${ring.outline}/${ring.outlineWidth}px`
+				: "focus=none";
+			// Reduced motion: the stock button's transition is off.
+			await page.emulateMediaFeatures([
+				{ name: "prefers-reduced-motion", value: "reduce" },
+			]);
+			const duration = await page.evaluate(
+				() =>
+					getComputedStyle(
+						document.querySelector("main [data-slot='button']") as Element,
+					).transitionDuration,
+			);
+			expect(
+				parseFloat(duration) === 0,
+				`${route} button transition under reduced motion: ${duration}`,
+			);
+			motionTrail = `motion=${duration}`;
+			await page.emulateMediaFeatures([
+				{ name: "prefers-reduced-motion", value: "no-preference" },
+			]);
+		}
 		if (route === "/") {
 			await page.click("#theme-toggle");
 			const dark = await page.evaluate(
@@ -435,6 +604,13 @@ try {
 		);
 		await context.close();
 	}
+	// The home page and /resume/ carry the same facts.
+	const home = resumeSnapshots.get("/");
+	const resume = resumeSnapshots.get("/resume/");
+	expect(
+		home !== undefined && home === resume,
+		"home and /resume/ do not carry the same resume facts",
+	);
 } finally {
 	await browser?.close();
 	preview?.kill();
@@ -448,5 +624,5 @@ if (failures.length > 0) {
 	process.exit(1);
 }
 console.log(
-	`smoke ok routes=${routeCount} toggle=${toggleTrail} console_errors=${consoleErrors} lessons ${lessonCounts.join(" ")}`,
+	`smoke ok routes=${routeCount} toggle=${toggleTrail} ${focusTrail} ${motionTrail} console_errors=${consoleErrors} lessons ${lessonCounts.join(" ")} cards=${PORTFOLIO_COUNT}x2 phone=absent`,
 );

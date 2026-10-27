@@ -4,13 +4,18 @@ Static Astro site on the bigface business theme (light by default, dark via the 
 project `jun-blog`. Routes: home (portfolio, resume, latest lessons), `/projects/` (titled Portfolio), posts,
 a numbered series page, resume, 404, RSS, sitemap.
 
+The portfolio is a card grid built from the theme package's own stock components (`Card`, `Badge`, `Button` from
+`@gjuoun/bigface-business-ui`). React renders them to static HTML at build time (`renderProjectGrid` in
+`src/components/ProjectGrid.tsx`), so no React runtime ships. Tailwind compiles only the three components used
+(`src/styles/tailwind.css`); the site's own rules stay in `src/styles/site.css`.
+
 ## Commands
 
 ```sh
 bun run dev        # local dev server
 bun run build      # static output in dist/
 bun run preview    # serves dist/ on port 4321
-bun run smoke      # rendered-DOM check in Chrome (needs CHROME_PATH or the macOS default)
+bun run smoke      # rendered-DOM check in Chrome: nav, card grid, resume facts, focus, phone absence (needs CHROME_PATH or the macOS default)
 bun run typecheck  # astro check
 bun run lint       # biome check src scripts
 bun run test       # bun test src scripts
@@ -38,12 +43,12 @@ Starter copy is marked `starter: true` in each post. Once Jun has rewritten an e
 `false` (or remove the field). A small note in the footer shows while any entry on the page is still
 starter. It is never in the content flow, and the resume page never shows it.
 
-The resume (`src/data/resume.ts`) has no flag. Its bullets are tagged `starter` on the page, and a fact
-that no source gives is a `[...]` value, rendered as a marked placeholder. Replace each placeholder, then
-remove its brackets.
+The resume (`src/data/resume.ts`) holds only facts from Jun's resume (`notebook: Private/resume/jun-guo-2025.md`).
+The home page and `/resume/` render the same facts (`src/components/ResumeFacts.astro`), and smoke checks that they match.
+The phone number is never in the content and smoke scans the built output for it.
 
 ## Notes
 
 - Only `var(--theme-*)` values in `src/styles/site.css`; no hand-picked colours (`src/lib/theme.test.ts` checks this).
-- The only client JS is the theme toggle, inline in `ThemeToggle.astro`.
+- The only client JS is the theme toggle, inline in `ThemeToggle.astro`. The card grid adds none.
 - The site URL in `astro.config.mjs` is the only origin. Canonical links, sitemap, RSS, robots and the resume contact line read it. It is `https://jun-blog.qqntt.com` until the cutover, which flips it to `https://jun.qqntt.com`.
