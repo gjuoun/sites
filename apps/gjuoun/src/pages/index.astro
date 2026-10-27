@@ -9,37 +9,46 @@ import { livePosts } from "../lib/collections";
 const projects = (await getCollection("projects"))
 	.map((e) => e.data)
 	.sort((a, b) => a.order - b.order);
-const series = (await getCollection("series"))
-	.map((e) => e.data)
-	.sort((a, b) => a.order - b.order);
+const seriesTitles = new Map(
+	(await getCollection("series")).map((e) => [e.data.slug, e.data.title] as const),
+);
 const posts = await livePosts();
-const standalone = posts
-	.filter((p) => p.data.series === undefined)
-	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-	.slice(0, 5);
+// Latest lessons: newest first. Ties keep series order, so a course with one date starts at lesson 1.
+const latest = posts
+	.slice()
+	.sort(
+		(a, b) =>
+			b.data.date.valueOf() - a.data.date.valueOf() ||
+			(a.data.order ?? 0) - (b.data.order ?? 0),
+	)
+	.slice(0, 3);
 const current = resume.roles[0];
 ---
 
 <Base description="Portfolio, resume and numbered posts by Jun Guo." starter={true}>
 	<h1>Jun Guo</h1>
-	<section aria-labelledby="portfolio-heading">
+	<section class="home-section" aria-labelledby="portfolio-heading">
 		<h2 id="portfolio-heading">Portfolio</h2>
 		{projects.map((project) => <ProjectCard project={project} />)}
 	</section>
-	<section aria-labelledby="resume-heading">
+	<section class="home-section" aria-labelledby="resume-heading">
 		<h2 id="resume-heading">Resume</h2>
 		<p>{resume.summary}</p>
-		{current && <p>{current.title ?? ""} · {current.organization}</p>}
-		<p><a href="/resume/">Full resume</a></p>
+		{current && <p class="kicker">{current.title} · {current.organization}</p>}
+		<p><a class="button" href="/resume/">Full resume</a></p>
 	</section>
-	<section aria-labelledby="posts-heading">
+	<section class="home-section" aria-labelledby="posts-heading">
 		<h2 id="posts-heading">Posts</h2>
 		<PostList
-			numbered={false}
-			items={series.map((s) => ({ href: `/posts/${s.slug}/`, title: s.title, summary: s.summary }))}
+			numbered
+			items={latest.map((p) => ({
+				href: "/posts/" + p.data.slug + "/",
+				title: p.data.title,
+				summary: p.data.summary,
+				order: p.data.order,
+				kicker: p.data.series ? seriesTitles.get(p.data.series) : undefined,
+			}))}
 		/>
-		<PostList
-			items={standalone.map((p) => ({ href: `/posts/${p.data.slug}/`, title: p.data.title, summary: p.data.summary }))}
-		/>
+		<p><a class="button button-outline" href="/posts/">All posts</a></p>
 	</section>
 </Base>

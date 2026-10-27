@@ -158,7 +158,15 @@ pre {
 	margin-top: 2rem;
 }
 
+/* Home: three sections, each set off from the one before it. */
+.home-section + .home-section {
+	margin-top: 2.5rem;
+	padding-top: 1.5rem;
+	border-top: 2px solid var(--theme-border);
+}
+
 @media print {
+
 	.skip-link,
 	.site-header,
 	footer {
