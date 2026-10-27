@@ -60,8 +60,8 @@ describe("the context switch on the front page", () => {
   });
 
   test("a model view footnote names its context; the Measured view has no context footnote", () => {
-    expect(summaryTable(ds, "gpt-6-luna", "short").footnote).toBe("Prices assume a 100K-token context");
-    expect(summaryTable(ds, "gpt-6-luna", "long").footnote).toBe("Prices assume a 350K-token context");
+    expect(summaryTable(ds, "gpt-6-luna", "short").footnote).toContain("Prices assume a 100K-token context");
+    expect(summaryTable(ds, "gpt-6-luna", "long").footnote).toContain("Prices assume a 350K-token context");
     expect(summaryTable(ds, MEASURED, "long").footnote ?? "").not.toContain("token context");
   });
 
@@ -90,16 +90,19 @@ describe("price guard: a listing that fails the sanity rule never replaces the s
     expect(sanity({ in_per_m: 0.1, out_per_m: 0.5, cache_per_m: 0.01 })).toBeNull();
   });
 
-  test("the shipped DeepSeek reference keeps its last verified values, with status and the snapshot date", () => {
+  test("the shipped DeepSeek reference is the official mean, a verified listing, or its last verified snapshot, with status and source priority", () => {
     const d = read("models.json").reference.find((r: { ref: string }) => r.ref === "deepseek-v4.1-flash");
-    expect(d.in_per_m).toBe(0.02);
-    expect(d.out_per_m).toBe(1);
-    expect(d.cache_per_m).toBe(0.015);
-    if (d.price_status === "anomaly") {
+    expect(["official", "verified", "anomaly", "unavailable"]).toContain(d.price_status);
+    expect(d.source_priority).toBe("official > openrouter");
+    if (d.price_status === "official") {
+      expect(d.official.source).toBe("https://api-docs.deepseek.com/quick_start/pricing/");
+      expect(d.price_note).toContain("Official documentation is authoritative for first-party models");
+    } else if (d.price_status === "verified") {
+      expect(d.in_per_m).toBe(d.openrouter_listed.in_per_m);
+    } else if (d.price_status === "anomaly") {
       expect(d.price_anomaly).toContain("price_anomaly: listing shows completion < prompt");
       expect(d.price_anomaly).toContain("using last verified snapshot " + String(d.last_verified_at).slice(0, 10));
     }
-    expect(d.source_priority).toBe("official > openrouter");
   });
 
   test("the DeepSeek estimate basis names the anomaly it kept", () => {

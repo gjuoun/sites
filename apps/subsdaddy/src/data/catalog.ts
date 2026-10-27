@@ -102,6 +102,19 @@ export const catalogRowSchema = z
     offered_basis: z.string().min(1).nullable().default(null),
     // the measured lane whose $/B is this plan's own measurement, when there is one
     measured_lane: z.enum(LANES).nullable().default(null),
+    // a plan published as messages per five-hour window (Codex): converted to tokens in messages.ts, never a dollar allowance
+    message_limit: z
+      .strictObject({
+        model: z.enum(REF_LITERALS),
+        low: z.number().int().positive(),
+        high: z.number().int().positive(),
+        window_hours: z.number().positive(),
+        source_url: z.string().regex(/^https:\/\//),
+        read_date: z.string().min(1),
+        note: z.string().min(1),
+      })
+      .nullable()
+      .optional(),
     estimate: estimateSchema.nullable().optional(),
     window_readings: z.array(windowReadingSchema).optional(),
     reading_error: z.string().min(1).nullable().optional(),

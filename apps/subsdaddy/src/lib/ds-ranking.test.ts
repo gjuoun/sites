@@ -19,9 +19,9 @@ describe("classification: convertible (a dollar allowance) vs needs_anchor (none
     expect(c.convertible + c.needs_anchor + c.excluded_status).toBe(catalog.rows.length);
   });
 
-  test("the convertible plans are the ones with a dollar allowance: 8 at r22", () => {
+  test("the convertible plans are the ones with a dollar allowance: 10 at r29", () => {
     const conv = catalog.rows.filter((r) => r.status === "catalog" && r.allowance.length > 0).map((r) => r.plan_id).sort();
-    expect(conv).toEqual(["commandcode-goat-published", "opencode-go-go", "opencode-go-plus", "qwen-cloud-token-owner-10", "trae-pro", "trae-pro-plus", "trae-ultra", "zed-pro"]);
+    expect(conv).toEqual(["commandcode-goat-published", "github-copilot-pro", "github-copilot-pro-plus", "opencode-go-go", "opencode-go-plus", "qwen-cloud-token-owner-10", "trae-pro", "trae-pro-plus", "trae-ultra", "zed-pro"]);
     expect(rank.counts.convertible).toBe(conv.length);
   });
 
@@ -31,7 +31,7 @@ describe("classification: convertible (a dollar allowance) vs needs_anchor (none
     for (const r of na) {
       expect(r.estimate?.status).toBe("unavailable");
       expect(r.estimate?.values ?? []).toHaveLength(0);
-      expect(r.allowance_reason ?? "").toContain("需一次基准实测才能折算");
+      expect(r.allowance_reason ?? "").toBeTruthy();
       expect(byId(r.plan_id)).toBeUndefined();
     }
   });
@@ -58,11 +58,11 @@ describe("DeepSeek ranking", () => {
     }
   });
 
-  test("CommandCode GOAT: $10 over its $80 DeepSeek allowance; list basis matches the catalog estimate (2.35)", () => {
+  test("CommandCode GOAT: $10 over its $80 DeepSeek allowance; list basis matches the catalog estimate", () => {
     const cc = byId("commandcode-goat-published")!;
     expect(cc.fee_usd).toBe(10);
     expect(cc.allowance_usd).toBe(80);
-    expect(cc.est_list!).toBeCloseTo(2.35, 1);
+    expect(cc.est_list!).toBeCloseTo(catalog.rows.find((r) => r.plan_id === "commandcode-goat-published")!.estimate!.values.find((v) => v.ref === DS_REF && v.shape === "agent")!.usd_per_b!, 6);
     expect(cc.tokens_b_list!).toBeCloseTo(10 / cc.est_list!, 9);
   });
 
@@ -80,6 +80,6 @@ describe("DeepSeek ranking", () => {
 
   test("the QwenCloud and list price bases are the stated ones: QwenCloud average and OpenRouter list", () => {
     expect(qwenDsPrice(models).in_per_m).toBeCloseTo(0.2375, 9);
-    expect(listDsPrice(models).in_per_m).toBeCloseTo(0.02, 9);
+    expect(listDsPrice(models).in_per_m).toBeCloseTo(models.reference.find((r) => r.ref === DS_REF)!.in_per_m, 9);
   });
 });

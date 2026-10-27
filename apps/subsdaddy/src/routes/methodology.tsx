@@ -3,8 +3,11 @@ import { SiteFooter } from "@/components/site-footer";
 import { UnifiedTable } from "@/components/unified-table";
 import { MODEL_BLOCK, MODEL_TITLE, NOTE, PAGE_TITLE, SECTION_TITLE, SMALL_NOTE } from "@/components/layout";
 import { dataset } from "@/lib/dataset";
-import { catalogTable, contextCompareTable, contextDistributionTable, dsRankingTable, measuredTable, modelTables, officialTable, type DS } from "@/lib/sections";
+import { catalogTable, contextCompareTable, contextDistributionTable, dsRankingTable, measuredTable, messageTable, modelTables, officialTable, type DS } from "@/lib/sections";
 import { contextLabel } from "@/data/context";
+import { CONTEXTS, OUTPUT_TOKENS_PER_MESSAGE, WINDOWS_PER_DAY, monthlyTokens, tokensPerMessage, usdPerBOfTokens } from "@/data/messages";
+import { hourWeighted } from "@/lib/official-prices";
+import { cacheShare } from "@/lib/summary";
 
 export const Route = createFileRoute("/methodology")({
   component: MethodologyPage,
@@ -62,12 +65,14 @@ function MethodologyPage() {
         <p>Cache writes have their own price (1.25× input for Haiku and Luna). The measured traffic writes no cache, so this term is zero today; it is priced, not folded into input, so a future write share is counted.</p>
         <p>A plan with an offered model but no published dollar allowance shows N/A and its reason in the title. A third-party figure is used only with its link and date, labelled third-party. None is used on this site yet.</p>
       </section>
+      <CacheShapeSection />
       <ContextSection />
+      <OfficialPlansSection />
       <section className="space-y-2">
         <h2 className="text-lg font-medium">Speed on the front page</h2>
         <p>Model view: weighted median over endpoints by request volume, not the unweighted median or the best endpoint. Measured view: our own usage logs, p50. Every speed cell shows one value, rounded to two significant figures.</p>
         <p>weighted median over endpoints by request volume, not the unweighted median or the best endpoint</p>
-        <p>Derived $/B (marked *): a plan whose own window is saturated takes the $/B of a same-rate peer plan, and says so on the front page.</p>
+        <p>Derived $/B (marked *): in the Measured view, a plan whose own window is saturated takes the $/B of its same-rate peer plan. In model views each plan keeps its own traffic shape; a * there marks a rate-derived allowance.</p>
       </section>
       <DetailTables />
       <SiteFooter />
@@ -84,6 +89,8 @@ function ContextSection() {
   const dist = contextDistributionTable(ds);
   const cmp = contextCompareTable(ds);
   const dsRef = ds.models.reference.find((r) => r.ref === "deepseek-v4.1-flash")!;
+  const off = dsRef.official;
+  const hw = off ? hourWeighted({ peak: off.peak, off_peak: off.off_peak, peak_hours_utc: off.peak_hours_utc }) : null;
   return (
     <section className="space-y-3" aria-labelledby="m-context">
       <h2 id="m-context" className={SECTION_TITLE}>Standard context</h2>
@@ -100,8 +107,81 @@ function ContextSection() {
       <p>$/B by standard context (agent shape). A value changes only where a prompt-length band is crossed, so a model with no band in the range does not move.</p>
       <UnifiedTable testId="context-compare" columns={cmp.columns} rows={cmp.rows} />
       <p className={SMALL_NOTE}>
-        DeepSeek V4.1 Flash list price used: {"$"}{dsRef.in_per_m} in / {"$"}{dsRef.out_per_m} out / {"$"}{dsRef.cache_per_m} cache per M tokens; status {dsRef.price_status ?? "unknown"}; last verified{" "}
-        {dsRef.last_verified_at ?? "unknown"}. {dsRef.price_anomaly ?? ""} Official: {dsRef.official_status ?? "not checked"}. Source priority: official above OpenRouter.
+        DeepSeek V4.1 Flash reference price in use: {"$"}{dsRef.in_per_m} in / {"$"}{dsRef.out_per_m} out / {"$"}{dsRef.cache_per_m} cache per M tokens (cache read); status {dsRef.price_status ?? "unknown"};
+        last verified {dsRef.last_verified_at ?? "unknown"}. {dsRef.price_note ?? dsRef.price_anomaly ?? ""} Official: {dsRef.official_status ?? "not checked"}. Source priority: official above OpenRouter.
+      </p>
+      {off && hw && (
+        <p className={SMALL_NOTE}>
+          Price basis: the arithmetic mean of the peak and off-peak bands, as ruled. Peak hours (UTC): {off.peak_hours_utc}. Source: {off.source}, read {off.fetched_at.slice(0, 10)}.
+          Sensitivity, not used: weighting each band by the hours it covers (peak is 7 of 168 hours a week) would give {"$"}{hw.in_per_m.toFixed(3)} input,
+          {" "}{"$"}{hw.cache_per_m.toFixed(4)} cache and {"$"}{hw.out_per_m.toFixed(3)} output per M tokens.
+        </p>
+      )}
+    </section>
+  );
+}
+
+/** Official consumer plans: how a dollar allowance, a message limit and a window limit become $/B, and what stays N/A. */
+function OfficialPlansSection() {
+  const ds = dataset as unknown as DS;
+  const msg = messageTable(ds);
+  const ceilingTokens = monthlyTokens({ low: 350, high: 3000 }, CONTEXTS.short, WINDOWS_PER_DAY.ceiling, "low");
+  const per = tokensPerMessage(CONTEXTS.short);
+  return (
+    <section className="space-y-3" aria-labelledby="m-official-plans">
+      <h2 id="m-official-plans" className={SECTION_TITLE}>Official consumer plans</h2>
+      <p>
+        GitHub Copilot Pro and Pro+ publish a dollar allowance: base AI credits, where 1 AI credit = $0.01 USD (GitHub Docs, read 2026-10-26). Pro is $10 with 1,000 base credits;
+        Pro+ is $39 with 3,900. The flex allotment on the plans table (500 and 3,100 more credits) is variable by GitHub's own text, so it is excluded. The estimate is fee ÷ allowance × the
+        blended list cost of each model, as for any other plan. It assumes credits bill at list rates per model; per-model credit rates were not read.
+      </p>
+      <p>
+        OpenAI Codex publishes messages per five-hour window, not tokens. The Codex pricing page (read 2026-10-26) lists GPT-6 Luna at 350-3,000 local messages per window on Plus, and says
+        these are estimates, not fixed limits. It says Pro plans currently have no five-hour limit, so the Pro rows are N/A. Go is not in that table. The GPT-5.5 ranges in the research note
+        are no longer on the page.
+      </p>
+      <p>
+        Conversion, one convention (src/data/messages.ts): 1 message = {per.toLocaleString("en-US")} tokens = 100,000 standard context + {OUTPUT_TOKENS_PER_MESSAGE} output tokens, the median output
+        of one assistant turn in our pi session logs. Monthly capacity = messages per window × windows a day × 30 × tokens per message. The vendor gives a range; the front page uses its
+        lower bound, and the table shows both ends. Realistic is 3 active windows a day. The ceiling is 24 hours of continuous use, 24 ÷ 5 = 4.8 windows a day: at the lower bound, Plus on GPT-6 Luna
+        would run {(ceilingTokens / 1e9).toFixed(2)}B tokens a month at 100K, which is {"$"}{usdPerBOfTokens(20, ceilingTokens).toFixed(2)} per billion tokens.
+      </p>
+      <p>
+        Measured output constant: a recount on 2026-10-26 found 43,582 assistant turns with usage in 45 days and a median output of 462 tokens. It replaces the earlier 467. The per-turn
+        median prompt is 192K tokens, not 100K; 100K per message is the standard context convention (the session-end median), so per-turn prompts would roughly double the token counts.
+      </p>
+      <UnifiedTable testId="messages" columns={msg.columns} rows={msg.rows} />
+      <p>Anthropic publishes percentage-based limits only; no measured token conversion is available. A month of own usage on any Max plan would replace this estimate.</p>
+    </section>
+  );
+}
+
+/** Why the traffic shape moves $/B: the same fee and allowance buy more tokens when more of them are cache reads. */
+function CacheShapeSection() {
+  const ds = dataset as unknown as DS;
+  const cc = ds.catalog.rows.find((r) => r.plan_id === "commandcode-goat-published")!;
+  const go = ds.catalog.rows.find((r) => r.plan_id === "opencode-go-go")!;
+  const ccV = cc.estimate!.values.find((v) => v.ref === "deepseek-v4.1-flash" && v.shape === "agent")!;
+  const goV = go.estimate!.values.find((v) => v.ref === "deepseek-v4.1-flash" && v.shape === "agent")!;
+  const dsRef = ds.models.reference.find((r) => r.ref === "deepseek-v4.1-flash")!;
+  const ccShare = Math.round(cacheShare(ds, "commandcode-goat").share * 100);
+  const goShare = Math.round(cacheShare(ds, "opencode-go").share * 100);
+  const ratio = Math.round(dsRef.in_per_m / dsRef.cache_per_m);
+  return (
+    <section className="space-y-2" aria-labelledby="m-cache-shape">
+      <h2 id="m-cache-shape" className={SECTION_TITLE}>Why the traffic shape moves $/B</h2>
+      <p>
+        CommandCode GOAT and OpenCode Go both cost $10 a month and both carry $80 of DeepSeek V4.1 Flash usage. Each model view uses the plan's own measured traffic shape, so they differ
+        only because of what each one carries. CommandCode's own traffic is {ccShare}% cache read of prompt tokens; OpenCode Go's is {goShare}%. A cache read is priced at
+        {" "}{"$"}{dsRef.cache_per_m} per M against {"$"}{dsRef.in_per_m} for an uncached input, about {ratio}×, so the same allowance buys more tokens when more of them are cache reads.
+      </p>
+      <p>
+        At the list-price blend that gives {"$"}{ccV.blended_usd_per_b.toFixed(2)} per billion tokens for CommandCode's shape and {"$"}{goV.blended_usd_per_b.toFixed(2)} for OpenCode Go's.
+        So on DeepSeek V4.1 Flash, CommandCode shows {"$"}{ccV.usd_per_b!.toFixed(2)} and OpenCode Go {"$"}{goV.usd_per_b!.toFixed(2)}. That gap is real, not a bug.
+      </p>
+      <p>
+        Measured view: CommandCode's own window is saturated, so its Measured $/B is OpenCode Go's measured value, marked *. Its tooltip still shows its own cache share.
+        Hover a $/B cell to see the cache share of the traffic it was computed from.
       </p>
     </section>
   );

@@ -211,7 +211,20 @@ export const modelsFileSchema = z.object({
         source: z.string().min(1).optional(),
         source_priority: z.string().min(1).optional(),
         last_verified_at: z.string().min(1).optional(),
-        price_status: z.enum(["verified", "anomaly", "unavailable"]).optional(),
+        price_status: z.enum(["official", "verified", "anomaly", "unavailable"]).optional(),
+        price_note: z.string().min(1).nullable().optional(),
+        official: z
+          .object({
+            source: z.string().min(1),
+            fetched_at: z.string().min(1),
+            model_label: z.string().min(1),
+            peak: z.object({ in_per_m: z.number().nonnegative(), out_per_m: z.number().nonnegative(), cache_per_m: z.number().nonnegative() }),
+            off_peak: z.object({ in_per_m: z.number().nonnegative(), out_per_m: z.number().nonnegative(), cache_per_m: z.number().nonnegative() }),
+            peak_hours_utc: z.string().min(1),
+            combination: z.string().min(1),
+          })
+          .nullable()
+          .optional(),
         price_anomaly: z.string().min(1).nullable().optional(),
         official_status: z.string().min(1).optional(),
         openrouter_listed: z
