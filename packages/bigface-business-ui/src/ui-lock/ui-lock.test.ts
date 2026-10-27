@@ -64,8 +64,8 @@ describe("components/ui lock", () => {
 		expect(checkLock(extra, m).some((f) => f.includes("zz-extra.tsx"))).toBe(true);
 	});
 	test("the glow variant exists as a Button variant and resolves to the glow ring", () => {
-		expect(buttonVariants({ variant: "glow" })).toContain("ring-3 ring-glow-halo");
-		expect(buttonVariants({ variant: "default" })).not.toContain("ring-glow-halo");
+		expect(buttonVariants({ variant: "glow" })).toContain("ring-3 ring-background");
+		expect(buttonVariants({ variant: "default" })).not.toContain("ring-background");
 	});
 
 	test("button.tsx diverges from registry bytes only by its declared colour lines and the marked glow lines", () => {
