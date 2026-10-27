@@ -79,6 +79,7 @@ function MethodologyPage() {
       <AllowanceColumnSection />
       <AllowanceSection />
       <ThirdPartySection />
+      <ThreadsSection />
       <ClaudeSection />
       <ContextSection />
       <OfficialPlansSection />
@@ -263,6 +264,33 @@ function ClaudeSection() {
         Anthropic's former help text, quoted in anthropics/claude-code issue 6611 (created 2025-08-26), gave prompts per five hours: Pro 10-40, Max 5x 50-200, Max 20x 200-800.
         At the Codex convention (1 prompt = 100,000 standard context + 462 output tokens, 3 windows a day, 30 days) they give {b({ low: 10, high: 40 })}, {b({ low: 50, high: 200 })} and {b({ low: 200, high: 800 })} tokens a month.
         This is a lower bound, and it is not a dollar allowance: one prompt is not one standard-context request. The table above uses the third-party figures instead.
+      </p>
+    </section>
+  );
+}
+
+/** How Threads is derived (r54): each input and where it comes from. Derived here, not a vendor figure. */
+function ThreadsSection() {
+  const ds = dataset as unknown as DS;
+  const heavy = ds.context.throughput.tokens_per_active_hour.p50;
+  const tp = ds.context.throughput;
+  return (
+    <section className="space-y-3" aria-labelledby="m-threads">
+      <h2 id="m-threads" className={SECTION_TITLE}>How Threads is derived</h2>
+      <p>
+        Threads is the number of agent threads a row's capacity keeps running at full time. It is derived by this site. Anthropic and OpenAI publish no parallel-thread metric, so the column is an estimate, marked est.
+      </p>
+      <p>
+        Threads = (capacity per cycle ÷ cycle days × 7) ÷ (burn rate × 168 h). A row with no capacity shows N/A. A value under 0.1 shows as less than 0.1.
+      </p>
+      <ul className={SMALL_NOTE + " list-disc pl-5"}>
+        <li>Burn rate, {(heavy / 1e6).toFixed(1)}M tokens per active hour: our own measurement from pi session logs (median of {tp.sample_sessions} sessions with at least 9 active minutes over {tp.window_days} days, gaps capped at 5 minutes). Self-measured, not a vendor figure. Source: data/context.json.</li>
+        <li>Allowance: the vendor's published figure, the vendor's per-model limit, or a third-party measurement. Each has its own link and date in the Allowance and third-party sections above.</li>
+        <li>List price: each vendor's own pricing page, as in the Pricing sections above.</li>
+        <li>168 hours: a full week of continuous agent use, the physical ceiling a thread is measured against.</li>
+      </ul>
+      <p className={SMALL_NOTE}>
+        A capped row (the hour ceiling binds, see the Haiku and Codex rows) reads 1.0 by construction: 730 hours a month is about one thread at full time.
       </p>
     </section>
   );

@@ -46,12 +46,33 @@ export const ARCHIVED_FOOTNOTE = (ctx: ContextId) => "‡ converted from vendor 
 export const SUMMARY_COLUMNS: Column[] = [
   { key: "plan", label: "Plan", width: "26%" },
   { key: "fee", label: "Fee/mo", width: "10%", numeric: true },
-  { key: "allowance", label: "Allowance", width: "15%", numeric: true },
-  { key: "capacity", label: "Capacity", width: "14%", numeric: true },
-  { key: "usd", label: "$/B", width: "12%", numeric: true },
-  { key: "tps", label: "tok/s", width: "12%", numeric: true },
-  { key: "ttft", label: "TTFT p50", width: "11%", numeric: true },
+  { key: "allowance", label: "Allowance", width: "14%", numeric: true },
+  { key: "capacity", label: "Capacity", width: "12%", numeric: true },
+  { key: "usd", label: "$/B", width: "10%", numeric: true },
+  { key: "threads", label: "Threads est", width: "8%", numeric: true },
+  { key: "tps", label: "tok/s", width: "10%", numeric: true },
+  { key: "ttft", label: "TTFT p50", width: "10%", numeric: true },
 ];
+
+/** Hours in a week: the full-time ceiling a thread count is measured against (r54). */
+export const THREAD_WEEK_HOURS = 168;
+
+/**
+ * Threads (r54): the agent threads a row's capacity keeps running at full time, derived. Weekly capacity is the 30-day
+ * capacity scaled to 7 days; a thread uses the measured burn rate for a week. Derived, not a vendor figure.
+ */
+export function threadsOf(tokens30d: number | null, heavyTokensPerActiveHour: number): number | null {
+  if (tokens30d === null || !(heavyTokensPerActiveHour > 0)) return null;
+  const weekTokens = (tokens30d * 7) / 30;
+  return weekTokens / (heavyTokensPerActiveHour * THREAD_WEEK_HOURS);
+}
+
+/** One decimal; below a tenth it reads "<0.1", never 0.0 (r54). */
+export function formatThreads(v: number | null): string {
+  if (v === null) return "N/A";
+  if (v < 0.1) return "<0.1";
+  return v.toFixed(1);
+}
 
 /** A weighted median: the value at which half of the total weight lies at or below it (ascending order). */
 export function weightedMedian(pairs: Array<{ value: number; weight: number }>): number | null {
@@ -370,7 +391,7 @@ export function physicsOf(r: ViewRow, ds: DS): ViewRow {
   if (r.tokens30d === null || r.tokens30d <= heavy * HOURS_PER_MONTH) return r;
   const hours = Math.round(r.tokens30d / heavy);
   const reason = "at the measured burn rate (" + (heavy / 1e6).toFixed(1) + "M tokens per active hour) this allowance needs about " + hours.toLocaleString("en-US") + " hours of agent use a month, " + PHYSICS_MARK;
-  return { ...r, capacity: null, capacityReason: reason, capDetail: null, capNote: null, capTitle: null, usd: null, usdTitle: reason, marker: "" };
+  return { ...r, capacity: null, capacityReason: reason, capDetail: null, capNote: null, capTitle: null, tokens30d: null, usd: null, usdTitle: reason, marker: "" };
 }
 
 function modelRows(ds: DS, ref: RefId, ctx: ContextId, shape: ShapeDef): ViewRow[] {
@@ -490,6 +511,8 @@ export function allowanceLegend(ds: DS): string {
 
 export function summaryTable(ds: DS, view: ViewId, ctx: ContextId = "short", shape: ShapeDef = DEFAULT_SHAPE): SummaryTable {
   const data = viewRows(ds, view, ctx, shape);
+  const heavy = ds.context.throughput.tokens_per_active_hour.p50;
+  const threadsTitle = "derived: capacity per week ÷ (" + (heavy / 1e6).toFixed(1) + "M tokens per active hour × 168 h). Inputs: our measured burn rate (pi session logs, median) · vendor/third-party allowance · list price. Not a vendor figure.";
   const rows = data.map((r) => ({
     key: r.key,
     cells: {
@@ -498,6 +521,10 @@ export function summaryTable(ds: DS, view: ViewId, ctx: ContextId = "short", sha
       allowance: r.allowance === null ? naShort(r.allowanceReason) : withSup(value("$" + r.allowance.usd.toFixed(2) + "/" + r.allowance.cycle + "d", [], r.allowance.title), r.allowance.sup),
       capacity: r.capacity === null ? naShort(r.capacityReason) : withDetail(value(r.capacity, r.capBadges ?? [], r.capTitle ?? null, r.capNote ?? null), r.capDetail ?? null),
       usd: r.usd === null ? naShort(r.usdTitle) : value(usd(r.usd) + r.marker, [], r.usdTitle),
+      threads: (() => {
+        const t = threadsOf(r.tokens30d, heavy);
+        return t === null ? naShort("no capacity reading, so no thread count") : value(formatThreads(t), [], threadsTitle);
+      })(),
       tps: r.tps === null ? naShort(r.tpsTitle || "no speed data") : value("~" + sig2(r.tps), [], r.tpsTitle),
       ttft: r.ttft === null ? naShort(r.ttftTitle || "no latency data") : value("~" + sig2(r.ttft) + " ms", [], r.ttftTitle),
     },

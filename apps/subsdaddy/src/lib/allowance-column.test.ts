@@ -15,7 +15,7 @@ const usage = JSON.parse(readFileSync(join(import.meta.dir, "..", "..", "data", 
 describe("Allowance: the seventh column", () => {
   test("the columns are Plan, Fee/mo, Allowance, Capacity, $/B, tok/s, TTFT p50 in every view", () => {
     for (const c of viewChips(ds)) {
-      expect(summaryTable(ds, c.id).columns.map((x) => x.label)).toEqual(["Plan", "Fee/mo", "Allowance", "Capacity", "$/B", "tok/s", "TTFT p50"]);
+      expect(summaryTable(ds, c.id).columns.map((x) => x.label)).toEqual(["Plan", "Fee/mo", "Allowance", "Capacity", "$/B", "Threads est", "tok/s", "TTFT p50"]);
     }
   });
 
