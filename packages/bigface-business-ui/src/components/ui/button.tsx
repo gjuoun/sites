@@ -19,7 +19,7 @@ const buttonVariants = cva(
           "bg-danger-veil text-destructive hover:bg-danger-veil-hover focus-visible:border-destructive/40 focus-visible:ring-danger-halo",
         link: "text-primary underline-offset-4 hover:underline",
         // bg2:variant variant.glow begin
-        glow: "bg-primary text-primary-foreground hover:bg-primary/80 ring-3 ring-background",
+        glow: "bg-primary text-primary-foreground hover:bg-primary/80 inset-ring-3 inset-ring-background",
         // bg2:variant end
       },
       size: {

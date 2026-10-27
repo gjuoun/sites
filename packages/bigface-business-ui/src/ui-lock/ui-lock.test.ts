@@ -63,8 +63,13 @@ describe("components/ui lock", () => {
 		extra.set("zz-extra.tsx", "export {};\n");
 		expect(checkLock(extra, m).some((f) => f.includes("zz-extra.tsx"))).toBe(true);
 	});
-	test("the glow variant exists as a Button variant and resolves to the glow ring", () => {
-		expect(buttonVariants({ variant: "glow" })).toContain("ring-3 ring-background");
+	test("the glow variant exists as a Button variant and resolves to an inset ring in the bg role", () => {
+		const glow = buttonVariants({ variant: "glow" }).split(/\s+/);
+		expect(glow).toContain("inset-ring-3");
+		expect(glow).toContain("inset-ring-background");
+		// an outer ring in the canvas colour is invisible on a canvas page: the glow must not use one
+		expect(glow).not.toContain("ring-3");
+		expect(glow).not.toContain("ring-background");
 		expect(buttonVariants({ variant: "default" })).not.toContain("ring-background");
 	});
 

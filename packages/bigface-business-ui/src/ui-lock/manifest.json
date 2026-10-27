@@ -321,7 +321,7 @@
 			{
 				"id": "variant.glow",
 				"body": [
-					"        glow: \"bg-primary text-primary-foreground hover:bg-primary/80 ring-3 ring-background\","
+					"        glow: \"bg-primary text-primary-foreground hover:bg-primary/80 inset-ring-3 inset-ring-background\","
 				]
 			}
 		]
