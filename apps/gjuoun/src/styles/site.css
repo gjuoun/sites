@@ -218,7 +218,45 @@ pre {
 	padding: 0 0.2em;
 }
 
+/* Actions: the theme's own button treatment (primary fill, outline for the rest). Theme variables only. */
+.button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 2.25rem;
+	padding: 0.4rem 0.9rem;
+	border: 1px solid var(--theme-primary);
+	border-radius: var(--radius, 0.5rem);
+	background: var(--theme-primary);
+	color: var(--theme-on-primary);
+	font-weight: 600;
+	line-height: 1.2;
+	text-decoration: none;
+}
+.button:hover {
+	background: var(--theme-primary-edge);
+	border-color: var(--theme-primary-edge);
+}
+.button-outline {
+	background: var(--theme-surface);
+	border-color: var(--theme-frame-border);
+	color: var(--theme-ink);
+}
+.button-outline:hover {
+	background: var(--theme-frame);
+	border-color: var(--theme-ink);
+}
+/* Text links: a heavier underline and a tint on hover, so they read as interactive without a new colour. */
+main a:not(.button) {
+	font-weight: 600;
+	text-decoration-thickness: 3px;
+}
+main a:not(.button):hover {
+	background: var(--theme-primary-tint);
+}
+
 @media print {
+
 
 
 	.skip-link,

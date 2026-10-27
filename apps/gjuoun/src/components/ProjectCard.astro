@@ -5,7 +5,6 @@ interface Props {
 	project: CollectionEntry<"projects">["data"];
 }
 const { project } = Astro.props;
-const link = project.url ?? project.repo;
 ---
 
 <article>
@@ -13,9 +12,10 @@ const link = project.url ?? project.repo;
 	<p>{project.summary}</p>
 	{project.stack.length > 0 && <p>{project.stack.join(" · ")}</p>}
 	{
-		link ? (
-			<p>
-				<a href={link}>{project.url ? "Visit" : "Source"}</a>
+		project.url || project.repo ? (
+			<p class="actions">
+				{project.url && <a class="button" href={project.url}>Visit</a>}
+				{project.repo && <a class="button button-outline" href={project.repo}>Source</a>}
 			</p>
 		) : (
 			<p>Private project. No public link.</p>
