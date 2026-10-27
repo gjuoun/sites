@@ -84,7 +84,7 @@ function Section({ id, title, source, children }: { id: string; title: string; s
 		<section id={id} className="flex scroll-mt-6 flex-col gap-5 rounded-xl border bg-card p-5 text-card-foreground">
 			<header className="flex flex-col gap-1">
 				<h3 className="text-lg font-semibold text-foreground">{title}</h3>
-				<code className="font-mono text-xs text-muted-foreground">{source}</code>
+				<code className="font-mono text-xs text-muted-foreground"><Path text={source} /></code>
 			</header>
 			<Group label="Variants">{VARIANTS[id] ?? <Note>No variant axis is declared in the source; the examples show its one form.</Note>}</Group>
 			<Group label="States">{STATES[id] ?? <Note>No stateful props. Hover and focus are live in the examples.</Note>}</Group>
@@ -95,6 +95,11 @@ function Section({ id, title, source, children }: { id: string; title: string; s
 			</details>
 		</section>
 	);
+}
+
+/** A source path may break only after its slashes (a legal break), never inside a segment. */
+function Path({ text }: { text: string }) {
+	return <>{text.split("/").map((seg, i, all) => <React.Fragment key={i}>{seg}{i < all.length - 1 ? <>/<wbr /></> : null}</React.Fragment>)}</>;
 }
 
 function Group({ label, children }: { label: string; children: React.ReactNode }) {
@@ -873,8 +878,8 @@ export function Catalog() {
 				</Section>
 
 				<Section id="bubble" title="Bubble" source="components/ui/bubble">
-					<Demo name="bubble" className="block">
-						<BubbleGroup className="max-w-md">
+					<Demo name="bubble" className="block pb-8">
+						<BubbleGroup className="w-full">
 							<Bubble align="start"><BubbleContent>Shall we ship the business package?</BubbleContent></Bubble>
 							<Bubble align="end"><BubbleContent>Yes, once the gates are green.</BubbleContent><BubbleReactions>+1</BubbleReactions></Bubble>
 						</BubbleGroup>
