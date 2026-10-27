@@ -1,24 +1,62 @@
 ---
+import Fact from "../../components/Fact.astro";
 import { resume } from "../../data/resume";
 import Base from "../../layouts/Base.astro";
+
+const siteLabel = resume.contact.site.replace(/^https?:\/\//, "").replace(/\/$/, "");
 ---
 
 <Base title="Resume" description={resume.summary} starter={false}>
 	<h1>{resume.name}</h1>
-	<p>{resume.headline}</p>
+	<p class="headline">{resume.headline}</p>
+	<p class="contact">
+		<Fact text={resume.contact.email} /> ·
+		<a href={resume.contact.github}>GitHub</a> ·
+		<a href={resume.contact.site}>{siteLabel}</a>
+	</p>
 	<p>{resume.summary}</p>
+
 	<h2>Experience</h2>
-	<ul>
-		{resume.roles.map((role) => (
-			<li>
-				{role.title ? `${role.title}, ` : ""}{role.organization} · {role.start} – {role.end}
-			</li>
-		))}
-	</ul>
+	<ol class="entries">
+		{
+			resume.roles.map((role) => (
+				<li class="entry">
+					<div class="entry-main">
+						<h3><Fact text={role.title} />, {role.organization}</h3>
+						{
+							role.bullets.length > 0 && (
+								<>
+									<p class="starter-label">
+										<span class="starter-tag">starter</span> what was built
+									</p>
+									<ul class="bullets">
+										{role.bullets.map((b) => <li><Fact text={b} /></li>)}
+									</ul>
+								</>
+							)
+						}
+					</div>
+					<time class="entry-date"><Fact text={role.start} /> – <Fact text={role.end} /></time>
+				</li>
+			))
+		}
+	</ol>
+
 	<h2>Education</h2>
-	<ul>
-		{resume.education.map((e) => <li>{e.school} · {e.years}</li>)}
-	</ul>
+	<ol class="entries">
+		{
+			resume.education.map((e) => (
+				<li class="entry">
+					<div class="entry-main">
+						<h3>{e.school}</h3>
+						<p><Fact text={e.degree} /></p>
+					</div>
+					<time class="entry-date"><Fact text={e.start} /> – <Fact text={e.end} /></time>
+				</li>
+			))
+		}
+	</ol>
+
 	<h2>Skills</h2>
 	<p>{resume.skills.join(" · ")}</p>
 </Base>
