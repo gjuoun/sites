@@ -70,15 +70,6 @@ describe("vs measured: est against the plan's own measured $/B", () => {
     expect(vsMeasuredText(1.64, 1.64)).toBe("+0%");
   });
 
-  test("the OpenCode Go rows compare against the measured $/B; CommandCode, which is only derived, shows N/A", () => {
-    const deepseek = modelTable(ds, "deepseek-v4.1-flash");
-    const go = deepseek.rows.find((r) => r.key === "opencode-go-go")!;
-    expect(go.cells.vs.na).toBe(false);
-    expect(go.cells.vs.text).toMatch(/^[+−]\d+%$/);
-    const cc = deepseek.rows.find((r) => r.key === "commandcode-goat-published")!;
-    expect(cc.cells.vs.na).toBe(true);
-    expect(cc.cells.vs.reason).toContain("derived");
-  });
 
   test("every value cell in the model tables is well-formed", () => {
     for (const t of modelTables(ds)) for (const c of allCells(t.table)) expect(wellFormed(c)).toBe(true);

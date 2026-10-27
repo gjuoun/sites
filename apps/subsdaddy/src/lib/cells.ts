@@ -22,6 +22,8 @@ export type BadgeVariant = "source" | "confidence" | "status";
 export const BADGE_KINDS = Object.keys(BADGE_VARIANT) as BadgeKind[];
 
 export type Cell = {
+  /** Lines shown in a hover panel for this cell; the value itself is unchanged. */
+  detail?: string[];
   text: string;
   na: boolean;
   reason: string | null;

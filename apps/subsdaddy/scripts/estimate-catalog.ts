@@ -28,6 +28,8 @@ const context = contextFileSchema.parse(JSON.parse(readFileSync(join(dataDir, "c
 const mix = pooledMix(usage.lanes.map((l) => ({ tokens: l.tokens })));
 // each measured plan is estimated on its own measured token mix; the others on the pooled mix
 const laneMix = new Map(usage.lanes.map((l) => [l.lane, pooledMix([{ tokens: l.tokens }])] as const));
+const allowanceFile = JSON.parse(readFileSync(join(dataDir, "allowance.json"), "utf8")) as { lanes: Array<{ lane: string; allowance_usd_per_cycle: number | null; binding_window: string | null; cycle_days: number | null }> };
+const measuredAllowance = new Map(allowanceFile.lanes.map((l) => [l.lane, l] as const));
 const price = new Map<RefId, RefPrice>(
   models.reference.map((r) => [
     r.ref,
@@ -71,6 +73,9 @@ function estimateRow(row: CatalogRow) {
   if (row.offered_models.length === 0) {
     return { status: "unavailable" as const, reason: "its checked model list names no reference model, so no estimate is made for one", basis: null, values: [] as Value[], range_agent: null };
   }
+  // a plan on a measured lane takes the allowance its quota windows give (allowance.json), not the published one
+  const measured = row.measured_lane ? measuredAllowance.get(row.measured_lane) : undefined;
+  const measuredUsd = measured && measured.allowance_usd_per_cycle !== null ? measured.allowance_usd_per_cycle : null;
   const values: Value[] = [];
   const ratios: string[] = [];
   const tierNotes = new Set<string>();
@@ -83,7 +88,7 @@ function estimateRow(row: CatalogRow) {
     const meta = refMeta.get(ref);
     if (meta?.price_status === "anomaly" && meta.price_anomaly) anomalies.add(ref + " " + meta.price_anomaly);
     for (const shape of SHAPES) {
-      const base = { fee_usd: fee, allowance_usd: entry ? entry.usd : null, allowance_reason: entry ? null : "no published allowance for this model in this plan", price: pr.price, mix: rowMix, shape };
+      const base = { fee_usd: fee, allowance_usd: measuredUsd ?? (entry ? entry.usd : null), allowance_reason: measuredUsd !== null || entry ? null : "no published allowance for this model in this plan", price: pr.price, mix: rowMix, shape };
       const s = estimateOne({ ...base, prompt_tokens: LMC_CONTEXT_SHORT });
       const l = estimateOne({ ...base, prompt_tokens: LMC_CONTEXT_LONG });
       const p = estimateOne({ ...base, prompt_tokens: P75 });
@@ -106,6 +111,7 @@ function estimateRow(row: CatalogRow) {
     (row.measured_lane ? "this plan's own measured" : "pooled measured") + " mix: output share " + (rowMix.output_share * 100).toFixed(2) + "%, agent cache share " + (rowMix.agent_cache_share * 100).toFixed(2) + "%, cache write share " + ((rowMix.cache_write_share ?? 0) * 100).toFixed(2) + "% (interactive 0%, cache_heavy 94%)" +
     "; standard contexts: 100K (table) and 350K, with p75 " + kTok(P75) + " as sensitivity (session-end median " + kTok(context.quantiles.p50) + ", p90 " + kTok(context.quantiles.p90) + ", " + context.sample_sessions.toLocaleString("en-US") + " sessions)" +
     (anomalies.size > 0 ? "; " + [...anomalies].join("; ") : "") +
+    (measuredUsd !== null ? "; allowance measured from the quota windows (" + measured!.binding_window + " window, " + measured!.cycle_days + "-day cycle): $" + measuredUsd.toFixed(2) + " of list usage per cycle, replacing the published allowance" : "") +
     (tierNotes.size > 0 ? "; prices: " + [...tierNotes].join("; ") : "") + ".";
   return { status: "estimated" as const, reason: null, basis, values, range_agent: [low, high] as [number, number] };
 }

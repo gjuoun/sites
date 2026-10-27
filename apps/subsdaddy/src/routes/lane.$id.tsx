@@ -29,7 +29,7 @@ function LanePage() {
         <CardHeader><CardTitle>Capacity</CardTitle></CardHeader>
         <CardContent className="space-y-1 text-sm">
           <p>Method: <code>{lane.capacity.method}</code> {lane.capacity.window && <LayerBadge layer="window" />} {lane.capacity.seeded && <LayerBadge layer="seed" />}</p>
-          <p>Tokens per week: {fmt.tokensWeek(lane.capacity.tokens_per_week)} {lane.capacity.badge && <Badge variant="outline">{lane.capacity.badge}</Badge>}</p>
+          <p>Tokens per cycle: {lane.capacity.tokens_per_cycle === null ? "N/A" : (lane.capacity.tokens_per_cycle / 1e9).toFixed(2) + "B per " + lane.capacity.cycle_days + " days"} {lane.capacity.badge && <Badge variant="outline">{lane.capacity.badge}</Badge>}</p>
           <p data-basis={lane.usd_per_b_basis ?? "none"}>$/B: {fmt.usd(lane.usd_per_b)} {lane.usd_per_b_basis === "derived" ? <Badge variant="outline" title={lane.usd_per_b_source ?? undefined}>derived</Badge> : null}{lane.usd_per_b_basis === "derived" ? `: ${lane.usd_per_b_source}` : ""}</p>
           <p>Log coverage of window: {fmt.pct(lane.capacity.coverage)}</p>
           {lane.capacity.confidence === "low" && (

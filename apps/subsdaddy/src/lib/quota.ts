@@ -4,6 +4,7 @@
  */
 
 export type QuotaWindow = "5h" | "weekly" | "monthly";
+export type CodexbarWindowReading = { window: QuotaWindow; window_minutes: number; used_pct: number; resets_at: string; source: string };
 export type QuotaReading =
   | {
       lane: string;
@@ -15,6 +16,7 @@ export type QuotaReading =
       plan_level?: string | null;
       credits_used?: number | null;
       credits_total?: number | null;
+      windows?: CodexbarWindowReading[];
     }
   | { lane: string; unavailable: string };
 
@@ -82,4 +84,33 @@ export function zaiEnvFor(env: Record<string, string | undefined>): Record<strin
   const key = env.ZAI_API_KEY;
   if (!key) return null;
   return { ...env, Z_AI_API_KEY: key };
+}
+
+/** The window length names codexbar uses; any other length is not a window this site reads. */
+export function labelOfMinutes(minutes: number): QuotaWindow | null {
+  return minutes === 300 ? "5h" : minutes === 10080 ? "weekly" : minutes === 43200 ? "monthly" : null;
+}
+
+/**
+ * Every window the codexbar reading carries that has a reset time: used percent, length and reset.
+ * Account identity and any other field are dropped here and never reach the data files.
+ */
+export function windowsFromCodexbar(json: string): CodexbarWindowReading[] {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(json);
+  } catch {
+    return [];
+  }
+  const entry = (Array.isArray(parsed) ? parsed[0] : parsed) as { usage?: Record<string, unknown> } | undefined;
+  const usage = entry?.usage ?? {};
+  const out: CodexbarWindowReading[] = [];
+  for (const slot of ["primary", "secondary", "tertiary"]) {
+    const w = usage[slot] as CodexbarWindow;
+    if (!w || typeof w.usedPercent !== "number" || typeof w.windowMinutes !== "number" || typeof w.resetsAt !== "string") continue;
+    const label = labelOfMinutes(w.windowMinutes);
+    if (label === null) continue;
+    out.push({ window: label, window_minutes: w.windowMinutes, used_pct: w.usedPercent, resets_at: w.resetsAt, source: "codexbar quota reading" });
+  }
+  return out;
 }

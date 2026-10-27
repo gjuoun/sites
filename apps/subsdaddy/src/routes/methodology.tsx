@@ -7,6 +7,8 @@ import { catalogTable, contextCompareTable, contextDistributionTable, dsRankingT
 import { contextLabel } from "@/data/context";
 import { CONTEXTS, OUTPUT_TOKENS_PER_MESSAGE, WINDOWS_PER_DAY, monthlyTokens, tokensPerMessage, usdPerBOfTokens } from "@/data/messages";
 import { hourWeighted } from "@/lib/official-prices";
+import { na, value } from "@/lib/cells";
+import { usd } from "@/lib/sections";
 import { cacheShare } from "@/lib/summary";
 
 export const Route = createFileRoute("/methodology")({
@@ -24,11 +26,11 @@ function MethodologyPage() {
       </section>
       <section className="space-y-2">
         <h2 className="text-lg font-medium">Capacity</h2>
-        <p>window_snapshot: tokens delivered in the current quota window ÷ used fraction, normalized to a week. Requires ≥95% log coverage of the elapsed window. A saturated (100%) or unused window is refused, not extrapolated. Delta pairs (two readings ≥1 h apart) are the fallback. The 5-hour window is never used for capacity.</p>
+        <p>Capacity is read per window from its own codexbar reading, not by a fixed conversion. Each window gives a cost over its used fraction and is scaled to the plan's billing cycle; the tightest usable window sets the allowance (see Usage allowance from quota windows). Saturated windows count; windows at 2% or less and windows with under 95% log coverage do not.</p>
       </section>
       <section className="space-y-2">
         <h2 className="text-lg font-medium">$/B</h2>
-        <p>usd per billion tokens = monthly fee ÷ (weekly tokens × 4.348) × 10⁹. Ranking key is the measured mix.</p>
+        <p>usd per billion tokens = fee ÷ (tokens per billing cycle the allowance buys) × 10⁹. For a measured lane the tokens are the binding window's tokens scaled to the cycle. No week is multiplied by a fixed factor.</p>
       </section>
       <section className="space-y-2">
         <h2 className="text-lg font-medium">Two speed layers</h2>
@@ -66,13 +68,15 @@ function MethodologyPage() {
         <p>A plan with an offered model but no published dollar allowance shows N/A and its reason in the title. A third-party figure is used only with its link and date, labelled third-party. None is used on this site yet.</p>
       </section>
       <CacheShapeSection />
+      <AllowanceSection />
+      <ClaudeSection />
       <ContextSection />
       <OfficialPlansSection />
       <section className="space-y-2">
         <h2 className="text-lg font-medium">Speed on the front page</h2>
         <p>Model view: weighted median over endpoints by request volume, not the unweighted median or the best endpoint. Measured view: our own usage logs, p50. Every speed cell shows one value, rounded to two significant figures.</p>
         <p>weighted median over endpoints by request volume, not the unweighted median or the best endpoint</p>
-        <p>Derived $/B (marked *): in the Measured view, a plan whose own window is saturated takes the $/B of its same-rate peer plan. In model views each plan keeps its own traffic shape; a * there marks a rate-derived allowance.</p>
+        <p>Derived $/B (marked *): a lane with no usable window of its own may take a same-rate peer's figure, and the * says so. Each lane now has its own window, so none is derived today.</p>
       </section>
       <DetailTables />
       <SiteFooter />
@@ -151,7 +155,7 @@ function OfficialPlansSection() {
         median prompt is 192K tokens, not 100K; 100K per message is the standard context convention (the session-end median), so per-turn prompts would roughly double the token counts.
       </p>
       <UnifiedTable testId="messages" columns={msg.columns} rows={msg.rows} />
-      <p>Anthropic publishes percentage-based limits only; no measured token conversion is available. A month of own usage on any Max plan would replace this estimate.</p>
+      <p>The Claude plans are converted from archived prompt counts; see the Claude section below.</p>
     </section>
   );
 }
@@ -171,7 +175,7 @@ function CacheShapeSection() {
     <section className="space-y-2" aria-labelledby="m-cache-shape">
       <h2 id="m-cache-shape" className={SECTION_TITLE}>Why the traffic shape moves $/B</h2>
       <p>
-        CommandCode GOAT and OpenCode Go both cost $10 a month and both carry $80 of DeepSeek V4.1 Flash usage. Each model view uses the plan's own measured traffic shape, so they differ
+        CommandCode GOAT and OpenCode Go both cost $10 a month, and each carries a measured allowance from its quota windows. Each model view uses the plan's own measured traffic shape, so they differ
         only because of what each one carries. CommandCode's own traffic is {ccShare}% cache read of prompt tokens; OpenCode Go's is {goShare}%. A cache read is priced at
         {" "}{"$"}{dsRef.cache_per_m} per M against {"$"}{dsRef.in_per_m} for an uncached input, about {ratio}×, so the same allowance buys more tokens when more of them are cache reads.
       </p>
@@ -180,9 +184,106 @@ function CacheShapeSection() {
         So on DeepSeek V4.1 Flash, CommandCode shows {"$"}{ccV.usd_per_b!.toFixed(2)} and OpenCode Go {"$"}{goV.usd_per_b!.toFixed(2)}. That gap is real, not a bug.
       </p>
       <p>
-        Measured view: CommandCode's own window is saturated, so its Measured $/B is OpenCode Go's measured value, marked *. Its tooltip still shows its own cache share.
+        Measured view: each lane's $/B is its fee over the tokens its binding quota window delivers per cycle. A lane's capacity tooltip lists its three windows and its model mix.
         Hover a $/B cell to see the cache share of the traffic it was computed from.
       </p>
+    </section>
+  );
+}
+
+/** The usage allowance: how each lane's dollars per cycle come from its quota windows, and what the tightest window means. */
+function AllowanceSection() {
+  const ds = dataset as unknown as DS;
+  const rows = ds.lanes.lanes.map((l) => {
+    const c = l.capacity;
+    const usd = l.usd_per_b === null ? na(c.reason ?? "no usable window") : value("$" + l.usd_per_b.toFixed(2));
+    return {
+      key: l.lane,
+      cells: {
+        plan: value(l.label),
+        window: value(c.window ?? "N/A"),
+        allowance: c.allowance_usd_per_cycle === null ? na(c.reason ?? "no usable window") : value("$" + c.allowance_usd_per_cycle.toFixed(2) + " per " + c.cycle_days + "d"),
+        tokens: c.tokens_per_cycle === null ? na(c.reason ?? "no usable window") : value((c.tokens_per_cycle / 1e9).toFixed(2) + "B per " + c.cycle_days + "d"),
+        usd: usd,
+        unpriced: c.unpriced_share === null ? na("no priced window") : value(Math.round(c.unpriced_share * 100) + "%", [], null, c.low_coverage ? "low coverage" : null),
+      },
+    };
+  });
+  const cols = [
+    { key: "plan", label: "Plan", width: "26%" },
+    { key: "window", label: "Binding window", width: "12%" },
+    { key: "allowance", label: "Allowance per cycle", width: "18%", numeric: true },
+    { key: "tokens", label: "Tokens per cycle", width: "16%", numeric: true },
+    { key: "usd", label: "$/B", width: "12%", numeric: true },
+    { key: "unpriced", label: "Unpriced", width: "16%", numeric: true },
+  ];
+  return (
+    <section className="space-y-3" aria-labelledby="m-allowance">
+      <h2 id="m-allowance" className={SECTION_TITLE}>Usage allowance from quota windows</h2>
+      <p>
+        A lane's allowance is taken from its own quota readings, not from a published figure. For each window codexbar reports, the window runs from its reset time back by its own length.
+        Every usage row inside it is priced at its model's list price, banded by its own prompt length. The window's full-cycle allowance is its cost ÷ used fraction × (cycle ÷ window length).
+        The cycle is the plan's monthly window length from the reading (43,200 minutes, 30 days), or, with no monthly window, the longest window's length. No week is multiplied by a fixed factor.
+      </p>
+      <p>
+        The tightest usable window sets the allowance. A window at 100% used is usable: a full window is a ceiling. A window at 2% or less is low signal and is left out. A window whose log covers less than 95% of its span is partial and is left out.
+        Rows whose model has no list price are counted as unpriced tokens, never zero cost; a lane above 5% unpriced is flagged low coverage.
+      </p>
+      <p>
+        Example, from the readings: CommandCode's monthly window is 50% used after its first 105 hours, with its priced rows costing the amount the window shows. Its weekly window is 100% used, which is usable, but its
+        cycle-scaled allowance is larger, so the monthly window binds. The brief's shortcut (the weekly token count divided by the monthly percentage) mixes two windows, and is not used.
+      </p>
+      <UnifiedTable testId="allowance" columns={cols} rows={rows} />
+      <p>Z.ai's two readings are both 1% used, which is low signal, so it has no allowance and no $/B. Its billing cycle is not read from a monthly window either.</p>
+    </section>
+  );
+}
+
+/** Claude Code prompt counts: the archived former limit text, converted with the same convention as Codex. */
+function ClaudeSection() {
+  const plans: Array<[string, string, { low: number; high: number }]> = [
+    ["Claude Code - Pro", "claude-code-pro", { low: 10, high: 40 }],
+    ["Claude Code - Max 5x", "claude-code-max-5x", { low: 50, high: 200 }],
+    ["Claude Code - Max 20x", "claude-code-max-20x", { low: 200, high: 800 }],
+  ];
+  const B = (t: number) => (t / 1e9).toFixed(3) + "B";
+  const rows = plans.map(([label, id, lim]) => {
+    const fee = dataset.catalog.rows.find((r) => r.plan_id === id)!.price_month_usd ?? 0;
+    const lower = monthlyTokens(lim, CONTEXTS.short, WINDOWS_PER_DAY.realistic, "low");
+    const upper = monthlyTokens(lim, CONTEXTS.short, WINDOWS_PER_DAY.realistic, "high");
+    const ceil = monthlyTokens(lim, CONTEXTS.short, WINDOWS_PER_DAY.ceiling, "low");
+    return {
+      key: id,
+      cells: {
+        plan: value(label),
+        range: value(lim.low + "-" + lim.high + " per 5h"),
+        lower: value(B(lower)),
+        upper: value(B(upper)),
+        ceiling: value(B(ceil)),
+        usd: value(usd(fee / (lower / 1e9)) + "‡"),
+      },
+    };
+  });
+  const cols = [
+    { key: "plan", label: "Plan", width: "24%" },
+    { key: "range", label: "Prompts (archived)", width: "18%" },
+    { key: "lower", label: "Lower, realistic", width: "16%", numeric: true },
+    { key: "upper", label: "Upper, realistic", width: "16%", numeric: true },
+    { key: "ceiling", label: "Lower, ceiling", width: "14%", numeric: true },
+    { key: "usd", label: "$/B lower", width: "12%", numeric: true },
+  ];
+  return (
+    <section className="space-y-3" aria-labelledby="m-claude">
+      <h2 id="m-claude" className={SECTION_TITLE}>Claude Code prompt counts (archived)</h2>
+      <p>
+        Anthropic's current help page states percentage limits only. The prompt counts above are the former Anthropic text, quoted word for word in anthropics/claude-code issue 6611 (created 2025-08-26):
+        Pro 10-40, Max 5x 50-200 and Max 20x 200-800 prompts per five hours. They are converted with the Codex convention: 1 prompt = 100,000 standard context + 462 output tokens; the lower bound; 3 active windows a day; 30 days.
+        Realistic is 3 windows a day; the ceiling is 24 hours of continuous use, 24 ÷ 5 = 4.8 windows a day. These counts are the old (Sonnet 4 era) limits, not today's.
+      </p>
+      <p>
+        A month of one's own Claude Code logs (ccusage-style, the same window method as the lanes above) would replace these conversions with a measured figure; that is the only change that should be made.
+      </p>
+      <UnifiedTable testId="claude-prompts" columns={cols} rows={rows} />
     </section>
   );
 }

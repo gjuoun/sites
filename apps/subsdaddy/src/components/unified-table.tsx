@@ -33,7 +33,7 @@ export function Badge({ kind }: { kind: BadgeKind }) {
 /** A cell's three slots: the value, its secondary line (reason or note), and its badges. */
 export function CellView({ cell, numeric = false, clip = false }: { cell: Cell; numeric?: boolean; clip?: boolean }) {
   const shown = cell.na ? cell.reason : cell.note;
-  return (
+  const body = (
     <span className="block min-w-0" data-na={cell.na ? "yes" : undefined} data-flags={cell.flags ? "yes" : undefined} title={cell.title ?? undefined}>
       <span className={"block h-5 leading-5 whitespace-nowrap " + (clip ? "truncate " : "") + (numeric ? "text-right " : "") + (cell.na ? "text-muted-foreground" : "font-medium")}>
         {cell.text.endsWith("*") ? cell.text.slice(0, -1) : cell.text}
@@ -45,6 +45,17 @@ export function CellView({ cell, numeric = false, clip = false }: { cell: Cell; 
       <span className={"mt-1 flex h-5 flex-nowrap items-center gap-1 overflow-hidden " + (numeric ? "justify-end" : "")}>
         {cell.badges.map((b) => (
           <Badge key={b} kind={b} />
+        ))}
+      </span>
+    </span>
+  );
+  if (!cell.detail || cell.detail.length === 0) return body;
+  return (
+    <span className="group relative block min-w-0" data-hover="yes">
+      {body}
+      <span role="tooltip" data-tooltip="yes" className="pointer-events-none absolute left-0 top-full z-20 mt-1 hidden w-[380px] max-w-[90vw] rounded-md border border-border bg-background p-3 text-xs leading-5 text-foreground shadow-md group-hover:block">
+        {cell.detail.map((line) => (
+          <span key={line} className="block">{line}</span>
         ))}
       </span>
     </span>

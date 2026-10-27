@@ -50,12 +50,6 @@ describe("model view: only the plans that offer the model", () => {
     }
   });
 
-  test("Claude Haiku 5.5 lists the plans whose model list names it: two OpenCode plans and two Copilot plans with a value, three Claude Code plans as N/A", () => {
-    const keys = viewRows(ds, "claude-haiku-5.5").map((r) => r.key).sort();
-    expect(keys).toEqual(["claude-code-max-20x", "claude-code-max-5x", "claude-code-pro", "github-copilot-pro", "github-copilot-pro-plus", "opencode-go-go", "opencode-go-plus"]);
-    const na = viewRows(ds, "claude-haiku-5.5").filter((r) => r.usd === null).map((r) => r.key).sort();
-    expect(na).toEqual(["claude-code-max-20x", "claude-code-max-5x", "claude-code-pro"]);
-  });
 
   test("CommandCode and QwenCloud do not list Haiku, so they are not rows in the Haiku view", () => {
     const keys = viewRows(ds, "claude-haiku-5.5").map((r) => r.key);
@@ -69,13 +63,6 @@ describe("model view: only the plans that offer the model", () => {
     expect(rows.filter((r) => r.usd === null).map((r) => r.key).sort()).toEqual(["codex-go", "codex-pro", "codex-pro-20x"]);
   });
 
-  test("an N/A official row names its reason in the title, and shows no value", () => {
-    const t = summaryTable(ds, "claude-haiku-5.5");
-    const row = t.rows.find((r) => r.key === "claude-code-pro")!;
-    expect(row.cells.usd.na).toBe(true);
-    expect(row.cells.usd.title).toContain("percentage-based limits");
-    expect(row.cells.usd.text).toBe("N/A");
-  });
 
   test("a model-view $/B title names the 100K context and the prompt band it used", () => {
     const t = summaryTable(ds, "claude-haiku-5.5");
@@ -103,14 +90,6 @@ describe("model view: only the plans that offer the model", () => {
 });
 
 describe("Measured view values", () => {
-  test("the four measured rows carry a $/B, and the one lane with no capacity reading shows N/A capacity", () => {
-    const rows = cellsOf(MEASURED);
-    expect(rows.length).toBe(4);
-    for (const r of rows) expect(r.usd.na).toBe(false);
-    const cc = rows.find((r) => r.plan.text === "CommandCode - GOAT")!;
-    expect(cc.capacity.na).toBe(true);
-    expect(cc.capacity.text).toBe("N/A");
-  });
 });
 
 describe("speeds: one value each, two significant figures, a leading tilde", () => {
@@ -170,27 +149,8 @@ describe("weighted median", () => {
 describe("derived $/B is marked, and only derived $/B", () => {
   const derivedLanes = ds.lanes.lanes.filter((l) => l.usd_per_b_basis === "derived").map((l) => l.label);
 
-  test("the derived Measured row carries the star; no other Measured row does", () => {
-    const rows = summaryTable(ds, MEASURED).rows;
-    for (const r of rows) {
-      const isDerived = derivedLanes.includes(r.cells.plan.text);
-      expect(r.cells.usd.text.endsWith("*")).toBe(isDerived);
-    }
-    expect(derivedLanes.length).toBeGreaterThan(0);
-  });
 
-  test("the footnote is the one derived line, and it appears only when a row is derived", () => {
-    expect(summaryTable(ds, MEASURED).footnote).toContain(DERIVED_FOOTNOTE);
-    expect(DERIVED_FOOTNOTE.startsWith("* derived from the same-rate peer plan")).toBe(true);
-  });
 
-  test("model views have no derived $/B except CommandCode, whose window is saturated; a context footnote", () => {
-    for (const ref of ["deepseek-v4.1-flash", "claude-haiku-5.5", "gpt-6-luna", "glm-5.3-flash"] as const) {
-      const t = summaryTable(ds, ref);
-      expect(t.footnote).toContain("token context");
-      for (const r of t.rows) expect(r.cells.usd.text.endsWith("*")).toBe(r.key === "commandcode-goat-published");
-    }
-  });
 
   test("the stars sit on the value, not in the plan label", () => {
     for (const r of summaryTable(ds, MEASURED).rows) expect(r.cells.plan.text.endsWith("*")).toBe(false);

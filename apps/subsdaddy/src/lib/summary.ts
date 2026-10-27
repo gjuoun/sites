@@ -23,6 +23,7 @@ export type Chip = { id: ViewId; label: string; rows: number };
 
 export const DERIVED_FOOTNOTE = "* derived from the same-rate peer plan — this plan's own window is saturated";
 export const CONVERTED_FOOTNOTE = (ctx: ContextId) => "† converted from vendor message limits at " + contextLabel(ctx) + " context per message";
+export const ARCHIVED_FOOTNOTE = (ctx: ContextId) => "‡ converted from vendor prompt-count guidance (2025 archive) at " + contextLabel(ctx) + " context per prompt";
 
 export const SUMMARY_COLUMNS: Column[] = [
   { key: "plan", label: "Plan", width: "30%" },
@@ -75,8 +76,8 @@ export function isDerivedLane(ds: DS, lane: string | null): boolean {
 const pct = (s: number) => Math.round(s * 100) + "%";
 
 type ViewRow = {
-  key: string; label: string; fee: number; capacity: string | null; capacityReason: string;
-  usd: number | null; usdTitle: string; marker: "" | "*" | "†";
+  key: string; label: string; fee: number; capacity: string | null; capacityReason: string; capDetail?: string[] | null; capNote?: string | null;
+  usd: number | null; usdTitle: string; marker: "" | "*" | "†" | "‡";
   tps: number | null; tpsTitle: string; ttft: number | null; ttftTitle: string;
 };
 
@@ -93,6 +94,32 @@ export function orWeighted(ds: DS, ref: RefId): { tps: number | null; ttft: numb
   return { tps, ttft, title: orId + " · " + eps.length + " endpoints · " + requests.toLocaleString("en-US") + " requests", reason: null };
 }
 
+type DsLane = DS["lanes"]["lanes"][number];
+
+/** The capacity hover panel: the three windows, the allowance they give, the binding window and the model mix. */
+export function capDetailOf(l: DsLane): string[] {
+  const c = l.capacity as DsLane["capacity"];
+  const lines: string[] = c.windows.map((w) => {
+    const head = w.window + " · used " + w.used_pct.toFixed(1) + "% · " + w.status;
+    if (w.tokens <= 0) return head;
+    const cost = "$" + w.cost_usd.toFixed(2) + " at list · " + (w.tokens / 1e9).toFixed(2) + "B in window · " + Math.round(w.unpriced_share * 100) + "% unpriced";
+    const allow = w.allowance_usd_cycle === null ? "" : " · allowance $" + w.allowance_usd_cycle.toFixed(2) + " per cycle";
+    return head + " · " + cost + allow;
+  });
+  if (c.tokens_per_cycle !== null) lines.push("binding: " + c.window + " window · cycle " + c.cycle_days + " days" + (c.cycle_billed ? "" : " (not billed: no monthly $/B)"));
+  if (c.top_models.length > 0) lines.push("model mix (binding window): " + c.top_models.map((m) => m.label + " " + Math.round(m.share * 100) + "%").join(", "));
+  if (c.low_coverage) lines.push("low coverage: more than 5% of the binding window's tokens have no list price");
+  return lines;
+}
+
+export function capNoteOf(l: DsLane): string | null {
+  const c = l.capacity as DsLane["capacity"];
+  if (c.tokens_per_cycle === null) return null;
+  return c.cycle_billed ? c.window + " window binds" : c.window + " window; billing cycle not read";
+}
+
+const withDetail = (cell: Cell, detail: string[] | null): Cell => (detail && detail.length > 0 ? { ...cell, detail } : cell);
+
 function measuredRows(ds: DS): ViewRow[] {
   return ds.lanes.lanes.map((l) => {
     const shape = cacheShare(ds, l.lane);
@@ -102,7 +129,9 @@ function measuredRows(ds: DS): ViewRow[] {
       key: l.lane,
       label: l.label,
       fee: l.price_month_usd,
-      capacity: l.capacity.tokens_per_week === null ? null : (l.capacity.tokens_per_week / 1e9).toFixed(2) + "B/wk",
+      capacity: l.capacity.tokens_per_cycle === null ? null : (l.capacity.tokens_per_cycle / 1e9).toFixed(2) + "B/" + l.capacity.cycle_days + "d",
+      capDetail: capDetailOf(l),
+      capNote: capNoteOf(l),
       capacityReason: l.capacity.reason ?? "no capacity reading",
       usd: l.usd_per_b,
       usdTitle: sourceNote + " · " + shapeNote,
@@ -133,7 +162,7 @@ function messageRow(r: CatalogRow, ref: RefId, ctx: ContextId): ViewRow | null {
     capacityReason: "",
     usd: usdVal,
     usdTitle: "converted at the lower bound: " + k(ml.low) + " messages per 5h × 3 windows a day × 30 days × " + k(tokensPerMessage(CONTEXTS[ctx])) + " tokens per message (" + contextLabel(ctx) + " context); upper bound " + k(ml.high) + " messages gives " + usdPerBOfTokens(fee, high).toFixed(2) + " $/B; ceiling (4.8 windows a day) at the lower bound gives " + usdPerBOfTokens(fee, ceiling).toFixed(2) + " $/B",
-    marker: "†",
+    marker: ml.unit === "prompts" ? "‡" : "†",
     tps: null,
     tpsTitle: "",
     ttft: null,
@@ -213,7 +242,7 @@ export function summaryTable(ds: DS, view: ViewId, ctx: ContextId = "short"): Su
     cells: {
       plan: value(r.label),
       fee: value(money(r.fee) + "/mo"),
-      capacity: r.capacity === null ? naShort(r.capacityReason) : value(r.capacity + (r.marker === "*" ? "*" : "")),
+      capacity: r.capacity === null ? naShort(r.capacityReason) : withDetail(value(r.capacity, [], null, r.capNote ?? null), r.capDetail ?? null),
       usd: r.usd === null ? naShort(r.usdTitle) : value(usd(r.usd) + r.marker, [], r.usdTitle),
       tps: r.tps === null ? naShort(r.tpsTitle || "no speed data") : value("~" + sig2(r.tps), [], r.tpsTitle),
       ttft: r.ttft === null ? naShort(r.ttftTitle || "no latency data") : value("~" + sig2(r.ttft) + " ms", [], r.ttftTitle),
@@ -227,6 +256,7 @@ export function summaryTable(ds: DS, view: ViewId, ctx: ContextId = "short"): Su
   } else {
     lines.push("Prices assume a " + contextLabel(ctx) + "-token context");
     if (data.some((r) => r.marker === "†")) lines.push(CONVERTED_FOOTNOTE(ctx));
+    if (data.some((r) => r.marker === "‡")) lines.push(ARCHIVED_FOOTNOTE(ctx));
     if (data.some((r) => r.marker === "*")) lines.push(DERIVED_FOOTNOTE);
   }
   return { columns: SUMMARY_COLUMNS, rows, footnote: lines.join("\n"), basisLine: basisLine(ds, view) };

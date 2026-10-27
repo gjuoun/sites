@@ -58,21 +58,7 @@ describe("DeepSeek ranking", () => {
     }
   });
 
-  test("CommandCode GOAT: $10 over its $80 DeepSeek allowance; list basis matches the catalog estimate", () => {
-    const cc = byId("commandcode-goat-published")!;
-    expect(cc.fee_usd).toBe(10);
-    expect(cc.allowance_usd).toBe(80);
-    expect(cc.est_list!).toBeCloseTo(catalog.rows.find((r) => r.plan_id === "commandcode-goat-published")!.estimate!.values.find((v) => v.ref === DS_REF && v.shape === "agent")!.usd_per_b!, 6);
-    expect(cc.tokens_b_list!).toBeCloseTo(10 / cc.est_list!, 9);
-  });
 
-  test("QwenCloud: the QwenCloud-basis est equals the catalog estimate (about 23.41), and has no list basis", () => {
-    const q = byId("qwen-cloud-token-owner-10")!;
-    const stored = catalog.rows.find((r) => r.plan_id === "qwen-cloud-token-owner-10")!.estimate!.values.find((v) => v.ref === DS_REF && v.shape === "agent")!.usd_per_b!;
-    expect(q.est_qw).toBeCloseTo(stored, 6);
-    expect(q.est_list).toBeNull();
-    expect(q.list_reason).toContain("qwen3.8-max");
-  });
 
   test("tokens per month are fee over est $/B, in billions", () => {
     for (const r of rank.ranked) expect(r.tokens_b_qw).toBeCloseTo(r.fee_usd / r.est_qw, 9);

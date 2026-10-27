@@ -7,7 +7,7 @@
  */
 import { spawnSync } from "node:child_process";
 import { LANES, type LaneId } from "../src/data/schema";
-import { type QuotaReading, creditsFromCodexbar, fromCodexbar, zaiEnvFor, zaiFromCodexbar } from "../src/lib/quota";
+import { type QuotaReading, creditsFromCodexbar, fromCodexbar, windowsFromCodexbar, zaiEnvFor, zaiFromCodexbar } from "../src/lib/quota";
 
 export type Resolved = QuotaReading;
 
@@ -30,12 +30,13 @@ export async function probeOne(lane: LaneId): Promise<Resolved> {
   const res = spawnSync("codexbar", ["usage", "--provider", provider, "--format", "json"], { encoding: "utf8", timeout: 30000, env });
   if (res.status !== 0 && !res.stdout) return { lane, unavailable: `codexbar_exit_${res.status}` };
   const base = lane === "zai-glm-max" ? zaiFromCodexbar(lane, res.stdout) : fromCodexbar(lane, provider, res.stdout);
+  const windows = windowsFromCodexbar(res.stdout);
   // QwenCloud is a credit pool: record the credits consumed and the pool size from the same reading
   if (lane === "qwen-cloud-token" && "used_pct" in base) {
     const c = creditsFromCodexbar(res.stdout);
-    return { ...base, credits_used: c?.credits_used ?? null, credits_total: c?.credits_total ?? null };
+    return { ...base, credits_used: c?.credits_used ?? null, credits_total: c?.credits_total ?? null, windows };
   }
-  return base;
+  return "used_pct" in base ? { ...base, windows } : base;
 }
 
 if (import.meta.main) {

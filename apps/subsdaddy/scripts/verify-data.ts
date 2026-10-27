@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
  * Provenance gate over data/*.json.
- *  - any object carrying a reading (used_pct, p50_*, tokens_per_week, usd_per_b, ...) must name
+ *  - any object carrying a reading (used_pct, p50_*, tokens_per_cycle, usd_per_b, ...) must name
  *    measured_at and either a source or an explicit unavailable reason;
  *  - no reading may be the number 0 (an unavailable value must be an explicit reason);
  *  - a ranked lane must name a capacity method;
@@ -13,7 +13,7 @@ import { join, resolve } from "node:path";
 const APP = resolve(import.meta.dir, "..");
 const dataDir = join(APP, "data");
 const started = Date.parse(process.env.SUBSDADDY_REFRESH_START ?? "") || 0;
-const READING = ["used_pct", "p50_throughput", "p50_latency_ms", "tokens_per_week", "usd_per_b", "p50_ttft_ms", "p50_output_tps", "usd_per_b_obs"];
+const READING = ["used_pct", "p50_throughput", "p50_latency_ms", "tokens_per_cycle", "usd_per_b", "p50_ttft_ms", "p50_output_tps", "usd_per_b_obs"];
 const REFRESHED = new Set(["usage.json", "quota.json", "lanes.json", "benchmark.json", "catalog.json"]);
 const problems: string[] = [];
 let provenanceMissing = 0;

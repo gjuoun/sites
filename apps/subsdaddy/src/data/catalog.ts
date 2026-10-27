@@ -12,7 +12,7 @@ export const ALLOWANCE_MODELS = ["credits", "usd_usage", "window_percent", "wind
 export type AllowanceModel = (typeof ALLOWANCE_MODELS)[number];
 
 const sourceSchema = z.strictObject({
-  kind: z.enum(["official_page", "official_post", "x_post", "owner_confirmed", "console_reading", "unverified", "third_party_measured"]),
+  kind: z.enum(["official_page", "official_post", "x_post", "owner_confirmed", "console_reading", "unverified", "third_party_measured", "archived_official"]),
   url: z.string().regex(/^https?:\/\//).nullable(),
   note: z.string().min(1),
 });
@@ -106,6 +106,7 @@ export const catalogRowSchema = z
     message_limit: z
       .strictObject({
         model: z.enum(REF_LITERALS),
+        unit: z.enum(["messages", "prompts"]).default("messages"),
         low: z.number().int().positive(),
         high: z.number().int().positive(),
         window_hours: z.number().positive(),
