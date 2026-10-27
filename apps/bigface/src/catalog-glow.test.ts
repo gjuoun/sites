@@ -2,19 +2,17 @@ import { beforeAll, describe, expect, test } from "bun:test";
 import { existsSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { $ } from "bun";
-import { BLUE, GRADIENT_BINS, type Geo, GLOW_SEL, type GlowRun, type Img, LIME, measureRim, type Rgb, rgbOf, runGlow } from "./catalog-glow.ts";
+import { BAND_DEPTH, BLUE, type Geo, GLOW_SEL, type GlowRun, type Img, measureShadow, type Rgb, rgbOf, runGlow, type Shadow } from "./catalog-glow.ts";
 import { findChrome } from "./panel-overflow.ts";
 
-// The Button glow variant is a plain primary fill at rest, and on hover a 1px rim over the fill's outermost ring: the reference
-// card's gradient (140deg; blue at 55, lime at 12 at 45, transparent at 70) cut to a hairline. Measured in headless Chrome, in
-// light and dark, at 1440 and 390: at rest the rim band is the fill and the border shows the cell; on hover the band carries a lime
-// tint on the fill-to-lime line, peaking at the gradient's 45 percent and absent from 70 percent on; the border stays the cell surface,
-// so the rim never leaves the button; the fill and the ink do not change. Set GLOW_SHOTS to a directory to write the PNGs.
+// The Button glow variant is the hero look: a gradient primary fill and, in dark, the reference blue drop shadow with an inset top
+// highlight, lifted 2px on hover with a second, larger shadow there. In light there is no shadow at all (every layer is transparent).
+// Measured in headless Chrome at 1440 and 390, at rest and on hover.
+// The shadow band is outside the edge: each pixel 1 to 6px outside the border box must lie on the segment from the surface toward
+// --theme-blue (a blue-shifted shadow). A zero-tint band, an off-line tint, or a 1px ring fails.
 const siteDir = join(import.meta.dir, "..");
 const dist = join(siteDir, "dist");
 const shots = process.env.GLOW_SHOTS;
-
-const CANVAS = { light: "rgb(248, 248, 240)", dark: "rgb(37, 41, 37)" } as const;
 const modes = ["light", "dark"] as const;
 
 beforeAll(async () => {
@@ -36,155 +34,160 @@ const contrast = (a: Rgb, b: Rgb) => {
 	const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x) as [number, number];
 	return (hi + 0.05) / (lo + 0.05);
 };
+const dist3 = (a: Rgb, b: Rgb) => Math.max(...[0, 1, 2].map((i) => Math.abs(a[i]! - b[i]!)));
 
-// The sampler is checked on a synthetic image first, where the answer is known. A 40x30 button at x 10 to 50, y 10 to 40, radius 0.
-// Pixels 0 to 1px outside the box are the transparent border; 1 to 2px inside are the rim band; the rest is the fill.
-const BG: Rgb = [248, 248, 240];
-const FILL = BLUE;
-const geo: Geo = { L: 10, T: 10, R: 50, B: 40, radius: 0, fill: "rgb(0, 176, 255)", bg: "rgb(248, 248, 240)", ink: "rgb(47, 51, 47)", shadow: "none" };
-const paint = (pick: (depth: number, cx: number, cy: number) => Rgb): Img => {
-	const w = 60, h = 50, d = new Array<number>(w * h * 4);
-	for (let iy = 0; iy < h; iy++)
-		for (let ix = 0; ix < w; ix++) {
+/** No ring: the blue share is present beyond the first pixel and falls off gradually, so there is no uniform 1px edge. */
+export const noRing = (profile: number[]) => profile[0]! > 0 && profile[3]! > 0.25 * profile[0]! && profile.every((v, i) => i === 0 || v <= profile[i - 1]! + 0.005);
+
+// The sampler, checked on a synthetic image first, where the answer is known. A 40x30 box at x 10 to 50, y 10 to 40, radius 0.
+const SURFACE: Rgb = [248, 248, 240];
+const geo: Geo = { L: 10, T: 10, R: 50, B: 40, radius: 0, fill: "rgb(0, 176, 255)", bg: "rgb(248, 248, 240)", ink: "rgb(47, 51, 47)", shadow: "none", surface: "rgb(248, 248, 240)" };
+const W = 70, H = 60;
+const paint = (pick: (depth: number, side: string) => Rgb | null, surfaceAt: (x: number, y: number) => Rgb = () => SURFACE): Img => {
+	const d = new Array<number>(W * H * 4);
+	for (let iy = 0; iy < H; iy++)
+		for (let ix = 0; ix < W; ix++) {
 			const cx = ix + 0.5, cy = iy + 0.5;
-			const depth = Math.min(cx - 10, 50 - cx, cy - 10, 40 - cy);
-			const c = depth <= 0 ? BG : pick(depth, cx, cy);
-			const i = (iy * w + ix) * 4;
+			let c: Rgb = surfaceAt(ix, iy);
+			const inside = cx > 10 && cx < 50 && cy > 10 && cy < 40;
+			if (inside) c = [0, 0, 0];
+			else {
+				const dep = cy < 10 ? 10 - cy : cy > 40 ? cy - 40 : cx < 10 ? 10 - cx : cx > 50 ? cx - 50 : -1;
+				const side = cy < 10 ? "top" : cy > 40 ? "bottom" : cx < 10 ? "left" : "right";
+				if (dep > 0) c = pick(dep, side) ?? c;
+			}
+			const i = (iy * W + ix) * 4;
 			d[i] = c[0]; d[i + 1] = c[1]; d[i + 2] = c[2]; d[i + 3] = 255;
 		}
-	return { w, h, d };
+	return { w: W, h: H, d };
 };
-const onLime = (a: number): Rgb => [0, 1, 2].map((i) => Math.round(FILL[i]! + a * (LIME[i]! - FILL[i]!))) as Rgb;
+const mix = (a: number): Rgb => [0, 1, 2].map((i) => Math.round(SURFACE[i]! + a * (BLUE[i]! - SURFACE[i]!))) as Rgb;
+const measure = (shot: Img, base: Img) => measureShadow("rest", shot, base, { x: 0, y: 0 }, geo);
+const baseImg = paint(() => null);
 
-describe("the rim sampler, on a synthetic image", () => {
-	test("at rest: the band is the fill, no pixel is tinted, and the border ring is the cell surface", () => {
-		const r = measureRim("rest", paint((depth) => (depth < 1 ? BG : FILL)), { x: 0, y: 0 }, geo);
+describe("the shadow sampler, on a synthetic image", () => {
+	test("a blue-shifted falloff is tinted at every depth, on the surface-to-blue line, and reads as no ring", () => {
+		const fall = (k: number) => Math.max(0, 0.3 * Math.exp(-(k * k) / 40));
+		const r = measure(paint((dep) => mix(fall(Math.ceil(dep)))), baseImg);
 		expect(r.band.total).toBeGreaterThan(0);
-		expect(r.band.fill).toBe(r.band.total);
-		expect(r.band.lime).toBe(0);
+		expect(r.band.surface).toBe(r.band.total);
 		expect(r.band.other).toBe(0);
-		expect(r.ring.surface).toBe(r.ring.total);
-		expect(r.ring.total).toBeGreaterThan(0);
+		expect(r.band.tinted).toBeGreaterThan(0);
+		expect(r.side.bottom.tinted).toBeGreaterThan(0);
+		expect(noRing(r.profile), "falloff reads as no ring").toBe(true);
 	});
-	test("on hover: a band pixel at 12 percent lime is counted as a lime tint, and the bins add up", () => {
-		const r = measureRim("hover", paint((depth) => (depth < 2 ? onLime(0.12) : FILL)), { x: 0, y: 0 }, geo);
-		expect(r.band.lime).toBe(r.band.total);
-		expect(r.band.other).toBe(0);
-		expect(r.band.maxA).toBeCloseTo(0.12, 1);
-		expect(r.bins.reduce((s, b) => s + b.n, 0)).toBe(r.band.total);
-		expect(r.bins.length).toBe(GRADIENT_BINS);
+	test("a uniform 1px ring of tint fails the no-ring test (no pixel beyond the first)", () => {
+		const r = measure(paint((dep) => (dep <= 1 ? mix(0.3) : null)), baseImg);
+		expect(r.profile[0]).toBeGreaterThan(0.2);
+		expect(r.profile[3]).toBe(0);
+		expect(noRing(r.profile)).toBe(false);
 	});
-	test("a band pixel off the fill-to-lime line is other, not a tint", () => {
-		const r = measureRim("hover", paint((depth) => (depth < 2 ? [200, 100, 100] : FILL)), { x: 0, y: 0 }, geo);
-		expect(r.band.other).toBe(r.band.total);
-		expect(r.band.lime).toBe(0);
+	test("a tint off the surface-to-blue line is other, not shadow", () => {
+		const r = measure(paint((dep) => (dep <= 3 ? [200, 120, 120] : null)), baseImg);
+		expect(r.band.other).toBeGreaterThan(0);
+		expect(r.band.tinted).toBe(0);
 	});
-	test("a tint in the transparent border is counted as ring other: the rim would leave the button", () => {
-		const r = measureRim("hover", paint((depth) => (depth < 1 ? onLime(0.12) : FILL)), { x: 0, y: 0 }, geo);
-		expect(r.ring.other).toBe(r.ring.total);
-		expect(r.ring.surface).toBe(0);
+	test("a pixel that is not the surface in the baseline is a neighbour: occluded, not measured", () => {
+		const nb = paint(() => null, (x) => (x < 10 ? [0, 176, 255] : SURFACE));
+		const r = measure(paint((dep) => mix(0.2)), nb);
+		expect(r.band.occluded).toBeGreaterThan(0);
+		expect(r.band.surface + r.band.occluded).toBe(r.band.total);
+	});
+	test("the band is the first 6px only: a tint at depth 9 is not counted", () => {
+		const r = measure(paint((dep) => (dep > 8 && dep < 9 ? mix(0.5) : null)), baseImg);
+		expect(r.band.tinted).toBe(0);
+		expect(BAND_DEPTH).toBe(6);
 	});
 });
 
-// One browser run per width and call, shared by the live tests below.
+// One browser run per width, shared by the live tests below.
 const runs = new Map<number, Promise<GlowRun>>();
 const runAt = (width: number) => {
 	if (!runs.has(width)) runs.set(width, runGlow(dist, "/ui/business/", width, shots));
 	return runs.get(width)!;
 };
-
-const census = (label: string, r: { band: Record<string, number> }) => console.log(label + " " + JSON.stringify(r.band));
+const show = (label: string, s: Shadow) =>
+	console.log(label + " band total=" + s.band.total + " surface=" + s.band.surface + " changed=" + s.band.changed + " tinted=" + s.band.tinted + " other=" + s.band.other + " meanA=" + s.band.meanA.toFixed(4) + " maxA=" + s.band.maxA.toFixed(4) + " sides(t/r/b/l)=" + ["top", "right", "bottom", "left"].map((k) => (s.side as any)[k].tinted + "/" + (s.side as any)[k].n).join(" ") + " profile=" + s.profile.map((v) => v.toFixed(4)).join(",") + " inside ring=" + s.inside.ring + "/" + s.inside.total + " shadow=" + s.shadow);
 
 for (const width of [1440, 390]) {
 	describe("at " + width + "px", () => {
-		test.skipIf(!findChrome())(
-			"rest: no rim. The band is the fill, and the border ring is the cell surface; the stock default is the control",
-			async () => {
-				const r = await runAt(width);
-				expect(r.initialMode, "starts light").toBe("light");
-				for (const mode of modes) {
-					const m = r[mode];
-					const rest = m.rest;
-					census(mode + " " + width + " rest band", rest);
-					expect(m.canvas, mode + " canvas").toBe(CANVAS[mode]);
-					expect(rest.band.total, mode + ": band sampled").toBeGreaterThan(0);
-					expect(rest.band.fill, mode + ": a rest rim pixel is a fill pixel").toBe(rest.band.total);
-					expect(rest.band.lime, mode + ": no lime tint at rest").toBe(0);
-					expect(rest.band.other, mode + ": no other colour in the band at rest").toBe(0);
-					expect(rest.ring.surface, mode + ": the border ring is the cell surface behind the button at rest").toBe(rest.ring.total);
-					expect(rest.ring.total, mode + ": border ring sampled").toBeGreaterThan(0);
-					expect(m.plain.band.lime, mode + ": the stock default has no rim (control)").toBe(0);
-					expect(m.plain.band.fill, mode + ": the stock default band is its fill (control)").toBe(m.plain.band.total);
-				}
-			},
-			240_000,
-		);
+		test.skipIf(!findChrome())("dark: every shadow pixel is on the surface-to-blue line; top, bottom and a side are tinted, at rest and on hover", async () => {
+			const r = await runAt(width);
+			for (const state of ["rest", "hover"] as const) {
+				const s = r.dark[state];
+				show("dark " + width + " " + state, s);
+				expect(s.band.surface, "dark " + state + ": the band is sampled on the surface").toBeGreaterThan(0.5 * s.band.total);
+				expect(s.band.other, "dark " + state + ": no band pixel off the surface-to-blue line").toBe(0);
+				expect(s.band.tinted, "dark " + state + ": the band carries blue shadow (zero tint is a FAIL)").toBeGreaterThan(0);
+				expect(s.side.bottom.tinted, "dark " + state + ": bottom edge tinted").toBeGreaterThan(0);
+				expect(s.side.top.tinted, "dark " + state + ": top edge tinted").toBeGreaterThan(0);
+			}
+		}, 240_000);
 
-		test.skipIf(!findChrome())(
-			"hover: the rim fades in. The band carries lime tint, every tinted pixel is on the fill-to-lime line, and the border stays the cell surface",
-			async () => {
-				const r = await runAt(width);
-				for (const mode of modes) {
-					const h = r[mode].hover;
-					census(mode + " " + width + " hover band", h);
-					expect(h.band.total, mode + ": band sampled").toBeGreaterThan(0);
-					expect(h.band.lime, mode + ": hover rim has lime-tinted pixels").toBeGreaterThan(0);
-					expect(h.band.other, mode + ": every rim pixel is fill or lime tint").toBe(0);
-					expect(h.band.canvas, mode + ": no hover band pixel is the canvas").toBe(0);
-					expect(h.band.maxA, mode + ": strongest lime tint is the reference 12 percent").toBeGreaterThan(0.1);
-					expect(h.band.maxA, mode + ": not above the reference 12 percent").toBeLessThanOrEqual(0.13);
-					expect(h.ring.surface, mode + ": the border ring stays the cell surface on hover").toBe(h.ring.total);
-				}
-			},
-			240_000,
-		);
+		test.skipIf(!findChrome())("light: no shadow: every band pixel equals the canvas, at rest and on hover", async () => {
+			const r = await runAt(width);
+			for (const state of ["rest", "hover"] as const) {
+				const s = r.light[state];
+				show("light " + width + " " + state, s);
+				expect(s.band.surface, "light " + state + ": the band is sampled on the canvas").toBeGreaterThan(0.5 * s.band.total);
+				expect(s.band.changed, "light " + state + ": no band pixel differs from the canvas").toBe(0);
+				expect(s.band.tinted, "light " + state + ": no tint").toBe(0);
+				expect(s.band.other, "light " + state + ": no off-line tint").toBe(0);
+			}
+		}, 240_000);
 
-		test.skipIf(!findChrome())(
-			"hover: the gradient runs along 140deg; lime peaks near the 45 percent stop and is absent from 70 percent on",
-			async () => {
-				const r = await runAt(width);
-				for (const mode of modes) {
-					const bins = r[mode].hover.bins;
-					const limeOf = (b: { lime: number; maxA: number }) => b.lime;
-					const peak = bins.reduce((best, b, i) => (b.maxA > bins[best]!.maxA ? i : best), 0);
-					console.log(mode + " " + width + " gradient bins (n/lime/maxA): " + bins.map((b) => b.n + "/" + b.lime + "/" + b.maxA.toFixed(3)).join(" "));
-					expect(peak, mode + ": the strongest lime is in the 0.3 to 0.5 bins (45 percent)").toBeGreaterThanOrEqual(3);
-					expect(peak, mode + ": the strongest lime is in the 0.3 to 0.5 bins (45 percent)").toBeLessThanOrEqual(4);
-					for (let i = 7; i < bins.length; i++) expect(limeOf(bins[i]!), mode + ": no lime past 70 percent, bin " + i).toBe(0);
-				}
-			},
-			240_000,
-		);
+		test.skipIf(!findChrome())("no ring: dark shadow falls off outward; no surface-coloured pixel sits inside the edge in either mode", async () => {
+			const r = await runAt(width);
+			for (const state of ["rest", "hover"] as const) {
+				const s = r.dark[state];
+				expect(noRing(s.profile), "dark " + state + ": profile " + s.profile.map((v) => v.toFixed(4)).join(",")).toBe(true);
+			}
+			for (const mode of modes) for (const state of ["rest", "hover"] as const) {
+				const s = r[mode][state];
+				expect(s.inside.total, mode + " " + state + ": inside edge sampled").toBeGreaterThan(0);
+				expect(s.inside.ring, mode + " " + state + ": no surface-coloured ring between fill and shadow").toBe(0);
+			}
+		}, 240_000);
 
-		test.skipIf(!findChrome())(
-			"hover keeps the fill and the ink unchanged, and the ink reads on the fill (WCAG 4.5)",
-			async () => {
-				const r = await runAt(width);
-				for (const mode of modes) {
-					const { rest, hover } = r[mode];
-					expect(hover.fill, mode + ": the fill is the same at rest and on hover").toEqual(rest.fill);
-					expect(hover.ink, mode + ": the ink is the same at rest and on hover").toBe(rest.ink);
-					const ink = rgbOf(hover.ink)!;
-					expect(contrast(ink, hover.fill!), mode + ": the ink on the fill is at least 4.5:1").toBeGreaterThanOrEqual(4.5);
-				}
-			},
-			240_000,
-		);
+		test.skipIf(!findChrome())("hover is measurably deeper than rest in dark (mean and peak blue share); light has no shadow to deepen", async () => {
+			const r = await runAt(width);
+			const { rest, hover } = r.dark;
+			expect(hover.band.meanA, "dark: hover band deeper than rest").toBeGreaterThan(rest.band.meanA * 1.15);
+			expect(hover.band.maxA, "dark: hover peak deeper than rest").toBeGreaterThan(rest.band.maxA);
+			expect(r.light.hover.band.changed, "light: hover adds no shadow").toBe(0);
+		}, 240_000);
 
-		test.skipIf(!findChrome())(
-			"hover lifts the button 2px, adds no shadow, and one real click moves the glow example's count",
-			async () => {
-				const r = await runAt(width);
-				for (const mode of modes) {
-					const { rest, hover } = r[mode];
-					expect(hover.box.T, mode + ": hover lifts the button 2px").toBe(rest.box.T - 2);
-					expect(rest.shadow, mode + ": no shadow at rest").toBe("none");
-					expect(hover.shadow, mode + ": no shadow on hover").toBe("none");
-				}
-				expect(r.textBefore).toBe("Glowed 0×");
-				expect(r.textAfterClick, "a real click counts").toBe("Glowed 1×");
-			},
-			240_000,
-		);
+		test.skipIf(!findChrome())("the computed shadow: dark is the reference (blue 30 percent, 0 8px 26px, inset fg 50 percent); light is transparent in every layer; hover adds one deeper layer in dark only", async () => {
+			const r = await runAt(width);
+			console.log("dark " + width + " rest shadow: " + r.dark.rest.shadow + " | hover shadow: " + r.dark.hover.shadow);
+			console.log("light " + width + " rest shadow: " + r.light.rest.shadow + " | hover shadow: " + r.light.hover.shadow);
+			const dr = r.dark.rest.shadow, dh = r.dark.hover.shadow;
+			expect(dr).toContain("color(srgb 0 0.690196 1 / 0.3) 0px 8px 26px 0px");
+			expect(dr).toContain("color(srgb 0.909804 0.913725 0.882353 / 0.5) 0px 1px 0px 0px inset");
+			expect(dr.split("color(").length - 1, "dark rest: two layers").toBe(2);
+			expect(dh.split("color(").length - 1, "dark hover: three layers").toBe(3);
+			expect(dh).toContain("color(srgb 0 0.690196 1 / 0.3) 0px 16px 40px -8px");
+			// every layer (the stock zero layers and the two or three shadow layers) is a transparent colour in light
+			for (const s of [r.light.rest.shadow, r.light.hover.shadow]) {
+				expect(s, "light: no colour with alpha").not.toContain("color(");
+				expect(s.split(/, (?=rgba\(|color\()/).every((layer) => layer.startsWith("rgba(0, 0, 0, 0) ")), "light: every layer transparent").toBe(true);
+			}
+		}, 240_000);
+
+		test.skipIf(!findChrome())("fill: a gradient at rest that darkens toward the bottom-right edge, a flat primary on hover, in both modes; the ink reads on the fill (WCAG 4.5); hover lifts 2px; one real click counts", async () => {
+			const r = await runAt(width);
+			for (const mode of modes) {
+				const { rest, hover } = r[mode];
+				expect(dist3(rest.fillTL, rest.fillBR), mode + ": rest fill is a gradient").toBeGreaterThan(15);
+				expect(lum(rest.fillBR) < lum(rest.fillTL), mode + ": the gradient darkens toward the edge").toBe(true);
+				expect(dist3(hover.fillTL, BLUE), mode + ": hover fill is flat primary (top-left)").toBeLessThanOrEqual(3);
+				expect(dist3(hover.fillBR, BLUE), mode + ": hover fill is flat primary (bottom-right)").toBeLessThanOrEqual(3);
+				expect(hover.ink, mode + ": the ink is the same on hover").toBe(rest.ink);
+				expect(contrast(rgbOf(hover.ink)!, hover.fillMid), mode + ": ink on fill at least 4.5:1").toBeGreaterThanOrEqual(4.5);
+				expect(hover.box.T, mode + ": hover lifts the button 2px").toBe(rest.box.T - 2);
+			}
+			expect(r.textBefore).toBe("Glowed 0×");
+			expect(r.textAfterClick, "a real click counts").toBe("Glowed 1×");
+		}, 240_000);
 	});
 }

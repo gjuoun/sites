@@ -1,163 +1,169 @@
-// The Button glow variant, driven in headless Chrome with real pointer input, in each colour mode and at two widths.
-// The variant is a plain primary fill at rest. On hover a 1px rim fades in over the fill's outermost ring: the reference
-// card's gradient (140deg; blue at 55 percent, lime at 12 percent at 45 percent, transparent at 70 percent) cut to a
-// hairline by a mask. The sampler reads three things per state: the transparent border (it shows the cell surface behind the
-// button, so the rim never leaves the button), the rim band (the first painted pixel ring, 1 to 2px inside the border box), and the
-// gradient position of every band pixel, so the lime tint is read against where it sits. The fill is sampled at mid-height.
-// The stock default button beside it is the control. The pixel maths is pure (measureRim) and is tested on a synthetic
-// image as well as on the live page.
+// The Button glow variant (the hero look): a gradient primary fill and a translucent blue drop shadow, measured in headless Chrome.
+// The shadow is outside the button, so the proof is outside the edge. For each state (rest, hover) the page is captured twice at the
+// same clip: once with the button, and once with the button set to visibility:hidden (a hidden element paints no box-shadow). The
+// second capture is the surface the button stands on, pixel for pixel, so a neighbouring control or the cell colour is never
+// mistaken for shadow. A band pixel is a surface pixel 1 to 6px outside the border box, on a straight run of an edge (corners are
+// skipped). Its change from the surface must lie on the segment from the surface toward --theme-blue (#00b0ff): that is a blue-shifted
+// shadow, not a grey or a ring. The sampler also reads the inside edge (no pixel of the surface colour may sit inside the border
+// box, which would be a ring between fill and shadow), the fill gradient (rest) and the flat fill (hover), and the ink.
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { findChrome, freePort } from "./panel-overflow.ts";
 
 export const GLOW_SEL = '[data-demo="button"] [data-glow-example]';
-export const PLAIN_SEL = '[data-demo="button"] [data-slot="button"][data-variant="default"]';
-
-/** Screenshot margin around the button, in CSS px. */
-const MARGIN = 6;
-/** The gradient's angle, as the reference card writes it (bg-linear-140). */
-export const GRADIENT_DEG = 140;
-/** The gradient positions are read in this many bins over 0 to 1. */
-export const GRADIENT_BINS = 10;
-/** The palette colours as painted in both modes: --theme-blue and --theme-lime are the same hex in light and dark. */
+/** Screenshot margin around the button, in CSS px: the hover shadow reaches about 48px below the edge. */
+const MARGIN = 56;
+/** --theme-blue as painted in both modes (the same hex in light and dark). */
 export const BLUE: Rgb = [0, 176, 255];
-export const LIME: Rgb = [198, 255, 0];
-/** Transitions and animations off while sampling, so a colour caught mid-fade is never measured. */
+/** The band: 1 to this many px outside the edge. */
+export const BAND_DEPTH = 6;
+/** A surface pixel counts as shadow when its blue share is at least this (about 5 of 255 levels in the blue channel). */
+export const MIN_A = 0.02;
+/** Off-line residual allowed per channel (8-bit rounding is under 1). */
+const RESIDUAL = 3;
+/** Quiet the page while sampling: no transitions or animations, so a colour caught mid-fade is never measured. */
 const QUIET = "*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}";
 
 export type Rgb = [number, number, number];
 export type State = "rest" | "hover";
-
+export type Side = "top" | "right" | "bottom" | "left";
 /** Geometry read from the page, in document pixels. */
-export interface Geo { L: number; T: number; R: number; B: number; radius: number; fill: string; bg: string; ink: string; shadow: string }
+export interface Geo { L: number; T: number; R: number; B: number; radius: number; fill: string; bg: string; ink: string; shadow: string; surface: string }
 export interface Img { w: number; h: number; d: number[] }
-/** One gradient-position bin: band pixels in it, how many carry the lime tint, and the strongest tint seen. */
-export interface Bin { n: number; lime: number; maxA: number }
 
-/** One state's census of the glow button. */
-export interface Rim {
+/** One state's measurement of the shadow band. */
+export interface Shadow {
 	state: State;
-	/** The painted fill, sampled inside the button at mid-height, 6px in from the left edge. */
-	fill: Rgb | null;
-	/** The bg role's value: a probe with the bg-background class. */
-	bg: Rgb;
-	/** The computed ink (text colour) of the button. */
+	/** The border box in whole pixels. Hover lifts the top by 2px. */
+	box: { T: number; L: number; R: number; B: number };
+	/** The surface behind the button, read from the page (the nearest non-transparent background). */
+	surface: Rgb;
+	/** The computed ink and box-shadow. */
 	ink: string;
-	/** The computed box-shadow: the rim is not a shadow, so this must carry no halo. */
 	shadow: string;
-	/** The border box's top and left in document pixels: the hover lift moves the top. */
-	box: { T: number; L: number };
-	/** The surface the button sits on (the catalogue cell), 5px left of the edge at mid-height. */
-	surface: Rgb | null;
-	/** The transparent border: the 1px ring just outside the padding box, depth 0 to 1. Shows the surface behind it, so it must equal the surface. */
-	ring: { total: number; surface: number; other: number };
-	/** The rim band: the first painted ring, depth 1 to 2. fill: equal to the fill. lime: on the fill-to-lime line (a tint toward lime). */
-	band: { total: number; fill: number; canvas: number; lime: number; other: number; maxA: number };
-	/** The band by gradient position (0 at the top-left, 1 at the bottom-right, along the 140deg axis). */
-	bins: Bin[];
+	/** The fill at two points on the gradient diagonal: top-left and bottom-right of the box. */
+	fillTL: Rgb;
+	fillBR: Rgb;
+	/** The fill at mid-height, 6px in: the ink's background. */
+	fillMid: Rgb;
+	/** The band: 1 to BAND_DEPTH px outside the edge. occluded = a pixel that is not the surface in the baseline (a neighbour). */
+	band: { total: number; occluded: number; surface: number; changed: number; tinted: number; other: number; meanA: number; maxA: number };
+	/** Per side: surface pixels, tinted pixels and mean blue share. */
+	side: Record<Side, { n: number; tinted: number; meanA: number }>;
+	/** Mean blue share at 1px, 2px … BAND_DEPTH px outside the edge (all sides, surface pixels only). */
+	profile: number[];
+	/** The inside edge: straight-run pixels within 1px inside the border box, and how many are the surface colour (a ring). */
+	inside: { total: number; ring: number };
 }
-export interface ModeReading {
-	canvas: string;
-	rest: Rim;
-	hover: Rim;
-	/** The stock default button at rest: the control, no rim. */
-	plain: Rim;
-}
-export interface GlowRun {
-	initialMode: string | undefined;
-	light: ModeReading;
-	dark: ModeReading;
-	textBefore: string;
-	textAfterClick: string;
-}
+export interface ModeReading { canvas: string; rest: Shadow; hover: Shadow }
+export interface GlowRun { initialMode: string | undefined; light: ModeReading; dark: ModeReading; textBefore: string; textAfterClick: string }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-/** The first rgb() in a computed colour string. */
+/** The first rgb() or rgba() in a computed colour string, or null when it is transparent. */
 export function rgbOf(colour: string): Rgb | null {
-	const m = /rgba?\((\d+), (\d+), (\d+)/.exec(colour);
-	return m ? [Number(m[1]), Number(m[2]), Number(m[3])] : null;
+	const m = /rgba?\((\d+), (\d+), (\d+)(?:, ([\d.]+))?\)/.exec(colour);
+	if (!m || (m[4] !== undefined && Number(m[4]) === 0)) return null;
+	return [Number(m[1]), Number(m[2]), Number(m[3])];
+}
+
+/** Which edge a point outside the box lies beside, and how far outside (pixel centres). Corners return null. */
+function outsideOf(cx: number, cy: number, L: number, T: number, R: number, B: number, r: number): { side: Side; depth: number } | null {
+	const inX = cx >= L + r + 2 && cx <= R - r - 2;
+	const inY = cy >= T + r + 2 && cy <= B - r - 2;
+	if (cy < T && inX) return { side: "top", depth: T - cy };
+	if (cy > B && inX) return { side: "bottom", depth: cy - B };
+	if (cx < L && inY) return { side: "left", depth: L - cx };
+	if (cx > R && inY) return { side: "right", depth: cx - R };
+	return null;
 }
 
 /**
- * Measures the rim from decoded RGBA pixels of a screenshot taken at clip (document pixels). Pure: no browser, so the counting
- * is testable on a synthetic image. The border box is taken to whole pixels, as Chrome paints it. Corner squares (the radius
- * plus 1px) are skipped, where the arc is anti-aliased. A band pixel is the fill (equal to the fill sample), the canvas, a tint
- * toward lime (on the segment from the fill to lime, within 3 per channel of it), or other. The gradient position of a pixel is
- * its projection on the 140deg axis across the box, 0 at the start and 1 at the end.
+ * Measures the shadow band from two decoded captures at the same clip (document pixels): shot with the button, base without it.
+ * Pure: no browser, so the counting is testable on a synthetic image.
  */
-export function measureRim(state: State, img: Img, clip: { x: number; y: number }, geo: Geo): Rim {
-	const px = (ix: number, iy: number): Rgb => {
+export function measureShadow(state: State, shot: Img, base: Img, clip: { x: number; y: number }, geo: Geo): Shadow {
+	const px = (img: Img, ix: number, iy: number): Rgb => {
 		const i = (iy * img.w + ix) * 4;
 		return [img.d[i]!, img.d[i + 1]!, img.d[i + 2]!];
 	};
-	const at = (x: number, y: number) => px(Math.floor(x - clip.x), Math.floor(y - clip.y));
+	const at = (img: Img, x: number, y: number) => px(img, Math.floor(x - clip.x), Math.floor(y - clip.y));
 	const same = (a: Rgb, b: Rgb) => a[0] === b[0] && a[1] === b[1] && a[2] === b[2];
-	const dist = (a: Rgb, b: Rgb) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
 	const L = Math.round(geo.L), T = Math.round(geo.T), R = Math.round(geo.R), B = Math.round(geo.B);
-	const midX = (L + R) / 2;
-	const midY = (T + B) / 2;
-	const fill = at(L + 6, midY);
-	const surface = at(L - 5, midY);
-	const bg = rgbOf(geo.bg);
-	if (!bg) throw new Error("bg role probe did not resolve to a colour: " + geo.bg);
-	const rad = (GRADIENT_DEG * Math.PI) / 180;
-	const dx = Math.sin(rad);
-	const dy = -Math.cos(rad);
-	const len = Math.abs((R - L) * dx) + Math.abs((B - T) * dy);
-	const lime = [0, 1, 2].map((i) => LIME[i]! - fill[i]!);
-	const limeLen2 = lime.reduce((s, v) => s + v * v, 0);
-	const out: Rim = {
-		state,
-		fill,
-		bg,
-		ink: geo.ink,
-		shadow: geo.shadow,
-		box: { T, L },
-		surface,
-		ring: { total: 0, surface: 0, other: 0 },
-		band: { total: 0, fill: 0, canvas: 0, lime: 0, other: 0, maxA: 0 },
-		bins: Array.from({ length: GRADIENT_BINS }, () => ({ n: 0, lime: 0, maxA: 0 })),
-	};
-	const corner = geo.radius + 1;
-	for (let iy = 0; iy < img.h; iy++)
-		for (let ix = 0; ix < img.w; ix++) {
+	const r = geo.radius;
+	const surface = rgbOf(geo.surface);
+	if (!surface) throw new Error("the surface did not resolve to a colour: " + geo.surface);
+	const bv = (b: Rgb) => BLUE.map((v, i) => v - b[i]!) as Rgb;
+	const side: Shadow["side"] = { top: { n: 0, tinted: 0, meanA: 0 }, right: { n: 0, tinted: 0, meanA: 0 }, bottom: { n: 0, tinted: 0, meanA: 0 }, left: { n: 0, tinted: 0, meanA: 0 } };
+	const sideSum: Record<Side, number> = { top: 0, right: 0, bottom: 0, left: 0 };
+	const profSum = new Array<number>(BAND_DEPTH).fill(0);
+	const profN = new Array<number>(BAND_DEPTH).fill(0);
+	const band = { total: 0, occluded: 0, surface: 0, changed: 0, tinted: 0, other: 0, meanA: 0, maxA: 0 };
+	let sum = 0;
+	const inside = { total: 0, ring: 0 };
+	for (let iy = 0; iy < shot.h; iy++)
+		for (let ix = 0; ix < shot.w; ix++) {
 			const cx = clip.x + ix + 0.5;
 			const cy = clip.y + iy + 0.5;
-			if ((cx - L < corner || R - cx < corner) && (cy - T < corner || B - cy < corner)) continue;
-			const depth = Math.min(cx - L, R - cx, cy - T, B - cy);
-			if (depth <= 0 || depth >= 2) continue;
-			const c = px(ix, iy);
-			if (depth < 1) {
-				out.ring.total++;
-				if (same(c, surface)) out.ring.surface++;
-				else out.ring.other++;
+			const out = outsideOf(cx, cy, L, T, R, B, r);
+			if (out) {
+				const k = Math.ceil(out.depth);
+				if (k < 1 || k > BAND_DEPTH) continue;
+				band.total++;
+				const b = px(base, ix, iy);
+				if (!same(b, surface)) {
+					band.occluded++;
+					continue;
+				}
+				band.surface++;
+				const c = px(shot, ix, iy);
+				if (!same(c, b)) band.changed++;
+				const v = bv(b);
+				const diff = [0, 1, 2].map((i) => c[i]! - b[i]!);
+				const vv = v.reduce((s, x) => s + x * x, 0);
+				const a = [0, 1, 2].reduce((s, i) => s + diff[i]! * v[i]!, 0) / vv;
+				const res = Math.max(...[0, 1, 2].map((i) => Math.abs(diff[i]! - a * v[i]!)));
+				const aa = Math.max(0, a);
+				if (a >= MIN_A && res <= RESIDUAL) {
+					band.tinted++;
+					side[out.side].tinted++;
+				} else if (res > RESIDUAL) band.other++;
+				band.maxA = Math.max(band.maxA, aa);
+				sum += aa;
+				side[out.side].n++;
+				sideSum[out.side] += aa;
+				profSum[k - 1]! += aa;
+				profN[k - 1]!++;
 				continue;
 			}
-			out.band.total++;
-			let tint = 0;
-			if (same(c, fill)) out.band.fill++;
-			else if (same(c, bg)) out.band.canvas++;
-			else {
-				const diff = [0, 1, 2].map((i) => c[i]! - fill[i]!);
-				const a = diff.reduce((s, v, i) => s + v * lime[i]!, 0) / limeLen2;
-				const on = [0, 1, 2].map((i) => fill[i]! + a * lime[i]!) as Rgb;
-				if (a > 0 && dist(c, on) <= 3) {
-					out.band.lime++;
-					tint = a;
-					out.band.maxA = Math.max(out.band.maxA, a);
-				} else out.band.other++;
-			}
-			const p = ((cx - midX) * dx + (cy - midY) * dy) / len + 0.5;
-			const bin = out.bins[Math.min(GRADIENT_BINS - 1, Math.max(0, Math.floor(p * GRADIENT_BINS)))]!;
-			bin.n++;
-			if (tint > 0) {
-				bin.lime++;
-				bin.maxA = Math.max(bin.maxA, tint);
+			if (cx < L || cx > R || cy < T || cy > B) continue;
+			const straightTB = (cy - T < 1 || B - cy < 1) && cx >= L + r + 2 && cx <= R - r - 2;
+			const straightLR = (cx - L < 1 || R - cx < 1) && cy >= T + r + 2 && cy <= B - r - 2;
+			if (straightTB || straightLR) {
+				inside.total++;
+				if (same(px(shot, ix, iy), surface)) inside.ring++;
 			}
 		}
-	return out;
+	band.meanA = band.surface ? sum / band.surface : 0;
+	for (const s of ["top", "right", "bottom", "left"] as Side[]) side[s].meanA = side[s].n ? sideSum[s] / side[s].n : 0;
+	const profile = profSum.map((v, i) => (profN[i] ? v / profN[i]! : 0));
+	const mid = (T + B) / 2;
+	const w = R - L, h = B - T;
+	return {
+		state,
+		box: { T, L, R, B },
+		surface,
+		ink: geo.ink,
+		shadow: geo.shadow,
+		fillTL: at(shot, L + 0.25 * w, T + 0.3 * h),
+		fillBR: at(shot, L + 0.75 * w, T + 0.7 * h),
+		fillMid: at(shot, L + 6, mid),
+		band,
+		side,
+		profile,
+		inside,
+	};
 }
 
 /** Runs the glow sequence on the built page at distDir + path, at the given width. shots, when set, is a directory for PNGs. */
@@ -223,50 +229,64 @@ export async function runGlow(distDir: string, path: string, width: number, shot
 			await moveMouse(at.x, at.y);
 			await sleep(250);
 		};
-		// Geometry in document pixels, the computed ink and box-shadow, and the bg role's value from a probe with the bg-background class.
+		// Geometry in document pixels, the computed ink and box-shadow, the surface (nearest non-transparent background above the button)
+		// and the bg role's value from a probe with the bg-background class.
 		const geoOf = (sel: string) =>
 			evaluate(
-				"JSON.stringify((() => { const el = document.querySelector(" + JSON.stringify(sel) + "); const r = el.getBoundingClientRect(); const cs = getComputedStyle(el); const probe = document.createElement('div'); probe.className = 'bg-background'; document.body.appendChild(probe); const bg = getComputedStyle(probe).backgroundColor; probe.remove(); return { L: r.left + scrollX, T: r.top + scrollY, R: r.right + scrollX, B: r.bottom + scrollY, radius: parseFloat(cs.borderTopLeftRadius) || 0, fill: cs.backgroundColor, bg, ink: cs.color, shadow: cs.boxShadow }; })())",
+				"JSON.stringify((() => { const el = document.querySelector(" + JSON.stringify(sel) + "); const r = el.getBoundingClientRect(); const cs = getComputedStyle(el); const probe = document.createElement('div'); probe.className = 'bg-background'; document.body.appendChild(probe); const bg = getComputedStyle(probe).backgroundColor; probe.remove(); let s = el.parentElement; let surface = 'rgba(0, 0, 0, 0)'; while (s) { const c = getComputedStyle(s).backgroundColor; if (rgbaAlpha(c) > 0) { surface = c; break; } s = s.parentElement; } if (rgbaAlpha(surface) === 0) surface = bg; return { L: r.left + scrollX, T: r.top + scrollY, R: r.right + scrollX, B: r.bottom + scrollY, radius: parseFloat(cs.borderTopLeftRadius) || 0, fill: cs.backgroundColor, bg, ink: cs.color, shadow: cs.boxShadow, surface }; function rgbaAlpha(c) { const m = /rgba?\(([^)]+)\)/.exec(c); if (!m) return 1; const p = m[1].split(',').map(Number); return p.length > 3 ? p[3] : 1; } })())",
 			).then((s: string) => JSON.parse(s) as Geo);
 		const savePng = (file: string, data: string) => writeFileSync(file, Buffer.from(data, "base64"));
-		// Screenshot of the button and its margin, decoded in the page (canvas getImageData), then measured here.
-		const sample = async (sel: string, state: State, file?: string): Promise<Rim> => {
-			const geo = await geoOf(sel);
-			const clip = { x: Math.floor(geo.L) - MARGIN, y: Math.floor(geo.T) - MARGIN, width: Math.ceil(geo.R) - Math.floor(geo.L) + 2 * MARGIN, height: Math.ceil(geo.B) - Math.floor(geo.T) + 2 * MARGIN, scale: 1 };
-			const shot = await send("Page.captureScreenshot", { format: "png", captureBeyondViewport: true, clip });
-			if (file) savePng(file, shot.data);
+		const capture = async (clip: { x: number; y: number; width: number; height: number; scale: number }) => (await send("Page.captureScreenshot", { format: "png", captureBeyondViewport: true, clip })).data as string;
+		const decode = async (data: string, clip: { width: number; height: number }): Promise<Img> => {
 			const img = JSON.parse(
 				await evaluate(
-					"(async () => { const img = new Image(); img.src = 'data:image/png;base64," + shot.data + "'; await img.decode(); const c = document.createElement('canvas'); c.width = img.width; c.height = img.height; const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(img, 0, 0); return JSON.stringify({ w: img.width, h: img.height, d: Array.from(g.getImageData(0, 0, img.width, img.height).data) }); })()",
+					"(async () => { const img = new Image(); img.src = 'data:image/png;base64," + data + "'; await img.decode(); const c = document.createElement('canvas'); c.width = img.width; c.height = img.height; const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(img, 0, 0); return JSON.stringify({ w: img.width, h: img.height, d: Array.from(g.getImageData(0, 0, img.width, img.height).data) }); })()",
 				),
 			);
 			if (img.w !== clip.width || img.h !== clip.height) throw new Error("screenshot is " + img.w + "x" + img.h + ", expected " + clip.width + "x" + clip.height);
-			return measureRim(state, img, clip, geo);
+			return img;
 		};
-		// Each state is set by real pointer input: hover by the pointer over the button, rest with the pointer away.
-		const readRim = async (state: State, sel: string, file?: string): Promise<Rim> => {
-			await scrollTo(sel);
+		const setVisible = (sel: string, on: boolean) => evaluate("document.querySelector(" + JSON.stringify(sel) + ").style.visibility = " + JSON.stringify(on ? "" : "hidden"));
+		// One state: the pointer sets it (hover over the button, rest with the pointer away), then the page is captured with the button and
+		// without it at the same clip. The baseline is the surface; the difference is the shadow alone.
+		const sampleState = async (state: State, mode: string, file?: string): Promise<Shadow> => {
+			await scrollTo(GLOW_SEL);
 			await sleep(250);
-			if (state === "hover") await moveTo(sel);
+			if (state === "hover") await moveTo(GLOW_SEL);
 			else await moveMouse(1, 1);
-			return sample(sel, state, file);
+			await sleep(150);
+			const geo = await geoOf(GLOW_SEL);
+			const clip = { x: Math.floor(geo.L) - MARGIN, y: Math.floor(geo.T) - MARGIN, width: Math.ceil(geo.R) - Math.floor(geo.L) + 2 * MARGIN, height: Math.ceil(geo.B) - Math.floor(geo.T) + 2 * MARGIN, scale: 1 };
+			const shotData = await capture(clip);
+			await setVisible(GLOW_SEL, false);
+			const baseData = await capture(clip);
+			await setVisible(GLOW_SEL, true);
+			if (file) savePng(file, shotData);
+			const shot = await decode(shotData, clip);
+			const base = await decode(baseData, clip);
+			return measureShadow(state, shot, base, clip, geo);
 		};
-		// The rim at 4x: the whole button and a 4px margin, captured at scale 4 (re-rasterised, not upscaled).
-		const cropRim = async (sel: string, file: string) => {
-			const geo = await geoOf(sel);
-			const pad = 4;
-			const clip = { x: Math.floor(geo.L) - pad, y: Math.floor(geo.T) - pad, width: Math.ceil(geo.R) - Math.floor(geo.L) + 2 * pad, height: Math.ceil(geo.B) - Math.floor(geo.T) + 2 * pad, scale: 4 };
-			const shot = await send("Page.captureScreenshot", { format: "png", captureBeyondViewport: true, clip });
-			savePng(file, shot.data);
+		// The shadow at 4x: the button and its margin, re-rasterised at scale 4 (not upscaled).
+		const cropShadow = async (state: State, file: string) => {
+			await scrollTo(GLOW_SEL);
+			await sleep(250);
+			if (state === "hover") await moveTo(GLOW_SEL);
+			else await moveMouse(1, 1);
+			await sleep(150);
+			const geo = await geoOf(GLOW_SEL);
+			const pad = 28;
+			savePng(file, await capture({ x: Math.floor(geo.L) - pad, y: Math.floor(geo.T) - pad, width: Math.ceil(geo.R) - Math.floor(geo.L) + 2 * pad, height: Math.ceil(geo.B) - Math.floor(geo.T) + 2 * pad, scale: 4 }));
 		};
 		const readMode = async (mode: string): Promise<ModeReading> => {
 			const canvas = await evaluate("getComputedStyle(document.body).backgroundColor");
-			const name = (state: string) => (shots ? join(shots, "glow-" + mode + "-" + width + "-" + state + ".png") : undefined);
-			const rest = await readRim("rest", GLOW_SEL, name("rest"));
-			const hover = await readRim("hover", GLOW_SEL, name("hover"));
-			if (shots) await cropRim(GLOW_SEL, join(shots, "glow-rim-4x-" + mode + "-" + width + ".png"));
-			const plain = await readRim("rest", PLAIN_SEL);
-			return { canvas, rest, hover, plain };
+			const name = (state: string) => (shots ? join(shots, "glow-" + mode + "-" + state + "-" + width + ".png") : undefined);
+			const rest = await sampleState("rest", mode, name("rest"));
+			const hover = await sampleState("hover", mode, name("hover"));
+			if (shots) {
+				await cropShadow("rest", join(shots, "glow-shadow-4x-" + mode + "-rest-" + width + ".png"));
+				await cropShadow("hover", join(shots, "glow-shadow-4x-" + mode + "-hover-" + width + ".png"));
+			}
+			return { canvas, rest, hover };
 		};
 		const clickGlow = async () => {
 			await scrollTo(GLOW_SEL);
