@@ -12,9 +12,10 @@ export type OrSummary = {
   window_minutes: number;
 };
 
+// r57: stats_unavailable = every endpoint reported zero throughput (no speed); kept_previous = this run could not read the page, the last trusted snapshot is kept
 export type OrModelStatus = {
   model: string;
-  status: "ok" | "unavailable";
+  status: "ok" | "unavailable" | "stats_unavailable" | "kept_previous";
   reason: string | null;
   endpoints: number;
 };
@@ -48,12 +49,16 @@ export function summarizeOr(endpoints: OrEndpoint[]): OrSummary | null {
 export function orForModel(
   file: { endpoints: OrEndpoint[]; models_status: OrModelStatus[] },
   model: string,
-): { summary: OrSummary | null; reason: string | null } {
+): { summary: OrSummary | null; reason: string | null; kept: string | null } {
   const status = file.models_status.find((s) => s.model === model);
-  if (!status) return { summary: null, reason: "not fetched from OpenRouter" };
-  if (status.status === "unavailable") return { summary: null, reason: status.reason ?? "unavailable" };
+  if (!status) return { summary: null, reason: "not fetched from OpenRouter", kept: null };
+  if (status.status === "unavailable" || status.status === "stats_unavailable") {
+    return { summary: null, reason: status.reason ?? status.status, kept: null };
+  }
   const summary = summarizeOr(file.endpoints.filter((e) => e.model === model));
-  return { summary, reason: summary === null ? "no endpoints reported for this model" : null };
+  // a kept snapshot says so in its reason, which the speed tooltip shows beside the figures (r57)
+  const kept = status.status === "kept_previous" ? status.reason : null;
+  return { summary, reason: summary === null ? "no endpoints reported for this model" : null, kept };
 }
 
 /** Compact range text: "24–249 (median 88)", or N/A when there is no range. */

@@ -173,7 +173,8 @@ export const benchmarkFileSchema = z.object({
     .array(
       z.object({
         model: z.string().min(1),
-        status: z.enum(["ok", "unavailable"]),
+        // r57: stats_unavailable = every endpoint reported zero throughput; kept_previous = this run could not read the page, so the last trusted snapshot is kept
+        status: z.enum(["ok", "unavailable", "stats_unavailable", "kept_previous"]),
         reason: z.string().min(1).nullable(),
         endpoints: z.number().int().nonnegative(),
         measured_at: z.iso.datetime(),
