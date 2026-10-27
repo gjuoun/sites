@@ -90,7 +90,7 @@ function estimateRow(row: CatalogRow) {
     // precedence: the official limit for this model, then the lane allowance (published, vendor pool or derived), then a wildcard
     // a plan with per-model limits has no pool: a model it does not list has no allowance
     const allowanceUsd = refPub ? refPub.usd : row.per_model_limit_plan ? null : measuredUsd ?? (wildcard ? wildcard.usd : null);
-    const allowanceBasis = refPub ? (row.per_model_limit_plan ? "vendor_published_per_model" : "vendor_published") : row.per_model_limit_plan ? null : measured ? measured.allowance_basis : wildcard ? (wildcard.kind === "vendor_hours" ? "vendor_hours" : row.allowance_model === "credits" || /credit/i.test(wildcard.basis) ? "credits" : "vendor_published") : null;
+    const allowanceBasis = refPub ? (row.per_model_limit_plan ? "vendor_published_per_model" : "vendor_published") : row.per_model_limit_plan ? null : measured ? measured.allowance_basis : wildcard ? (row.allowance_model === "credits" || /credit/i.test(wildcard.basis) ? "credits" : "vendor_published") : null;
     const allowanceCycle = measured ? measured.cycle_days : 30;
     const pr = priceFor(row, ref);
     if (pr.note) tierNotes.add(pr.note);

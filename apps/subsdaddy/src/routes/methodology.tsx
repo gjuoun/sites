@@ -11,7 +11,8 @@ import { hourWeighted } from "@/lib/official-prices";
 import { na, value } from "@/lib/cells";
 import { usd } from "@/lib/sections";
 import { cacheShare } from "@/lib/summary";
-import { cycleUsd, CLAUDE_CYCLE_DAYS } from "@/lib/claude-hours";
+import { CLAUDE_CYCLE_DAYS, fmtK, intensityLevels, sensitivityGrid } from "@/lib/claude-hours";
+import type { RefPrice } from "@/data/estimate";
 import { pooledMix, type TokenTotals } from "@/data/estimate";
 import { claudePlansFileSchema } from "@/data/claude-plans";
 import claudePlansRaw from "../../data/claude-plans.json";
@@ -302,69 +303,68 @@ function ClaudeSection() {
   );
 }
 
-/** The Claude plans from Anthropic's hour figures: the three steps, each with its source, the bounds, and the caveats. */
+/** Claude plans: why hours do not become a dollar allowance, and the sensitivity table that shows it (r44). */
 function ClaudeHoursSection() {
   const ds = dataset as unknown as DS;
   const file = claudePlansFileSchema.parse(claudePlansRaw);
   const tp = ds.context.throughput;
-  const perHour = tp.tokens_per_active_hour.p50;
+  const heavy = tp.tokens_per_active_hour.p50;
   const usage = usageRaw as { lanes: Array<{ tokens: TokenTotals }> };
   const pooled = pooledMix(usage.lanes.map((l) => ({ tokens: l.tokens })));
   const mix = { output_share: pooled.output_share, cache_share: pooled.agent_cache_share, cache_write_share: pooled.cache_write_share ?? 0 };
   const price = { in_per_m: file.price.in_per_m, out_per_m: file.price.out_per_m, cache_per_m: file.price.cache_read_per_m, cache_write_per_m: file.price.cache_write_per_m };
-  const usdPerB = cycleUsd(1, 1e9, price, mix).usdPerB;
-  const fmtB = (t: number) => (t / 1e9).toFixed(2) + "B";
-  const rows = file.plans.map((p) => {
-    const lo = cycleUsd(p.hours_per_week_low, perHour, price, mix);
-    const hi = cycleUsd(p.hours_per_week_high, perHour, price, mix);
-    const catRow = ds.catalog.rows.find((r) => r.plan_id === p.plan_id);
+  const haiku = ds.models.reference.find((r) => r.ref === "claude-haiku-5.5")!;
+  const grid = sensitivityGrid({
+    plans: file.plans.map((p) => ({ plan: p.plan, plan_id: p.plan_id, hours_low: p.hours_per_week_low, hours_high: p.hours_per_week_high })),
+    price, mix, haiku: haiku as unknown as RefPrice, heavy,
+  });
+  const levels = intensityLevels(heavy);
+  const lows = grid.filter((g) => g.bound === "lower").map((g) => g.cells[levels.length - 1].usd);
+  const span = fmtK(Math.min(...lows)) + "\u2013" + fmtK(Math.max(...lows));
+  const millions = (t: number) => (t / 1e6).toFixed(1) + "M";
+  const fmtB = (b: number) => Math.round(b).toLocaleString("en-US") + "B";
+  const cols = [
+    { key: "plan", label: "Plan", width: "22%" },
+    { key: "hours", label: "Hours/wk", width: "10%", numeric: true },
+    ...levels.map((lv) => ({ key: lv.id, label: lv.label, width: "22%", numeric: true })),
+  ];
+  const rows = grid.map((g) => {
+    const fee = file.plans.find((p) => p.plan_id === g.plan_id)!.fee_usd_per_month;
     return {
-      key: p.plan_id,
+      key: g.plan_id + "-" + g.bound,
       cells: {
-        plan: value(p.plan),
-        fee: value(usd(p.fee_usd_per_month) + "/mo"),
-        hours: value(p.hours_per_week_low + "–" + p.hours_per_week_high + " h/wk"),
-        tokens: value(fmtB(lo.tokensPerWeek) + "/wk"),
-        low: catRow && catRow.allowance[0] ? value("$" + catRow.allowance[0].usd.toFixed(2) + "/" + CLAUDE_CYCLE_DAYS + "d") : na("no allowance"),
-        high: value("$" + hi.usdPerCycle.toFixed(2) + "/" + CLAUDE_CYCLE_DAYS + "d"),
+        plan: value(g.plan + " (" + usd(fee) + "/mo), " + g.bound + " bound"),
+        hours: value(g.hours + " h"),
+        ...Object.fromEntries(g.cells.map((c) => [c.intensity.id, value("$" + Math.round(c.usd).toLocaleString("en-US") + " · " + fmtB(c.haikuB) + " Haiku", [], c.intensity.basis)])),
       },
     };
   });
-  const cols = [
-    { key: "plan", label: "Plan", width: "18%" },
-    { key: "fee", label: "Fee/mo", width: "12%", numeric: true },
-    { key: "hours", label: "Hours/wk (Anthropic)", width: "18%", numeric: true },
-    { key: "tokens", label: "Tokens/wk, lower", width: "18%", numeric: true },
-    { key: "low", label: "Allowance, lower bound", width: "17%", numeric: true },
-    { key: "high", label: "Allowance, upper bound", width: "17%", numeric: true },
-  ];
-  const sources = file.plans.map((p) => p.plan + ": " + p.source.quote + " Capture " + (p.source.capture_timestamp ?? "") + "; read " + p.source.read_date + ".");
+  const sources = file.plans.map((p) => p.plan + ": " + p.source.quote);
   return (
     <section className="space-y-3" aria-labelledby="m-claude-hours">
-      <h2 id="m-claude-hours" className={SECTION_TITLE}>Claude plans from Anthropic's hour figures</h2>
+      <h2 id="m-claude-hours" className={SECTION_TITLE}>Claude plans: hours, not dollars</h2>
       <p>
-        Step 1, hours: Anthropic's help text gives a weekly range of hours of Sonnet 4 (and Opus 4 where stated). The lower bound is used; the upper bound is shown beside it. Source: {file.plans[0].source.url}, archived capture {file.plans[0].source.capture_timestamp ?? ""}, read {file.plans[0].source.read_date}.
+        Claude Pro, Max 5x and Max 20x show N/A in the table. Anthropic publishes hours of usage, not a dollar allowance, and converting those hours at our measured burn rate would span {span} a month, too wide to publish as one number.
       </p>
+      <ul className={SMALL_NOTE + " list-disc pl-5"}>
+        <li>The hours are Sonnet 4 and Opus 4 figures from 2025 (archived capture, read {file.plans[0].source.read_date}). They assume interactive coding.</li>
+        <li>Our measured agent burn rate is {millions(heavy)} tokens per active hour ({tp.sample_sessions} pi sessions, 30 days), far heavier than that assumed use.</li>
+        <li>The value of a Claude plan depends on usage intensity more than on the plan, as the table shows.</li>
+        <li>Sonnet 5.5 cache read is {"$" + file.price.cache_read_per_m} per million tokens on the pricing page; the blend uses it.</li>
+      </ul>
       <p>
-        Step 2, throughput: the tokens one active hour of agent work uses, measured on our pi sessions over 30 days (all four token classes; sessions with at least 9 active minutes; gaps capped at 5 minutes).
-        Median {(perHour / 1e6).toFixed(1)}M tokens per active hour over {tp.sample_sessions} sessions (p25 {(tp.tokens_per_active_hour.p25 / 1e6).toFixed(1)}M, p75 {(tp.tokens_per_active_hour.p75 / 1e6).toFixed(1)}M). It is stored in data/context.json and read from there.
+        Sensitivity, not a ranking. Each cell is the dollars a plan's hours would buy per {CLAUDE_CYCLE_DAYS}-day cycle at that burn rate (hours × tokens per active hour × the Sonnet 5.5 blend at the measured mix × 30/7),
+        and the Haiku 5.5 billions those dollars buy at the measured mix.
       </p>
-      <p>
-        Step 3, dollars: tokens per week × the blended list price of {file.price.model} at the measured mix ({"$" + usdPerB.toFixed(2)} per billion tokens), × {CLAUDE_CYCLE_DAYS}/7 for a {CLAUDE_CYCLE_DAYS}-day cycle.
-        Prices: {file.price.source.url}, read {file.price.source.read_date}: {"$" + file.price.in_per_m} input, {"$" + file.price.out_per_m} output, {"$" + file.price.cache_read_per_m} cache read, {"$" + file.price.cache_write_per_m} cache write per million tokens.
-      </p>
-      <UnifiedTable testId="claude-hours" columns={cols} rows={rows} />
+      <UnifiedTable testId="claude-sensitivity" columns={cols} rows={rows} />
       <p className={SMALL_NOTE}>
-        Fees from the same archived capture: {file.fee_source.quote}. Capture {file.fee_source.capture_timestamp ?? ""}, read {file.fee_source.read_date}.
+        Light (5M) and medium (15M) tokens per active hour are scenario values chosen for this table, not measurements. Heavy is the measured median of pi sessions with at least 9 active minutes over 30 days,
+        gaps capped at 5 minutes, all four token classes ({tp.sample_sessions} sessions; p25 {millions(tp.tokens_per_active_hour.p25)}, p75 {millions(tp.tokens_per_active_hour.p75)}; data/context.json).
       </p>
       {sources.map((t) => (
-        <p key={t} className={SMALL_NOTE}>{t}</p>
+        <p key={t} className={SMALL_NOTE}>{t}. Capture {file.plans[0].source.capture_timestamp ?? ""} at {file.plans[0].source.capture ?? file.plans[0].source.url}, read {file.plans[0].source.read_date}.</p>
       ))}
-      <p className={SMALL_NOTE}>
-        Caveats. The hours are Sonnet 4 and Opus 4 figures from 2025, not Sonnet 5.5. The throughput is measured on all models in pi sessions, not on Claude Code. The measured mix moves
-        neither the hours nor the throughput, so these allowances do not move with Shape. Haiku and Luna are priced by the same dollar pool at their own list prices; Anthropic publishes no hour figure for them,
-        so their capacity is an extension of the dollar convention, not a stated limit.
-      </p>
+      <p className={SMALL_NOTE}>Fees: {file.fee_source.quote}. Price: {file.price.source.url}, read {file.price.source.read_date}.</p>
     </section>
   );
 }

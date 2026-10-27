@@ -138,24 +138,24 @@ describe("model views: an allowance-based $/B on each plan's own traffic shape",
   });
 });
 
-describe("Claude: prompt counts stay a methodology lower bound; the table carries the hours allowance", () => {
+describe("Claude: prompt counts stay a methodology lower bound; the table shows N/A (r44)", () => {
   test("the lower-bound conversion is 3 windows a day, 30 days, 100,462 tokens per prompt: Pro 0.090B, Max 5x 0.452B, Max 20x 1.809B per month", () => {
     expect(monthlyTokens({ low: 10, high: 40 }, CONTEXTS.short, 3) / 1e9).toBeCloseTo(0.0904158, 6);
     expect(monthlyTokens({ low: 50, high: 200 }, CONTEXTS.short, 3) / 1e9).toBeCloseTo(0.4520790, 6);
     expect(monthlyTokens({ low: 200, high: 800 }, CONTEXTS.short, 3) / 1e9).toBeCloseTo(1.8083160, 6);
   });
 
-  test("the table shows each Claude plan with an h marker and its hours basis in the tooltip; no prompt footnote", () => {
+  test("the table shows each Claude plan as N/A in allowance, capacity and $/B; no h marker; no prompt footnote", () => {
     const t = summaryTable(ds, "claude-haiku-5.5", "short");
     for (const k of ["claude-code-pro", "claude-code-max-5x", "claude-code-max-20x"]) {
       const r = t.rows.find((x) => x.key === k)!;
-      expect(r.cells.allowance.na).toBe(false);
-      expect((r.cells.allowance as { sup?: string }).sup).toBe("h");
-      expect(r.cells.allowance.title ?? "").toContain("hours of Sonnet 4 per week");
-      expect(r.cells.usd.na).toBe(false);
+      expect(r.cells.allowance.na).toBe(true);
+      expect(r.cells.capacity.na).toBe(true);
+      expect(r.cells.usd.na).toBe(true);
+      expect((r.cells.allowance as { sup?: string }).sup).toBeUndefined();
     }
     expect(t.footnote ?? "").not.toContain("converted from vendor prompt-count guidance");
-    expect(t.footnote ?? "").toContain("h hours × measured throughput");
+    expect(t.footnote ?? "").not.toContain("h hours");
   });
 });
 

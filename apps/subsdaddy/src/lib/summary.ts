@@ -85,7 +85,7 @@ export function isDerivedLane(ds: DS, lane: string | null): boolean {
   return ds.lanes.lanes.find((l) => l.lane === lane)?.usd_per_b_basis === "derived";
 }
 
-export type Sup = "p" | "r" | "d" | "c" | "h";
+export type Sup = "p" | "r" | "d" | "c";
 export type AllowanceCell = { usd: number; cycle: number; sup: Sup; title: string };
 
 /** A credit-denominated allowance (QwenCloud credits, Copilot base credits) is c, whatever its basis says. */
@@ -96,7 +96,6 @@ export function isCreditRow(r: CatalogRow | undefined): boolean {
 export function supOf(basis: string | null | undefined, credit: boolean): Sup | null {
   if (basis === "credits") return "c";
   if (basis === "vendor_published" || basis === "vendor_published_per_model") return "p";
-  if (basis === "vendor_hours") return "h";
   if (basis === "vendor_reported") return "r";
   if (basis === "derived") return credit ? "c" : "d";
   return null;
@@ -300,8 +299,7 @@ function modelRows(ds: DS, ref: RefId, ctx: ContextId, shape: ShapeDef): ViewRow
     let allowance: AllowanceCell | null = null;
     if (v && v.allowance_usd && v.allowance_basis) {
       const sup = supOf(v.allowance_basis, isCreditRow(r));
-      const wild = r.allowance.find((x) => x.ref === "*");
-      if (sup) allowance = { usd: v.allowance_usd, cycle: v.allowance_cycle_days ?? 30, sup, title: laneRow ? allowanceTitleOf(laneRow.capacity as DsLane["capacity"]) : sup === "h" && wild ? wild.basis : "published $" + v.allowance_usd.toFixed(2) };
+      if (sup) allowance = { usd: v.allowance_usd, cycle: v.allowance_cycle_days ?? 30, sup, title: laneRow ? allowanceTitleOf(laneRow.capacity as DsLane["capacity"]) : "published $" + v.allowance_usd.toFixed(2) };
     }
     out.push({
       key: r.plan_id,
@@ -361,14 +359,11 @@ export function allowanceLegend(ds: DS): string {
   const der = lanes.find((l) => l.capacity.allowance_basis === "derived" && !isCreditRow(creditRowOfLane(ds, l.lane)));
   const cr = lanes.find((l) => l.capacity.allowance_basis === "derived" && isCreditRow(creditRowOfLane(ds, l.lane)));
   const perCredit = cr ? creditRowOfLane(ds, cr.lane)?.credits_to_usd?.usd_per_credit : undefined;
-  const hours = ds.catalog.rows.find((r) => r.allowance.some((a) => a.kind === "vendor_hours"));
-  const hoursAllow = hours?.allowance.find((a) => a.kind === "vendor_hours");
   return "Allowance source: " + [
     "p published (" + (pub ? pub.label + " $" + (pub.capacity.allowance_published_usd ?? 0).toFixed(2) : "none") + ")",
     "r vendor reading (" + (pool ? pool.label + " pool $" + (pool.capacity.allowance_vendor_usd ?? 0).toFixed(2) : "none") + ")",
     "d derived from quota windows (" + (der ? der.label + " $" + (der.capacity.allowance_usd_per_cycle ?? 0).toFixed(2) : "none") + ")",
     "c credit value (" + (cr && perCredit !== undefined ? cr.label + " $" + Number(perCredit.toPrecision(3)) + " per credit" : "none") + ")",
-    "h hours × measured throughput (" + (hours && hoursAllow ? hours.label + " $" + hoursAllow.usd.toFixed(2) : "none") + ")",
   ].join(" · ");
 }
 
