@@ -3,8 +3,8 @@ import businessCss from "@gjuoun/bigface-business-ui/themes/business.css?raw";
 import darkPalette from "@gjuoun/bigface-tokens/palette.json";
 import lightPalette from "@gjuoun/bigface-tokens/palette-light.json";
 import { Block } from "./_frame.tsx";
-import { ACCENTS } from "./_accents.tsx";
-import { ACCENT_NAMES, neutralsLightToDark } from "../../../data/neutrals.ts";
+import { ACCENT_DOCS } from "@gjuoun/bigface-business-ui/themes/accents";
+import { themeNeutralsLightToDark } from "../../../data/neutrals.ts";
 
 // The colour section reads the generated business theme, so it cannot drift from what the components use. Each light
 // value sits in a light scope and each dark value in a dark scope, so every swatch is painted by the same --theme-*
@@ -17,20 +17,26 @@ interface Pair {
 	bg: string;
 }
 
-function parseBlocks(css: string): { light: Record<string, Hex>; dark: Record<string, Hex> } {
+// One block now: a role is light-dark(light, dark) when the palettes differ, one bare hex when they agree.
+// The page reads both branches out of that one declaration, so it still shows a light and a dark column.
+function parseTheme(css: string): { light: Record<string, Hex>; dark: Record<string, Hex> } {
 	const clean = css.replace(/\/\*[\s\S]*?\*\//g, "");
 	const light: Record<string, Hex> = {};
 	const dark: Record<string, Hex> = {};
-	for (const m of clean.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
-		const selector = m[1].trim();
-		const target = selector.endsWith('[data-theme="business"]') ? light : selector.includes('[data-theme="business"][data-mode="dark"]') ? dark : null;
-		if (!target) continue;
-		for (const d of m[2].matchAll(/--theme-([\w-]+):\s*([^;]+);/g)) target[d[1]] = d[2].trim();
+	for (const m of clean.matchAll(/--theme-([\w-]+):\s*([^;]+);/g)) {
+		const role = m[1] as string;
+		const value = (m[2] as string).trim();
+		const pair = /^light-dark\((#[0-9a-f]{6}), (#[0-9a-f]{6})\)$/i.exec(value);
+		light[role] = (pair?.[1] ?? value) as Hex;
+		dark[role] = (pair?.[2] ?? value) as Hex;
 	}
 	return { light, dark };
 }
 
-const parsed = parseBlocks(businessCss);
+const parsed = parseTheme(businessCss);
+// The ink on the primary fill is a formula, not a palette role: light takes the fg, dark takes the canvas.
+parsed.light["on-primary"] = parsed.light.fg as Hex;
+parsed.dark["on-primary"] = parsed.dark.bg as Hex;
 
 const HEX = /^#[0-9a-f]{6}$/i;
 function luminance(hex: Hex): number {
@@ -50,16 +56,13 @@ export function contrast(a: Hex, b: Hex): number | null {
 }
 
 const PAIRS: Pair[] = [
-	{ label: "Body text on canvas", text: "ink", bg: "canvas" },
-	{ label: "Heading on canvas", text: "heading", bg: "canvas" },
-	{ label: "Muted text on canvas", text: "muted-ink", bg: "canvas" },
-	{ label: "Link and ring on canvas", text: "primary-ink", bg: "canvas" },
-	{ label: "Primary button: ink on fill", text: "on-primary", bg: "primary" },
-	{ label: "Secondary button", text: "on-secondary", bg: "secondary" },
-	{ label: "Frame", text: "on-frame", bg: "frame" },
-	{ label: "Solid", text: "on-solid", bg: "solid" },
-	{ label: "Success text on canvas", text: "success", bg: "canvas" },
-	{ label: "Danger text on canvas", text: "danger", bg: "canvas" },
+	{ label: "Body and heading text on canvas", text: "fg", bg: "bg" },
+	{ label: "Muted text on canvas", text: "fgDim", bg: "bg" },
+	{ label: "Link and ring on canvas", text: "blue", bg: "bg" },
+	{ label: "Primary button: ink on fill", text: "on-primary", bg: "blue" },
+	{ label: "Secondary button, card, popover", text: "fg", bg: "panel" },
+	{ label: "Success text on canvas", text: "green", bg: "bg" },
+	{ label: "Danger text on canvas", text: "burntOrange", bg: "bg" },
 ];
 
 const RULES = [
@@ -68,8 +71,8 @@ const RULES = [
 	"Accents are not text-safe on paper: link, success, info and danger text, and the lime and yellow family, measure below AA. Read on their deepened plates they clear 4.5:1 (the accents table). Body ink and muted text keep AA.",
 	"The primary ink (links and rings) follows the accent, so it measures 2.27:1 on paper. Whether a readable light ink returns is parked for Jun.",
 	"The ink on the primary fill is each mode's own darkest readable value: light fg (5.29:1), dark canvas (6.08:1). Dark fg would measure 1.98:1 on the fill.",
-	"Surfaces (card, popover, secondary, subtle, frame, solid) read the panel tier: 5% of fg mixed into the canvas, in each mode.",
-	"Stock shadcn classes are not restyled: bg-black/10 and bg-white resolve through the palette ends.",
+	"Surfaces (card, popover, secondary, subtle, frame, solid) read the panel tier: one neutral, no per-mode fork.",
+	"The scrim and the slider thumb are formulas over the two neutral ends, not palette roles: there is no black or white token.",
 ];
 
 // Both tables share one column template, so the role table and the text-pairs table line up column for column.
@@ -130,14 +133,14 @@ function PaletteColumn({ mode }: { mode: "light" | "dark" }) {
 			<h3 className="text-sm font-semibold">{mode === "light" ? "Light" : "Dark"} palette: {palette.name}</h3>
 			<h4 className="pt-1 text-xs font-semibold tracking-[0.08em] text-muted-foreground uppercase">Neutrals, lightest first</h4>
 			<ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-				{neutralsLightToDark(palette).map((name) => (
+				{themeNeutralsLightToDark(palette).map((name) => (
 					<PaletteRow key={name} name={name} hex={hexOf(name)} />
 				))}
 			</ul>
-			<h4 className="pt-1 text-xs font-semibold tracking-[0.08em] text-muted-foreground uppercase">Accents</h4>
+			<h4 className="pt-1 text-xs font-semibold tracking-[0.08em] text-muted-foreground uppercase">Accents the theme uses</h4>
 			<ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-				{ACCENT_NAMES.map((name) => (
-					<PaletteRow key={name} name={name} hex={hexOf(name)} />
+				{ACCENT_DOCS.map(({ id, accent }) => (
+					<PaletteRow key={id} name={id} hex={accent} />
 				))}
 			</ul>
 		</div>
@@ -226,10 +229,8 @@ export function ColourSection() {
 							</tr>
 						</thead>
 						<tbody>
-							{ACCENTS.map((id) => {
-								const accent = parsed.light["accent-" + id] ?? "";
-								const plate = parsed.light["plate-" + id] ?? "";
-								const onPaper = contrast(accent, parsed.light.canvas ?? "");
+							{ACCENT_DOCS.map(({ id, accent, plate }) => {
+								const onPaper = contrast(accent, parsed.light.bg ?? "");
 								const onPlate = contrast(accent, plate);
 								return (
 									<tr key={id} className="border-t">
@@ -256,7 +257,7 @@ export function ColourSection() {
 			</div>
 			<div className="flex flex-col gap-3">
 				<h3 className="text-base font-semibold">Palette</h3>
-				<p className="text-sm text-muted-foreground">The named colours the roles are drawn from, one palette per mode.</p>
+				<p className="text-sm text-muted-foreground">The palette colours the theme draws from, one palette per mode. The palette carries more accents than the theme uses; only these are shown.</p>
 				<div className="grid gap-4 md:grid-cols-2">
 					<PaletteColumn mode="light" />
 					<PaletteColumn mode="dark" />

@@ -291,6 +291,8 @@ test("the site only ships colours that exist in the palette", () => {
 		...paletteHexes(palette),
 		...paletteHexes(lightPaletteJson as unknown as Palette),
 		...themeHexes,
+		// the accent docs table: accents and their solved plates, rendered as inline styles on the colour page
+		...[...readFileSync(join(siteDir, "../../packages/bigface-business-ui/src/themes/accents.ts"), "utf8").matchAll(/#[0-9a-fA-F]{6}\b/g)].map((m) => m[0].toLowerCase()),
 	]);
 	const htmlFiles = readdirSync(dist, {
 		recursive: true,

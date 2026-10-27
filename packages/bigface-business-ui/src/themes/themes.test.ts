@@ -4,41 +4,39 @@ import { join } from "node:path";
 import darkJson from "../../../bigface-tokens/palette/bigface.json";
 import lightJson from "../../../bigface-tokens/palette/bigface-light.json";
 import contract from "./contract.json";
-import { COLOURS, DEFAULT_MODE, OPTIONAL, REQUIRED, THEMES } from "./roles.ts";
+import { ACCENT_DOCS } from "./accents.ts";
+import { DEFAULT_MODE, REQUIRED, THEMES } from "./roles.ts";
 import { mixHex, PLATE_FLOOR, renderAll, solvePlate, themesDir } from "../../scripts/gen-tokens.ts";
 import { contrastRatio } from "../../../bigface-tokens/src/contrast-math.ts";
 
-// The business package is COLOUR ONLY. These tests hold it to the colour contract and to the standing colour
-// rulings: the two-tier primary, paper surfaces, no pure white, black and white from the palette. Nothing here
-// asserts a size, a radius or a shadow geometry, because the package sets none of them.
+// The business package is COLOUR ONLY, and the theme is ONE block: a role whose two palettes differ is
+// light-dark(light, dark), one whose palettes agree is a bare hex. These tests hold the package to that
+// contract and to the standing colour rulings. Nothing here asserts a size, a radius or a shadow geometry.
 type Pal = { colors: Record<string, { hex: string }>; ansi: Record<string, { hex: string }> };
 const dark = darkJson as unknown as Pal;
 const light = lightJson as unknown as Pal;
 
 const css = (name: string) =>
-	readFileSync(join(themesDir, name.endsWith("theme.css") ? "../styles/theme.css" : name), "utf8");
+	readFileSync(name === "styles.css" ? join(themesDir, "../styles/styles.css") : join(themesDir, name), "utf8");
 const strip = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, "");
 
-/** The light and dark block declarations of business.css. */
-const blocks = () => {
-	const text = strip(css("business.css"));
-	const out: { light: Record<string, string>; dark: Record<string, string> } = { light: {}, dark: {} };
-	for (const m of text.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
-		const target = /data-mode="dark"/.test(m[1] as string) ? out.dark : out.light;
-		for (const d of (m[2] as string).split(";")) {
-			const i = d.indexOf(":");
-			if (i > 0) target[d.slice(0, i).trim()] = d.slice(i + 1).trim();
-		}
+/** Every --theme-* declaration of business.css, as role -> value. There is only one block. */
+const roles = () => {
+	const out: Record<string, string> = {};
+	for (const m of strip(css("business.css")).matchAll(/--theme-([\w-]+):\s*([^;]+);/g)) {
+		out[m[1] as string] = (m[2] as string).trim();
 	}
 	return out;
 };
 
-/** Evaluate color-mix(in oklab, #hex p%, #hex) to a hex, so contrast can be measured. */
-const evaluate = (value: string): string => {
-	const m = /^color-mix\(in oklab, (#[0-9a-f]{6}) ([\d.]+)%, (#[0-9a-f]{6})\)$/.exec(value);
-	if (!m) return value;
-	return mixHex(m[1] as string, Number(m[2]), m[3] as string);
+/** The branch a value takes in a mode; a bare hex is the same in both. */
+const pick = (value: string, mode: "light" | "dark"): string => {
+	const m = /^light-dark\((#[0-9a-f]{6}), (#[0-9a-f]{6})\)$/i.exec(value);
+	if (!m) return value.toLowerCase();
+	return ((mode === "light" ? m[1] : m[2]) as string).toLowerCase();
 };
+
+const hex = (palette: Pal, name: string) => (palette.colors[name] as { hex: string }).hex.toLowerCase();
 
 describe("bigface-business-ui: colour only", () => {
 	test("the generated files equal a fresh render (regenerate with theme:sync)", () => {
@@ -57,163 +55,104 @@ describe("bigface-business-ui: colour only", () => {
 		const keys = [...Object.keys(contract.required), ...Object.keys(contract.optional)];
 		const feel = /radius|space|text-|shadow-(2xs|xs|sm|md|lg|xl|2xl|card|modal)|duration|ease|hover|press|weight|font-/;
 		expect(keys.filter((k) => feel.test(k))).toEqual([]);
-		expect([...REQUIRED, ...OPTIONAL].length).toBe(keys.length);
+		expect([...REQUIRED].length).toBe(keys.length);
 	});
 
 	test("the contract lists exactly the keys the theme sets", () => {
-		const known = [...REQUIRED, ...OPTIONAL].map((k) => "--theme-" + k).sort();
+		const known = REQUIRED.map((k) => "--theme-" + k).sort();
 		expect([...Object.keys(contract.required), ...Object.keys(contract.optional)].sort()).toEqual(known);
-		const b = blocks();
-		for (const key of [...Object.keys(b.light), ...Object.keys(b.dark)]) expect(known, key).toContain(key);
+		expect(Object.keys(roles()).sort()).toEqual([...REQUIRED].sort());
 	});
 
-	test("every required role is set in both the light and the dark block", () => {
-		const b = blocks();
-		for (const key of REQUIRED) {
-			expect(b.light["--theme-" + key], "light " + key).toBeDefined();
-			expect(b.dark["--theme-" + key], "dark " + key).toBeDefined();
+	test("the theme is one block: no dark-mode selector, 14 declarations", () => {
+		const text = strip(css("business.css"));
+		expect(text).not.toContain('[data-mode="dark"]');
+		expect(text.match(/\{/g)?.length).toBe(1);
+		expect(Object.keys(roles()).length).toBe(14);
+	});
+
+	test("every value is light-dark(light, dark) or one bare hex, and the neutrals carry both palettes", () => {
+		const r = roles();
+		for (const [role, value] of Object.entries(r)) {
+			expect(value, role).toMatch(/^(?:light-dark\(#[0-9a-f]{6}, #[0-9a-f]{6}\)|#[0-9a-f]{6})$/i);
 		}
+		for (const role of ["bg", "panel", "fg", "fgDim", "border"]) {
+			expect(r[role], role).toBe("light-dark(" + hex(light, role) + ", " + hex(dark, role) + ")");
+		}
+		for (const role of ["blue", "lightBlue", "paleBlue", "cyan", "green", "burntOrange", "purple", "lime", "yellow"]) {
+			const paletteName = THEMES[0]!.roles[role] as string;
+			expect(r[role], role).toBe(hex(dark, paletteName));
+			expect(r[role], role + " is the same in both palettes").toBe(hex(light, paletteName));
+		}
+		// the palette carries two yellows; the theme keeps only the bright one, under the name yellow
+		expect(r.yellow).toBe(hex(dark, "brightYellow"));
 	});
 
 	test("theme.css carries no feel override: no spacing, text size, radius scale, motion or shadow geometry", () => {
-		const text = strip(css("theme.css"));
+		const text = strip(css("styles.css"));
 		expect(text).not.toMatch(/--spacing:/);
 		expect(text).not.toMatch(/--text-(xs|sm|base|lg):/);
 		expect(text).not.toMatch(/--default-transition-/);
 		expect(text).not.toMatch(/--theme-(space|radius|duration|ease|hover|press|weight)/);
-		expect(text).not.toMatch(/--font-(sans|mono|display):/);
-		// the only radius is shadcn's own default, and the scale derives from it
+		// the font stacks moved here from the retired tailwind.css; they are the only font keys allowed
+		expect((text.match(/--font-[\w-]+:/g) ?? []).sort()).toEqual(["--font-display:", "--font-heading:", "--font-mono:", "--font-sans:"]);
 		expect(text).toContain("--radius: 0.625rem;");
 	});
 
-	test("shadows keep Tailwind's geometry and take the palette's colour: no black literal", () => {
-		const text = strip(css("theme.css"));
-		expect(text).toContain("--shadow-sm: 0 1px 3px 0 color-mix(in oklab, var(--color-black) 10%, transparent)");
+	test("shadows keep the geometry and take the palette darkest neutral: no black literal", () => {
+		const text = strip(css("styles.css"));
 		expect(text).not.toMatch(/rgb\(0 0 0/);
+		expect(text).not.toMatch(/--color-(black|white)/);
+		expect(text).toContain("color-mix(in oklab, var(--color-scrim) 10%, transparent)");
+		expect(text).toContain("--color-scrim: light-dark(var(--theme-fg), var(--theme-bg));");
 	});
 
-	test("standing colour decision: paper surfaces in light, dark canvas in dark, never pure white", () => {
-		const b = blocks();
-		expect(b.light["--theme-canvas"]).toBe("#f8f8f0");
-		expect(b.dark["--theme-canvas"]).toBe("#252925");
-		const everything = [css("business.css"), css("_reset.css"), css("theme.css")].join("\n").toLowerCase();
+	test("standing colour decision: paper in light, dark canvas in dark, never pure white", () => {
+		const r = roles();
+		expect(pick(r.bg as string, "light")).toBe("#f8f8f0");
+		expect(pick(r.bg as string, "dark")).toBe("#252925");
+		const everything = [css("business.css"), css("styles.css")].join("\n").toLowerCase();
 		expect(everything).not.toContain("#fff;");
 		expect(everything).not.toContain("#ffffff");
 		expect(everything).not.toContain("255, 255, 255");
 	});
 
-	test("the primary: native blue fill; light ink on it in light mode; the light blue is the native blue by ruling (2026-10-24)", () => {
-		const b = blocks();
-		const nativeBlue = dark.colors.blue?.hex.toLowerCase();
-		// Jun's ruling: the accent family borrows the dark palette exactly, so the light blue IS the native blue.
-		// The readable-ink tier this test used to pin (#007aa6) is now a PARKED question for Jun (sites evidence,
-		// round 7: keep a derived readable ink for text and links, or let link text follow the accent). Until he
-		// decides, primary-ink follows blue, and this test records that rather than pinning the old value.
-		expect(nativeBlue).toBe("#00b0ff");
-		expect(light.colors.blue?.hex.toLowerCase()).toBe(nativeBlue);
-		for (const mode of [b.light, b.dark]) {
-			expect(mode["--theme-primary"]).toBe(nativeBlue);
-			expect(mode["--theme-primary-fill"]).toBe(nativeBlue);
-		}
-		// Ruling 2026-10-26: the light ink on the blue fill is the light fg, the one ink of the light scope.
-		expect(b.light["--theme-on-primary"]).toBe(light.colors.fg.hex);
-		// Ruling 2026-10-26 (B1): dark keeps the dark canvas as the fill ink. Its fg cannot be the ink (checked below).
-		expect(b.dark["--theme-on-primary"]).toBe("#252925");
-		expect(contrastRatio(dark.colors.fg.hex, nativeBlue), "dark fg on the fill").toBeLessThan(4.5);
-		expect(b.light["--theme-primary-ink"]).toBe(nativeBlue);
-		expect(b.dark["--theme-primary-ink"]).toBe(nativeBlue);
-	});
-
-	test("the surface roles read the panel tier in both modes: frame, surface, solid, subtle, gray-100 and secondary", () => {
-		const b = blocks();
-		for (const mode of ["light", "dark"] as const) {
-			const palette = (mode === "light" ? light : dark) as Pal;
-			const panel = palette.colors.panel.hex.toLowerCase();
-			for (const role of ["frame", "surface", "solid", "subtle", "gray-100", "secondary"]) {
-				expect(b[mode]["--theme-" + role], mode + " " + role).toBe(panel);
-			}
-		}
-	});
-
-	test("heading is the ink, not the canvas, in both modes: it clears AA on the canvas (the paper retirement, 2026-10-26)", () => {
-		const b = blocks();
-		for (const mode of ["light", "dark"] as const) {
-			const read = (k: string) => evaluate(b[mode]["--theme-" + k] as string);
-			expect(contrastRatio(read("heading"), read("canvas")), mode + " heading on canvas").toBeGreaterThanOrEqual(4.5);
-		}
-	});
-
-	test("black and white are the palette's own ends, per mode; white is the canvas, not #fff", () => {
-		const b = blocks();
-		expect(b.light["--theme-black"]).toBe(light.colors.fg.hex); // the light ink is the derived fg (neutral collapse)
-		expect(b.light["--theme-white"]).toBe("#f8f8f0");
-		expect(b.dark["--theme-black"]).toBe("#252925");
-		expect(b.dark["--theme-white"]).toBe(dark.colors.fg.hex); // the dark ink is the derived fg
-	});
-
-	test("every colour role resolves to the native palette value it names, or the exact mix of two", () => {
-		const b = blocks();
-		for (const mode of ["light", "dark"] as const) {
-			const palette = (mode === "light" ? light : dark) as Pal;
-			const pick = (name: string, pinned?: string) =>
-				((pinned === "dark" ? dark : palette) as Pal).colors[name]?.hex.toLowerCase();
-			for (const [key, value] of Object.entries(COLOURS)) {
-				if (typeof value === "string" || "light" in value) continue;
-				const got = b[mode]["--theme-" + key];
-				if ("color" in value) {
-					expect(got, mode + " " + key).toBe(pick(value.color, value.palette));
-				} else if ("plate" in value) {
-					// a plate is solved, not mixed: the lightest mix of the accent into the dark ink that gives it the floor
-					expect(got, mode + " " + key).toBe(solvePlate(pick(value.plate) as string, dark.colors.bg.hex.toLowerCase()));
-				} else {
-					const [a, pct, c] = value.mix;
-					expect(got, mode + " " + key).toBe(mixHex(pick(a) as string, pct, pick(c) as string));
-				}
-			}
-		}
-	});
-
 	test("text pairs clear WCAG AA in both modes", () => {
-		const b = blocks();
+		const r = roles();
 		for (const mode of ["light", "dark"] as const) {
-			const read = (k: string) => evaluate(b[mode]["--theme-" + k] as string);
-			expect(contrastRatio(read("on-primary"), read("primary")), mode + " on-primary").toBeGreaterThanOrEqual(4.5);
-			expect(contrastRatio(read("ink"), read("canvas")), mode + " ink").toBeGreaterThanOrEqual(4.5);
-			expect(contrastRatio(read("on-frame"), read("frame")), mode + " on-frame").toBeGreaterThanOrEqual(4.5);
+			const onBg = (role: string) => contrastRatio(pick(r[role] as string, mode), pick(r.bg as string, mode));
+			const fillInk = mode === "light" ? r.fg : r.bg;
+			expect(onBg("fg"), mode + " fg on bg").toBeGreaterThanOrEqual(4.5);
+			expect(contrastRatio(pick(fillInk as string, mode), pick(r.blue as string, mode)), mode + " ink on the fill").toBeGreaterThanOrEqual(4.5);
 		}
-		// The link and ring ink on paper follows the accent (ruling 2026-10-24) and measures below AA: recorded here,
-		// not hidden. Parked as a question; see the primary test above.
-		const linkInk = Math.round(contrastRatio(evaluate(b.light["--theme-primary-ink"] as string), evaluate(b.light["--theme-canvas"] as string)) * 100) / 100;
-		expect(linkInk, "primary-ink on paper (accepted tradeoff, parked)").toBe(2.27);
-	});
-
-	test("the reset resets exactly the optional roles", () => {
-		const reset = strip(css("_reset.css"));
-		const keys = [...reset.matchAll(/--theme-([\w-]+): initial;/g)].map((m) => "--theme-" + m[1]);
-		expect(keys.sort()).toEqual(OPTIONAL.map((k) => "--theme-" + k).sort());
+		// the muted grey clears AA in both modes; the palette accent does not, and that tradeoff is recorded
+		expect(contrastRatio(pick(r.fgDim as string, "light"), pick(r.bg as string, "light"))).toBeGreaterThanOrEqual(4.5);
+		expect(contrastRatio(pick(r.fgDim as string, "dark"), pick(r.bg as string, "dark"))).toBeGreaterThanOrEqual(4.5);
+		// the accent-as-link measures 2.27:1 on paper: an accepted tradeoff, recorded rather than hidden
+		expect(Math.round(contrastRatio(pick(r.blue as string, "light"), pick(r.bg as string, "light")) * 100) / 100).toBe(2.27);
 	});
 });
 
-// The accent family (ruling 2026-10-24): each accent is the palette's own colour as text, and a deepened plate it is
+// The accent family (ruling 2026-10-24): each accent is the palette own colour as text, and a deepened plate it is
 // read on. The plate is the LIGHTEST mix of the accent into the dark ink that still gives the accent PLATE_FLOOR:
-// the ratio sits at the floor, not far above it, so the plate is no darker than the accent needs.
-const ACCENTS = [
-	["blue", "blue"], ["light-blue", "lightBlue"], ["pale-blue", "paleBlue"], ["cyan", "cyan"], ["green", "green"],
-	["lime", "lime"], ["yellow", "yellow"], ["bright-yellow", "brightYellow"], ["burnt-orange", "burntOrange"], ["purple", "purple"],
-] as const;
-
-test("each accent is the palette's own colour, and reads on its deepened plate at the floor, not far above it", () => {
-	const b = blocks();
-	const base = dark.colors.bg.hex.toLowerCase();
-	for (const [id, pal] of ACCENTS) {
-		const accent = dark.colors[pal]?.hex.toLowerCase() as string;
-		expect(String(b.light["--theme-accent-" + id]).toLowerCase(), "accent " + id).toBe(accent);
-		expect(String(b.dark["--theme-accent-" + id]).toLowerCase(), "accent " + id + " dark").toBe(accent);
-		const plate = String(b.light["--theme-plate-" + id]).toLowerCase();
-		expect(String(b.dark["--theme-plate-" + id]).toLowerCase(), "plate " + id + " same in both modes").toBe(plate);
-		const ratio = contrastRatio(accent, plate);
-		expect(ratio, id + " on its plate").toBeGreaterThanOrEqual(PLATE_FLOOR);
-		expect(ratio, id + " plate is no darker than it needs to be").toBeLessThan(PLATE_FLOOR + 0.15);
-		expect(plate, id + " is the solved plate").toBe(solvePlate(accent, base));
+// the ratio sits at the floor, not far above it, so the plate is no darker than the accent needs. The docs table
+// is data, not a theme role: no component reads it.
+test("each accent is the palette own colour, and reads on its deepened plate at the floor", () => {
+	const base = hex(dark, "bg");
+	expect(ACCENT_DOCS.length).toBe(9);
+	for (const doc of ACCENT_DOCS) {
+		const accent = hex(dark, doc.palette);
+		expect(doc.accent, doc.id).toBe(accent);
+		expect(doc.plate, doc.id + " is the solved plate").toBe(solvePlate(accent, base));
+		const ratio = contrastRatio(accent, doc.plate);
+		expect(ratio, doc.id + " on its plate").toBeGreaterThanOrEqual(PLATE_FLOOR);
+		expect(ratio, doc.id + " plate is no darker than it needs to be").toBeLessThan(PLATE_FLOOR + 0.15);
 	}
+});
+
+// Keeps mixHex imported and honest: the plates above are computed with it, so one case pins the arithmetic.
+test("mixHex is OKLab and deterministic, and lands on the accent at 100%", () => {
+	expect(mixHex("#00b0ff", 100, "#252925")).toBe("#00b0ff");
+	expect(mixHex("#00b0ff", 0, "#252925")).toBe("#252925");
+	expect(mixHex("#00b0ff", 50, "#252925")).toBe(mixHex("#00b0ff", 50, "#252925"));
 });

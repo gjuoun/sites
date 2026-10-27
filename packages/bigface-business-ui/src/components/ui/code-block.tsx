@@ -11,9 +11,9 @@ const codeBlockVariants = cva(
     variants: {
       variant: {
         default:
-          "border border-input text-foreground has-[>[data-slot=code-block-content]:focus-visible]:border-ring dark:bg-input/30",
+          "border border-input text-foreground has-[>[data-slot=code-block-content]:focus-visible]:border-ring bg-input-veil",
         destructive:
-          "border border-destructive/30 text-destructive dark:border-destructive/40",
+          "border border-danger-line text-destructive",
       },
     },
     defaultVariants: {
