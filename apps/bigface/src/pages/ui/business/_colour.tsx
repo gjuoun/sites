@@ -109,7 +109,7 @@ function PairCell({ mode, pair, colours }: { mode: "light" | "dark"; pair: Pair;
 				>
 					Aa
 				</span>
-				<span className="font-mono text-xs whitespace-nowrap">{ratio === null ? "-" : ratio.toFixed(2) + ":1"} {verdict}</span>
+				<span className="min-w-0 font-mono text-xs">{ratio === null ? "-" : ratio.toFixed(2) + ":1"} {verdict}</span>
 			</span>
 		</td>
 	);
@@ -158,7 +158,7 @@ export function ColourSection() {
 				<h3 className="text-base font-semibold">Role table</h3>
 				<p className="text-sm text-muted-foreground">{roles.length} roles. Each name is a --theme-* variable; the hex is its value in the generated file.</p>
 				<div className="overflow-x-auto rounded-lg border">
-					<table className="w-full min-w-[30rem] table-fixed text-sm">
+					<table className="w-full min-w-[36rem] table-fixed text-sm">
 						{GRID}
 						<thead className="bg-muted">
 							<tr className="border-b">
@@ -183,7 +183,7 @@ export function ColourSection() {
 				<h3 className="text-base font-semibold">Text pairs</h3>
 				<p className="text-sm text-muted-foreground">Contrast of each text role on its background, in both modes. AA is 4.5:1 for body text and 3:1 for large text.</p>
 				<div className="overflow-x-auto rounded-lg border">
-					<table className="w-full min-w-[30rem] table-fixed text-sm">
+					<table className="w-full min-w-[36rem] table-fixed text-sm">
 						{GRID}
 						<thead className="bg-muted">
 							<tr className="border-b">
@@ -213,7 +213,7 @@ export function ColourSection() {
 					Each accent is the palette's own colour in both modes. On paper several sit below 3:1, so each is read on its deepened plate, solved to clear 4.5:1 as text. The plate is the same in both modes.
 				</p>
 				<div className="overflow-x-auto rounded-lg border">
-					<table className="w-full min-w-[30rem] table-fixed text-sm">
+					<table className="w-full min-w-[36rem] table-fixed text-sm">
 						<colgroup>
 							<col style={{ width: "22%" }} />
 							<col style={{ width: "26%" }} />
@@ -238,13 +238,13 @@ export function ColourSection() {
 										<td className="bg-background px-3 py-2 text-foreground">
 											<span className="flex items-center gap-3">
 												<span className="font-medium" style={{ color: accent }}>Aa</span>
-												<span className="font-mono text-xs whitespace-nowrap">{accent} · {onPaper === null ? "-" : onPaper.toFixed(2) + ":1"} {onPaper !== null && onPaper < 4.5 ? "below AA" : "AA"}</span>
+												<span className="min-w-0 font-mono text-xs">{accent} · {onPaper === null ? "-" : onPaper.toFixed(2) + ":1"} {onPaper !== null && onPaper < 4.5 ? "below AA" : "AA"}</span>
 											</span>
 										</td>
 										<td className="bg-background px-3 py-2 text-foreground">
 											<span className="flex items-center gap-3">
 												<span className="inline-flex h-6 min-w-[2.25rem] items-center justify-center rounded-md px-2 text-sm leading-none font-medium whitespace-nowrap" style={{ backgroundColor: plate, color: accent }}>Aa</span>
-												<span className="font-mono text-xs whitespace-nowrap">{onPlate === null ? "-" : onPlate.toFixed(2) + ":1"} {onPlate !== null && onPlate >= 4.5 ? "AA" : "below AA"}</span>
+												<span className="min-w-0 font-mono text-xs">{onPlate === null ? "-" : onPlate.toFixed(2) + ":1"} {onPlate !== null && onPlate >= 4.5 ? "AA" : "below AA"}</span>
 											</span>
 										</td>
 										<td className="bg-background px-3 py-2 font-mono text-xs text-foreground">{plate}</td>
