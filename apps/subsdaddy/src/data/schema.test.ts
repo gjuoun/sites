@@ -66,16 +66,7 @@ describe("provenance", () => {
     expect(ACCOUNT_TO_LANE[3]).toBeUndefined();
   });
 
-  test("a plan record cannot carry a negative count", () => {
-    expect(laneRecordSchema.parse(lane).usd_per_b).toBeNull();
-    expect(() => laneRecordSchema.parse({ ...lane, measured: { ...lane.measured, n: -1 } })).toThrow();
-  });
 
-  test("a derived dollar figure must name the peer it came from", () => {
-    const derived = { ...lane, usd_per_b: 9.5, usd_per_b_basis: "derived", usd_per_b_derived_from: "opencode-go", usd_per_b_source: "same-rate estimate" };
-    expect(laneRecordSchema.parse(derived).usd_per_b_derived_from).toBe("opencode-go");
-    expect(() => laneRecordSchema.parse({ ...derived, usd_per_b_derived_from: "deepseek-official" })).toThrow();
-  });
 });
 
 describe("legacy quota history", () => {

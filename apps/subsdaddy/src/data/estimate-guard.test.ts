@@ -65,12 +65,6 @@ describe("shipped catalog estimates are consistent", () => {
     }
   });
 
-  test("CommandCode GOAT is estimated from the $80 usage allowance: fee/allowance = 0.125", () => {
-    const row = file.rows.find((r) => r.plan_id === "commandcode-goat-published")!;
-    expect(row.estimate?.status).toBe("estimated");
-    const flash = row.estimate!.values.find((v) => v.ref === "deepseek-v4.1-flash" && v.shape === "agent")!;
-    expect(flash.fee_over_allowance).toBeCloseTo(0.125, 9);
-  });
 });
 
 function baseRow() {

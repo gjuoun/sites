@@ -22,6 +22,8 @@ export type BadgeVariant = "source" | "confidence" | "status";
 export const BADGE_KINDS = Object.keys(BADGE_VARIANT) as BadgeKind[];
 
 export type Cell = {
+  /** Lines shown in a hover panel for this cell; the value itself is unchanged. */
+  detail?: string[];
   text: string;
   na: boolean;
   reason: string | null;
@@ -29,6 +31,8 @@ export type Cell = {
   title: string | null;
   note: string | null;
   flags: boolean;
+  /** A source marker shown as a superscript after the value (allowance: p, r, d, c). */
+  sup?: string | null;
 };
 
 export const na = (reason: string, badges: BadgeKind[] = []): Cell => ({ text: "N/A", na: true, reason, badges, title: reason, note: null, flags: false });

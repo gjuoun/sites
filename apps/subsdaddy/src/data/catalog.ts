@@ -12,7 +12,7 @@ export const ALLOWANCE_MODELS = ["credits", "usd_usage", "window_percent", "wind
 export type AllowanceModel = (typeof ALLOWANCE_MODELS)[number];
 
 const sourceSchema = z.strictObject({
-  kind: z.enum(["official_page", "official_post", "x_post", "owner_confirmed", "console_reading", "unverified", "third_party_measured"]),
+  kind: z.enum(["official_page", "official_post", "x_post", "owner_confirmed", "console_reading", "unverified", "third_party_measured", "archived_official"]),
   url: z.string().regex(/^https?:\/\//).nullable(),
   note: z.string().min(1),
 });
@@ -49,6 +49,12 @@ const estimateValueSchema = z.strictObject({
   band_short: z.string().min(1).optional(),
   band_long: z.string().min(1).optional(),
   band_p75: z.string().min(1).optional(),
+  // the inputs of this value, so a Shape can be applied to it at render time
+  allowance_usd: z.number().positive().nullable().optional(),
+  allowance_basis: z.string().nullable().optional(),
+  allowance_cycle_days: z.number().int().positive().nullable().optional(),
+  fee_usd: z.number().positive().nullable().optional(),
+  price_used: z.object({ in_per_m: z.number().nonnegative(), out_per_m: z.number().nonnegative(), cache_per_m: z.number().nonnegative(), cache_write_per_m: z.number().nonnegative().nullable().optional(), overrides: z.array(z.object({ min_prompt_tokens: z.number().int().positive(), in_per_m: z.number().nonnegative(), out_per_m: z.number().nonnegative(), cache_per_m: z.number().nonnegative(), cache_write_per_m: z.number().nonnegative().nullable().optional() })).optional() }).nullable().optional(),
 });
 
 /** A catalog estimate. Status "unavailable" carries a reason and no values; "estimated" carries at least one value. */
@@ -100,12 +106,18 @@ export const catalogRowSchema = z
     // the reference models this plan offers, from its official model list; a model not listed gets no row
     offered_models: z.array(z.enum(REF_LITERALS)).default([]),
     offered_basis: z.string().min(1).nullable().default(null),
+    // the allowance the vendor publishes for this plan, in usage dollars per cycle; null when it publishes none
+    published_allowance_usd: z.number().positive().nullable().optional(),
+    /** The plan whose per-model monthly limits this row carries (OpenCode Go docs): such a row has no pool, only per-model limits. */
+    per_model_limit_plan: z.enum(["Go", "Go Plus"]).nullable().optional(),
+    published_allowance_basis: z.string().min(1).nullable().optional(),
     // the measured lane whose $/B is this plan's own measurement, when there is one
     measured_lane: z.enum(LANES).nullable().default(null),
     // a plan published as messages per five-hour window (Codex): converted to tokens in messages.ts, never a dollar allowance
     message_limit: z
       .strictObject({
         model: z.enum(REF_LITERALS),
+        unit: z.enum(["messages", "prompts"]).default("messages"),
         low: z.number().int().positive(),
         high: z.number().int().positive(),
         window_hours: z.number().positive(),

@@ -28,6 +28,8 @@ const context = contextFileSchema.parse(JSON.parse(readFileSync(join(dataDir, "c
 const mix = pooledMix(usage.lanes.map((l) => ({ tokens: l.tokens })));
 // each measured plan is estimated on its own measured token mix; the others on the pooled mix
 const laneMix = new Map(usage.lanes.map((l) => [l.lane, pooledMix([{ tokens: l.tokens }])] as const));
+const allowanceFile = JSON.parse(readFileSync(join(dataDir, "allowance.json"), "utf8")) as { lanes: Array<{ lane: string; allowance_usd_per_cycle: number | null; binding_window: string | null; cycle_days: number | null; fee_per_cycle_usd: number | null; allowance_basis: string | null }> };
+const measuredAllowance = new Map(allowanceFile.lanes.map((l) => [l.lane, l] as const));
 const price = new Map<RefId, RefPrice>(
   models.reference.map((r) => [
     r.ref,
@@ -57,12 +59,14 @@ function priceFor(row: CatalogRow, ref: RefId): { price: RefPrice; note: string 
 
 type Value = {
   ref: RefId; shape: Shape; usd_per_b: number | null; reason: string | null; fee_over_allowance: number | null; blended_usd_per_b: number;
-  measured_at: string; source: string; usd_per_b_long: number | null; usd_per_b_p75: number | null; band_short: string; band_long: string; band_p75: string;
+  measured_at: string; source: string; usd_per_b_long: number | null; usd_per_b_p75: number | null; band_short: string; band_long: string; band_p75: string; allowance_usd?: number | null; allowance_basis?: string | null; allowance_cycle_days?: number | null; fee_usd?: number | null; price_used?: RefPrice | null;
 };
 
 function estimateRow(row: CatalogRow) {
   const rowMix = row.measured_lane ? (laneMix.get(row.measured_lane) ?? mix) : mix;
-  const fee = row.price_month_usd;
+  // a measured lane is priced per its own cycle: its fee for that cycle and its allowance (vendor-reported or derived)
+  const measuredLane = row.measured_lane ? measuredAllowance.get(row.measured_lane) : undefined;
+  const fee = measuredLane ? (measuredLane.fee_per_cycle_usd ?? null) : row.price_month_usd;
   if (fee === null) return { status: "unavailable" as const, reason: "no USD fee to divide", basis: null, values: [] as Value[], range_agent: null };
   if (row.allowance.length === 0) {
     const reason = row.status === "excluded" ? (row.exclusion_reason ?? "excluded") : (row.allowance_reason ?? "no published usage-dollar allowance");
@@ -71,26 +75,36 @@ function estimateRow(row: CatalogRow) {
   if (row.offered_models.length === 0) {
     return { status: "unavailable" as const, reason: "its checked model list names no reference model, so no estimate is made for one", basis: null, values: [] as Value[], range_agent: null };
   }
+  // a plan on a measured lane takes the allowance its quota windows give (allowance.json), not the published one
+  const measured = row.measured_lane ? measuredAllowance.get(row.measured_lane) : undefined;
+  const measuredUsd = measured && measured.allowance_usd_per_cycle !== null ? measured.allowance_usd_per_cycle : null;
   const values: Value[] = [];
   const ratios: string[] = [];
   const tierNotes = new Set<string>();
   const anomalies = new Set<string>();
   for (const ref of REF_IDS) {
     if (!row.offered_models.includes(ref)) continue;
-    const entry = row.allowance.find((a) => a.ref === ref) ?? row.allowance.find((a) => a.ref === "*") ?? null;
+    const refPub = row.allowance.find((a) => a.ref === ref) ?? null;
+    const wildcard = row.allowance.find((a) => a.ref === "*") ?? null;
+    const entry = refPub ?? wildcard;
+    // precedence: the official limit for this model, then the lane allowance (published, vendor pool or derived), then a wildcard
+    // a plan with per-model limits has no pool: a model it does not list has no allowance
+    const allowanceUsd = refPub ? refPub.usd : row.per_model_limit_plan ? null : measuredUsd ?? (wildcard ? wildcard.usd : null);
+    const allowanceBasis = refPub ? (row.per_model_limit_plan ? "vendor_published_per_model" : "vendor_published") : row.per_model_limit_plan ? null : measured ? measured.allowance_basis : wildcard ? (row.allowance_model === "credits" || /credit/i.test(wildcard.basis) ? "credits" : "vendor_published") : null;
+    const allowanceCycle = measured ? measured.cycle_days : 30;
     const pr = priceFor(row, ref);
     if (pr.note) tierNotes.add(pr.note);
     const meta = refMeta.get(ref);
     if (meta?.price_status === "anomaly" && meta.price_anomaly) anomalies.add(ref + " " + meta.price_anomaly);
     for (const shape of SHAPES) {
-      const base = { fee_usd: fee, allowance_usd: entry ? entry.usd : null, allowance_reason: entry ? null : "no published allowance for this model in this plan", price: pr.price, mix: rowMix, shape };
+      const base = { fee_usd: fee, allowance_usd: allowanceUsd, allowance_basis: allowanceBasis, allowance_cycle_days: allowanceCycle, allowance_reason: allowanceUsd !== null ? null : row.per_model_limit_plan ? row.per_model_limit_plan + " publishes no monthly limit for this model" : "no published allowance for this model in this plan", price: pr.price, mix: rowMix, shape };
       const s = estimateOne({ ...base, prompt_tokens: LMC_CONTEXT_SHORT });
       const l = estimateOne({ ...base, prompt_tokens: LMC_CONTEXT_LONG });
       const p = estimateOne({ ...base, prompt_tokens: P75 });
       values.push({
         ref, shape, usd_per_b: s.usd_per_b, reason: s.reason, fee_over_allowance: s.fee_over_allowance, blended_usd_per_b: s.blended_usd_per_b,
         measured_at: now, source: SOURCE, usd_per_b_long: l.usd_per_b, usd_per_b_p75: p.usd_per_b,
-        band_short: s.band, band_long: l.band, band_p75: p.band,
+        band_short: s.band, band_long: l.band, band_p75: p.band, allowance_usd: base.allowance_usd, allowance_basis: base.allowance_basis, allowance_cycle_days: base.allowance_cycle_days, fee_usd: base.fee_usd, price_used: base.price,
       });
       if (shape === "agent" && s.fee_over_allowance !== null) ratios.push(ref + " " + Number(s.fee_over_allowance.toPrecision(3)));
     }
@@ -102,10 +116,11 @@ function estimateRow(row: CatalogRow) {
   const low = Math.min(...agent);
   const high = Math.max(...agent);
   const basis =
-    "fee $" + fee + "/mo ÷ published usage-dollar allowance (" + ratios.join(", ") + ") × blended list cost per billion tokens of each reference model; " +
+    "fee $" + fee + (measuredUsd !== null ? " per cycle ÷ " + (measured!.allowance_basis === "vendor_published" ? "published allowance" : measured!.allowance_basis === "vendor_reported" ? "vendor-reported pool" : "derived allowance") : "/mo ÷ published usage-dollar allowance") + " (" + ratios.join(", ") + ") × blended list cost per billion tokens of each reference model; " +
     (row.measured_lane ? "this plan's own measured" : "pooled measured") + " mix: output share " + (rowMix.output_share * 100).toFixed(2) + "%, agent cache share " + (rowMix.agent_cache_share * 100).toFixed(2) + "%, cache write share " + ((rowMix.cache_write_share ?? 0) * 100).toFixed(2) + "% (interactive 0%, cache_heavy 94%)" +
     "; standard contexts: 100K (table) and 350K, with p75 " + kTok(P75) + " as sensitivity (session-end median " + kTok(context.quantiles.p50) + ", p90 " + kTok(context.quantiles.p90) + ", " + context.sample_sessions.toLocaleString("en-US") + " sessions)" +
     (anomalies.size > 0 ? "; " + [...anomalies].join("; ") : "") +
+    (measuredUsd !== null ? "; allowance " + (measured!.allowance_basis === "vendor_published" ? "is the published allowance" : measured!.allowance_basis === "vendor_reported" ? "is the vendor-reported pool" : "is derived from the quota windows") + " (" + measured!.binding_window + " window, " + measured!.cycle_days + "-day cycle): $" + measuredUsd.toFixed(2) + " per cycle, replacing the published allowance" : "") +
     (tierNotes.size > 0 ? "; prices: " + [...tierNotes].join("; ") : "") + ".";
   return { status: "estimated" as const, reason: null, basis, values, range_agent: [low, high] as [number, number] };
 }
