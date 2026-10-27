@@ -37,6 +37,8 @@ export const allowanceEntrySchema = z.strictObject({
   /** The measurement class whose list blend prices this allowance (r46): capacity = allowance / blend, shape-invariant. */
   mix_class: z.enum(["sonnet", "luna"]).optional(),
   mix_blend_usd_per_million: z.number().positive().optional(),
+  /** r56: the X reports behind a median row: their range, count, and month. */
+  community: z.strictObject({ min: z.number().positive(), max: z.number().positive(), count: z.number().int().positive(), period: z.string().min(1) }).optional(),
   source: z.strictObject({ publisher: z.string().min(1), url: z.url(), published: z.iso.date(), note: z.string().min(1) }).optional(),
 });
 

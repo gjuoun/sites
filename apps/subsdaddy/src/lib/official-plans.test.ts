@@ -56,20 +56,20 @@ describe("Codex: messages per window converted to tokens", () => {
     expect(long.usd!).toBeLessThan(short.usd!);
   });
 
-  test("the Codex footnote on the Luna view is the second line, and the view has at most five lines", () => {
+  test("the Codex footnote on the Luna view is the second line, and the view has at most four lines (r55: the cap line is gone)", () => {
     const t = summaryTable(ds, "gpt-6-luna", "short");
     const lines = (t.footnote ?? "").split("\n");
-    expect(lines.length).toBe(5);
+    expect(lines.length).toBe(4);
     expect(lines[1]).toBe("† converted from vendor message limits at 100K context per message");
   });
 
-  test("Codex Pro rows keep their third-party allowance (t, j) and are capped by the hour ceiling in the Luna view (r50)", () => {
+  test("Codex Pro rows keep their third-party allowance (t, j) and carry no hour cap (r55)", () => {
     const rows = viewRows(ds, "gpt-6-luna", "short");
     for (const id of ["codex-pro", "codex-pro-20x"]) {
       const row = rows.find((r) => r.key === id)!;
       expect(row.allowance).not.toBeNull();
-      expect(row.capped).toBe(true);
       expect(row.usd).not.toBeNull();
+      expect(row.capNote ?? null).toBeNull();
     }
     expect(rows.find((r) => r.key === "codex-pro")!.allowance!.sup).toBe("t");
     expect(rows.find((r) => r.key === "codex-pro-20x")!.allowance!.sup).toBe("j");

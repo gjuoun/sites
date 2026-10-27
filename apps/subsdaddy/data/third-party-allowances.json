@@ -31,7 +31,7 @@
       "fee_usd_per_month": 100,
       "weekly_usd": 940,
       "value_kind": "measured",
-      "value_rule": "lower_bound",
+      "value_rule": "median_of_sources",
       "range_usd": [
         940,
         1170
@@ -46,15 +46,36 @@
       "quote": "Claude delivered about $940–1,170 a week",
       "cross_check": null,
       "mix_class": "sonnet",
-      "mix_class_note": "counterpart only (r50): the Sonnet 5.5 blend at the measured mix, shown in the tooltip; the row itself is priced at the selected model"
+      "mix_class_note": "counterpart only (r50): the Sonnet 5.5 blend at the measured mix, shown in the tooltip; the row itself is priced at the selected model",
+      "primary_weekly_usd": 940,
+      "community_observations": [
+        {
+          "author": "buildwithhassan",
+          "tweet_id": "2111584427067551764",
+          "url": "https://x.com/buildwithhassan/status/2111584427067551764",
+          "date": "2026-10-17",
+          "quote": "On Max 20x you get about $1,100 of API value a week, while Max 5x gets around $550.",
+          "weekly_usd": 550,
+          "note": "the author's own arithmetic in the post, for Max 5x"
+        },
+        {
+          "author": "SKatalystAI",
+          "tweet_id": "2114395405253333390",
+          "url": "https://x.com/SKatalystAI/status/2114395405253333390",
+          "date": "2026-10-25",
+          "quote": "$1,718 estimated API-equivalent usage",
+          "weekly_usd": 1718,
+          "note": "at 100% of the weekly limit on Max 5x: 5.22 BILLION tokens processed, 5.13B cache read, 14.98M output; the author's own API-equivalent estimate from logs"
+        }
+      ]
     },
     {
       "plan_id": "claude-code-max-20x",
       "plan": "Claude Max 20x",
       "fee_usd_per_month": 200,
-      "weekly_usd": 1602,
+      "weekly_usd": 1351,
       "value_kind": "measured",
-      "value_rule": "headline",
+      "value_rule": "median_of_sources",
       "range_usd": [
         1147,
         1745
@@ -75,7 +96,19 @@
         "note": "Measured cap, scaled to 125%; 60 days of logs. Not an independent measurement of the same quantity; shown for reference."
       },
       "mix_class": "sonnet",
-      "mix_class_note": "counterpart only (r50): the Sonnet 5.5 blend at the measured mix, shown in the tooltip; the row itself is priced at the selected model"
+      "mix_class_note": "counterpart only (r50): the Sonnet 5.5 blend at the measured mix, shown in the tooltip; the row itself is priced at the selected model",
+      "primary_weekly_usd": 1602,
+      "community_observations": [
+        {
+          "author": "buildwithhassan",
+          "tweet_id": "2111584427067551764",
+          "url": "https://x.com/buildwithhassan/status/2111584427067551764",
+          "date": "2026-10-17",
+          "quote": "On Max 20x you get about $1,100 of API value a week, while Max 5x gets around $550.",
+          "weekly_usd": 1100,
+          "note": "the author's own arithmetic in the post, for Max 20x"
+        }
+      ]
     },
     {
       "plan_id": "codex-pro",
