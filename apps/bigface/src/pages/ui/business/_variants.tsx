@@ -34,7 +34,7 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@gjuoun/bi
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@gjuoun/bigface-business-ui/components/ui/select";
 import { Separator } from "@gjuoun/bigface-business-ui/components/ui/separator";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@gjuoun/bigface-business-ui/components/ui/sheet";
-import { Sidebar, SidebarContent, SidebarGroup, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem, SidebarProvider } from "@gjuoun/bigface-business-ui/components/ui/sidebar";
+import { Sidebar, SidebarContent, SidebarGroup, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem, SidebarProvider, SidebarTrigger } from "@gjuoun/bigface-business-ui/components/ui/sidebar";
 import { Slider } from "@gjuoun/bigface-business-ui/components/ui/slider";
 import { Switch } from "@gjuoun/bigface-business-ui/components/ui/switch";
 import { Tabs, TabsList, TabsTrigger } from "@gjuoun/bigface-business-ui/components/ui/tabs";
@@ -88,7 +88,7 @@ function Matrix<R extends string, C extends string>({ corner, rows, cols, cell, 
 						<tr key={r} className="border-t">
 							<th scope="row" className="px-2 py-3 text-left font-mono text-xs font-normal text-muted-foreground">{r}</th>
 							{cols.map((c) => (
-								<td key={c} className="px-2 py-3 align-middle"><span className={"flex w-full min-w-0 min-h-9 items-center justify-center rounded-sm border border-dashed border-border px-1.5 py-1" + (track === "column" ? " flex-col items-stretch" : "")}>{cell(r, c)}</span></td>
+								<td key={c} className="px-2 py-3 align-middle"><span className={"flex w-full min-w-0 min-h-9 items-center justify-center rounded-sm outline-1 -outline-offset-1 outline-dashed outline-border px-1.5 py-1" + (track === "column" ? " flex-col items-stretch" : "")}>{cell(r, c)}</span></td>
 							))}
 						</tr>
 					))}
@@ -100,12 +100,14 @@ function Matrix<R extends string, C extends string>({ corner, rows, cols, cell, 
 
 /** One sidebar frame: the stock sidebar and its page in a box tall enough to read the sidebar's own chrome. Each frame
     is its own provider, so the value it names is the only thing that differs between frames. */
-function SidebarFrame({ label, variant = "sidebar", collapsible, side = "left", open }: { label: string; variant?: "sidebar" | "floating" | "inset"; collapsible: "offcanvas" | "icon" | "none"; side?: "left" | "right"; open: boolean }) {
+function SidebarFrame({ label, variant = "sidebar", collapsible, side = "left", open, trigger = false }: { label: string; variant?: "sidebar" | "floating" | "inset"; collapsible: "offcanvas" | "icon" | "none"; side?: "left" | "right"; open: boolean; trigger?: boolean }) {
 	return (
 		<figure data-frame={label} className="m-0 flex min-w-0 flex-col gap-1.5">
 			<figcaption className="font-mono text-xs text-muted-foreground">{label}</figcaption>
 			<div className="relative h-56 w-full overflow-hidden rounded-md border [transform:translateZ(0)]">
 				<SidebarProvider defaultOpen={open} className="h-full min-h-0">
+					{side === "right" ? (<>
+					<SidebarInset className="p-3 text-sm">{trigger ? <SidebarTrigger data-frame-trigger aria-label="Toggle this sidebar" /> : null}Content</SidebarInset>
 					<Sidebar variant={variant} collapsible={collapsible} side={side}>
 						<SidebarContent>
 							<SidebarGroup>
@@ -120,7 +122,23 @@ function SidebarFrame({ label, variant = "sidebar", collapsible, side = "left", 
 							</SidebarGroup>
 						</SidebarContent>
 					</Sidebar>
-					<SidebarInset className="p-3 text-sm">Content</SidebarInset>
+					</>) : (<>
+					<Sidebar variant={variant} collapsible={collapsible} side={side}>
+						<SidebarContent>
+							<SidebarGroup>
+								<SidebarMenu>
+									<SidebarMenuItem><SidebarMenuButton isActive><Home />Home</SidebarMenuButton></SidebarMenuItem>
+									<SidebarMenuItem><SidebarMenuButton><Folder />Projects</SidebarMenuButton></SidebarMenuItem>
+								</SidebarMenu>
+								<SidebarMenuSub>
+									<SidebarMenuSubItem><SidebarMenuSubButton size="sm">Sub small</SidebarMenuSubButton></SidebarMenuSubItem>
+									<SidebarMenuSubItem><SidebarMenuSubButton size="md">Sub medium</SidebarMenuSubButton></SidebarMenuSubItem>
+								</SidebarMenuSub>
+							</SidebarGroup>
+						</SidebarContent>
+					</Sidebar>
+					<SidebarInset className="p-3 text-sm">{trigger ? <SidebarTrigger data-frame-trigger aria-label="Toggle this sidebar" /> : null}Content</SidebarInset>
+					</>)}
 				</SidebarProvider>
 			</div>
 		</figure>
@@ -193,20 +211,16 @@ export const VARIANTS: Record<string, React.ReactNode> = {
 		<div className="flex flex-col gap-4">
 			<Matrix corner="orientation / size" rows={["horizontal", "vertical"] as const} cols={["default", "sm", "xs"] as const} cell={(r, c) => (
 				<Attachment size={c} orientation={r} className="max-w-full">
-					<AttachmentMedia variant="icon">PDF</AttachmentMedia>
+					<AttachmentMedia variant="icon" className={r === "vertical" ? "aspect-auto h-12" : undefined}>PDF</AttachmentMedia>
 					<AttachmentContent><AttachmentTitle>report.pdf</AttachmentTitle></AttachmentContent>
 				</Attachment>
 			)} />
-			<div className="flex flex-col divide-y">
-				{(["icon", "image"] as const).map((m) => (
-					<Row key={m} label={"media=" + m}>
-						<Attachment className="max-w-full">
-							<AttachmentMedia variant={m}>{m === "image" ? "IMG" : "ZIP"}</AttachmentMedia>
-							<AttachmentContent><AttachmentTitle>{m + ".file"}</AttachmentTitle></AttachmentContent>
-						</Attachment>
-					</Row>
-				))}
-			</div>
+			<Matrix corner="media / size" rows={["icon", "image"] as const} cols={["default", "sm", "xs"] as const} cell={(r, c) => (
+				<Attachment size={c} className="max-w-full">
+					<AttachmentMedia variant={r}>{r === "image" ? "IMG" : "ZIP"}</AttachmentMedia>
+					<AttachmentContent><AttachmentTitle>{r + ".file"}</AttachmentTitle></AttachmentContent>
+				</Attachment>
+			)} />
 		</div>
 	),
 	avatar: (
@@ -303,16 +317,28 @@ export const VARIANTS: Record<string, React.ReactNode> = {
 		</div>
 	),
 	"context-menu": (
-		<div className="grid gap-3 sm:grid-cols-2">
-			{SIDES.map((s) => (
-				<ContextMenu key={s}>
-					<ContextMenuTrigger className="flex h-20 items-center justify-center rounded-md border border-dashed text-sm text-muted-foreground">Right-click, side {s}</ContextMenuTrigger>
-					<ContextMenuContent side={s}>
-						<ContextMenuItem>Default item</ContextMenuItem>
-						<ContextMenuItem variant="destructive">Destructive item</ContextMenuItem>
-					</ContextMenuContent>
-				</ContextMenu>
-			))}
+		<div className="flex flex-col gap-3">
+			<div className="grid gap-3 sm:grid-cols-2">
+				{SIDES.map((s) => (
+					<ContextMenu key={s}>
+						<ContextMenuTrigger className="flex h-20 items-center justify-center rounded-md border border-dashed text-sm text-muted-foreground">Right-click, side {s}</ContextMenuTrigger>
+						<ContextMenuContent side={s}>
+							<ContextMenuItem>Default item</ContextMenuItem>
+							<ContextMenuItem variant="destructive">Destructive item</ContextMenuItem>
+						</ContextMenuContent>
+					</ContextMenu>
+				))}
+			</div>
+			<div className="flex flex-col divide-y">
+				{(["default", "destructive"] as const).map((v) => (
+					<Row key={v} label={"variant=" + v + " · right-click"}>
+						<ContextMenu>
+							<ContextMenuTrigger className="flex h-20 w-full items-center justify-center rounded-md border border-dashed text-sm text-muted-foreground">Right-click for {v}</ContextMenuTrigger>
+							<ContextMenuContent><ContextMenuItem variant={v}>{v === "default" ? "Default item" : "Destructive item"}</ContextMenuItem></ContextMenuContent>
+						</ContextMenu>
+					</Row>
+				))}
+			</div>
 		</div>
 	),
 	direction: (
@@ -343,15 +369,16 @@ export const VARIANTS: Record<string, React.ReactNode> = {
 		</div>
 	),
 	"dropdown-menu": (
-		<Row label="item variant">
-			<DropdownMenu>
-				<DropdownMenuTrigger asChild><Button variant="outline">Open items</Button></DropdownMenuTrigger>
-				<DropdownMenuContent>
-					<DropdownMenuItem>Default item</DropdownMenuItem>
-					<DropdownMenuItem variant="destructive">Destructive item</DropdownMenuItem>
-				</DropdownMenuContent>
-			</DropdownMenu>
-		</Row>
+		<div className="flex flex-col divide-y">
+			{(["default", "destructive"] as const).map((v) => (
+				<Row key={v} label={"variant=" + v + " · opens on click"}>
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild><Button variant="outline">Open {v} menu</Button></DropdownMenuTrigger>
+						<DropdownMenuContent><DropdownMenuItem variant={v}>{v === "default" ? "Default item" : "Destructive item"}</DropdownMenuItem></DropdownMenuContent>
+					</DropdownMenu>
+				</Row>
+			))}
+		</div>
 	),
 	empty: (
 		<div className="flex flex-col divide-y">
@@ -440,17 +467,18 @@ export const VARIANTS: Record<string, React.ReactNode> = {
 		</div>
 	),
 	menubar: (
-		<Row label="item variant">
-			<Menubar>
-				<MenubarMenu>
-					<MenubarTrigger>Items</MenubarTrigger>
-					<MenubarContent>
-						<MenubarItem>Default item</MenubarItem>
-						<MenubarItem variant="destructive">Destructive item</MenubarItem>
-					</MenubarContent>
-				</MenubarMenu>
-			</Menubar>
-		</Row>
+		<div className="flex flex-col divide-y">
+			{(["default", "destructive"] as const).map((v) => (
+				<Row key={v} label={"variant=" + v + " · opens on click"}>
+					<Menubar>
+						<MenubarMenu>
+							<MenubarTrigger>{v === "default" ? "Default menu" : "Destructive menu"}</MenubarTrigger>
+							<MenubarContent><MenubarItem variant={v}>{v === "default" ? "Default item" : "Destructive item"}</MenubarItem></MenubarContent>
+						</MenubarMenu>
+					</Menubar>
+				</Row>
+			))}
+		</div>
 	),
 	message: (
 		<div className="flex flex-col divide-y">
@@ -459,11 +487,27 @@ export const VARIANTS: Record<string, React.ReactNode> = {
 					<MessageGroup className="w-full">
 						<Message align={a}>
 							<MessageAvatar>JG</MessageAvatar>
-							<MessageContent><MessageHeader>Jun</MessageHeader><Bubble variant="muted" align={a}><BubbleContent>Aligned to the {a}.</BubbleContent></Bubble><MessageFooter>10:02</MessageFooter></MessageContent>
+							<MessageContent>
+								<MessageHeader>Jun</MessageHeader>
+								<Bubble variant="muted" align={a}><BubbleContent>Aligned to the {a}.</BubbleContent></Bubble>
+								<MessageFooter>10:02</MessageFooter>
+							</MessageContent>
 						</Message>
 					</MessageGroup>
 				</Row>
 			))}
+			<Row label="text · long, wraps">
+				<MessageGroup className="w-full">
+					<Message>
+						<MessageAvatar>JG</MessageAvatar>
+						<MessageContent>
+							<MessageHeader>Jun</MessageHeader>
+							<Bubble variant="muted" align="start"><BubbleContent>A longer message, so the reader can see how a bubble wraps across several lines at its own maximum width instead of running off the column.</BubbleContent></Bubble>
+							<MessageFooter>10:03</MessageFooter>
+						</MessageContent>
+					</Message>
+				</MessageGroup>
+			</Row>
 		</div>
 	),
 	"native-select": (
@@ -527,24 +571,24 @@ export const VARIANTS: Record<string, React.ReactNode> = {
 				)} />
 			</SidebarProvider>
 			<p className="text-sm text-muted-foreground">Below 768px the stock sidebar is a sheet, so these frames show their inline form from the md breakpoint up.</p>
-			<SubHead>Variant (expanded)</SubHead>
+			<SubHead>Variant (expanded; each frame's trigger collapses it)</SubHead>
 			<div className="grid gap-3 md:grid-cols-3">
 				{(["sidebar", "floating", "inset"] as const).map((v) => (
-					<SidebarFrame key={v} label={"variant=" + v} variant={v} collapsible="icon" open />
+					<SidebarFrame key={v} label={"variant=" + v + " · expanded"} variant={v} collapsible="icon" open trigger />
 				))}
 			</div>
 			<SubHead>Collapsible (offcanvas and icon, expanded and collapsed; none ignores state)</SubHead>
 			<div className="grid gap-3 md:grid-cols-3">
-				<SidebarFrame label="collapsible=offcanvas, expanded" collapsible="offcanvas" open />
-				<SidebarFrame label="collapsible=offcanvas, collapsed" collapsible="offcanvas" open={false} />
-				<SidebarFrame label="collapsible=icon, expanded" collapsible="icon" open />
-				<SidebarFrame label="collapsible=icon, collapsed" collapsible="icon" open={false} />
-				<SidebarFrame label="collapsible=none" collapsible="none" open />
+				<SidebarFrame label="collapsible=offcanvas · expanded" collapsible="offcanvas" open trigger />
+				<SidebarFrame label="collapsible=offcanvas · collapsed" collapsible="offcanvas" open={false} trigger />
+				<SidebarFrame label="collapsible=icon · expanded" collapsible="icon" open trigger />
+				<SidebarFrame label="collapsible=icon · collapsed" collapsible="icon" open={false} trigger />
+				<SidebarFrame label="collapsible=none · static: no state, no trigger" collapsible="none" open />
 			</div>
 			<SubHead>Side (expanded)</SubHead>
 			<div className="grid gap-3 md:grid-cols-2">
 				{(["left", "right"] as const).map((s) => (
-					<SidebarFrame key={s} label={"side=" + s} collapsible="icon" side={s} open />
+					<SidebarFrame key={s} label={"side=" + s + " · static: no trigger"} collapsible="icon" side={s} open />
 				))}
 			</div>
 		</div>

@@ -129,7 +129,7 @@ function Category({ id, title, count, children }: { id: string; title: string; c
 
 function Demo({ name, className, children }: { name: string; className?: string; children: React.ReactNode }) {
 	return (
-		<div data-demo={name} className={cn("flex min-h-24 flex-wrap items-center gap-3 rounded-md border p-4", className)}>
+		<div data-demo={name} className={cn("flex min-h-24 flex-wrap items-center gap-3 py-2", className)}>
 			{children}
 		</div>
 	);
@@ -859,21 +859,26 @@ export function Catalog() {
 
 				<Category id="cat-chat" title="Chat and content" count={7}>
 				<Section id="attachment" title="Attachment" source="components/ui/attachment">
-					<Demo name="attachment" className="block">
-						<AttachmentGroup className="max-w-md">
-							<Attachment className="relative">
-								<AttachmentMedia>PDF</AttachmentMedia>
-								<AttachmentContent>
-									<AttachmentTitle>quarterly-report.pdf</AttachmentTitle>
-									<AttachmentDescription>2.4 MB</AttachmentDescription>
-								</AttachmentContent>
-								<AttachmentActions>
-									<AttachmentAction>Remove</AttachmentAction>
-								</AttachmentActions>
-								<AttachmentTrigger data-trigger="click" aria-label="Preview quarterly-report.pdf" onClick={() => setPreview(preview ? null : "quarterly-report.pdf")} />
-							</Attachment>
-						</AttachmentGroup>
-						<p className="text-sm text-muted-foreground">Preview: {preview ?? "closed"}</p>
+					<Demo name="attachment" className="block border-0 p-0">
+						<div className="flex max-w-md flex-col gap-3">
+							<AttachmentGroup>
+								<Attachment className="relative">
+									<AttachmentMedia>PDF</AttachmentMedia>
+									<AttachmentContent>
+										<AttachmentTitle>quarterly-report.pdf</AttachmentTitle>
+										<AttachmentDescription>2.4 MB</AttachmentDescription>
+									</AttachmentContent>
+									<AttachmentActions>
+										<AttachmentAction size="xs">Remove</AttachmentAction>
+									</AttachmentActions>
+									<AttachmentTrigger data-trigger="click" aria-label="Preview quarterly-report.pdf" onClick={() => setPreview(preview ? null : "quarterly-report.pdf")} />
+								</Attachment>
+							</AttachmentGroup>
+							<div className="flex items-center justify-between gap-3 border-t pt-3 font-mono text-xs text-muted-foreground">
+								<span>preview</span>
+								<span>{preview ?? "closed"}</span>
+							</div>
+						</div>
 					</Demo>
 				</Section>
 
@@ -904,13 +909,13 @@ export function Catalog() {
 				</Section>
 
 				<Section id="message" title="Message" source="components/ui/message">
-					<Demo name="message" className="block">
+					<Demo name="message" className="block border-0 p-0 max-w-md">
 						<MessageGroup className="max-w-md">
 							<Message>
 								<MessageAvatar>JG</MessageAvatar>
 								<MessageContent>
 									<MessageHeader>Jun</MessageHeader>
-									Ship the business package when the gates are green.
+									<Bubble variant="muted" align="start"><BubbleContent>Ship the business package when the gates are green.</BubbleContent></Bubble>
 									<MessageFooter>10:02</MessageFooter>
 								</MessageContent>
 							</Message>
@@ -919,7 +924,7 @@ export function Catalog() {
 				</Section>
 
 				<Section id="message-scroller" title="Message scroller" source="components/ui/message-scroller">
-					<Demo name="message-scroller">
+					<Demo name="message-scroller" className="block border-0 p-0 pb-4">
 						<MessageScrollerProvider>
 							<MessageScroller className="h-48 w-full max-w-md rounded-md border">
 								<MessageScrollerViewport data-trigger="wheel" className="h-full">
@@ -929,7 +934,7 @@ export function Catalog() {
 										))}
 									</MessageScrollerContent>
 								</MessageScrollerViewport>
-								<MessageScrollerButton>Jump to latest</MessageScrollerButton>
+								<MessageScrollerButton size="sm">Jump to latest</MessageScrollerButton>
 							</MessageScroller>
 						</MessageScrollerProvider>
 					</Demo>
