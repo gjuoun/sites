@@ -12,8 +12,5 @@
       "DOM"
     ],
     "isolatedModules": true
-  },
-  "include": [
-    ".snippets/*.ts"
-  ]
+  }
 }
