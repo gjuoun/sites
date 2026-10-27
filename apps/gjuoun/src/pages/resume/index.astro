@@ -1,0 +1,24 @@
+---
+import Base from "../../layouts/Base.astro";
+import { resume } from "../../data/resume";
+---
+
+<Base title="Resume — Jun Guo" description={resume.summary} starter={resume.starter}>
+	<h1>{resume.name}</h1>
+	<p>{resume.headline}</p>
+	<p>{resume.summary}</p>
+	<h2>Experience</h2>
+	<ul>
+		{resume.roles.map((role) => (
+			<li>
+				{role.title ? `${role.title}, ` : ""}{role.organization} · {role.start} – {role.end}
+			</li>
+		))}
+	</ul>
+	<h2>Education</h2>
+	<ul>
+		{resume.education.map((e) => <li>{e.school} · {e.years}</li>)}
+	</ul>
+	<h2>Skills</h2>
+	<p>{resume.skills.join(" · ")}</p>
+</Base>

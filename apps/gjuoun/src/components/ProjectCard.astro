@@ -1,0 +1,24 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+	project: CollectionEntry<"projects">["data"];
+}
+const { project } = Astro.props;
+const link = project.url ?? project.repo;
+---
+
+<article>
+	<h3>{project.name}</h3>
+	<p>{project.summary}</p>
+	{project.stack.length > 0 && <p>{project.stack.join(" · ")}</p>}
+	{
+		link ? (
+			<p>
+				<a href={link}>{project.url ? "Visit" : "Source"}</a>
+			</p>
+		) : (
+			<p>Private project. No public link.</p>
+		)
+	}
+</article>

@@ -1,0 +1,26 @@
+---
+import "../styles/site.css";
+
+interface Props {
+	title: string;
+	description: string;
+	starter?: boolean;
+}
+const { title, description, starter = false } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="description" content={description} />
+		<title>{title}</title>
+	</head>
+	<body>
+		<main id="main">
+			{starter && <p class="starter">Starter copy: written to be reviewed and replaced.</p>}
+			<slot />
+		</main>
+	</body>
+</html>

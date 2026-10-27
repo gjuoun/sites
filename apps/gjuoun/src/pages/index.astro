@@ -1,0 +1,41 @@
+---
+import { getCollection } from "astro:content";
+import Base from "../layouts/Base.astro";
+import PostList from "../components/PostList.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import { publishedPosts } from "../lib/content-rules";
+import { resume } from "../data/resume";
+
+const projects = (await getCollection("projects")).map((e) => e.data).sort((a, b) => a.order - b.order);
+const series = (await getCollection("series")).map((e) => e.data).sort((a, b) => a.order - b.order);
+const posts = publishedPosts(await getCollection("posts"));
+const standalone = posts
+	.filter((p) => p.data.series === undefined)
+	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+	.slice(0, 5);
+const current = resume.roles[0];
+---
+
+<Base title="Jun Guo — portfolio, resume and posts" description="Portfolio, resume and numbered posts by Jun Guo." starter={true}>
+	<h1>Jun Guo</h1>
+	<section aria-labelledby="portfolio-heading">
+		<h2 id="portfolio-heading">Portfolio</h2>
+		{projects.map((project) => <ProjectCard project={project} />)}
+	</section>
+	<section aria-labelledby="resume-heading">
+		<h2 id="resume-heading">Resume</h2>
+		<p>{resume.summary}</p>
+		{current && <p>{current.title ?? ""} · {current.organization}</p>}
+		<p><a href="/resume/">Full resume</a></p>
+	</section>
+	<section aria-labelledby="posts-heading">
+		<h2 id="posts-heading">Posts</h2>
+		<PostList
+			numbered={false}
+			items={series.map((s) => ({ href: `/posts/${s.slug}/`, title: s.title, summary: s.summary }))}
+		/>
+		<PostList
+			items={standalone.map((p) => ({ href: `/posts/${p.data.slug}/`, title: p.data.title, summary: p.data.summary }))}
+		/>
+	</section>
+</Base>

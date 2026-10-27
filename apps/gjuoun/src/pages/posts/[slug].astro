@@ -1,0 +1,77 @@
+---
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import PostList from "../../components/PostList.astro";
+import { publishedPosts } from "../../lib/content-rules";
+
+type Props =
+	| { kind: "series"; series: CollectionEntry<"series">; items: CollectionEntry<"posts">[] }
+	| { kind: "post"; post: CollectionEntry<"posts">; prev?: CollectionEntry<"posts">; next?: CollectionEntry<"posts"> };
+
+export async function getStaticPaths() {
+	const posts = publishedPosts(await getCollection("posts"));
+	const series = await getCollection("series");
+	const inSeries = (name: string) =>
+		posts.filter((p) => p.data.series === name).sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
+	const seriesPaths = series.map((s) => ({
+		params: { slug: s.data.slug },
+		props: { kind: "series" as const, series: s, items: inSeries(s.data.slug) },
+	}));
+	const postPaths = posts.map((p) => {
+		const siblings = p.data.series ? inSeries(p.data.series) : [];
+		const index = siblings.findIndex((q) => q.id === p.id);
+		return {
+			params: { slug: p.data.slug },
+			props: {
+				kind: "post" as const,
+				post: p,
+				prev: index > 0 ? siblings[index - 1] : undefined,
+				next: index >= 0 && index < siblings.length - 1 ? siblings[index + 1] : undefined,
+			},
+		};
+	});
+	return [...seriesPaths, ...postPaths];
+}
+
+const props = Astro.props;
+const seriesBody = props.kind === "series" ? await render(props.series) : undefined;
+const postBody = props.kind === "post" ? await render(props.post) : undefined;
+---
+
+{
+	props.kind === "series" && seriesBody && (
+		<Base
+			title={`${props.series.data.title} — Jun Guo`}
+			description={props.series.data.summary}
+			starter={props.items.some((p) => p.data.starter)}
+		>
+			<h1>{props.series.data.title}</h1>
+			<p>{props.series.data.summary}</p>
+			<seriesBody.Content />
+			<PostList
+				numbered
+				items={props.items.map((p) => ({
+					href: `/posts/${p.data.slug}/`,
+					title: p.data.title,
+					summary: p.data.summary,
+					order: p.data.order,
+				}))}
+			/>
+		</Base>
+	)
+}
+{
+	props.kind === "post" && postBody && (
+		<Base title={`${props.post.data.title} — Jun Guo`} description={props.post.data.summary} starter={props.post.data.starter}>
+			<article>
+				<h1>{props.post.data.title}</h1>
+				<p>{props.post.data.summary}</p>
+				<postBody.Content />
+			</article>
+			<nav aria-label="Series">
+				{props.prev && <a href={`/posts/${props.prev.data.slug}/`}>← {props.prev.data.title}</a>}
+				{props.next && <a href={`/posts/${props.next.data.slug}/`}>{props.next.data.title} →</a>}
+			</nav>
+		</Base>
+	)
+}
