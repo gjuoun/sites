@@ -16,6 +16,7 @@ import { Avatar, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage } fr
 import { Badge } from "@gjuoun/bigface-business-ui/components/ui/badge";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@gjuoun/bigface-business-ui/components/ui/breadcrumb";
 import { Button } from "@gjuoun/bigface-business-ui/components/ui/button";
+import { ButtonCandidates } from "./_button-candidates.tsx";
 import { ButtonGroup, ButtonGroupText } from "@gjuoun/bigface-business-ui/components/ui/button-group";
 import { Calendar } from "@gjuoun/bigface-business-ui/components/ui/calendar";
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@gjuoun/bigface-business-ui/components/ui/card";
@@ -189,6 +190,7 @@ export function Catalog() {
 						<Button size="sm">Small</Button>
 						<Button size="lg">Large</Button>
 					</Demo>
+									<ButtonCandidates />
 				</Section>
 
 				<Section id="button-group" title="Button group" source="components/ui/button-group">
