@@ -1,6 +1,8 @@
 import { na, value, type Cell } from "./cells";
 import { REF_IDS, REF_NAMES, type RefId } from "../data/estimate";
 import { contextLabel, type ContextId } from "../data/context";
+import { CONTEXTS, WINDOWS_PER_DAY, monthlyTokens, usdPerBOfTokens } from "../data/messages";
+import type { CatalogRow } from "../data/catalog";
 import { orForModel } from "./or-stats";
 import { money, usd, type Column, type DS, type Table } from "./sections";
 
@@ -8,7 +10,8 @@ import { money, usd, type Column, type DS, type Table } from "./sections";
  * The front page: one table for one view at a time. The views are Measured (our own traffic) and one
  * per reference model that some plan offers. The context switch (100K or 350K) sets the prompt length
  * the model prices are read at; Measured $/B is what the plan delivered, so it does not depend on it.
- * Every number is a single value; a missing value is N/A.
+ * Marks: * a derived measured $/B; † a $/B converted from vendor message limits. Every number is a single
+ * value; a missing value is N/A. The footnote carries at most two lines, separated by a newline.
  */
 
 export const MEASURED = "measured" as const;
@@ -16,6 +19,7 @@ export type ViewId = typeof MEASURED | RefId;
 export type Chip = { id: ViewId; label: string; rows: number };
 
 export const DERIVED_FOOTNOTE = "* derived from the same-rate peer plan — this plan's own window is saturated";
+export const CONVERTED_FOOTNOTE = (ctx: ContextId) => "† converted from vendor message limits at " + contextLabel(ctx) + " context per message";
 
 export const SUMMARY_COLUMNS: Column[] = [
   { key: "plan", label: "Plan", width: "30%" },
@@ -50,7 +54,7 @@ export function orModelOf(ds: DS, ref: RefId): string | null {
 
 type ViewRow = {
   key: string; label: string; fee: number; capacity: string | null; capacityReason: string;
-  usd: number | null; usdTitle: string; derived: boolean;
+  usd: number | null; usdTitle: string; marker: "" | "*" | "†";
   tps: number | null; tpsTitle: string; ttft: number | null; ttftTitle: string;
 };
 
@@ -76,7 +80,7 @@ function measuredRows(ds: DS): ViewRow[] {
     capacityReason: l.capacity.reason ?? "no capacity reading",
     usd: l.usd_per_b,
     usdTitle: l.usd_per_b === null ? (l.capacity.reason ?? "no measured $/B") : (l.usd_per_b_basis === "derived" ? "derived: " : "") + (l.usd_per_b_source ?? "measured $/B"),
-    derived: l.usd_per_b_basis === "derived",
+    marker: l.usd_per_b_basis === "derived" ? "*" : "",
     tps: l.measured.p50_output_tps,
     tpsTitle: "our usage logs, p50 output tok/s",
     ttft: l.measured.p50_ttft_ms,
@@ -84,11 +88,43 @@ function measuredRows(ds: DS): ViewRow[] {
   }));
 }
 
+/** A plan published as messages per five-hour window: its value at the context, realistic rhythm, with the ceiling in the title. */
+function messageRow(r: CatalogRow, ref: RefId, ctx: ContextId): ViewRow | null {
+  const ml = r.message_limit;
+  if (!ml || ml.model !== ref || r.price_month_usd === null) return null;
+  const realistic = monthlyTokens(ml, CONTEXTS[ctx], WINDOWS_PER_DAY.realistic);
+  const ceiling = monthlyTokens(ml, CONTEXTS[ctx], WINDOWS_PER_DAY.ceiling);
+  const usdVal = usdPerBOfTokens(r.price_month_usd, realistic);
+  return {
+    key: r.plan_id,
+    label: r.label,
+    fee: r.price_month_usd,
+    capacity: (realistic / 1e9).toFixed(2) + "B/mo",
+    capacityReason: "",
+    usd: usdVal,
+    usdTitle: "converted: " + ml.low.toLocaleString("en-US") + "-" + ml.high.toLocaleString("en-US") + " messages per 5h (midpoint) × 3 windows a day × 30 days × tokens per message at " + contextLabel(ctx) + " context; ceiling (4.8 windows a day) gives " + usdPerBOfTokens(r.price_month_usd, ceiling).toFixed(2) + " $/B",
+    marker: "†",
+    tps: null,
+    tpsTitle: "",
+    ttft: null,
+    ttftTitle: "",
+  };
+}
+
 function modelRows(ds: DS, ref: RefId, ctx: ContextId): ViewRow[] {
   const or = orWeighted(ds, ref);
   const out: ViewRow[] = [];
   for (const r of ds.catalog.rows) {
     if (r.status !== "catalog" || !r.offered_models.includes(ref) || r.price_month_usd === null) continue;
+    const msg = messageRow(r, ref, ctx);
+    if (msg) {
+      msg.tps = or.tps;
+      msg.tpsTitle = or.title || (or.reason ?? "no OpenRouter data");
+      msg.ttft = or.ttft;
+      msg.ttftTitle = msg.tpsTitle;
+      out.push(msg);
+      continue;
+    }
     // a plan that offers the model but has no dollar allowance is a row with N/A and its reason
     const v = r.estimate?.status === "estimated" ? r.estimate.values.find((x) => x.ref === ref && x.shape === "agent") : undefined;
     const usdVal = !v ? null : ctx === "short" ? v.usd_per_b : (v.usd_per_b_long ?? null);
@@ -102,7 +138,7 @@ function modelRows(ds: DS, ref: RefId, ctx: ContextId): ViewRow[] {
       capacityReason: reason,
       usd: usdVal,
       usdTitle: usdVal === null ? reason : "estimate at a " + contextLabel(ctx) + "-token context: fee ÷ allowance × blended $/B for " + REF_NAMES[ref] + (band ? "; prices " + band : ""),
-      derived: false,
+      marker: "",
       tps: or.tps,
       tpsTitle: or.title || (or.reason ?? "no OpenRouter data"),
       ttft: or.ttft,
@@ -145,15 +181,19 @@ export function summaryTable(ds: DS, view: ViewId, ctx: ContextId = "short"): Su
       plan: value(r.label),
       fee: value(money(r.fee) + "/mo"),
       capacity: r.capacity === null ? naShort(r.capacityReason) : value(r.capacity),
-      usd: r.usd === null ? naShort(r.usdTitle) : value(usd(r.usd) + (r.derived ? "*" : ""), [], r.usdTitle),
-      tps: r.tps === null ? naShort("no speed data") : value("~" + sig2(r.tps), [], r.tpsTitle),
-      ttft: r.ttft === null ? naShort("no latency data") : value("~" + sig2(r.ttft) + " ms", [], r.ttftTitle),
+      usd: r.usd === null ? naShort(r.usdTitle) : value(usd(r.usd) + r.marker, [], r.usdTitle),
+      tps: r.tps === null ? naShort(r.tpsTitle || "no speed data") : value("~" + sig2(r.tps), [], r.tpsTitle),
+      ttft: r.ttft === null ? naShort(r.ttftTitle || "no latency data") : value("~" + sig2(r.ttft) + " ms", [], r.ttftTitle),
     },
   }));
-  // a measured $/B does not depend on the context size; a model view says which context its prices assume
-  const parts = view === MEASURED
-    ? [data.some((r) => r.derived) ? DERIVED_FOOTNOTE : null, "Measured $/B does not depend on the context size."]
-    : ["Prices assume a " + contextLabel(ctx) + "-token context"];
-  const footnote = parts.filter((x): x is string => x !== null).join(" ");
-  return { columns: SUMMARY_COLUMNS, rows, footnote, basisLine: basisLine(ds, view) };
+  // at most two lines: the view's own marks first, then the context or the measured note
+  const lines: string[] = [];
+  if (view === MEASURED) {
+    if (data.some((r) => r.marker === "*")) lines.push(DERIVED_FOOTNOTE);
+    lines.push("Measured $/B does not depend on the context size.");
+  } else {
+    lines.push("Prices assume a " + contextLabel(ctx) + "-token context");
+    if (data.some((r) => r.marker === "†")) lines.push(CONVERTED_FOOTNOTE(ctx));
+  }
+  return { columns: SUMMARY_COLUMNS, rows, footnote: lines.join("\n"), basisLine: basisLine(ds, view) };
 }

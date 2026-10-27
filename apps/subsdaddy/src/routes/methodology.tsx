@@ -3,7 +3,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { UnifiedTable } from "@/components/unified-table";
 import { MODEL_BLOCK, MODEL_TITLE, NOTE, PAGE_TITLE, SECTION_TITLE, SMALL_NOTE } from "@/components/layout";
 import { dataset } from "@/lib/dataset";
-import { catalogTable, contextCompareTable, contextDistributionTable, dsRankingTable, measuredTable, modelTables, officialTable, type DS } from "@/lib/sections";
+import { catalogTable, contextCompareTable, contextDistributionTable, dsRankingTable, measuredTable, messageTable, modelTables, officialTable, type DS } from "@/lib/sections";
 import { contextLabel } from "@/data/context";
 
 export const Route = createFileRoute("/methodology")({
@@ -63,6 +63,7 @@ function MethodologyPage() {
         <p>A plan with an offered model but no published dollar allowance shows N/A and its reason in the title. A third-party figure is used only with its link and date, labelled third-party. None is used on this site yet.</p>
       </section>
       <ContextSection />
+      <OfficialPlansSection />
       <section className="space-y-2">
         <h2 className="text-lg font-medium">Speed on the front page</h2>
         <p>Model view: weighted median over endpoints by request volume, not the unweighted median or the best endpoint. Measured view: our own usage logs, p50. Every speed cell shows one value, rounded to two significant figures.</p>
@@ -103,6 +104,39 @@ function ContextSection() {
         DeepSeek V4.1 Flash list price used: {"$"}{dsRef.in_per_m} in / {"$"}{dsRef.out_per_m} out / {"$"}{dsRef.cache_per_m} cache per M tokens; status {dsRef.price_status ?? "unknown"}; last verified{" "}
         {dsRef.last_verified_at ?? "unknown"}. {dsRef.price_anomaly ?? ""} Official: {dsRef.official_status ?? "not checked"}. Source priority: official above OpenRouter.
       </p>
+    </section>
+  );
+}
+
+/** Official consumer plans: how a dollar allowance, a message limit and a window limit become $/B, and what stays N/A. */
+function OfficialPlansSection() {
+  const ds = dataset as unknown as DS;
+  const msg = messageTable(ds);
+  return (
+    <section className="space-y-3" aria-labelledby="m-official-plans">
+      <h2 id="m-official-plans" className={SECTION_TITLE}>Official consumer plans</h2>
+      <p>
+        GitHub Copilot Pro and Pro+ publish a dollar allowance: base AI credits, where 1 AI credit = $0.01 USD (GitHub Docs, read 2026-10-26). Pro is $10 with 1,000 base credits;
+        Pro+ is $39 with 3,900. The flex allotment on the plans table (500 and 3,100 more credits) is variable by GitHub's own text, so it is excluded. The estimate is fee ÷ allowance × the
+        blended list cost of each model, as for any other plan. It assumes credits bill at list rates per model; per-model credit rates were not read.
+      </p>
+      <p>
+        OpenAI Codex publishes messages per five-hour window, not tokens. The Codex pricing page (read 2026-10-26) lists GPT-6 Luna at 350-3,000 local messages per window on Plus, and says
+        these are estimates, not fixed limits. It says Pro plans currently have no five-hour limit, so the Pro rows are N/A. Go is not in that table. The GPT-5.5 ranges in the research note
+        are no longer on the page.
+      </p>
+      <p>
+        Conversion, one convention (src/data/messages.ts): 1 message = 100,467 tokens = 100,000 standard context + 467 output tokens, the median output of one assistant turn in our pi
+        session logs. Monthly capacity = the range's midpoint × windows a day × 30 × tokens per message. Realistic is 3 active windows a day; the ceiling is 24 hours of continuous use,
+        24 ÷ 5 = 4.8 windows a day. The front page shows realistic; the ceiling is here so the range is visible.
+      </p>
+      <p>
+        Measured figures behind the output constant: a recount on 2026-10-26 found 43,582 assistant turns with usage in 45 days and a median output of 462 tokens. The constant of 467
+        is the earlier measurement and is kept as ruled. The per-turn median prompt is 192K tokens, not 100K; 100K per message is the standard context convention (the session-end median),
+        so per-turn prompts would roughly double the token counts.
+      </p>
+      <UnifiedTable testId="messages" columns={msg.columns} rows={msg.rows} />
+      <p>Anthropic publishes percentage-based limits only; no measured token conversion is available. A month of own usage on any Max plan would replace this estimate.</p>
     </section>
   );
 }

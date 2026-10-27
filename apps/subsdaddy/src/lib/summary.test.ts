@@ -50,9 +50,9 @@ describe("model view: only the plans that offer the model", () => {
     }
   });
 
-  test("Claude Haiku 5.5 lists the plans whose model list names it: two OpenCode plans with a value, three Claude Code plans as N/A", () => {
+  test("Claude Haiku 5.5 lists the plans whose model list names it: two OpenCode plans and two Copilot plans with a value, three Claude Code plans as N/A", () => {
     const keys = viewRows(ds, "claude-haiku-5.5").map((r) => r.key).sort();
-    expect(keys).toEqual(["claude-code-max-20x", "claude-code-max-5x", "claude-code-pro", "opencode-go-go", "opencode-go-plus"]);
+    expect(keys).toEqual(["claude-code-max-20x", "claude-code-max-5x", "claude-code-pro", "github-copilot-pro", "github-copilot-pro-plus", "opencode-go-go", "opencode-go-plus"]);
     const na = viewRows(ds, "claude-haiku-5.5").filter((r) => r.usd === null).map((r) => r.key).sort();
     expect(na).toEqual(["claude-code-max-20x", "claude-code-max-5x", "claude-code-pro"]);
   });
@@ -63,17 +63,17 @@ describe("model view: only the plans that offer the model", () => {
     expect(keys).not.toContain("qwen-cloud-token-owner-10");
   });
 
-  test("GPT-6 Luna lists the OpenCode plans with a value and the Codex plans as N/A", () => {
+  test("GPT-6 Luna lists the OpenCode plans with a value and Codex Plus as a converted value; the Codex Pro and Go rows as N/A", () => {
     const rows = viewRows(ds, "gpt-6-luna");
-    expect(rows.map((r) => r.key).sort()).toEqual(["codex-go", "codex-plus", "codex-pro", "opencode-go-go", "opencode-go-plus"]);
-    expect(rows.filter((r) => r.usd === null).map((r) => r.key).sort()).toEqual(["codex-go", "codex-plus", "codex-pro"]);
+    expect(rows.map((r) => r.key).sort()).toEqual(["codex-go", "codex-plus", "codex-pro", "codex-pro-20x", "github-copilot-pro", "github-copilot-pro-plus", "opencode-go-go", "opencode-go-plus"]);
+    expect(rows.filter((r) => r.usd === null).map((r) => r.key).sort()).toEqual(["codex-go", "codex-pro", "codex-pro-20x"]);
   });
 
   test("an N/A official row names its reason in the title, and shows no value", () => {
     const t = summaryTable(ds, "claude-haiku-5.5");
     const row = t.rows.find((r) => r.key === "claude-code-pro")!;
     expect(row.cells.usd.na).toBe(true);
-    expect(row.cells.usd.title).toContain("需一次基准实测");
+    expect(row.cells.usd.title).toContain("percentage-based limits");
     expect(row.cells.usd.text).toBe("N/A");
   });
 

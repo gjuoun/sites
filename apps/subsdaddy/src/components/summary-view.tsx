@@ -62,7 +62,9 @@ export function SummaryView({ chips, tables, initial }: { chips: Chip[]; tables:
       </div>
       <p className={NOTE_LINE} data-note="basis">{t.basisLine}</p>
       <UnifiedTable testId="summary" columns={t.columns} rows={t.rows} />
-      {t.footnote && <p className={NOTE_LINE} data-note="footnote">{t.footnote}</p>}
+      {t.footnote && t.footnote.split("\n").map((line) => (
+        <p key={line} className={NOTE_LINE} data-note="footnote">{line}</p>
+      ))}
     </section>
   );
 }

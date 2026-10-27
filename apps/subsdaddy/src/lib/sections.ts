@@ -4,6 +4,7 @@ import { dsRanking, type DsLane, type DsModels } from "./ds-ranking";
 import { fmtPrice } from "../data/peak-offpeak";
 import type { RefPrice } from "../data/estimate";
 import { REF_IDS, REF_NAMES, type RefId } from "../data/estimate";
+import { CONTEXTS, WINDOWS_PER_DAY, monthlyTokens, usdPerBOfTokens } from "../data/messages";
 import { flagCell, na, orCell, value, type BadgeKind, type Cell } from "./cells";
 import { formatRange, orForModel } from "./or-stats";
 
@@ -372,6 +373,43 @@ export function contextCompareTable(ds: DS): Table {
       { key: "short", label: "$/B at 100K", width: "14%", numeric: true },
       { key: "long", label: "$/B at 350K", width: "14%", numeric: true },
       { key: "p75", label: "$/B at p75 " + p75, width: "16%", numeric: true },
+    ],
+    rows,
+  };
+}
+
+/** The Codex plans as converted rows: messages per five-hour window to a monthly token capacity and $/B, at both standard contexts. */
+export function messageTable(ds: DS): Table {
+  const rows = ds.catalog.rows.filter((r) => r.product === "OpenAI Codex").map((r) => {
+    const ml = r.message_limit;
+    const fee = r.price_month_usd;
+    if (!ml || fee === null) {
+      const reason = r.allowance_reason ?? "no message limit on the vendor page";
+      return { key: r.plan_id, cells: { plan: value(r.label), limit: na(reason), tokens: na(reason), s100: na(reason), s350: na(reason), c100: na(reason), c350: na(reason) } };
+    }
+    const at = (ctx: "short" | "long", w: number) => monthlyTokens(ml, CONTEXTS[ctx], w);
+    return {
+      key: r.plan_id,
+      cells: {
+        plan: value(r.label),
+        limit: value(ml.low.toLocaleString("en-US") + "-" + ml.high.toLocaleString("en-US") + " per 5h", [], ml.note),
+        tokens: value((at("short", WINDOWS_PER_DAY.realistic) / 1e9).toFixed(2) + "B/mo", [], "midpoint × 3 windows a day × 30 days × 100,467 tokens"),
+        s100: value(usd(usdPerBOfTokens(fee, at("short", WINDOWS_PER_DAY.realistic))) + "†", [], "realistic rhythm, 100K context"),
+        s350: value(usd(usdPerBOfTokens(fee, at("long", WINDOWS_PER_DAY.realistic))) + "†", [], "realistic rhythm, 350K context"),
+        c100: value(usd(usdPerBOfTokens(fee, at("short", WINDOWS_PER_DAY.ceiling))) + "†", [], "ceiling: 4.8 windows a day, 100K context"),
+        c350: value(usd(usdPerBOfTokens(fee, at("long", WINDOWS_PER_DAY.ceiling))) + "†", [], "ceiling: 4.8 windows a day, 350K context"),
+      },
+    };
+  });
+  return {
+    columns: [
+      { key: "plan", label: "Plan", width: "22%" },
+      { key: "limit", label: "Messages per 5h", width: "16%", numeric: true },
+      { key: "tokens", label: "Tokens/mo, realistic", width: "14%", numeric: true },
+      { key: "s100", label: "$/B 100K", width: "11%", numeric: true },
+      { key: "s350", label: "$/B 350K", width: "11%", numeric: true },
+      { key: "c100", label: "Ceiling $/B 100K", width: "13%", numeric: true },
+      { key: "c350", label: "Ceiling $/B 350K", width: "13%", numeric: true },
     ],
     rows,
   };
