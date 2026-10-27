@@ -13,7 +13,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { reconcile, sanity } from "../src/lib/price-guard";
-import { DEEPSEEK_PRICING_URL, arithmeticMean, parseDeepSeekFlash, type OfficialTiers, type PriceTriple } from "../src/lib/official-prices";
+import { DEEPSEEK_PRICING_URL, hourWeighted, parseDeepSeekFlash, type OfficialTiers, type PriceTriple } from "../src/lib/official-prices";
 
 const APP = resolve(import.meta.dir, "..");
 const path = join(APP, "data", "models.json");
@@ -82,7 +82,7 @@ for (const r of file.reference as Array<Record<string, any>>) {
   const listed = pricing ? fromListing(pricing) : null;
   const refusal = listed ? ([sanity(listed), ...listed.overrides.map((o) => sanity(o))].find((x) => x !== null) ?? null) : null;
   const isOfficial = r.ref === OFFICIAL_MODEL && official.tiers !== null;
-  const off = isOfficial ? arithmeticMean(official.tiers!) : null;
+  const off = isOfficial ? hourWeighted(official.tiers!) : null;
   const listedTriple = listed && Number.isFinite(listed.in_per_m) ? { in_per_m: listed.in_per_m, out_per_m: listed.out_per_m, cache_per_m: listed.cache_per_m } : null;
   const res = reconcile({ official: off, listing: listedTriple, listingRefusal: refusal, snapshot, snapshotDate: String(r.last_verified_at).slice(0, 10) });
   r.openrouter_listed = listed ? { in_per_m: listed.in_per_m, out_per_m: listed.out_per_m, cache_per_m: listed.cache_per_m, cache_write_per_m: listed.cache_write_per_m } : null;
@@ -110,13 +110,13 @@ for (const r of file.reference as Array<Record<string, any>>) {
       peak: t.peak,
       off_peak: t.off_peak,
       peak_hours_utc: t.peak_hours_utc,
-      combination: "arithmetic mean of peak and off-peak (owner ruling 2026-10-26)",
+      combination: "hour-weighted: peak 35 of 168 hours a week (01:00-04:00 and 06:00-10:00 UTC, Monday to Friday), off-peak 133 of 168 (r42 ruling 2026-10-27)",
     };
     r.price_status = "official";
     r.price_anomaly = null;
     r.price_note = res.note;
     r.last_verified_at = now;
-    r.source = DEEPSEEK_PRICING_URL + ", " + today + "; mean of peak and off-peak";
+    r.source = DEEPSEEK_PRICING_URL + ", " + today + "; hour-weighted peak/off-peak (35/168)";
     notes.push(r.ref + " official " + res.values.in_per_m + " / " + res.values.out_per_m + " / " + res.values.cache_per_m + " per M (" + res.note + ")");
     continue;
   }

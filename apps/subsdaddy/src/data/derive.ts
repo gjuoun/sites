@@ -1,13 +1,5 @@
 import type { TokenCounts } from "./schema";
 
-export const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
-/** 365.25 / 12 / 7 — weeks per average month. */
-export const WEEKS_PER_MONTH = 4.348;
-
-export type Capacity =
-  | { ok: true; tokens_per_week: number; coverage: number | null }
-  | { ok: false; unavailable: string };
-
 export function totalTokens(t: TokenCounts): number {
   return t.input + t.cache_creation + t.cache_read + t.output;
 }
@@ -23,55 +15,12 @@ export function cacheShare(t: TokenCounts): number | null {
   return share >= 0 && share <= 1 ? share : null;
 }
 
-/**
- * Tokens already delivered in the current window, divided by how much of the
- * window the plan says has been consumed. Saturated and implausibly empty
- * windows are refused rather than extrapolated.
- */
-export function capacityFromSnapshot(input: {
-  tokens_in_window: number;
-  used_pct: number | null | undefined;
-  window_ms: number;
-  coverage: number | null;
-}): Capacity {
-  const { tokens_in_window, used_pct, window_ms, coverage } = input;
-  if (used_pct === null || used_pct === undefined) return { ok: false, unavailable: "used_pct_missing" };
-  if (!(used_pct > 0)) return { ok: false, unavailable: "window_unused" };
-  if (used_pct >= 100) return { ok: false, unavailable: "window_saturated" };
-  if (coverage !== null && coverage < 0.95) return { ok: false, unavailable: "partial_window" };
-  if (tokens_in_window <= 0) return { ok: false, unavailable: "no_tokens_in_window" };
-  const windowTokens = tokens_in_window / (used_pct / 100);
-  return { ok: true, tokens_per_week: windowTokens * (WEEK_MS / window_ms), coverage };
+/** $/B from a monthly fee and the tokens per billing cycle the allowance buys. */
+export function usdPerBOfCycle(price_month_usd: number, tokens_per_cycle: number): number | null {
+  if (!(price_month_usd > 0) || !(tokens_per_cycle > 0)) return null;
+  return (price_month_usd / tokens_per_cycle) * 1e9;
 }
 
-/** Two window readings at least an hour apart: tokens between them over the percentage delta. */
-export function capacityFromDelta(input: {
-  tokens_between: number;
-  used_pct_before: number;
-  used_pct_after: number;
-  elapsed_ms: number;
-}): Capacity {
-  const delta = input.used_pct_after - input.used_pct_before;
-  if (!(delta > 0)) return { ok: false, unavailable: "used_pct_did_not_advance" };
-  if (input.elapsed_ms < 60 * 60 * 1000) return { ok: false, unavailable: "delta_window_too_short" };
-  if (input.tokens_between <= 0) return { ok: false, unavailable: "no_tokens_between" };
-  const windowTokens = input.tokens_between / (delta / 100);
-  return { ok: true, tokens_per_week: windowTokens * (WEEK_MS / input.elapsed_ms), coverage: null };
-}
-
-/**
- * The ranking key: monthly fee over the tokens the lane actually delivers in a
- * month, expressed per billion tokens.
- */
-export function usdB(price_month_usd: number, tokens_per_week: number): number | null {
-  if (!(price_month_usd > 0) || !(tokens_per_week > 0)) return null;
-  return (price_month_usd / (tokens_per_week * WEEKS_PER_MONTH)) * 1e9;
-}
-
-/**
- * Confidence of a capacity reading from the used percentage. Providers report whole percents, so a
- * reading near 0% carries roughly 1/used_pct relative error: below 10% it is flagged low.
- */
 export function capacityConfidence(used_pct: number | null | undefined): { confidence: "low" | "normal"; reason: string | null } | null {
   if (used_pct === null || used_pct === undefined || !Number.isFinite(used_pct)) return null;
   if (used_pct < 10) {
@@ -206,14 +155,14 @@ export function presetsFor(input: {
   capacity_usd: number | null;
   plan_price_month_usd: number;
   agent_share: number | null;
-  capacity_tokens_per_week: number | null;
+  capacity_tokens_per_cycle: number | null;
 }): Array<{ shape: Shape; usd_per_b?: number; unavailable?: string }> {
-  const { fit, capacity_usd, plan_price_month_usd, agent_share, capacity_tokens_per_week } = input;
+  const { fit, capacity_usd, plan_price_month_usd, agent_share, capacity_tokens_per_cycle } = input;
   const out: Array<{ shape: Shape; usd_per_b?: number; unavailable?: string }> = [];
   const base = (shape: Shape, share: number | null): { shape: Shape; usd_per_b?: number; unavailable?: string } => {
     if (!fit.ok) return { shape, unavailable: fit.unavailable };
     if (share === null) return { shape, unavailable: "share_unavailable" };
-    if (capacity_tokens_per_week === null) return { shape, unavailable: "capacity_unavailable" };
+    if (capacity_tokens_per_cycle === null) return { shape, unavailable: "capacity_unavailable" };
     // cost of one billion tokens at this cache share, using the fitted vector
     const cache = share;
     const fresh = 1 - cache;

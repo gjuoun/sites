@@ -1,4 +1,15 @@
-import { na, value, type Cell } from "./cells";
+import shapesRaw from "../../data/shapes.json";
+import { shapesFileSchema, mixOf, type ShapeDef } from "../data/shapes";
+import { priceAt, blendedUsdPerB, type RefPrice } from "../data/estimate";
+
+/** The Shape switch: the token mixes every plan is priced at (data/shapes.json). */
+export const ALL_SHAPES: ShapeDef[] = shapesFileSchema.parse(shapesRaw).shapes;
+/** The Shape switch offers the enabled shapes; a disabled one (the local collector's) is data, not UI. */
+export const SHAPES: ShapeDef[] = ALL_SHAPES.filter((x) => x.enabled);
+export const DEFAULT_SHAPE_ID = shapesFileSchema.parse(shapesRaw).default;
+export const DEFAULT_SHAPE: ShapeDef = SHAPES.find((s) => s.id === DEFAULT_SHAPE_ID) ?? SHAPES[0];
+
+import { na, value, type BadgeKind, type Cell } from "./cells";
 import { REF_IDS, REF_NAMES, pooledMix, type RefId } from "../data/estimate";
 import { contextLabel, type ContextId } from "../data/context";
 import { CONTEXTS, WINDOWS_PER_DAY, monthlyTokens, tokensPerMessage, usdPerBOfTokens } from "../data/messages";
@@ -14,7 +25,7 @@ import { money, usd, type Column, type DS, type Table } from "./sections";
  * Each plan's model $/B uses its own measured traffic shape: its own cache-read share and its own allowance.
  * The Measured view takes a derived $/B from its same-rate peer when the plan's own window is saturated.
  * Marks: * a derived $/B (its lane is derived); dagger, a $/B converted from vendor message limits.
- * Every number is a single value; a missing value is N/A. The footnote carries at most two lines.
+ * Every number is a single value; a missing value is N/A. The footnote carries at most four lines: the view's marks, the allowance legend and the collector note.
  */
 
 export const MEASURED = "measured" as const;
@@ -23,14 +34,16 @@ export type Chip = { id: ViewId; label: string; rows: number };
 
 export const DERIVED_FOOTNOTE = "* derived from the same-rate peer plan — this plan's own window is saturated";
 export const CONVERTED_FOOTNOTE = (ctx: ContextId) => "† converted from vendor message limits at " + contextLabel(ctx) + " context per message";
+export const ARCHIVED_FOOTNOTE = (ctx: ContextId) => "‡ converted from vendor prompt-count guidance (2025 archive) at " + contextLabel(ctx) + " context per prompt";
 
 export const SUMMARY_COLUMNS: Column[] = [
-  { key: "plan", label: "Plan", width: "30%" },
-  { key: "fee", label: "Fee/mo", width: "12%", numeric: true },
-  { key: "capacity", label: "Capacity", width: "15%", numeric: true },
+  { key: "plan", label: "Plan", width: "26%" },
+  { key: "fee", label: "Fee/mo", width: "10%", numeric: true },
+  { key: "allowance", label: "Allowance", width: "15%", numeric: true },
+  { key: "capacity", label: "Capacity", width: "14%", numeric: true },
   { key: "usd", label: "$/B", width: "12%", numeric: true },
-  { key: "tps", label: "tok/s", width: "14%", numeric: true },
-  { key: "ttft", label: "TTFT p50", width: "17%", numeric: true },
+  { key: "tps", label: "tok/s", width: "12%", numeric: true },
+  { key: "ttft", label: "TTFT p50", width: "11%", numeric: true },
 ];
 
 /** A weighted median: the value at which half of the total weight lies at or below it (ascending order). */
@@ -72,11 +85,66 @@ export function isDerivedLane(ds: DS, lane: string | null): boolean {
   return ds.lanes.lanes.find((l) => l.lane === lane)?.usd_per_b_basis === "derived";
 }
 
+export type Sup = "p" | "r" | "d" | "c";
+export type AllowanceCell = { usd: number; cycle: number; sup: Sup; title: string };
+
+/** A credit-denominated allowance (QwenCloud credits, Copilot base credits) is c, whatever its basis says. */
+export function isCreditRow(r: CatalogRow | undefined): boolean {
+  return !!r && ((r.credits_to_usd !== null && r.credits_to_usd !== undefined) || r.allowance_model === "credits");
+}
+/** The source marker: p published, r vendor reading, d derived from quota windows, c credit value. */
+export function supOf(basis: string | null | undefined, credit: boolean): Sup | null {
+  if (basis === "credits") return "c";
+  if (basis === "vendor_published" || basis === "vendor_published_per_model") return "p";
+  if (basis === "vendor_reported") return "r";
+  if (basis === "derived") return credit ? "c" : "d";
+  return null;
+}
+export const creditRowOfLane = (ds: DS, lane: string): CatalogRow | undefined => ds.catalog.rows.find((r) => r.measured_lane === lane) as CatalogRow | undefined;
+
+/** Every source of a lane's allowance on one line: the published figure, the dashboard pool, the derived figure. */
+export function allowanceTitleOf(c: DsLane["capacity"]): string {
+  const parts: string[] = [];
+  if (c.allowance_published_usd !== null && c.allowance_published_usd !== undefined) parts.push("published $" + c.allowance_published_usd.toFixed(2));
+  if (c.allowance_vendor_usd !== null && c.allowance_vendor_usd !== undefined) {
+    const m = c.windows.find((w) => w.window === "monthly");
+    parts.push("dashboard pool $" + c.allowance_vendor_usd.toFixed(2) + (m ? " (" + Math.round(m.used_pct) + "% used)" : ""));
+  }
+  if (c.allowance_derived_usd !== null && c.allowance_derived_usd !== undefined) parts.push("derived $" + c.allowance_derived_usd.toFixed(2));
+  return parts.join(" · ");
+}
+/** A lane's allowance per cycle, with the basis the build recorded. */
+export function laneAllowance(ds: DS, l: DsLane): AllowanceCell | null {
+  const c = l.capacity as DsLane["capacity"];
+  const usd = c.allowance_usd_per_cycle;
+  if (usd === null || usd === undefined) return null;
+  const sup = supOf(c.allowance_basis, isCreditRow(creditRowOfLane(ds, l.lane)));
+  if (!sup) return null;
+  return { usd, cycle: c.cycle_days ?? 30, sup, title: allowanceTitleOf(c) };
+}
+/** One lane's cache mix from its usage: cache read over prompt tokens (usage.json cache_share), the other parts, and the request count. */
+export function cacheMixOf(ds: DS, lane: string): { share: number; short: string; line: string } | null {
+  const u = ds.usage.lanes.find((x) => x.lane === lane);
+  if (!u) return null;
+  const t = u.tokens;
+  const prompt = t.input + t.cache_creation + t.cache_read;
+  const all = prompt + t.output;
+  const p = (n: number, d: number) => (d > 0 ? ((n / d) * 100).toFixed(1) + "%" : "N/A");
+  if (u.cache_share === null || u.cache_share === undefined) return null;
+  const share = u.cache_share;
+  return {
+    share,
+    short: "cache " + (share * 100).toFixed(1) + "%",
+    line: "cache read " + (share * 100).toFixed(1) + "% of prompt · fresh input " + p(t.input + t.cache_creation, prompt) + " of prompt · output " + p(t.output, all) + " of all tokens · " + u.rows.toLocaleString("en-US") + " requests in window",
+  };
+}
+export const withSup = (c: Cell, sup: Sup): Cell => ({ ...c, sup });
 const pct = (s: number) => Math.round(s * 100) + "%";
 
 type ViewRow = {
-  key: string; label: string; fee: number; capacity: string | null; capacityReason: string;
-  usd: number | null; usdTitle: string; marker: "" | "*" | "†";
+  key: string; label: string; fee: number; capacity: string | null; capacityReason: string; capDetail?: string[] | null; capNote?: string | null; capBadges?: BadgeKind[];
+  allowance: AllowanceCell | null; allowanceReason: string;
+  usd: number | null; usdTitle: string; marker: "" | "*" | "†" | "‡";
   tps: number | null; tpsTitle: string; ttft: number | null; ttftTitle: string;
 };
 
@@ -93,19 +161,67 @@ export function orWeighted(ds: DS, ref: RefId): { tps: number | null; ttft: numb
   return { tps, ttft, title: orId + " · " + eps.length + " endpoints · " + requests.toLocaleString("en-US") + " requests", reason: null };
 }
 
+type DsLane = DS["lanes"]["lanes"][number];
+
+/** The capacity hover panel: the windows, the allowance (vendor-reported and derived), the binding window and the model mix. */
+export function capDetailOf(l: DsLane): string[] {
+  const c = l.capacity as DsLane["capacity"];
+  const lines: string[] = c.windows.map((w) => {
+    const head = w.window + " · used " + w.used_pct.toFixed(1) + "% · " + w.status;
+    if (w.tokens <= 0) return head;
+    const cost = "$" + w.cost_usd.toFixed(2) + " at list · " + (w.tokens / 1e9).toFixed(2) + "B in window · " + Math.round(w.unpriced_share * 100) + "% unpriced";
+    const allow = w.allowance_usd_cycle === null ? "" : " · allowance $" + w.allowance_usd_cycle.toFixed(2) + " per cycle";
+    return head + " · " + cost + allow;
+  });
+  if (c.tokens_per_cycle !== null) lines.push("binding: " + c.window + " window · cycle " + c.cycle_days + " days" + (c.cycle_billed ? "" : " · fee " + (c.fee_basis ?? "not read")));
+  const published = c.allowance_published_usd ?? null;
+  const vendor = c.allowance_vendor_usd ?? null;
+  const derived = c.allowance_derived_usd ?? null;
+  const unpricedNote = c.unpriced_share === null || c.unpriced_share === undefined || c.unpriced_share === 0 ? "" : ", includes " + Math.round(c.unpriced_share * 100) + "% unpriced";
+  if (published !== null) {
+    lines.push("published allowance: $" + published.toFixed(2) + " per cycle (used by the model views)");
+    if (vendor !== null) lines.push("dashboard pool: $" + vendor.toFixed(2) + " (matches the monthly window): recorded as a difference from the published figure");
+    if (derived !== null) lines.push("derived: $" + derived.toFixed(2) + " (from the quota windows" + unpricedNote + ")");
+  } else if (vendor !== null && derived !== null) {
+    lines.push("vendor-reported pool: $" + vendor.toFixed(2) + " per cycle (used by the model views)");
+    lines.push("derived: $" + derived.toFixed(2) + " (lower estimate" + unpricedNote + ")");
+  } else if (derived !== null) {
+    lines.push("allowance: derived $" + derived.toFixed(2) + " per cycle" + (c.allowance_vendor_reason ? " (" + c.allowance_vendor_reason + ")" : ""));
+  }
+  const binding = c.windows.find((w) => w.window === c.window);
+  if (c.confidence === "low" && binding) lines.push("used " + Math.round(binding.used_pct) + "% — capacity estimate has a wide error bar");
+  if (c.top_models.length > 0) lines.push("model mix (binding window): " + c.top_models.map((m) => m.label + " " + Math.round(m.share * 100) + "%").join(", "));
+  if (c.low_coverage) lines.push("low coverage: more than 5% of the binding window's tokens have no list price");
+  return lines;
+}
+
+export function capNoteOf(l: DsLane): string | null {
+  const c = l.capacity as DsLane["capacity"];
+  if (c.tokens_per_cycle === null) return null;
+  const parts = [c.window + " window" + (c.cycle_billed ? " binds" : " (weekly cap)")];
+  if (c.confidence === "low") parts.push("low confidence");
+  return parts.join(" · ");
+}
+
+const withDetail = (cell: Cell, detail: string[] | null): Cell => (detail && detail.length > 0 ? { ...cell, detail } : cell);
+
 function measuredRows(ds: DS): ViewRow[] {
   return ds.lanes.lanes.map((l) => {
-    const shape = cacheShare(ds, l.lane);
-    const shapeNote = "own traffic: cache read " + pct(shape.share) + " of prompt tokens (" + shape.scope + ")";
+    const cm = cacheMixOf(ds, l.lane);
     const sourceNote = l.usd_per_b === null ? (l.capacity.reason ?? "no measured $/B") : (l.usd_per_b_basis === "derived" ? "derived: " : "") + (l.usd_per_b_source ?? "measured $/B");
     return {
       key: l.lane,
       label: l.label,
       fee: l.price_month_usd,
-      capacity: l.capacity.tokens_per_week === null ? null : (l.capacity.tokens_per_week / 1e9).toFixed(2) + "B/wk",
+      capacity: l.capacity.tokens_per_cycle === null ? null : (l.capacity.tokens_per_cycle / 1e9).toFixed(2) + "B/" + l.capacity.cycle_days + "d",
+      capDetail: capDetailOf(l),
+      capNote: cm ? cm.short : null,
+      capBadges: l.capacity.confidence === "low" ? ["low confidence"] : [],
       capacityReason: l.capacity.reason ?? "no capacity reading",
+      allowance: laneAllowance(ds, l),
+      allowanceReason: "no allowance reading for this lane",
       usd: l.usd_per_b,
-      usdTitle: sourceNote + " · " + shapeNote,
+      usdTitle: sourceNote + " · " + (cm ? cm.line : "own traffic"),
       marker: l.usd_per_b_basis === "derived" ? "*" : "",
       tps: l.measured.p50_output_tps,
       tpsTitle: "our usage logs, p50 output tok/s",
@@ -114,9 +230,8 @@ function measuredRows(ds: DS): ViewRow[] {
     };
   });
 }
-
-/** A plan published as messages per five-hour window: its value at the lower bound of the vendor range, realistic rhythm. The upper bound and the ceiling are in the title. */
-function messageRow(r: CatalogRow, ref: RefId, ctx: ContextId): ViewRow | null {
+/** A plan published as messages per five-hour window: its value at the lower bound of the vendor range, realistic rhythm. Its allowance is the list value of that capacity. */
+function messageRow(r: CatalogRow, ref: RefId, ctx: ContextId, ds: DS, shape: ShapeDef): ViewRow | null {
   const ml = r.message_limit;
   if (!ml || ml.model !== ref || r.price_month_usd === null) return null;
   const fee = r.price_month_usd;
@@ -125,15 +240,20 @@ function messageRow(r: CatalogRow, ref: RefId, ctx: ContextId): ViewRow | null {
   const ceiling = monthlyTokens(ml, CONTEXTS[ctx], WINDOWS_PER_DAY.ceiling, "low");
   const usdVal = usdPerBOfTokens(fee, low);
   const k = (n: number) => n.toLocaleString("en-US");
+  const refRow = ds.models.reference.find((x) => x.ref === ref);
+  const blend = refRow ? shapeUsd({ fee: 1, allowance: 1, price: refRow as unknown as RefPrice, ctx_tokens: CONTEXTS[ctx], shape }).blend : null;
+  const listUsd = blend === null ? null : (low / 1e9) * blend;
   return {
     key: r.plan_id,
     label: r.label,
     fee,
     capacity: (low / 1e9).toFixed(2) + "B/mo",
     capacityReason: "",
+    allowance: listUsd === null ? null : { usd: listUsd, cycle: 30, sup: "d", title: "list value of the monthly capacity (" + (low / 1e9).toFixed(2) + "B tokens) at " + REF_NAMES[ref] + " list price, " + shape.label },
+    allowanceReason: "no list price for " + REF_NAMES[ref],
     usd: usdVal,
     usdTitle: "converted at the lower bound: " + k(ml.low) + " messages per 5h × 3 windows a day × 30 days × " + k(tokensPerMessage(CONTEXTS[ctx])) + " tokens per message (" + contextLabel(ctx) + " context); upper bound " + k(ml.high) + " messages gives " + usdPerBOfTokens(fee, high).toFixed(2) + " $/B; ceiling (4.8 windows a day) at the lower bound gives " + usdPerBOfTokens(fee, ceiling).toFixed(2) + " $/B",
-    marker: "†",
+    marker: ml.unit === "prompts" ? "‡" : "†",
     tps: null,
     tpsTitle: "",
     ttft: null,
@@ -141,12 +261,20 @@ function messageRow(r: CatalogRow, ref: RefId, ctx: ContextId): ViewRow | null {
   };
 }
 
-function modelRows(ds: DS, ref: RefId, ctx: ContextId): ViewRow[] {
+/** One value under a shape: the blended list $/B at the context, the tokens an allowance buys, and the $/B of the fee. */
+export function shapeUsd(input: { fee: number; allowance: number; price: RefPrice; ctx_tokens: number; shape: ShapeDef }): { usd: number; tokens_b: number; blend: number; band: string } {
+  const p = priceAt(input.price, input.ctx_tokens);
+  const blend = blendedUsdPerB(p.price, mixOf(input.shape));
+  const tokensB = input.allowance / blend;
+  return { usd: input.fee / tokensB, tokens_b: tokensB, blend, band: p.band };
+}
+
+function modelRows(ds: DS, ref: RefId, ctx: ContextId, shape: ShapeDef): ViewRow[] {
   const or = orWeighted(ds, ref);
   const out: ViewRow[] = [];
   for (const r of ds.catalog.rows) {
     if (r.status !== "catalog" || !r.offered_models.includes(ref) || r.price_month_usd === null) continue;
-    const msg = messageRow(r, ref, ctx);
+    const msg = messageRow(r, ref, ctx, ds, shape);
     if (msg) {
       msg.tps = or.tps;
       msg.tpsTitle = or.title || (or.reason ?? "no OpenRouter data");
@@ -155,23 +283,37 @@ function modelRows(ds: DS, ref: RefId, ctx: ContextId): ViewRow[] {
       out.push(msg);
       continue;
     }
-    // a plan that offers the model but has no dollar allowance is a row with N/A and its reason
+    // the value's own allowance, fee and price, re-blended under the chosen shape; no allowance means N/A with its reason
     const v = r.estimate?.status === "estimated" ? r.estimate.values.find((x) => x.ref === ref && x.shape === "agent") : undefined;
-    const usdVal = !v ? null : ctx === "short" ? v.usd_per_b : (v.usd_per_b_long ?? null);
-    const band = !v ? null : ctx === "short" ? (v.band_short ?? null) : (v.band_long ?? null);
     const reason = r.estimate?.reason ?? "no estimate for this model";
-    const shape = cacheShare(ds, r.measured_lane);
-    const derived = isDerivedLane(ds, r.measured_lane);
-    const shapeNote = "its own traffic shape: cache read " + pct(shape.share) + " of prompt tokens (" + shape.scope + ")" + (derived ? "; its own window is saturated, so the * marks a rate-derived allowance" : "");
+    let usdVal: number | null = null;
+    let capacity: string | null = null;
+    let band: string | null = null;
+    if (v && v.allowance_usd && v.fee_usd && v.price_used) {
+      const x = shapeUsd({ fee: v.fee_usd, allowance: v.allowance_usd, price: v.price_used as RefPrice, ctx_tokens: CONTEXTS[ctx], shape });
+      usdVal = x.usd;
+      capacity = x.tokens_b.toFixed(2) + "B/mo";
+      band = x.band;
+    }
+    const laneRow = r.measured_lane ? ds.lanes.lanes.find((l) => l.lane === r.measured_lane) : undefined;
+    let allowance: AllowanceCell | null = null;
+    if (v && v.allowance_usd && v.allowance_basis) {
+      const sup = supOf(v.allowance_basis, isCreditRow(r));
+      if (sup) allowance = { usd: v.allowance_usd, cycle: v.allowance_cycle_days ?? 30, sup, title: laneRow ? allowanceTitleOf(laneRow.capacity as DsLane["capacity"]) : "published $" + v.allowance_usd.toFixed(2) };
+    }
     out.push({
       key: r.plan_id,
       label: r.label,
       fee: r.price_month_usd,
-      capacity: usdVal === null ? null : (r.price_month_usd / usdVal).toFixed(2) + "B/mo",
+      capacity,
       capacityReason: reason,
+      capDetail: null,
+      capNote: null,
+      allowance,
+      allowanceReason: reason,
       usd: usdVal,
-      usdTitle: usdVal === null ? reason : "estimate at a " + contextLabel(ctx) + "-token context: fee ÷ allowance × blended $/B for " + REF_NAMES[ref] + (band ? "; prices " + band : "") + "; " + shapeNote,
-      marker: derived ? "*" : "",
+      usdTitle: usdVal === null ? reason : "fee ÷ (allowance ÷ blended list $/B) for " + REF_NAMES[ref] + " at a " + contextLabel(ctx) + "-token context, " + shape.label + (band ? "; prices " + band : ""),
+      marker: "",
       tps: or.tps,
       tpsTitle: or.title || (or.reason ?? "no OpenRouter data"),
       ttft: or.ttft,
@@ -180,9 +322,8 @@ function modelRows(ds: DS, ref: RefId, ctx: ContextId): ViewRow[] {
   }
   return out;
 }
-
-export function viewRows(ds: DS, view: ViewId, ctx: ContextId = "short"): ViewRow[] {
-  const rows = view === MEASURED ? measuredRows(ds) : modelRows(ds, view, ctx);
+export function viewRows(ds: DS, view: ViewId, ctx: ContextId = "short", shape: ShapeDef = DEFAULT_SHAPE): ViewRow[] {
+  const rows = view === MEASURED ? measuredRows(ds) : modelRows(ds, view, ctx, shape);
   return rows.sort((a, b) => (a.usd ?? Infinity) - (b.usd ?? Infinity) || a.label.localeCompare(b.label));
 }
 
@@ -206,28 +347,50 @@ export type SummaryTable = Table & { rows: Array<{ key: string; cells: Record<st
 
 const naShort = (reason: string): Cell => ({ ...na(reason), reason: "" });
 
-export function summaryTable(ds: DS, view: ViewId, ctx: ContextId = "short"): SummaryTable {
-  const data = viewRows(ds, view, ctx);
+export const BRING_YOUR_OWN = "Bring your own shape: a local collector is planned; the site will price every plan against your own cache share.";
+export const MEASURED_FOOTNOTE = "Measured $/B is per plan and reflects that plans own cache share; use Shape to compare on equal terms.";
+export const SHAPE_FOOTNOTE = "Shape sets the token mix used to price every plan; Measured uses each plans own traffic.";
+
+/** The one-line legend of the four allowance sources, each with a real example from the data. */
+export function allowanceLegend(ds: DS): string {
+  const lanes = ds.lanes.lanes;
+  const pub = lanes.find((l) => l.capacity.allowance_published_usd !== null && l.capacity.allowance_published_usd !== undefined);
+  const pool = lanes.find((l) => l.capacity.allowance_vendor_usd !== null && l.capacity.allowance_vendor_usd !== undefined);
+  const der = lanes.find((l) => l.capacity.allowance_basis === "derived" && !isCreditRow(creditRowOfLane(ds, l.lane)));
+  const cr = lanes.find((l) => l.capacity.allowance_basis === "derived" && isCreditRow(creditRowOfLane(ds, l.lane)));
+  const perCredit = cr ? creditRowOfLane(ds, cr.lane)?.credits_to_usd?.usd_per_credit : undefined;
+  return "Allowance source: " + [
+    "p published (" + (pub ? pub.label + " $" + (pub.capacity.allowance_published_usd ?? 0).toFixed(2) : "none") + ")",
+    "r vendor reading (" + (pool ? pool.label + " pool $" + (pool.capacity.allowance_vendor_usd ?? 0).toFixed(2) : "none") + ")",
+    "d derived from quota windows (" + (der ? der.label + " $" + (der.capacity.allowance_usd_per_cycle ?? 0).toFixed(2) : "none") + ")",
+    "c credit value (" + (cr && perCredit !== undefined ? cr.label + " $" + Number(perCredit.toPrecision(3)) + " per credit" : "none") + ")",
+  ].join(" · ");
+}
+
+export function summaryTable(ds: DS, view: ViewId, ctx: ContextId = "short", shape: ShapeDef = DEFAULT_SHAPE): SummaryTable {
+  const data = viewRows(ds, view, ctx, shape);
   const rows = data.map((r) => ({
     key: r.key,
     cells: {
       plan: value(r.label),
       fee: value(money(r.fee) + "/mo"),
-      capacity: r.capacity === null ? naShort(r.capacityReason) : value(r.capacity + (r.marker === "*" ? "*" : "")),
+      allowance: r.allowance === null ? naShort(r.allowanceReason) : withSup(value("$" + r.allowance.usd.toFixed(2) + "/" + r.allowance.cycle + "d", [], r.allowance.title), r.allowance.sup),
+      capacity: r.capacity === null ? naShort(r.capacityReason) : withDetail(value(r.capacity, r.capBadges ?? [], null, r.capNote ?? null), r.capDetail ?? null),
       usd: r.usd === null ? naShort(r.usdTitle) : value(usd(r.usd) + r.marker, [], r.usdTitle),
       tps: r.tps === null ? naShort(r.tpsTitle || "no speed data") : value("~" + sig2(r.tps), [], r.tpsTitle),
       ttft: r.ttft === null ? naShort(r.ttftTitle || "no latency data") : value("~" + sig2(r.ttft) + " ms", [], r.ttftTitle),
     },
   }));
-  // at most two lines: the view's own marks, then the context or the measured note
   const lines: string[] = [];
   if (view === MEASURED) {
     if (data.some((r) => r.marker === "*")) lines.push(DERIVED_FOOTNOTE);
-    lines.push("Measured $/B does not depend on the context size.");
+    lines.push(MEASURED_FOOTNOTE);
   } else {
-    lines.push("Prices assume a " + contextLabel(ctx) + "-token context");
+    lines.push("Prices assume a " + contextLabel(ctx) + "-token context and the " + shape.label + " shape. " + SHAPE_FOOTNOTE);
     if (data.some((r) => r.marker === "†")) lines.push(CONVERTED_FOOTNOTE(ctx));
-    if (data.some((r) => r.marker === "*")) lines.push(DERIVED_FOOTNOTE);
+    if (data.some((r) => r.marker === "‡")) lines.push(ARCHIVED_FOOTNOTE(ctx));
   }
+  lines.push(allowanceLegend(ds));
+  lines.push(BRING_YOUR_OWN);
   return { columns: SUMMARY_COLUMNS, rows, footnote: lines.join("\n"), basisLine: basisLine(ds, view) };
 }

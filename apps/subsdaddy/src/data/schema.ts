@@ -82,6 +82,11 @@ export const quotaObservationSchema = z.object({
   plan_level: z.string().nullable().optional(),
   credits_used: z.number().nonnegative().nullable().optional(),
   credits_total: z.number().positive().nullable().optional(),
+  windows: z
+    .array(z.object({ window: z.enum(["5h", "weekly", "monthly"]), window_minutes: z.number().positive(), used_pct: z.number().min(0).max(100), resets_at: z.iso.datetime(), source: z.string().min(1).optional(), measured_at: z.iso.datetime().optional() }))
+    .optional(),
+  // the vendor-reported usage pool, when codexbar states one (e.g. "GOAT · $35.00 of $70.00")
+  vendor_pool: z.object({ used_usd: z.number().nonnegative(), total_usd: z.number().positive(), source: z.string().min(1), measured_at: z.iso.datetime() }).nullable().optional(),
   ...provenance,
 });
 export type QuotaObservation = z.infer<typeof quotaObservationSchema>;
@@ -185,6 +190,12 @@ export const modelsFileSchema = z.object({
       openrouter: z.string().regex(/^[^/]+\/[^/]+$/),
     }),
   ),
+  // list prices for usage-only model ids (not in the reference list), and aliases that map raw ids onto them
+  usage_prices: z
+    .array(z.object({ openrouter: z.string().min(1), in_per_m: z.number().nonnegative(), out_per_m: z.number().nonnegative(), cache_per_m: z.number().nonnegative(), cache_write_per_m: z.number().nonnegative().nullable(), source: z.string().min(1), basis: z.string().min(1), price_basis: z.string().min(1).optional() }))
+    .default([]),
+  model_aliases: z.record(z.string().min(1), z.string().min(1)).default({}),
+  unpriced_notes: z.record(z.string().min(1), z.string().min(1)).default({}),
   // reference list prices used only for catalog estimates (never for the ranking)
   reference: z
     .array(
@@ -275,15 +286,48 @@ export const laneRecordSchema = z.object({
   price_month_usd: z.number().positive(),
   price_badge: z.enum(["plan_spec", "console"]),
   capacity: z.object({
-    method: z.enum(["window_snapshot", "delta_pair", "plan_spec", "unavailable"]),
-    window: z.enum(["weekly", "monthly"]).nullable(),
-    tokens_per_week: z.number().positive().nullable(),
+    method: z.enum(["quota_windows", "unavailable"]),
+    window: z.enum(["5h", "weekly", "monthly"]).nullable(),
+    cycle_days: z.number().positive().nullable(),
+    cycle_billed: z.boolean(),
+    allowance_basis: z.enum(["vendor_published", "vendor_reported", "derived"]).nullable().optional(),
+    allowance_published_usd: z.number().positive().nullable().optional(),
+    allowance_vendor_usd: z.number().positive().nullable().optional(),
+    allowance_vendor_reason: z.string().nullable().optional(),
+    allowance_derived_usd: z.number().positive().nullable().optional(),
+    fee_per_cycle_usd: z.number().positive().nullable().optional(),
+    fee_basis: z.string().nullable().optional(),
+    assumed_share: z.number().min(0).max(1).nullable().optional(),
+    tokens_per_cycle: z.number().positive().nullable(),
+    allowance_usd_per_cycle: z.number().positive().nullable(),
     coverage: z.number().min(0).max(1).nullable(),
+    unpriced_share: z.number().min(0).max(1).nullable(),
+    low_coverage: z.boolean(),
+    top_models: z.array(z.object({ model: z.string(), label: z.string(), share: z.number() })),
     seeded: z.boolean(),
     reason: z.string().nullable(),
     confidence: z.enum(["low", "normal"]).nullable(),
     confidence_reason: z.string().nullable(),
     badge: z.string().nullable(),
+    windows: z.array(
+      z.object({
+        window: z.enum(["5h", "weekly", "monthly"]),
+        window_minutes: z.number().positive(),
+        used_pct: z.number().min(0).max(100),
+        resets_at: z.string().min(1),
+        status: z.enum(["usable", "partial", "unused", "low_signal", "no_priced_usage"]),
+        elapsed_hours: z.number().nonnegative(),
+        tokens: z.number().nonnegative(),
+        cost_usd: z.number().nonnegative(),
+        unpriced_share: z.number().min(0).max(1),
+        coverage: z.number().min(0).max(1),
+        allowance_usd_cycle: z.number().positive().nullable(),
+        tokens_cycle: z.number().positive().nullable(),
+        measured_at: z.string().min(1),
+        source: z.string().min(1),
+        confidence: z.enum(["low", "normal"]).optional(),
+      }),
+    ),
     ...provenance,
   }),
   usd_per_b: z.number().positive().nullable(),

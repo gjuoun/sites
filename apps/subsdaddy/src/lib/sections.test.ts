@@ -38,21 +38,6 @@ describe("badges and names", () => {
     for (const k of BADGE_KINDS) expect(["source", "confidence", "status"]).toContain(BADGE_VARIANT[k]);
   });
 
-  test("Section A's badges column names each flag and is blank when there are none; it never shows a count", () => {
-    const t = measuredTable(ds);
-    for (const r of t.rows) {
-      const c = r.cells.badges;
-      expect(c.flags).toBe(true);
-      expect(c.text).toBe("");
-      for (const b of c.badges) expect(BADGE_KINDS).toContain(b);
-      expect(c.badges.some((b) => /flag/.test(b))).toBe(false);
-    }
-    const cc = t.rows.find((r) => r.key === "commandcode-goat")!;
-    expect(cc.cells.badges.badges).toEqual([]);
-    expect(cc.cells.capacity.reason).toContain("window_saturated");
-    const opencode = t.rows.find((r) => r.key === "opencode-go")!;
-    expect(opencode.cells.badges.badges).toContain("single_account_reading");
-  });
 
   test("display names are the ones in data/models.json, and the reference names match the estimate names", () => {
     for (const r of ds.models.reference) expect(r.name).toBe(REF_NAMES[r.ref as keyof typeof REF_NAMES]);
@@ -94,7 +79,7 @@ describe("regression: Section A shows each plan's own measured values", () => {
       ...ds,
       lanes: {
         ...ds.lanes,
-        lanes: ds.lanes.lanes.map((l) => ({ ...l, usd_per_b: null, usd_per_b_basis: null, capacity: { ...l.capacity, tokens_per_week: null, reason: "window_saturated" } })),
+        lanes: ds.lanes.lanes.map((l) => ({ ...l, usd_per_b: null, usd_per_b_basis: null, capacity: { ...l.capacity, tokens_per_cycle: null, reason: "window_saturated" } })),
       },
     };
     const t = measuredTable(broken);

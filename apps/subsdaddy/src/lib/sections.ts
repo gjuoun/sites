@@ -47,9 +47,9 @@ export function measuredTable(ds: DS): Table & { footnote: string } {
         ? na(l.capacity.reason ?? "no capacity reading")
         : value(usd(l.usd_per_b), [l.usd_per_b_basis === "derived" ? "derived" : "measured"], l.usd_per_b_source);
     const capCell =
-      l.capacity.tokens_per_week === null
+      l.capacity.tokens_per_cycle === null
         ? na(l.capacity.reason ?? "no capacity reading")
-        : value((l.capacity.tokens_per_week / 1e9).toFixed(2) + "B/wk");
+        : value((l.capacity.tokens_per_cycle / 1e9).toFixed(2) + "B/" + l.capacity.cycle_days + "d");
     let orCellValue: Cell;
     if (or.summary?.tps && orId) {
       const low = or.summary.low_confidence;

@@ -2,7 +2,7 @@
 /**
  * Reads the prerendered pages in dist/client and checks the public contract.
  *
- * Front page (/): one title line, one switch, one table of six columns (Plan, Fee/mo, Capacity, $/B,
+ * Front page (/): one title line, one switch, one table of seven columns (Plan, Fee/mo, Allowance, Capacity, $/B,
  * tok/s, TTFT p50), one footnote linking /methodology. No badges, no OR column, no sections. The first
  * (Measured) view is the one rendered. Speeds are one value with a leading "~". N/A carries no line.
  *
@@ -37,13 +37,13 @@ const cells = (h: string) => [...h.matchAll(/<td[^>]*>[\s\S]*?<\/td>/g)].map((m)
 const tableById = (h: string, id: string) => (h.match(new RegExp('<table[^>]*data-testid="' + id + '"[\\s\\S]*?<\\/table>')) ?? [""])[0];
 const rowsIn = (t: string) => (t.match(/data-row="/g) ?? []).length;
 
-// 1. the front page: one table, six columns, in order
+// 1. the front page: one table, seven columns, in order
 const idx = main(html.index);
 const summary = tableById(html.index, "summary");
 if (!summary) fail("front page has no summary table");
 if (tables(html.index).length !== 1) fail("front page has " + tables(html.index).length + " tables, expected 1");
 const heads = [...summary.matchAll(/<th[^>]*>([\s\S]*?)<\/th>/g)].map((m) => text(m[1]));
-const expectedHeads = ["Plan", "Fee/mo", "Capacity", "$/B", "tok/s", "TTFT p50"];
+const expectedHeads = ["Plan", "Fee/mo", "Allowance", "Capacity", "$/B", "tok/s", "TTFT p50"];
 if (JSON.stringify(heads) !== JSON.stringify(expectedHeads)) fail("front page columns are " + JSON.stringify(heads) + ", expected " + JSON.stringify(expectedHeads));
 
 // 2. the switch: Measured first and selected, the other chips present, no Gemini chip
@@ -68,7 +68,9 @@ for (const c of cells(summary)) {
 }
 
 // 4. the front page has no detail: no badges, no OR column, no sections, no footnote table, one footnote link
-if (/data-badge=/.test(idx)) fail("badges on the front page");
+// the only badge the front page may carry is low confidence, on a Capacity cell (its third line)
+const badgeValues = [...idx.matchAll(/data-badge="([^"]*)"/g)].map((m) => m[1]);
+if (badgeValues.some((v) => v !== "low confidence")) fail("front page carries a badge other than low confidence: " + badgeValues.join(", "));
 if (/OR p50|Badges|vs measured|>Basis</.test(idx)) fail("a detail column name is on the front page");
 if (/\b[ABC] · /.test(idx)) fail("a section letter is on the front page");
 if (!/href="\/methodology"/.test(idx)) fail("front page has no link to /methodology");
@@ -93,6 +95,11 @@ if (!/data-testid="context-compare"/.test(html.methodology)) fail("methodology h
 if (!/aria-labelledby="switch-label-model"/.test(html.index) || !/>Model<\/span>/.test(html.index)) fail("Model label missing on the front page");
 if (!/aria-labelledby="switch-label-context"/.test(html.index) || !/>Context size<\/span>/.test(html.index)) fail("Context size label missing on the front page");
 if (html.index.indexOf(">Model</span>") > html.index.indexOf(">Context size</span>")) fail("Context size label comes before Model");
+
+// 4e. the Shape switch: three shapes, Cache-heavy default
+const shapeOpts = [...html.index.matchAll(/data-shape="([^"]+)"/g)].map((m) => m[1]);
+if (shapeOpts.join(",") !== "cache_heavy,agent,cold") fail("shape switch options are " + shapeOpts.join(",") + ", expected cache_heavy,agent,cold");
+if (html.index.indexOf(">Shape</span>") < 0) fail("Shape label missing on the front page");
 
 // 5. methodology: every detail table, in full
 const meth = main(html.methodology);
@@ -119,7 +126,9 @@ if (new Set(all.map(styleOf)).size !== 1) fail("tables use more than one style s
 for (const [name, h] of Object.entries({ index: idx, methodology: meth, catalog: main(html.catalog) })) {
   for (const c of cells(h)) {
     const t = text(c);
-    if (t.indexOf("\u2014") >= 0) fail(name + " shows an em dash in a cell");
+    // the hover panel carries prose (the wide-error-bar sentence); the rule is about the visible value, so the panel is cut off first
+    const visible = text(c.slice(0, Math.max(0, c.indexOf("role=\"tooltip\"") < 0 ? c.length : c.indexOf("role=\"tooltip\""))));
+    if (visible.indexOf("\u2014") >= 0) fail(name + " shows an em dash in a cell");
     if (t.length === 0 && !/data-flags="yes"/.test(c)) fail(name + " has an empty cell");
     if (/\$0\.00(?!\d)/.test(t) && !/data-na="yes"/.test(c)) fail(name + " prints $0.00 in a value cell");
     if (/\bNaN\b/.test(t)) fail(name + " prints NaN");

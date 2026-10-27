@@ -4,7 +4,7 @@ import { SummaryView } from "@/components/summary-view";
 import { NOTE, PAGE, PAGE_TITLE, SMALL_NOTE } from "@/components/layout";
 import { dataset } from "@/lib/dataset";
 import type { DS } from "@/lib/sections";
-import { MEASURED, summaryTable, viewChips, type SummaryTable } from "@/lib/summary";
+import { DEFAULT_SHAPE_ID, MEASURED, SHAPES, summaryTable, viewChips, type SummaryTable } from "@/lib/summary";
 import { CONTEXT_IDS } from "@/data/context";
 
 export const Route = createFileRoute("/")({
@@ -15,7 +15,7 @@ function IndexPage() {
   const ds = dataset as unknown as DS;
   const chips = viewChips(ds);
   const tables: Record<string, SummaryTable> = {};
-  for (const c of chips) for (const k of CONTEXT_IDS) tables[c.id + "|" + k] = summaryTable(ds, c.id, k);
+  for (const c of chips) for (const k of CONTEXT_IDS) for (const sh of SHAPES) tables[c.id + "|" + k + "|" + sh.id] = summaryTable(ds, c.id, k, sh);
   return (
     <main className={PAGE}>
       <header className="space-y-2">
@@ -26,7 +26,7 @@ function IndexPage() {
           {dataset.benchmark.measured_at}
         </p>
       </header>
-      <SummaryView chips={chips} tables={tables} initial={MEASURED} />
+      <SummaryView chips={chips} tables={tables} initial={MEASURED} shapes={SHAPES.map((x) => ({ id: x.id, label: x.label }))} initialShape={DEFAULT_SHAPE_ID} />
       <p className={SMALL_NOTE}>
         Estimates assume the whole allowance runs one model. Details, sources and allowances: <Link to="/methodology" className="underline">/methodology</Link>
       </p>

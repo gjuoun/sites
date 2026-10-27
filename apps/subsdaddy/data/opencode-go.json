@@ -1,0 +1,1245 @@
+{
+  "source": "https://opencode.ai/docs/go",
+  "fetched_at": "2026-10-27T02:55:04.374Z",
+  "parser": "opencode-go-docs-v1",
+  "plans": [
+    {
+      "plan": "Go",
+      "plan_id": "opencode-go-go",
+      "fee_usd_per_month": 10,
+      "models": [
+        {
+          "model": "GLM-5.3-Flash",
+          "base": "GLM-5.3-Flash",
+          "ref": "glm-5.3-flash",
+          "input_usd_per_m": 0.15,
+          "output_usd_per_m": 0.5,
+          "cache_read_usd_per_m": 0.03,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$0.15",
+            "$0.50",
+            "$0.03",
+            "-"
+          ],
+          "monthly_limit_usd": 60,
+          "limit_raw": "$60"
+        },
+        {
+          "model": "GLM-5.3",
+          "base": "GLM-5.3",
+          "ref": null,
+          "input_usd_per_m": 1.4,
+          "output_usd_per_m": 4.4,
+          "cache_read_usd_per_m": 0.26,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$1.40",
+            "$4.40",
+            "$0.26",
+            "-"
+          ],
+          "monthly_limit_usd": 15,
+          "limit_raw": "$15"
+        },
+        {
+          "model": "GLM-5.2",
+          "base": "GLM-5.2",
+          "ref": null,
+          "input_usd_per_m": 1.4,
+          "output_usd_per_m": 4.4,
+          "cache_read_usd_per_m": 0.26,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$1.40",
+            "$4.40",
+            "$0.26",
+            "-"
+          ],
+          "monthly_limit_usd": 60,
+          "limit_raw": "$60"
+        },
+        {
+          "model": "Kimi K3.1 Pro",
+          "base": "Kimi K3.1 Pro",
+          "ref": null,
+          "input_usd_per_m": 2,
+          "output_usd_per_m": 10,
+          "cache_read_usd_per_m": 0.2,
+          "cache_write_usd_per_m": 2,
+          "prices_raw": [
+            "$2.00",
+            "$10.00",
+            "$0.20",
+            "$2.00"
+          ],
+          "monthly_limit_usd": 15,
+          "limit_raw": "$15"
+        },
+        {
+          "model": "Kimi K3",
+          "base": "Kimi K3",
+          "ref": null,
+          "input_usd_per_m": 3,
+          "output_usd_per_m": 15,
+          "cache_read_usd_per_m": 0.3,
+          "cache_write_usd_per_m": 3,
+          "prices_raw": [
+            "$3.00",
+            "$15.00",
+            "$0.30",
+            "$3.00"
+          ],
+          "monthly_limit_usd": 15,
+          "limit_raw": "$15"
+        },
+        {
+          "model": "Kimi K2.7 Code",
+          "base": "Kimi K2.7 Code",
+          "ref": null,
+          "input_usd_per_m": 0.95,
+          "output_usd_per_m": 4,
+          "cache_read_usd_per_m": 0.19,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$0.95",
+            "$4.00",
+            "$0.19",
+            "-"
+          ],
+          "monthly_limit_usd": 60,
+          "limit_raw": "$60"
+        },
+        {
+          "model": "LongCat-2.0",
+          "base": "LongCat-2.0",
+          "ref": null,
+          "input_usd_per_m": 0.3,
+          "output_usd_per_m": 1.2,
+          "cache_read_usd_per_m": 0.006,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$0.30",
+            "$1.20",
+            "$0.006",
+            "-"
+          ],
+          "monthly_limit_usd": 60,
+          "limit_raw": "$60"
+        },
+        {
+          "model": "Step 5 Preview",
+          "base": "Step 5 Preview",
+          "ref": null,
+          "input_usd_per_m": 1,
+          "output_usd_per_m": 2.7,
+          "cache_read_usd_per_m": 0.1,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$1.00",
+            "$2.70",
+            "$0.10",
+            "-"
+          ],
+          "monthly_limit_usd": 15,
+          "limit_raw": "$15"
+        },
+        {
+          "model": "Beam Free",
+          "base": "Beam Free",
+          "ref": null,
+          "input_usd_per_m": null,
+          "output_usd_per_m": null,
+          "cache_read_usd_per_m": null,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "Free",
+            "Free",
+            "Free",
+            "-"
+          ],
+          "monthly_limit_usd": null,
+          "limit_raw": "Unlimitedlimited time"
+        },
+        {
+          "model": "MiMo-V2.6-Flash",
+          "base": "MiMo-V2.6-Flash",
+          "ref": null,
+          "input_usd_per_m": 0.14,
+          "output_usd_per_m": 0.28,
+          "cache_read_usd_per_m": 0.0028,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$0.14",
+            "$0.28",
+            "$0.0028",
+            "-"
+          ],
+          "monthly_limit_usd": 60,
+          "limit_raw": "$60"
+        },
+        {
+          "model": "MiMo-V2.6-Pro",
+          "base": "MiMo-V2.6-Pro",
+          "ref": null,
+          "input_usd_per_m": 0.435,
+          "output_usd_per_m": 0.87,
+          "cache_read_usd_per_m": 0.003625,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$0.435",
+            "$0.87",
+            "$0.003625",
+            "-"
+          ],
+          "monthly_limit_usd": 15,
+          "limit_raw": "$15"
+        },
+        {
+          "model": "MiMo-V2.5",
+          "base": "MiMo-V2.5",
+          "ref": null,
+          "input_usd_per_m": 0.14,
+          "output_usd_per_m": 0.28,
+          "cache_read_usd_per_m": 0.0028,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$0.14",
+            "$0.28",
+            "$0.0028",
+            "-"
+          ],
+          "monthly_limit_usd": 60,
+          "limit_raw": "$60"
+        },
+        {
+          "model": "MiMo-V2.5-Pro",
+          "base": "MiMo-V2.5-Pro",
+          "ref": null,
+          "input_usd_per_m": 0.435,
+          "output_usd_per_m": 0.87,
+          "cache_read_usd_per_m": 0.003625,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$0.435",
+            "$0.87",
+            "$0.003625",
+            "-"
+          ],
+          "monthly_limit_usd": 15,
+          "limit_raw": "$15"
+        },
+        {
+          "model": "MiniMax M3.1 Flash",
+          "base": "MiniMax M3.1 Flash",
+          "ref": null,
+          "input_usd_per_m": 0.15,
+          "output_usd_per_m": 0.6,
+          "cache_read_usd_per_m": 0.015,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$0.15",
+            "$0.60",
+            "$0.015",
+            "-"
+          ],
+          "monthly_limit_usd": 20,
+          "limit_raw": "$20"
+        },
+        {
+          "model": "MiniMax M3",
+          "base": "MiniMax M3",
+          "ref": null,
+          "input_usd_per_m": 0.3,
+          "output_usd_per_m": 1.2,
+          "cache_read_usd_per_m": 0.06,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$0.30",
+            "$1.20",
+            "$0.06",
+            "-"
+          ],
+          "monthly_limit_usd": 60,
+          "limit_raw": "$60"
+        },
+        {
+          "model": "Muse Spark 1.3 Contributor",
+          "base": "Muse Spark 1.3 Contributor",
+          "ref": null,
+          "input_usd_per_m": 0.1,
+          "output_usd_per_m": 0.2,
+          "cache_read_usd_per_m": 0.002,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$0.10",
+            "$0.20",
+            "$0.002",
+            "-"
+          ],
+          "monthly_limit_usd": 60,
+          "limit_raw": "$60"
+        },
+        {
+          "model": "Muse Spark 1.2 Contributor",
+          "base": "Muse Spark 1.2 Contributor",
+          "ref": null,
+          "input_usd_per_m": 0.1,
+          "output_usd_per_m": 0.2,
+          "cache_read_usd_per_m": 0.002,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$0.10",
+            "$0.20",
+            "$0.002",
+            "-"
+          ],
+          "monthly_limit_usd": 60,
+          "limit_raw": "$60"
+        },
+        {
+          "model": "Qwen3.8 Max",
+          "base": "Qwen3.8 Max",
+          "ref": null,
+          "input_usd_per_m": 2,
+          "output_usd_per_m": 6,
+          "cache_read_usd_per_m": 0.25,
+          "cache_write_usd_per_m": 2.5,
+          "prices_raw": [
+            "$2.00",
+            "$6.00",
+            "$0.25",
+            "$2.50"
+          ],
+          "monthly_limit_usd": 15,
+          "limit_raw": "$15"
+        },
+        {
+          "model": "Qwen3.8 Flash",
+          "base": "Qwen3.8 Flash",
+          "ref": null,
+          "input_usd_per_m": 0.15,
+          "output_usd_per_m": 0.47,
+          "cache_read_usd_per_m": 0.016,
+          "cache_write_usd_per_m": 0.2,
+          "prices_raw": [
+            "$0.15",
+            "$0.47",
+            "$0.016",
+            "$0.20"
+          ],
+          "monthly_limit_usd": 30,
+          "limit_raw": "$30"
+        },
+        {
+          "model": "Qwen3.7 Plus (≤ 256K tokens)",
+          "base": "Qwen3.7 Plus",
+          "ref": null,
+          "input_usd_per_m": 0.4,
+          "output_usd_per_m": 1.6,
+          "cache_read_usd_per_m": 0.04,
+          "cache_write_usd_per_m": 0.5,
+          "prices_raw": [
+            "$0.40",
+            "$1.60",
+            "$0.04",
+            "$0.50"
+          ],
+          "monthly_limit_usd": 60,
+          "limit_raw": "$60"
+        },
+        {
+          "model": "Qwen3.7 Plus (> 256K tokens)",
+          "base": "Qwen3.7 Plus",
+          "ref": null,
+          "input_usd_per_m": 1.2,
+          "output_usd_per_m": 4.8,
+          "cache_read_usd_per_m": 0.12,
+          "cache_write_usd_per_m": 1.5,
+          "prices_raw": [
+            "$1.20",
+            "$4.80",
+            "$0.12",
+            "$1.50"
+          ],
+          "monthly_limit_usd": 60,
+          "limit_raw": "$60"
+        },
+        {
+          "model": "DeepSeek V4.1 Flash (Off-Peak)",
+          "base": "DeepSeek V4.1 Flash",
+          "ref": "deepseek-v4.1-flash",
+          "input_usd_per_m": 0.15,
+          "output_usd_per_m": 0.6,
+          "cache_read_usd_per_m": 0.003,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$0.15",
+            "$0.60",
+            "$0.003",
+            "-"
+          ],
+          "monthly_limit_usd": 80,
+          "limit_raw": "$80"
+        },
+        {
+          "model": "DeepSeek V4.1 Flash (Peak)",
+          "base": "DeepSeek V4.1 Flash",
+          "ref": "deepseek-v4.1-flash",
+          "input_usd_per_m": 0.3,
+          "output_usd_per_m": 1.2,
+          "cache_read_usd_per_m": 0.006,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$0.30",
+            "$1.20",
+            "$0.006",
+            "-"
+          ],
+          "monthly_limit_usd": 80,
+          "limit_raw": "$80"
+        },
+        {
+          "model": "DeepSeek V4 Pro (Off-Peak)",
+          "base": "DeepSeek V4 Pro",
+          "ref": null,
+          "input_usd_per_m": 0.66,
+          "output_usd_per_m": 1.98,
+          "cache_read_usd_per_m": 0.022,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$0.66",
+            "$1.98",
+            "$0.022",
+            "-"
+          ],
+          "monthly_limit_usd": 15,
+          "limit_raw": "$15"
+        },
+        {
+          "model": "DeepSeek V4 Pro (Peak)",
+          "base": "DeepSeek V4 Pro",
+          "ref": null,
+          "input_usd_per_m": 1.32,
+          "output_usd_per_m": 3.96,
+          "cache_read_usd_per_m": 0.044,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$1.32",
+            "$3.96",
+            "$0.044",
+            "-"
+          ],
+          "monthly_limit_usd": 15,
+          "limit_raw": "$15"
+        },
+        {
+          "model": "Hy4 preview",
+          "base": "Hy4 preview",
+          "ref": null,
+          "input_usd_per_m": 0.834,
+          "output_usd_per_m": 2.501,
+          "cache_read_usd_per_m": 0.042,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$0.834",
+            "$2.501",
+            "$0.042",
+            "-"
+          ],
+          "monthly_limit_usd": 30,
+          "limit_raw": "$30"
+        },
+        {
+          "model": "Hy3",
+          "base": "Hy3",
+          "ref": null,
+          "input_usd_per_m": 0.14,
+          "output_usd_per_m": 0.58,
+          "cache_read_usd_per_m": 0.035,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$0.14",
+            "$0.58",
+            "$0.035",
+            "-"
+          ],
+          "monthly_limit_usd": 60,
+          "limit_raw": "$60"
+        },
+        {
+          "model": "Grok 4.7 (≤ 200K tokens)",
+          "base": "Grok 4.7",
+          "ref": null,
+          "input_usd_per_m": 2,
+          "output_usd_per_m": 6,
+          "cache_read_usd_per_m": 0.5,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$2.00",
+            "$6.00",
+            "$0.50",
+            "-"
+          ],
+          "monthly_limit_usd": 15,
+          "limit_raw": "$15"
+        },
+        {
+          "model": "Grok 4.7 (> 200K tokens)",
+          "base": "Grok 4.7",
+          "ref": null,
+          "input_usd_per_m": 4,
+          "output_usd_per_m": 12,
+          "cache_read_usd_per_m": 1,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$4.00",
+            "$12.00",
+            "$1.00",
+            "-"
+          ],
+          "monthly_limit_usd": 15,
+          "limit_raw": "$15"
+        },
+        {
+          "model": "GPT 6 Luna (≤ 272K tokens)",
+          "base": "GPT 6 Luna",
+          "ref": "gpt-6-luna",
+          "input_usd_per_m": 0.1,
+          "output_usd_per_m": 0.5,
+          "cache_read_usd_per_m": 0.01,
+          "cache_write_usd_per_m": 0.125,
+          "prices_raw": [
+            "$0.10",
+            "$0.50",
+            "$0.01",
+            "$0.125"
+          ],
+          "monthly_limit_usd": 15,
+          "limit_raw": "$15"
+        },
+        {
+          "model": "GPT 6 Luna (> 272K tokens)",
+          "base": "GPT 6 Luna",
+          "ref": "gpt-6-luna",
+          "input_usd_per_m": 0.2,
+          "output_usd_per_m": 0.75,
+          "cache_read_usd_per_m": 0.02,
+          "cache_write_usd_per_m": 0.25,
+          "prices_raw": [
+            "$0.20",
+            "$0.75",
+            "$0.02",
+            "$0.25"
+          ],
+          "monthly_limit_usd": 15,
+          "limit_raw": "$15"
+        },
+        {
+          "model": "GPT 5.6 Luna (≤ 272K tokens)",
+          "base": "GPT 5.6 Luna",
+          "ref": null,
+          "input_usd_per_m": 0.2,
+          "output_usd_per_m": 1.2,
+          "cache_read_usd_per_m": 0.02,
+          "cache_write_usd_per_m": 0.25,
+          "prices_raw": [
+            "$0.20",
+            "$1.20",
+            "$0.02",
+            "$0.25"
+          ],
+          "monthly_limit_usd": 15,
+          "limit_raw": "$15"
+        },
+        {
+          "model": "GPT 5.6 Luna (> 272K tokens)",
+          "base": "GPT 5.6 Luna",
+          "ref": null,
+          "input_usd_per_m": 0.4,
+          "output_usd_per_m": 1.8,
+          "cache_read_usd_per_m": 0.04,
+          "cache_write_usd_per_m": 0.5,
+          "prices_raw": [
+            "$0.40",
+            "$1.80",
+            "$0.04",
+            "$0.50"
+          ],
+          "monthly_limit_usd": 15,
+          "limit_raw": "$15"
+        },
+        {
+          "model": "Claude Haiku 5.5 (≤ 100K tokens)",
+          "base": "Claude Haiku 5.5",
+          "ref": "claude-haiku-5.5",
+          "input_usd_per_m": 0.1,
+          "output_usd_per_m": 0.5,
+          "cache_read_usd_per_m": 0.01,
+          "cache_write_usd_per_m": 0.125,
+          "prices_raw": [
+            "$0.10",
+            "$0.50",
+            "$0.01",
+            "$0.125"
+          ],
+          "monthly_limit_usd": 15,
+          "limit_raw": "$15"
+        },
+        {
+          "model": "Claude Haiku 5.5 (> 100K tokens)",
+          "base": "Claude Haiku 5.5",
+          "ref": "claude-haiku-5.5",
+          "input_usd_per_m": 0.5,
+          "output_usd_per_m": 2.5,
+          "cache_read_usd_per_m": 0.05,
+          "cache_write_usd_per_m": 0.625,
+          "prices_raw": [
+            "$0.50",
+            "$2.50",
+            "$0.05",
+            "$0.625"
+          ],
+          "monthly_limit_usd": 15,
+          "limit_raw": "$15"
+        },
+        {
+          "model": "Gemini 4 Argon (50% off)",
+          "base": "Gemini 4 Argon",
+          "ref": null,
+          "input_usd_per_m": null,
+          "output_usd_per_m": null,
+          "cache_read_usd_per_m": null,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$4.00 $2.00",
+            "$20.00 $10.00",
+            "$0.20 $0.10",
+            "-"
+          ],
+          "monthly_limit_usd": 30,
+          "limit_raw": "$30"
+        }
+      ]
+    },
+    {
+      "plan": "Go Plus",
+      "plan_id": "opencode-go-plus",
+      "fee_usd_per_month": 40,
+      "models": [
+        {
+          "model": "GLM-5.3-Flash",
+          "base": "GLM-5.3-Flash",
+          "ref": "glm-5.3-flash",
+          "input_usd_per_m": 0.15,
+          "output_usd_per_m": 0.5,
+          "cache_read_usd_per_m": 0.03,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$0.15",
+            "$0.50",
+            "$0.03",
+            "-"
+          ],
+          "monthly_limit_usd": 180,
+          "limit_raw": "$180"
+        },
+        {
+          "model": "GLM-5.3",
+          "base": "GLM-5.3",
+          "ref": null,
+          "input_usd_per_m": 1.4,
+          "output_usd_per_m": 4.4,
+          "cache_read_usd_per_m": 0.26,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$1.40",
+            "$4.40",
+            "$0.26",
+            "-"
+          ],
+          "monthly_limit_usd": 120,
+          "limit_raw": "$120"
+        },
+        {
+          "model": "GLM-5.2",
+          "base": "GLM-5.2",
+          "ref": null,
+          "input_usd_per_m": 1.4,
+          "output_usd_per_m": 4.4,
+          "cache_read_usd_per_m": 0.26,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$1.40",
+            "$4.40",
+            "$0.26",
+            "-"
+          ],
+          "monthly_limit_usd": 180,
+          "limit_raw": "$180"
+        },
+        {
+          "model": "Kimi K3.1 Pro",
+          "base": "Kimi K3.1 Pro",
+          "ref": null,
+          "input_usd_per_m": 2,
+          "output_usd_per_m": 10,
+          "cache_read_usd_per_m": 0.2,
+          "cache_write_usd_per_m": 2,
+          "prices_raw": [
+            "$2.00",
+            "$10.00",
+            "$0.20",
+            "$2.00"
+          ],
+          "monthly_limit_usd": 60,
+          "limit_raw": "$60"
+        },
+        {
+          "model": "Kimi K3",
+          "base": "Kimi K3",
+          "ref": null,
+          "input_usd_per_m": 3,
+          "output_usd_per_m": 15,
+          "cache_read_usd_per_m": 0.3,
+          "cache_write_usd_per_m": 3,
+          "prices_raw": [
+            "$3.00",
+            "$15.00",
+            "$0.30",
+            "$3.00"
+          ],
+          "monthly_limit_usd": 60,
+          "limit_raw": "$60"
+        },
+        {
+          "model": "Kimi K2.7 Code",
+          "base": "Kimi K2.7 Code",
+          "ref": null,
+          "input_usd_per_m": 0.95,
+          "output_usd_per_m": 4,
+          "cache_read_usd_per_m": 0.19,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$0.95",
+            "$4.00",
+            "$0.19",
+            "-"
+          ],
+          "monthly_limit_usd": 180,
+          "limit_raw": "$180"
+        },
+        {
+          "model": "LongCat-2.0",
+          "base": "LongCat-2.0",
+          "ref": null,
+          "input_usd_per_m": 0.3,
+          "output_usd_per_m": 1.2,
+          "cache_read_usd_per_m": 0.006,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$0.30",
+            "$1.20",
+            "$0.006",
+            "-"
+          ],
+          "monthly_limit_usd": 240,
+          "limit_raw": "$240"
+        },
+        {
+          "model": "Step 5 Preview",
+          "base": "Step 5 Preview",
+          "ref": null,
+          "input_usd_per_m": 1,
+          "output_usd_per_m": 2.7,
+          "cache_read_usd_per_m": 0.1,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$1.00",
+            "$2.70",
+            "$0.10",
+            "-"
+          ],
+          "monthly_limit_usd": 60,
+          "limit_raw": "$60"
+        },
+        {
+          "model": "Beam Free",
+          "base": "Beam Free",
+          "ref": null,
+          "input_usd_per_m": null,
+          "output_usd_per_m": null,
+          "cache_read_usd_per_m": null,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "Free",
+            "Free",
+            "Free",
+            "-"
+          ],
+          "monthly_limit_usd": null,
+          "limit_raw": "Unlimitedlimited time"
+        },
+        {
+          "model": "MiMo-V2.6-Flash",
+          "base": "MiMo-V2.6-Flash",
+          "ref": null,
+          "input_usd_per_m": 0.14,
+          "output_usd_per_m": 0.28,
+          "cache_read_usd_per_m": 0.0028,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$0.14",
+            "$0.28",
+            "$0.0028",
+            "-"
+          ],
+          "monthly_limit_usd": 120,
+          "limit_raw": "$120"
+        },
+        {
+          "model": "MiMo-V2.6-Pro",
+          "base": "MiMo-V2.6-Pro",
+          "ref": null,
+          "input_usd_per_m": 0.435,
+          "output_usd_per_m": 0.87,
+          "cache_read_usd_per_m": 0.003625,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$0.435",
+            "$0.87",
+            "$0.003625",
+            "-"
+          ],
+          "monthly_limit_usd": 60,
+          "limit_raw": "$60"
+        },
+        {
+          "model": "MiMo-V2.5",
+          "base": "MiMo-V2.5",
+          "ref": null,
+          "input_usd_per_m": 0.14,
+          "output_usd_per_m": 0.28,
+          "cache_read_usd_per_m": 0.0028,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$0.14",
+            "$0.28",
+            "$0.0028",
+            "-"
+          ],
+          "monthly_limit_usd": 120,
+          "limit_raw": "$120"
+        },
+        {
+          "model": "MiMo-V2.5-Pro",
+          "base": "MiMo-V2.5-Pro",
+          "ref": null,
+          "input_usd_per_m": 0.435,
+          "output_usd_per_m": 0.87,
+          "cache_read_usd_per_m": 0.003625,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$0.435",
+            "$0.87",
+            "$0.003625",
+            "-"
+          ],
+          "monthly_limit_usd": 60,
+          "limit_raw": "$60"
+        },
+        {
+          "model": "MiniMax M3.1 Flash",
+          "base": "MiniMax M3.1 Flash",
+          "ref": null,
+          "input_usd_per_m": 0.15,
+          "output_usd_per_m": 0.6,
+          "cache_read_usd_per_m": 0.015,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$0.15",
+            "$0.60",
+            "$0.015",
+            "-"
+          ],
+          "monthly_limit_usd": 80,
+          "limit_raw": "$80"
+        },
+        {
+          "model": "MiniMax M3",
+          "base": "MiniMax M3",
+          "ref": null,
+          "input_usd_per_m": 0.3,
+          "output_usd_per_m": 1.2,
+          "cache_read_usd_per_m": 0.06,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$0.30",
+            "$1.20",
+            "$0.06",
+            "-"
+          ],
+          "monthly_limit_usd": 180,
+          "limit_raw": "$180"
+        },
+        {
+          "model": "Muse Spark 1.3 Contributor",
+          "base": "Muse Spark 1.3 Contributor",
+          "ref": null,
+          "input_usd_per_m": 0.1,
+          "output_usd_per_m": 0.2,
+          "cache_read_usd_per_m": 0.002,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$0.10",
+            "$0.20",
+            "$0.002",
+            "-"
+          ],
+          "monthly_limit_usd": 120,
+          "limit_raw": "$120"
+        },
+        {
+          "model": "Muse Spark 1.2 Contributor",
+          "base": "Muse Spark 1.2 Contributor",
+          "ref": null,
+          "input_usd_per_m": 0.1,
+          "output_usd_per_m": 0.2,
+          "cache_read_usd_per_m": 0.002,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$0.10",
+            "$0.20",
+            "$0.002",
+            "-"
+          ],
+          "monthly_limit_usd": 120,
+          "limit_raw": "$120"
+        },
+        {
+          "model": "Qwen3.8 Max",
+          "base": "Qwen3.8 Max",
+          "ref": null,
+          "input_usd_per_m": 2,
+          "output_usd_per_m": 6,
+          "cache_read_usd_per_m": 0.25,
+          "cache_write_usd_per_m": 2.5,
+          "prices_raw": [
+            "$2.00",
+            "$6.00",
+            "$0.25",
+            "$2.50"
+          ],
+          "monthly_limit_usd": 60,
+          "limit_raw": "$60"
+        },
+        {
+          "model": "Qwen3.8 Flash",
+          "base": "Qwen3.8 Flash",
+          "ref": null,
+          "input_usd_per_m": 0.15,
+          "output_usd_per_m": 0.47,
+          "cache_read_usd_per_m": 0.016,
+          "cache_write_usd_per_m": 0.2,
+          "prices_raw": [
+            "$0.15",
+            "$0.47",
+            "$0.016",
+            "$0.20"
+          ],
+          "monthly_limit_usd": 90,
+          "limit_raw": "$90"
+        },
+        {
+          "model": "Qwen3.7 Plus (≤ 256K tokens)",
+          "base": "Qwen3.7 Plus",
+          "ref": null,
+          "input_usd_per_m": 0.4,
+          "output_usd_per_m": 1.6,
+          "cache_read_usd_per_m": 0.04,
+          "cache_write_usd_per_m": 0.5,
+          "prices_raw": [
+            "$0.40",
+            "$1.60",
+            "$0.04",
+            "$0.50"
+          ],
+          "monthly_limit_usd": 180,
+          "limit_raw": "$180"
+        },
+        {
+          "model": "Qwen3.7 Plus (> 256K tokens)",
+          "base": "Qwen3.7 Plus",
+          "ref": null,
+          "input_usd_per_m": 1.2,
+          "output_usd_per_m": 4.8,
+          "cache_read_usd_per_m": 0.12,
+          "cache_write_usd_per_m": 1.5,
+          "prices_raw": [
+            "$1.20",
+            "$4.80",
+            "$0.12",
+            "$1.50"
+          ],
+          "monthly_limit_usd": 180,
+          "limit_raw": "$180"
+        },
+        {
+          "model": "DeepSeek V4.1 Flash (Off-Peak)",
+          "base": "DeepSeek V4.1 Flash",
+          "ref": "deepseek-v4.1-flash",
+          "input_usd_per_m": 0.15,
+          "output_usd_per_m": 0.6,
+          "cache_read_usd_per_m": 0.003,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$0.15",
+            "$0.60",
+            "$0.003",
+            "-"
+          ],
+          "monthly_limit_usd": 160,
+          "limit_raw": "$160"
+        },
+        {
+          "model": "DeepSeek V4.1 Flash (Peak)",
+          "base": "DeepSeek V4.1 Flash",
+          "ref": "deepseek-v4.1-flash",
+          "input_usd_per_m": 0.3,
+          "output_usd_per_m": 1.2,
+          "cache_read_usd_per_m": 0.006,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$0.30",
+            "$1.20",
+            "$0.006",
+            "-"
+          ],
+          "monthly_limit_usd": 160,
+          "limit_raw": "$160"
+        },
+        {
+          "model": "DeepSeek V4 Pro (Off-Peak)",
+          "base": "DeepSeek V4 Pro",
+          "ref": null,
+          "input_usd_per_m": 0.66,
+          "output_usd_per_m": 1.98,
+          "cache_read_usd_per_m": 0.022,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$0.66",
+            "$1.98",
+            "$0.022",
+            "-"
+          ],
+          "monthly_limit_usd": 60,
+          "limit_raw": "$60"
+        },
+        {
+          "model": "DeepSeek V4 Pro (Peak)",
+          "base": "DeepSeek V4 Pro",
+          "ref": null,
+          "input_usd_per_m": 1.32,
+          "output_usd_per_m": 3.96,
+          "cache_read_usd_per_m": 0.044,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$1.32",
+            "$3.96",
+            "$0.044",
+            "-"
+          ],
+          "monthly_limit_usd": 60,
+          "limit_raw": "$60"
+        },
+        {
+          "model": "Hy4 preview",
+          "base": "Hy4 preview",
+          "ref": null,
+          "input_usd_per_m": 0.834,
+          "output_usd_per_m": 2.501,
+          "cache_read_usd_per_m": 0.042,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$0.834",
+            "$2.501",
+            "$0.042",
+            "-"
+          ],
+          "monthly_limit_usd": 120,
+          "limit_raw": "$120"
+        },
+        {
+          "model": "Hy3",
+          "base": "Hy3",
+          "ref": null,
+          "input_usd_per_m": 0.14,
+          "output_usd_per_m": 0.58,
+          "cache_read_usd_per_m": 0.035,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$0.14",
+            "$0.58",
+            "$0.035",
+            "-"
+          ],
+          "monthly_limit_usd": 240,
+          "limit_raw": "$240"
+        },
+        {
+          "model": "Grok 4.7 (≤ 200K tokens)",
+          "base": "Grok 4.7",
+          "ref": null,
+          "input_usd_per_m": 2,
+          "output_usd_per_m": 6,
+          "cache_read_usd_per_m": 0.5,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$2.00",
+            "$6.00",
+            "$0.50",
+            "-"
+          ],
+          "monthly_limit_usd": 60,
+          "limit_raw": "$60"
+        },
+        {
+          "model": "Grok 4.7 (> 200K tokens)",
+          "base": "Grok 4.7",
+          "ref": null,
+          "input_usd_per_m": 4,
+          "output_usd_per_m": 12,
+          "cache_read_usd_per_m": 1,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$4.00",
+            "$12.00",
+            "$1.00",
+            "-"
+          ],
+          "monthly_limit_usd": 60,
+          "limit_raw": "$60"
+        },
+        {
+          "model": "GPT 6 Luna (≤ 272K tokens)",
+          "base": "GPT 6 Luna",
+          "ref": "gpt-6-luna",
+          "input_usd_per_m": 0.1,
+          "output_usd_per_m": 0.5,
+          "cache_read_usd_per_m": 0.01,
+          "cache_write_usd_per_m": 0.125,
+          "prices_raw": [
+            "$0.10",
+            "$0.50",
+            "$0.01",
+            "$0.125"
+          ],
+          "monthly_limit_usd": 60,
+          "limit_raw": "$60"
+        },
+        {
+          "model": "GPT 6 Luna (> 272K tokens)",
+          "base": "GPT 6 Luna",
+          "ref": "gpt-6-luna",
+          "input_usd_per_m": 0.2,
+          "output_usd_per_m": 0.75,
+          "cache_read_usd_per_m": 0.02,
+          "cache_write_usd_per_m": 0.25,
+          "prices_raw": [
+            "$0.20",
+            "$0.75",
+            "$0.02",
+            "$0.25"
+          ],
+          "monthly_limit_usd": 60,
+          "limit_raw": "$60"
+        },
+        {
+          "model": "GPT 5.6 Luna (≤ 272K tokens)",
+          "base": "GPT 5.6 Luna",
+          "ref": null,
+          "input_usd_per_m": 0.2,
+          "output_usd_per_m": 1.2,
+          "cache_read_usd_per_m": 0.02,
+          "cache_write_usd_per_m": 0.25,
+          "prices_raw": [
+            "$0.20",
+            "$1.20",
+            "$0.02",
+            "$0.25"
+          ],
+          "monthly_limit_usd": 60,
+          "limit_raw": "$60"
+        },
+        {
+          "model": "GPT 5.6 Luna (> 272K tokens)",
+          "base": "GPT 5.6 Luna",
+          "ref": null,
+          "input_usd_per_m": 0.4,
+          "output_usd_per_m": 1.8,
+          "cache_read_usd_per_m": 0.04,
+          "cache_write_usd_per_m": 0.5,
+          "prices_raw": [
+            "$0.40",
+            "$1.80",
+            "$0.04",
+            "$0.50"
+          ],
+          "monthly_limit_usd": 60,
+          "limit_raw": "$60"
+        },
+        {
+          "model": "Claude Haiku 5.5 (≤ 100K tokens)",
+          "base": "Claude Haiku 5.5",
+          "ref": "claude-haiku-5.5",
+          "input_usd_per_m": 0.1,
+          "output_usd_per_m": 0.5,
+          "cache_read_usd_per_m": 0.01,
+          "cache_write_usd_per_m": 0.125,
+          "prices_raw": [
+            "$0.10",
+            "$0.50",
+            "$0.01",
+            "$0.125"
+          ],
+          "monthly_limit_usd": 60,
+          "limit_raw": "$60"
+        },
+        {
+          "model": "Claude Haiku 5.5 (> 100K tokens)",
+          "base": "Claude Haiku 5.5",
+          "ref": "claude-haiku-5.5",
+          "input_usd_per_m": 0.5,
+          "output_usd_per_m": 2.5,
+          "cache_read_usd_per_m": 0.05,
+          "cache_write_usd_per_m": 0.625,
+          "prices_raw": [
+            "$0.50",
+            "$2.50",
+            "$0.05",
+            "$0.625"
+          ],
+          "monthly_limit_usd": 60,
+          "limit_raw": "$60"
+        },
+        {
+          "model": "Gemini 4 Argon (50% off)",
+          "base": "Gemini 4 Argon",
+          "ref": null,
+          "input_usd_per_m": null,
+          "output_usd_per_m": null,
+          "cache_read_usd_per_m": null,
+          "cache_write_usd_per_m": null,
+          "prices_raw": [
+            "$4.00 $2.00",
+            "$20.00 $10.00",
+            "$0.20 $0.10",
+            "-"
+          ],
+          "monthly_limit_usd": 120,
+          "limit_raw": "$120"
+        }
+      ]
+    }
+  ]
+}
