@@ -1,11 +1,18 @@
 #!/usr/bin/env bun
-// Click matrix for the business catalogue (/ui/business/). Read-only on the page; it clicks.
+// Click matrix for the business catalogue (/ui/business/). Read-only on the page; it drives real pointer input.
 //
-// For every state-bearing specimen: each trigger inside it is clicked with a real pointer (CDP Input events), and the
-// specimen's state is read before and after: state attributes (aria-expanded, aria-pressed, aria-checked, aria-selected,
-// data-state, data-collapsible, data-orientation, data-open) and the geometry of every element in the specimen.
-// A trigger PASSES when either changed. A specimen with a state but no trigger is STATIC: it passes only when its label
-// says static. Before and after screenshots of each specimen go to <out>/<mode>/.
+// Every state trigger inside a state-bearing section is driven with CDP mouse events, then the state it controls is read
+// before and after: state attributes (aria-expanded, aria-pressed, aria-checked, aria-selected, data-state, data-collapsible,
+// data-orientation, data-open) and the geometry of every element in the specimen cell.
+//
+// Method per trigger:
+//   - press (left, or right for context menus) and release; hover-opened triggers (tooltip, hover-card) are hovered instead
+//   - a trigger that is already selected (tab, radio) cannot change by being clicked, so an unselected sibling in the same
+//     group is clicked first; with no such sibling the row is NOT-APPLICABLE, not a pass
+//   - a resizable separator is dragged along its own axis (aria-orientation)
+//   - an overlay that opens lists the items it shows, read from the open menu only (role=menu, data-state=open)
+// Verdicts: PASS (state changed), FAIL (no change), NOT-APPLICABLE (already selected, no sibling), STATIC-LABELLED
+// (a state with no trigger, labelled as static), DISABLED (disabled by design).
 //
 // Usage: bun run scripts/click-matrix.ts --dist apps/bigface/dist [--modes light,dark] [--out plan-shots/click]
 import { mkdirSync, writeFileSync } from "node:fs";
@@ -15,7 +22,7 @@ import { findChrome, launchChrome, openPage, serveDist, type Page } from "./them
 /** Sections whose components carry a state: open, expanded, collapsed, pressed, checked, selected or a sidebar state. */
 export const STATE_SECTIONS = ["accordion", "alert-dialog", "carousel", "checkbox", "collapsible", "combobox", "context-menu", "dialog", "drawer", "dropdown-menu", "hover-card", "menubar", "navigation-menu", "popover", "radio-group", "resizable", "select", "sheet", "sidebar", "switch", "tabs", "toggle", "toggle-group", "tooltip"] as const;
 
-export interface Item { k: number; cell: number; label: string; kind: string; disabled: boolean; trigger: string; mouse: "left" | "right" | "drag" }
+export interface Item { k: number; cell: number; group: number; label: string; kind: string; disabled: boolean; selected: boolean; hover: boolean; trigger: string; mouse: "left" | "right" | "drag" }
 export interface Static { cell: number; label: string; labelled: boolean }
 export interface Index { items: Item[]; statics: Static[]; error?: string }
 
@@ -23,14 +30,14 @@ export interface Index { items: Item[]; statics: Static[]; error?: string }
 export function index(id: string): Index {
   const CELL = "td > span, [data-demo], [data-frame], div.flex.min-w-0.flex-wrap.items-center.gap-3, div.flex.min-w-0.flex-col.items-start.gap-1\\.5";
   const STATE = ["aria-expanded", "aria-pressed", "aria-checked", "aria-selected", "data-state", "data-collapsible", "data-orientation", "data-open"];
-  const TRIG = "button, [role=tab], [role=switch], [role=checkbox], [role=radio], [role=combobox], [role=slider], [data-slot$=-trigger], [data-slot=carousel-next], [data-slot=carousel-previous], [data-sidebar=trigger], [data-slot=resizable-handle], [data-frame-trigger], [aria-expanded]";
+  const TRIG = "button, [role=tab], [role=switch], [role=checkbox], [role=radio], [role=combobox], [role=slider], [role=separator], [data-slot$=-trigger], [data-slot=carousel-next], [data-slot=carousel-previous], [data-sidebar=trigger], [data-slot=resizable-handle], [data-frame-trigger], [aria-expanded]";
   const sec = document.getElementById(id);
   if (!sec) return { items: [], statics: [], error: "no section " + id };
   const inDet = (e: Element) => e.closest("details") !== null;
   const stateTrig = (t: Element) => {
     const slot = t.getAttribute("data-slot") || "";
     const role = t.getAttribute("role") || "";
-    return STATE.some((a) => t.hasAttribute(a)) || ["tab", "switch", "checkbox", "radio", "combobox", "slider"].includes(role) || /-trigger$/.test(slot) || ["carousel-next", "carousel-previous", "resizable-handle"].includes(slot) || t.getAttribute("data-sidebar") === "trigger" || t.hasAttribute("data-frame-trigger");
+    return STATE.some((a) => t.hasAttribute(a)) || ["tab", "switch", "checkbox", "radio", "combobox", "slider", "separator"].includes(role) || /-trigger$/.test(slot) || ["carousel-next", "carousel-previous", "resizable-handle"].includes(slot) || t.getAttribute("data-sidebar") === "trigger" || t.hasAttribute("data-frame-trigger");
   };
   const cells = Array.from(sec.querySelectorAll(CELL)).filter((c) => !inDet(c));
   cells.forEach((c, i) => c.setAttribute("data-cmc", String(i)));
@@ -49,14 +56,23 @@ export function index(id: string): Index {
     return (first?.textContent || c.getAttribute("data-frame") || id).trim();
   };
   const items: Item[] = []; const statics: Static[] = [];
+  const groups: Element[] = [];
+  const groupOf = (t: Element): number => {
+    const g = t.closest("[role=tablist], [role=radiogroup], [data-slot=tabs-list], [data-slot=radio-group], [data-slot=toggle-group]") ?? t.parentElement;
+    if (!g) return -1;
+    let i = groups.indexOf(g); if (i < 0) { groups.push(g); i = groups.length - 1; }
+    return i;
+  };
   const triggers = Array.from(sec.querySelectorAll(TRIG)).filter((t) => !inDet(t) && stateTrig(t));
   triggers.forEach((t, k) => {
     t.setAttribute("data-cmt", String(k));
     const cell = t.closest("[data-cmc]") as Element | null; const ci = cell ? Number(cell.getAttribute("data-cmc")) : -1;
     const slot = t.getAttribute("data-slot") || "";
     const disabled = (t as HTMLButtonElement).disabled === true || t.getAttribute("aria-disabled") === "true";
-    const mouse: Item["mouse"] = slot === "context-menu-trigger" ? "right" : slot === "resizable-handle" ? "drag" : "left";
-    items.push({ k, cell: ci, label: cell ? labelOf(cell) : id, kind: slot || t.getAttribute("role") || t.tagName.toLowerCase(), disabled, trigger: ((t.textContent || "").trim() || t.getAttribute("aria-label") || slot || t.tagName.toLowerCase()).slice(0, 36), mouse });
+    const selected = [t.getAttribute("aria-selected"), t.getAttribute("aria-checked"), t.getAttribute("data-state")].some((v) => v === "true" || v === "checked" || v === "active" || v === "on");
+    const hover = /tooltip|hover-card/.test(slot);
+    const mouse: Item["mouse"] = slot === "context-menu-trigger" ? "right" : slot === "resizable-handle" || t.getAttribute("role") === "separator" ? "drag" : "left";
+    items.push({ k, cell: ci, group: groupOf(t), label: cell ? labelOf(cell) : id, kind: slot || t.getAttribute("role") || t.tagName.toLowerCase(), disabled, selected, hover, trigger: ((t.textContent || "").trim() || t.getAttribute("aria-label") || slot || t.tagName.toLowerCase()).slice(0, 36), mouse });
   });
   cells.forEach((c, i) => {
     const hasState = STATE.some((a) => c.hasAttribute(a)) || Array.from(c.querySelectorAll("*")).some((e) => STATE.some((a) => e.hasAttribute(a)) && !(e.matches(TRIG) && stateTrig(e)));
@@ -85,6 +101,20 @@ export function place(k: number): number[] | null {
   return [Math.round(r.left + r.width / 2), Math.round(r.top + r.height / 2), Math.round(r.width), Math.round(r.height)];
 }
 
+/** Runs in the page: a separator's direction. A horizontal separator (between stacked panels) is dragged along y. */
+export function axisOf(k: number): string {
+  const t = document.querySelector("[data-cmt='" + k + "']") as HTMLElement | null;
+  return t && t.getAttribute("aria-orientation") === "horizontal" ? "y" : "x";
+}
+
+/** Runs in the page, after a trigger opened something: the items of the open menu only, with their variant. */
+export function observeItems(): string[] {
+  return Array.from(document.querySelectorAll("[role=menu][data-state=open]"))
+    .flatMap((m) => Array.from(m.querySelectorAll("[data-variant]")))
+    .filter((e) => (e as HTMLElement).getBoundingClientRect().width > 0)
+    .map((e) => (e.textContent || "").trim().slice(0, 24) + " (variant=" + e.getAttribute("data-variant") + ")");
+}
+
 const diff = (a: string[], b: string[]) => {
   const ma = new Map(a.map((s) => [s.split(":")[0] + ":" + s.split(":")[1]?.split("=")[0], s]));
   const mb = new Map(b.map((s) => [s.split(":")[0] + ":" + s.split(":")[1]?.split("=")[0], s]));
@@ -93,13 +123,6 @@ const diff = (a: string[], b: string[]) => {
   for (const [key, vb] of mb) if (!ma.has(key)) out.push("(new) " + vb);
   return out;
 };
-
-/** Runs in the page, after a trigger opened something: the items now visible, with their variant (menus, menubars, context menus). */
-export function observeItems(): string[] {
-  return Array.from(document.querySelectorAll('[data-slot$="-item"][data-variant]'))
-    .filter((e) => (e as HTMLElement).getBoundingClientRect().width > 0)
-    .map((e) => (e.textContent || "").trim().slice(0, 24) + " (variant=" + e.getAttribute("data-variant") + ")");
-}
 
 if (import.meta.main) {
   const argv = Bun.argv.slice(2);
@@ -119,6 +142,18 @@ if (import.meta.main) {
     const s = await page.send("Page.captureScreenshot", { format: "png", captureBeyondViewport: true, clip: { x, y, width: box[2]! + 2 * m, height: box[3]! + 2 * m, scale: 1 } });
     writeFileSync(path, Buffer.from(s.data, "base64"));
   };
+  const press = async (page: Page, x: number, y: number, button: "left" | "right") => {
+    await page.send("Input.dispatchMouseEvent", { type: "mouseMoved", x, y });
+    await page.send("Input.dispatchMouseEvent", { type: "mousePressed", x, y, button, clickCount: 1 });
+    await page.send("Input.dispatchMouseEvent", { type: "mouseReleased", x, y, button, clickCount: 1 });
+  };
+  const drag = async (page: Page, x: number, y: number, axis: string) => {
+    const dx = axis === "x" ? 6 : 0; const dy = axis === "y" ? 6 : 0;
+    await page.send("Input.dispatchMouseEvent", { type: "mouseMoved", x, y });
+    await page.send("Input.dispatchMouseEvent", { type: "mousePressed", x, y, button: "left", clickCount: 1 });
+    for (let i = 1; i <= 8; i++) await page.send("Input.dispatchMouseEvent", { type: "mouseMoved", x: x + i * dx, y: y + i * dy, button: "left" });
+    await page.send("Input.dispatchMouseEvent", { type: "mouseReleased", x: x + 8 * dx, y: y + 8 * dy, button: "left", clickCount: 1 });
+  };
   try {
     for (const mode of modes) {
       const dir = join(outRoot, mode); mkdirSync(dir, { recursive: true });
@@ -130,6 +165,10 @@ if (import.meta.main) {
         for (const s of idx.statics) matrix.push({ mode, section: id, frame: s.label, trigger: "(none)", change: "state with no trigger", verdict: s.labelled ? "STATIC-LABELLED" : "FAIL" });
         for (const it of idx.items) {
           if (it.disabled) { matrix.push({ mode, section: id, frame: it.label, trigger: it.trigger, change: "disabled by design", verdict: "DISABLED" }); continue; }
+          // A selected member of a group cannot change by being clicked: move off it first, via an unselected sibling.
+          const sibling = it.selected ? idx.items.find((s) => s.k !== it.k && it.group >= 0 && s.group === it.group && !s.selected && !s.disabled) : undefined;
+          if (it.selected && !sibling) { matrix.push({ mode, section: id, frame: it.label, trigger: it.trigger + " [" + it.kind + "]", change: "already selected; no unselected sibling to move from", verdict: "NOT-APPLICABLE" }); continue; }
+          if (sibling) { const sp = await page.evaluate<number[] | null>("(" + place.toString() + ")(" + sibling.k + ")"); if (sp) { await press(page, sp[0]!, sp[1]!, "left"); await new Promise((r) => setTimeout(r, 400)); } }
           const at = await page.evaluate<number[] | null>("(" + place.toString() + ")(" + it.k + ")");
           if (!at) { matrix.push({ mode, section: id, frame: it.label, trigger: it.trigger, change: "trigger not found", verdict: "FAIL" }); continue; }
           await new Promise((r) => setTimeout(r, 180));
@@ -137,14 +176,14 @@ if (import.meta.main) {
           const [x, y] = [at[0]!, at[1]!];
           const stem = join(dir, id + "-" + String(it.k).padStart(2, "0"));
           if (before) await shot(page, before.box, stem + "-before.png");
-          await page.send("Input.dispatchMouseEvent", { type: "mouseMoved", x, y });
-          if (it.mouse === "drag") {
-            await page.send("Input.dispatchMouseEvent", { type: "mousePressed", x, y, button: "left", clickCount: 1 });
-            for (let i = 1; i <= 8; i++) await page.send("Input.dispatchMouseEvent", { type: "mouseMoved", x: x + i * 6, y, button: "left" });
-            await page.send("Input.dispatchMouseEvent", { type: "mouseReleased", x: x + 48, y, button: "left", clickCount: 1 });
+          if (it.hover) {
+            await page.send("Input.dispatchMouseEvent", { type: "mouseMoved", x, y });
+            await new Promise((r) => setTimeout(r, 900));
+          } else if (it.mouse === "drag") {
+            const axis = await page.evaluate<string>("(" + axisOf.toString() + ")(" + it.k + ")");
+            await drag(page, x, y, axis);
           } else {
-            await page.send("Input.dispatchMouseEvent", { type: "mousePressed", x, y, button: it.mouse, clickCount: 1 });
-            await page.send("Input.dispatchMouseEvent", { type: "mouseReleased", x, y, button: it.mouse, clickCount: 1 });
+            await press(page, x, y, it.mouse);
           }
           await new Promise((r) => setTimeout(r, 520));
           const after = await page.evaluate<ReturnType<typeof snap>>("(" + snap.toString() + ")(" + it.cell + ")");
@@ -154,7 +193,7 @@ if (import.meta.main) {
           const changed = changedAttrs.length > 0 || moved > 0;
           const items = after ? await page.evaluate<string[]>("(" + observeItems.toString() + ")()") : [];
           const what = changedAttrs.slice(0, 2).join("; ") + (moved ? (changedAttrs.length ? "; " : "") + moved + " element(s) moved" : "");
-          matrix.push({ mode, section: id, frame: it.label, trigger: it.trigger + " [" + it.kind + "]", change: (changed ? what : "no state change") + (items.length ? " | items: " + items.join(", ") : ""), verdict: changed ? "PASS" : "FAIL", items });
+          matrix.push({ mode, section: id, frame: it.label, trigger: it.trigger + " [" + it.kind + "]" + (it.hover ? " (hovered)" : ""), change: (changed ? what : "no state change") + (items.length ? " | menu items: " + items.join(", ") : ""), verdict: changed ? "PASS" : "FAIL", items });
           await key(page, "Escape");
           await page.send("Input.dispatchMouseEvent", { type: "mouseMoved", x: 2, y: 2 });
           await new Promise((r) => setTimeout(r, 250));
@@ -166,5 +205,5 @@ if (import.meta.main) {
   writeFileSync(join(outRoot, "matrix.json"), JSON.stringify(matrix, null, 1));
   const tally = (v: string) => matrix.filter((m) => m.verdict === v).length;
   for (const r of matrix) console.log([r.mode, r.section, r.frame, r.trigger, r.verdict, String(r.change).slice(0, 150)].join(" | "));
-  console.log("\nPASS " + tally("PASS") + "  FAIL " + tally("FAIL") + "  STATIC-LABELLED " + tally("STATIC-LABELLED") + "  DISABLED " + tally("DISABLED"));
+  console.log("\nPASS " + tally("PASS") + "  FAIL " + tally("FAIL") + "  NOT-APPLICABLE " + tally("NOT-APPLICABLE") + "  STATIC-LABELLED " + tally("STATIC-LABELLED") + "  DISABLED " + tally("DISABLED"));
 }
