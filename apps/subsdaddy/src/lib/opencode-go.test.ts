@@ -124,10 +124,10 @@ describe("model views price a Go plan at its own model's limit", () => {
     expect(rows.find((r) => r.key === "opencode-go-go")!.cells.allowance.text).toBe("$15.00/30d");
     expect(rows.find((r) => r.key === "opencode-go-plus")!.cells.allowance.text).toBe("$60.00/30d");
   });
-  test("the Measured view keeps Go's pool (derived), not one model's limit", () => {
+  test("the Measured view takes Go's main-model limit ($80, published), and the derived pool is comparison only (r53)", () => {
     const go = summaryTable(ds, MEASURED).rows.find((r) => r.key === "opencode-go")!;
-    expect(go.cells.allowance.sup).toBe("d");
-    expect(go.cells.allowance.text).not.toBe("$80.00/30d");
+    expect(go.cells.allowance.sup).toBe("p");
+    expect(go.cells.allowance.text).toBe("$80.00/30d");
   });
   test("a per-model limit is marked p, like a published figure", () => {
     expect(supOf("vendor_published_per_model", false)).toBe("p");

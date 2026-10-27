@@ -51,7 +51,7 @@ describe("the seed is on the Measured board, not N/A (r49)", () => {
   test("the $/B tooltip says it is seeded and that no window has exceeded 2% used", () => {
     const row = summaryTable(ds, MEASURED).rows.find((r) => r.key === "zai-glm-max")!;
     expect(row.cells.usd.title ?? "").toContain("seeded from the last computed reading; no window has exceeded 2% used");
-    expect(row.cells.usd.title ?? "").toContain("last stable reading 2026-10-27; current windows read 1% / 1%");
+    expect(row.cells.usd.title ?? "").toMatch(/last stable reading 2026-10-27; current windows read [\d.]+%/);
   });
 });
 

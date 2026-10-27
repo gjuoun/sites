@@ -73,7 +73,7 @@ function estimateRow(row: CatalogRow) {
     return { status: "unavailable" as const, reason, basis: null, values: [] as Value[], range_agent: null };
   }
   if (row.allowance.some((a) => a.mix_class)) {
-    return { status: "unavailable" as const, reason: "measured under a " + row.allowance.find((a) => a.mix_class)!.mix_class + "-class mix; its capacity and price use that class's list blend, not a reference model", basis: null, values: [] as Value[], range_agent: null };
+    return { status: "unavailable" as const, reason: "a third-party measured allowance: priced in each model view at that model's list price, capped by the hour ceiling (see methodology)", basis: null, values: [] as Value[], range_agent: null };
   }
   if (row.offered_models.length === 0) {
     return { status: "unavailable" as const, reason: "its checked model list names no reference model, so no estimate is made for one", basis: null, values: [] as Value[], range_agent: null };

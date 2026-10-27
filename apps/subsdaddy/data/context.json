@@ -1,13 +1,13 @@
 {
   "window_days": 45,
-  "measured_at": "2026-10-27T06:33:35.801Z",
+  "measured_at": "2026-10-27T22:06:19.000Z",
   "source": "local pi session logs (read-only, aggregated): session-end prompt = input + cache read + cache write of the last assistant call",
   "method": "quantiles by linear interpolation between order statistics (R-7); a session counts once, at its last call",
-  "sample_sessions": 540,
+  "sample_sessions": 576,
   "quantiles": {
-    "p50": 98391,
-    "p75": 221199,
-    "p90": 363573,
+    "p50": 108392,
+    "p75": 228286,
+    "p90": 372796,
     "max": 963868
   },
   "histogram": [
@@ -21,15 +21,15 @@
     },
     {
       "bucket": "50-100k",
-      "sessions": 122
+      "sessions": 124
     },
     {
       "bucket": "100-200k",
-      "sessions": 113
+      "sessions": 125
     },
     {
       "bucket": "200k+",
-      "sessions": 154
+      "sessions": 176
     }
   ],
   "throughput": {
@@ -38,11 +38,11 @@
     "method": "active time = sum of gaps between a session's consecutive messages, each gap capped at 5 minutes; sessions with at least 9 active minutes count; tokens per active hour per session; quantiles by R-7",
     "idle_cap_minutes": 5,
     "min_active_minutes": 9,
-    "sample_sessions": 208,
+    "sample_sessions": 234,
     "tokens_per_active_hour": {
-      "p25": 27346314,
-      "p50": 46510197,
-      "p75": 67299250
+      "p25": 29577201,
+      "p50": 47268592,
+      "p75": 67683945
     }
   }
 }
