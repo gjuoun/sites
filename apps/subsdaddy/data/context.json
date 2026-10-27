@@ -1,6 +1,6 @@
 {
   "window_days": 45,
-  "measured_at": "2026-10-27T02:00:28.406Z",
+  "measured_at": "2026-10-27T02:03:24.016Z",
   "source": "local pi session logs (read-only, aggregated): session-end prompt = input + cache read + cache write of the last assistant call",
   "method": "quantiles by linear interpolation between order statistics (R-7); a session counts once, at its last call",
   "sample_sessions": 534,
@@ -25,11 +25,11 @@
     },
     {
       "bucket": "100-200k",
-      "sessions": 113
+      "sessions": 112
     },
     {
       "bucket": "200k+",
-      "sessions": 148
+      "sessions": 149
     }
   ]
 }

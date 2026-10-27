@@ -38,7 +38,7 @@ export function CellView({ cell, numeric = false, clip = false }: { cell: Cell; 
       <span className={"block h-5 leading-5 whitespace-nowrap " + (clip ? "truncate " : "") + (numeric ? "text-right " : "") + (cell.na ? "text-muted-foreground" : "font-medium")}>
         {cell.text.endsWith("*") ? cell.text.slice(0, -1) : cell.text}
         {cell.text.endsWith("*") && <sup className="ml-px text-[9px] leading-none">*</sup>}
-        {cell.sup && <sup className="ml-px text-[10px] leading-none" data-sup={cell.sup}>{cell.sup}</sup>}
+        {cell.sup && <span className="ml-1 text-[0.8em] text-muted-foreground" data-sup={cell.sup}>({cell.sup})</span>}
       </span>
       <span className={"block h-4 truncate text-xs leading-4 text-muted-foreground " + (numeric ? "text-right" : "")} title={shown ?? undefined}>
         {shown ?? ""}

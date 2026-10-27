@@ -1,6 +1,6 @@
 {
   "window_days": 7,
-  "measured_at": "2026-10-27T02:00:43.716Z",
+  "measured_at": "2026-10-27T02:03:37.242Z",
   "source": "local Codex and Claude Code session logs, read-only, aggregated; codexbar windows",
   "providers": [
     {
@@ -13,7 +13,7 @@
       "window": {
         "five_hour_pct": 0,
         "weekly_pct": 0,
-        "resets_at": "2026-11-03T02:00:44Z"
+        "resets_at": "2026-11-03T02:03:38Z"
       },
       "window_reason": null,
       "tokens_7d": {
@@ -39,7 +39,7 @@
           "n": 3
         }
       },
-      "measured_at": "2026-10-27T02:00:43.716Z",
+      "measured_at": "2026-10-27T02:03:37.242Z",
       "source": "local ~/.codex session rollouts (read-only, aggregated); codexbar windows"
     },
     {
@@ -74,7 +74,7 @@
           "n": 58
         }
       },
-      "measured_at": "2026-10-27T02:00:43.716Z",
+      "measured_at": "2026-10-27T02:03:37.242Z",
       "source": "local ~/.claude session logs (read-only, aggregated)"
     }
   ]

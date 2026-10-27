@@ -1,4 +1,7 @@
 import { describe, expect, test } from "bun:test";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { UnifiedTable } from "@/components/unified-table";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { dataset } from "./dataset";
@@ -96,5 +99,44 @@ describe("the collector's shape is data, not UI", () => {
   });
   test("every view carries the bring-your-own line", () => {
     for (const c of viewChips(ds)) expect((summaryTable(ds, c.id).footnote ?? "").split("\n")).toContain(BRING_YOUR_OWN);
+  });
+});
+
+describe("Capacity note and source labels (r40)", () => {
+  test("no Capacity cell carries an ellipsis (U+2026) in its text, note or badges, in any view", () => {
+    for (const c of viewChips(ds)) for (const ctx of CONTEXT_IDS) for (const s of SHAPES) {
+      for (const r of summaryTable(ds, c.id, ctx, s).rows) {
+        const cap = r.cells.capacity;
+        const all = [cap.text, cap.note ?? "", cap.reason ?? "", ...cap.badges].join(" ");
+        expect(all.includes("\u2026")).toBe(false);
+      }
+    }
+  });
+
+  test("the measured Capacity note is the cache share alone, one decimal; low confidence is a badge line", () => {
+    for (const r of summaryTable(ds, MEASURED).rows) {
+      expect(r.cells.capacity.note ?? "").toMatch(/^cache \d+\.\d%$/);
+      expect(r.cells.capacity.note ?? "").not.toContain("window");
+    }
+    const z = summaryTable(ds, MEASURED).rows.find((r) => r.key === "zai-glm-max")!;
+    expect(z.cells.capacity.badges).toContain("low confidence");
+  });
+
+  test("the allowance text is $X.XX/Nd with no spaces", () => {
+    for (const r of summaryTable(ds, MEASURED).rows) {
+      if (r.cells.allowance.na) continue;
+      expect(r.cells.allowance.text).toMatch(/^\$\d+\.\d{2}\/\d+d$/);
+    }
+  });
+
+  test("each source label renders as a muted bracket: (p), (d) and (c) appear in the Measured table, and (r) renders from a vendor reading", () => {
+    const html = renderToStaticMarkup(createElement(UnifiedTable, { testId: "t", columns: summaryTable(ds, MEASURED).columns, rows: summaryTable(ds, MEASURED).rows }));
+    expect(html).toContain("(p)");
+    expect(html).toContain("(d)");
+    expect(html).toContain("(c)");
+    const cell = { text: "$70.00/30d", na: false, reason: null, badges: [], title: null, note: null, flags: false, sup: "r" as const };
+    const rHtml = renderToStaticMarkup(createElement(UnifiedTable, { testId: "r", columns: [{ key: "a", label: "A", width: "100%" }], rows: [{ key: "x", cells: { a: cell } }] }));
+    expect(rHtml).toContain("(r)");
+    expect(rHtml).toContain('data-sup="r"');
   });
 });

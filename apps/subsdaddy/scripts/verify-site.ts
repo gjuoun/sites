@@ -68,7 +68,9 @@ for (const c of cells(summary)) {
 }
 
 // 4. the front page has no detail: no badges, no OR column, no sections, no footnote table, one footnote link
-if (/data-badge=/.test(idx)) fail("badges on the front page");
+// the only badge the front page may carry is low confidence, on a Capacity cell (its third line)
+const badgeValues = [...idx.matchAll(/data-badge="([^"]*)"/g)].map((m) => m[1]);
+if (badgeValues.some((v) => v !== "low confidence")) fail("front page carries a badge other than low confidence: " + badgeValues.join(", "));
 if (/OR p50|Badges|vs measured|>Basis</.test(idx)) fail("a detail column name is on the front page");
 if (/\b[ABC] · /.test(idx)) fail("a section letter is on the front page");
 if (!/href="\/methodology"/.test(idx)) fail("front page has no link to /methodology");

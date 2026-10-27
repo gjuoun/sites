@@ -9,7 +9,7 @@ export const SHAPES: ShapeDef[] = ALL_SHAPES.filter((x) => x.enabled);
 export const DEFAULT_SHAPE_ID = shapesFileSchema.parse(shapesRaw).default;
 export const DEFAULT_SHAPE: ShapeDef = SHAPES.find((s) => s.id === DEFAULT_SHAPE_ID) ?? SHAPES[0];
 
-import { na, value, type Cell } from "./cells";
+import { na, value, type BadgeKind, type Cell } from "./cells";
 import { REF_IDS, REF_NAMES, pooledMix, type RefId } from "../data/estimate";
 import { contextLabel, type ContextId } from "../data/context";
 import { CONTEXTS, WINDOWS_PER_DAY, monthlyTokens, tokensPerMessage, usdPerBOfTokens } from "../data/messages";
@@ -142,7 +142,7 @@ export const withSup = (c: Cell, sup: Sup): Cell => ({ ...c, sup });
 const pct = (s: number) => Math.round(s * 100) + "%";
 
 type ViewRow = {
-  key: string; label: string; fee: number; capacity: string | null; capacityReason: string; capDetail?: string[] | null; capNote?: string | null;
+  key: string; label: string; fee: number; capacity: string | null; capacityReason: string; capDetail?: string[] | null; capNote?: string | null; capBadges?: BadgeKind[];
   allowance: AllowanceCell | null; allowanceReason: string;
   usd: number | null; usdTitle: string; marker: "" | "*" | "†" | "‡";
   tps: number | null; tpsTitle: string; ttft: number | null; ttftTitle: string;
@@ -215,7 +215,8 @@ function measuredRows(ds: DS): ViewRow[] {
       fee: l.price_month_usd,
       capacity: l.capacity.tokens_per_cycle === null ? null : (l.capacity.tokens_per_cycle / 1e9).toFixed(2) + "B/" + l.capacity.cycle_days + "d",
       capDetail: capDetailOf(l),
-      capNote: [cm ? cm.short : null, capNoteOf(l)].filter((x) => x !== null).join(" · ") || null,
+      capNote: cm ? cm.short : null,
+      capBadges: l.capacity.confidence === "low" ? ["low confidence"] : [],
       capacityReason: l.capacity.reason ?? "no capacity reading",
       allowance: laneAllowance(ds, l),
       allowanceReason: "no allowance reading for this lane",
@@ -373,8 +374,8 @@ export function summaryTable(ds: DS, view: ViewId, ctx: ContextId = "short", sha
     cells: {
       plan: value(r.label),
       fee: value(money(r.fee) + "/mo"),
-      allowance: r.allowance === null ? naShort(r.allowanceReason) : withSup(value("$" + r.allowance.usd.toFixed(2) + " / " + r.allowance.cycle + "d", [], r.allowance.title), r.allowance.sup),
-      capacity: r.capacity === null ? naShort(r.capacityReason) : withDetail(value(r.capacity, [], null, r.capNote ?? null), r.capDetail ?? null),
+      allowance: r.allowance === null ? naShort(r.allowanceReason) : withSup(value("$" + r.allowance.usd.toFixed(2) + "/" + r.allowance.cycle + "d", [], r.allowance.title), r.allowance.sup),
+      capacity: r.capacity === null ? naShort(r.capacityReason) : withDetail(value(r.capacity, r.capBadges ?? [], null, r.capNote ?? null), r.capDetail ?? null),
       usd: r.usd === null ? naShort(r.usdTitle) : value(usd(r.usd) + r.marker, [], r.usdTitle),
       tps: r.tps === null ? naShort(r.tpsTitle || "no speed data") : value("~" + sig2(r.tps), [], r.tpsTitle),
       ttft: r.ttft === null ? naShort(r.ttftTitle || "no latency data") : value("~" + sig2(r.ttft) + " ms", [], r.ttftTitle),
