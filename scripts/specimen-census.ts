@@ -196,6 +196,16 @@ export function census(): CensusResult {
 			);
 			continue;
 		}
+		// The track must span its specimen: an axis inside a box far narrower than its cell reads as centred, not as an edge.
+		const cell = el.closest(CELL);
+		// Only axis specimens: bubbles and messages, and rows labelled align=... (an icon addon is not an axis demonstration).
+		const axisRow = el.closest("div.grid")?.querySelector(":scope > span")?.textContent?.startsWith("align=") ?? false;
+		if (cell && cell !== track && (el.getAttribute("data-slot") === "bubble" || axisRow)) {
+			const cp = pad(cell);
+			const inner = cell.clientWidth - cp.l - cp.r;
+			if (track.clientWidth < inner * 0.6)
+				add(el, "B", "track does not span its specimen", align + " " + name(el) + ": track " + track.clientWidth + "px of a " + Math.round(inner) + "px cell");
+		}
 		const tr = track.getBoundingClientRect();
 		const pinned = atEnd
 			? er.right >= tr.right - tp.r - 2
