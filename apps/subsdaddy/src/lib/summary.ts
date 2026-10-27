@@ -207,7 +207,7 @@ export function orWeighted(ds: DS, ref: RefId): { tps: number | null; ttft: numb
   const requests = eps.reduce((a, e) => a + (e.request_count ?? 0), 0);
   const tps = weightedMedian(eps.filter((e) => e.p50_throughput !== null).map((e) => ({ value: e.p50_throughput as number, weight: e.request_count ?? 0 })));
   const ttft = weightedMedian(eps.filter((e) => e.p50_latency_ms !== null).map((e) => ({ value: e.p50_latency_ms as number, weight: e.request_count ?? 0 })));
-  return { tps, ttft, title: orId + " · " + eps.length + " endpoints · " + requests.toLocaleString("en-US") + " requests", reason: null };
+  return { tps, ttft, title: orId + " · " + eps.length + " endpoints · " + requests.toLocaleString("en-US") + " requests" + (or.kept ? " · " + or.kept : ""), reason: null };
 }
 
 type DsLane = DS["lanes"]["lanes"][number];

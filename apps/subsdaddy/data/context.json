@@ -1,6 +1,6 @@
 {
   "window_days": 45,
-  "measured_at": "2026-10-27T22:43:35.686Z",
+  "measured_at": "2026-10-27T22:51:08.704Z",
   "source": "local pi session logs (read-only, aggregated): session-end prompt = input + cache read + cache write of the last assistant call",
   "method": "quantiles by linear interpolation between order statistics (R-7); a session counts once, at its last call",
   "sample_sessions": 579,
@@ -38,11 +38,11 @@
     "method": "session-hour = one session with usage in one clock hour; aggregate = all tokens / session-hours; median, mean and p90 are over session-hours (R-7); concurrency = distinct sessions per clock hour that has usage",
     "active_hours": 249,
     "session_hours": 915,
-    "tokens": 11264376352,
+    "tokens": 11291045100,
     "tokens_per_session_hour": {
-      "aggregate": 12310794,
+      "aggregate": 12339940,
       "median": 3638732,
-      "mean": 12310794,
+      "mean": 12339940,
       "p90": 34963343
     },
     "concurrency": {
