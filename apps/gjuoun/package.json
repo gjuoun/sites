@@ -17,13 +17,22 @@
     "check:snippets": "bun run scripts/check-snippets.ts"
   },
   "dependencies": {
-    "astro": "7.4.2",
     "@astrojs/rss": "4.0.19",
-    "@gjuoun/bigface-business-ui": "workspace:*"
+    "@gjuoun/bigface-business-ui": "workspace:*",
+    "@tailwindcss/vite": "4.3.3",
+    "astro": "7.4.2",
+    "class-variance-authority": "0.7.1",
+    "cn": "0.5.0",
+    "radix-ui": "1.8.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "tailwindcss": "4.3.3"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.12",
     "@biomejs/biome": "2.6.2",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
     "effect": "4.0.4",
     "puppeteer-core": "25.15.0",
     "typescript": "5.9.3"

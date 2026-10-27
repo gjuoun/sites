@@ -3,9 +3,11 @@
 // name no other host except the declared external ones. "gqntt" never appears in the output.
 import { join } from "node:path";
 
-/** External hosts the content links to (project pages and the repo), plus XML namespace identifiers, which are not requests. */
+/** External hosts the content links to (project pages, the repo, the profile), plus XML namespace identifiers and the licence comment in the compiled stylesheet, which are not requests. */
 export const EXTERNAL_HOSTS: readonly string[] = [
 	"github.com",
+	"linkedin.com",
+	"tailwindcss.com", // the licence comment Tailwind writes at the top of the compiled stylesheet; not a request
 	"qublack.qqntt.com",
 	"bigface.qqntt.com",
 	"subsdaddy.qqntt.com",

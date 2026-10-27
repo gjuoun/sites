@@ -1,0 +1,26 @@
+/* Tailwind for the theme package's stock components only (cards, chips, buttons). Theme and utilities, no
+   preflight: the site's plain CSS keeps the element defaults it was written against. Colours come from the
+   business theme (styles.css), so no palette is set here. */
+@layer theme, base, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+@import "@gjuoun/bigface-business-ui/styles.css";
+/* Only the three stock components the site renders: the package's other 60 would only add CSS nobody loads. */
+@source "../../../../packages/bigface-business-ui/src/components/ui/card.tsx";
+@source "../../../../packages/bigface-business-ui/src/components/ui/badge.tsx";
+@source "../../../../packages/bigface-business-ui/src/components/ui/button.tsx";
+
+/* The site's font stacks, as in the showcase entry: the stock components' font-sans and font-heading follow it. */
+@theme inline {
+	--font-sans: "QuBlack Sans", ui-sans-serif, system-ui, sans-serif;
+	--font-mono: "QuBlack Mono", ui-monospace, monospace;
+}
+
+/* Preflight's one global that the stock components rely on: a border with no colour takes the theme's border. */
+@layer base {
+	*,
+	::after,
+	::before {
+		border-color: var(--theme-border);
+	}
+}

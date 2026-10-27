@@ -66,3 +66,20 @@ describe("originViolations", () => {
 		]);
 	});
 });
+
+test("the resume's profile link and the stylesheet's licence comment are declared, not violations", () => {
+	const files = new Map([
+		[
+			"index.html",
+			home(
+				"https://jun-blog.qqntt.com/",
+				'<a href="https://linkedin.com/in/gjuoun">LinkedIn</a>',
+			),
+		],
+		[
+			"_astro/Base.css",
+			"/*! tailwindcss v4.3.3 | MIT License | https://tailwindcss.com */",
+		],
+	]);
+	expect(originViolations(files, origin)).toEqual([]);
+});
