@@ -43,6 +43,10 @@ describe("a held lane says so in its capacity tooltip (r48)", () => {
     const lines = capDetailOf({ capacity: held } as never);
     expect(lines).toContain("last stable reading 2026-10-20; current windows read 1% / 1%; capacity held, not recomputed from the current reading");
   });
+  test("a held lane states its held allowance and the figure the current reading gives", () => {
+    const lines = capDetailOf({ capacity: { ...(held as object), allowance_usd_per_cycle: 106.66, allowance_derived_usd: 107.29 } } as never);
+    expect(lines).toContain("allowance held at $106.66 per cycle (last stable reading); the current reading gives $107.29");
+  });
   test("a lane without a stale record carries no such line", () => {
     const fresh = { ...(held as object), stale: null } as never;
     const lines = capDetailOf({ capacity: fresh } as never);

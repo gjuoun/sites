@@ -197,7 +197,7 @@ export const allowanceFileSchema = z.object({
       measured_at: z.string().min(1),
       source: z.string().min(1),
       /** Set when the lane holds its last stable reading (r48): every window is at or under 2% used. */
-      stale: z.object({ read_at: z.string().min(1), published_on: z.string().min(1), current_windows: z.array(windowUseSchema), reason: z.string().min(1) }).nullable().optional(),
+      stale: z.object({ read_at: z.string().min(1), published_on: z.string().min(1), current_windows: z.array(windowUseSchema), reason: z.string().min(1), seed: z.boolean().optional(), seed_source: z.string().min(1).optional() }).nullable().optional(),
       fee_usd: z.number().positive().nullable(),
       fee_per_cycle_usd: z.number().positive().nullable(),
       fee_basis: z.string().nullable(),

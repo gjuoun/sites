@@ -210,7 +210,7 @@ const lanes = computed.map((rec: any) => {
   if (res.mode === "fresh") return { ...rec, stale: null };
   if (res.mode === "stale") {
     const s = res.stable;
-    return { ...rec, binding_window: s.binding_window, cycle_days: s.cycle_days, fee_per_cycle_usd: s.fee_per_cycle_usd, tokens_per_cycle: s.tokens_per_cycle, allowance_usd_per_cycle: s.allowance_usd_per_cycle, allowance_basis: s.allowance_basis, usd_per_b_measured: s.usd_per_b_measured, confidence: "low", reason: null, models: modelRowsFor({ chosen: s.allowance_usd_per_cycle, fee: s.fee_per_cycle_usd, basis: s.allowance_basis, mix: rec.mix }), stale: { read_at: s.read_at, published_on: s.published_on, current_windows: res.current, reason: res.reason } };
+    return { ...rec, binding_window: s.binding_window, cycle_days: s.cycle_days, fee_per_cycle_usd: s.fee_per_cycle_usd, tokens_per_cycle: s.tokens_per_cycle, allowance_usd_per_cycle: s.allowance_usd_per_cycle, allowance_basis: s.allowance_basis, usd_per_b_measured: s.usd_per_b_measured, confidence: "low", reason: null, models: modelRowsFor({ chosen: s.allowance_usd_per_cycle, fee: s.fee_per_cycle_usd, basis: s.allowance_basis, mix: rec.mix }), stale: { read_at: s.read_at, published_on: s.published_on, current_windows: res.current, reason: res.reason, seed: s.seed ?? false, seed_source: s.seed_source ?? null } };
   }
   return { ...rec, allowance_usd_per_cycle: null, allowance_basis: null, allowance_derived_usd: null, tokens_per_cycle: null, binding_window: null, binding_coverage: null, binding_unpriced_share: null, binding_assumed_share: null, usd_per_b_measured: null, list_usd_per_b_effective: null, confidence: null, reason: res.reason, models: [], stale: null };
 });

@@ -309,7 +309,7 @@ export const laneRecordSchema = z.object({
     confidence: z.enum(["low", "normal"]).nullable(),
     confidence_reason: z.string().nullable(),
     /** Set when the lane holds its last stable reading (r48). */
-    stale: z.object({ read_at: z.string().min(1), published_on: z.string().min(1), current_windows: z.array(z.object({ window: z.string().min(1), used_pct: z.number().min(0).max(100), measured_at: z.string().min(1), source: z.string().min(1) })), reason: z.string().min(1) }).nullable().optional(),
+    stale: z.object({ read_at: z.string().min(1), published_on: z.string().min(1), current_windows: z.array(z.object({ window: z.string().min(1), used_pct: z.number().min(0).max(100), measured_at: z.string().min(1), source: z.string().min(1) })), reason: z.string().min(1), seed: z.boolean().optional(), seed_source: z.string().min(1).optional() }).nullable().optional(),
     badge: z.string().nullable(),
     windows: z.array(
       z.object({

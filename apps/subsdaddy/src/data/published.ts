@@ -27,6 +27,9 @@ export const stableSchema = z.object({
   allowance_basis: z.string().min(1),
   usd_per_b_measured: z.number().positive(),
   windows: z.array(windowUseSchema).min(1),
+  /** An exception to the first-run rule (r49): a reading taken from a committed build, not from a window above 2%. */
+  seed: z.boolean().optional(),
+  seed_source: z.string().min(1).optional(),
 });
 export const snapshotFileSchema = z.object({
   source: z.string().min(1),

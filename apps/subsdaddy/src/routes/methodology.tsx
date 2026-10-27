@@ -410,6 +410,10 @@ function AllowanceColumnSection() {
         A reading above 2% replaces the stored one. A lane with no stored reading shows N/A. The reason: the allowance is cost over the used share, so at 1% used a tenth of a point moves the $/B by about 10%.
       </p>
       <p className={SMALL_NOTE}>
+        Z.ai exception (r49). A lane with no stored reading is N/A, but Z.ai is kept on the board: its value is the reading computed in build 8779751 (2026-10-27), taken from git and not re-derived,
+        and it is marked seed. No Z.ai window has read above 2% used in any build since r35, so this is the only computed Z.ai reading on record. The first window above 2% used recomputes the lane and removes the seed mark.
+      </p>
+      <p className={SMALL_NOTE}>
         Bring your own shape: a local collector is planned; the site will price every plan against your own cache share. Its contract is written, and the custom shape stays disabled until it ships.
       </p>
     </section>

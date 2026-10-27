@@ -92,18 +92,19 @@ describe("every token is priced: no binding window has unpriced tokens", () => {
   });
 });
 
-describe("Z.ai with no stored stable reading: N/A with the reason (r48)", () => {
-  test("both readings are low_signal (at or under 2% used), so no window binds and the record gives the reason", () => {
+describe("Z.ai is held on its seed: its reading is low-signal, so the record keeps the seeded reading (r49)", () => {
+  test("both readings are low_signal (at or under 2% used), and the record is held: stale, with the seed mark", () => {
     const z = byLane("zai-glm-max");
     expect(z.windows.every((w: any) => w.used_pct <= 2)).toBe(true);
     expect(z.windows.every((w: any) => w.status === "low_signal")).toBe(true);
-    expect(z.binding_window).toBeNull();
-    expect(z.reason).toContain("N/A until a window passes 2% used");
+    expect(z.stale).not.toBeNull();
+    expect(z.stale.seed).toBe(true);
+    expect(z.binding_window).toBe("weekly");
   });
-  test("the lane is not ranked: no $/B is published while no stable reading is stored", () => {
+  test("the lane is ranked by its held $/B, and the reason is cleared", () => {
     const rec = laneRec("zai-glm-max");
-    expect(rec.usd_per_b).toBeNull();
-    expect(rec.capacity.stale ?? null).toBeNull();
+    expect(rec.usd_per_b).not.toBeNull();
+    expect(rec.capacity.reason ?? null).toBeNull();
   });
 });
 

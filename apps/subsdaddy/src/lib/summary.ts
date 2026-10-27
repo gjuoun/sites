@@ -13,6 +13,11 @@ import { na, value, type BadgeKind, type Cell } from "./cells";
 import { REF_IDS, REF_NAMES, pooledMix, type RefId } from "../data/estimate";
 import { contextLabel, type ContextId } from "../data/context";
 import { staleSentence } from "../data/published";
+
+/** The held-lane sentence: the date of its last stable reading and its current windows; a seed adds its own clause (r49). */
+export function heldLine(s: { read_at: string; current_windows: Array<{ window: string; used_pct: number; measured_at: string; source: string }>; seed?: boolean | null }): string {
+  return staleSentence(s.read_at, s.current_windows) + (s.seed ? "; seeded from the last computed reading; no window has exceeded 2% used" : "");
+}
 import { CONTEXTS, WINDOWS_PER_DAY, monthlyTokens, tokensPerMessage, usdPerBOfTokens } from "../data/messages";
 import type { CatalogRow } from "../data/catalog";
 import { orForModel } from "./or-stats";
@@ -207,13 +212,17 @@ export function capDetailOf(l: DsLane): string[] {
     lines.push("vendor-reported pool: $" + vendor.toFixed(2) + " per cycle (used by the model views)");
     lines.push("derived: $" + derived.toFixed(2) + " (lower estimate" + unpricedNote + ")");
   } else if (derived !== null) {
-    lines.push("allowance: derived $" + derived.toFixed(2) + " per cycle" + (c.allowance_vendor_reason ? " (" + c.allowance_vendor_reason + ")" : ""));
+    lines.push(
+      l.capacity.stale && c.allowance_usd_per_cycle !== null && c.allowance_usd_per_cycle !== undefined
+        ? "allowance held at $" + c.allowance_usd_per_cycle.toFixed(2) + " per cycle (last stable reading); the current reading gives $" + derived.toFixed(2)
+        : "allowance: derived $" + derived.toFixed(2) + " per cycle" + (c.allowance_vendor_reason ? " (" + c.allowance_vendor_reason + ")" : "")
+    );
   }
   const binding = c.windows.find((w) => w.window === c.window);
   if (c.confidence === "low" && binding) lines.push("used " + Math.round(binding.used_pct) + "% — capacity estimate has a wide error bar");
   if (c.top_models.length > 0) lines.push("model mix (binding window): " + c.top_models.map((m) => m.label + " " + Math.round(m.share * 100) + "%").join(", "));
   if (c.low_coverage) lines.push("low coverage: more than 5% of the binding window's tokens have no list price");
-  if (l.capacity.stale) lines.push(staleSentence(l.capacity.stale.read_at, l.capacity.stale.current_windows) + "; capacity held, not recomputed from the current reading");
+  if (l.capacity.stale) lines.push(heldLine(l.capacity.stale) + "; capacity held, not recomputed from the current reading");
   if (c.windows.length > 0 && c.windows.every((w) => w.status === "low_signal")) lines.push("all windows under 2% used; capacity uses the longest window and has a wide error bar");
   return lines;
 }
@@ -245,7 +254,7 @@ function measuredRows(ds: DS): ViewRow[] {
       allowance: laneAllowance(ds, l),
       allowanceReason: "no allowance reading for this lane",
       usd: l.usd_per_b,
-      usdTitle: sourceNote + " · " + (cm ? cm.line : "own traffic") + (l.capacity.stale ? " · " + staleSentence(l.capacity.stale.read_at, l.capacity.stale.current_windows) : ""),
+      usdTitle: sourceNote + " · " + (cm ? cm.line : "own traffic") + (l.capacity.stale ? " · " + heldLine(l.capacity.stale) : ""),
       marker: l.usd_per_b_basis === "derived" ? "*" : "",
       tps: l.measured.p50_output_tps,
       tpsTitle: "our usage logs, p50 output tok/s",
