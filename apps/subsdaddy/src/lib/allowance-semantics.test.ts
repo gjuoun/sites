@@ -80,7 +80,7 @@ describe("every token is priced: no binding window has unpriced tokens", () => {
   test("deepseek-v4.1-flash-fast is priced as an assumed alias of deepseek-v4.1-flash, and says so", () => {
     const fast = read("models.json").usage_prices.find((p: any) => p.openrouter === "deepseek/deepseek-v4.1-flash-fast");
     expect(fast.price_basis).toBe("assumed_alias_rate");
-    expect([fast.in_per_m, fast.out_per_m, fast.cache_per_m]).toEqual([0.225, 0.9, 0.0045]);
+    expect([fast.in_per_m, fast.out_per_m, fast.cache_per_m]).toEqual([0.18125, 0.725, 0.003625]);
     expect(fast.source).toContain("no public listing");
   });
 
@@ -138,31 +138,26 @@ describe("model views: an allowance-based $/B on each plan's own traffic shape",
   });
 });
 
-describe("Claude: archived prompt counts, the same convention as Codex", () => {
-  test("the three plans carry their archived ranges, lower bound used", () => {
+describe("Claude: archived prompt counts are a methodology lower bound, not a table value", () => {
+  test("the three plans no longer carry a message limit: their prompt counts are not a table value", () => {
     const get = (id: string) => catalog.rows.find((r: any) => r.plan_id === id).message_limit;
-    expect([get("claude-code-pro").low, get("claude-code-pro").high]).toEqual([10, 40]);
-    expect([get("claude-code-max-5x").low, get("claude-code-max-5x").high]).toEqual([50, 200]);
-    expect([get("claude-code-max-20x").low, get("claude-code-max-20x").high]).toEqual([200, 800]);
+    expect(get("claude-code-pro")).toBeNull();
   });
 
-  test("lower bound, 3 windows a day, 30 days, 100,462 tokens per prompt: Pro 0.090B, Max 5x 0.452B, Max 20x 1.809B per month", () => {
-    const rows = summaryTable(ds, "claude-haiku-5.5", "short").rows;
-    const cap = (k: string) => rows.find((r) => r.key === k)!.cells.capacity.text;
-    expect(cap("claude-code-pro")).toBe("0.09B/mo");
-    expect(cap("claude-code-max-5x")).toBe("0.45B/mo");
-    expect(cap("claude-code-max-20x")).toBe("1.81B/mo");
+  test("the lower-bound conversion is 3 windows a day, 30 days, 100,462 tokens per prompt: Pro 0.090B, Max 5x 0.452B, Max 20x 1.809B per month", () => {
     expect(monthlyTokens({ low: 10, high: 40 }, CONTEXTS.short, 3) / 1e9).toBeCloseTo(0.0904158, 6);
     expect(monthlyTokens({ low: 50, high: 200 }, CONTEXTS.short, 3) / 1e9).toBeCloseTo(0.4520790, 6);
     expect(monthlyTokens({ low: 200, high: 800 }, CONTEXTS.short, 3) / 1e9).toBeCloseTo(1.8083160, 6);
   });
 
-  test("the prompt rows carry the double dagger and their own footnote line, and the view has four lines at most", () => {
+  test("the table shows N/A for the three plans, with no double-dagger marker and no prompt footnote", () => {
     const t = summaryTable(ds, "claude-haiku-5.5", "short");
-    expect(t.rows.find((r) => r.key === "claude-code-pro")!.cells.usd.text.endsWith("‡")).toBe(true);
-    const lines = (t.footnote ?? "").split("\n");
-    expect(lines.length).toBeLessThanOrEqual(4);
-    expect(lines).toContain("‡ converted from vendor prompt-count guidance (2025 archive) at 100K context per prompt");
+    for (const k of ["claude-code-pro", "claude-code-max-5x", "claude-code-max-20x"]) {
+      const r = t.rows.find((x) => x.key === k)!;
+      expect(r.cells.usd.text).toBe("N/A");
+      expect(r.cells.capacity.text).toBe("N/A");
+    }
+    expect(t.footnote ?? "").not.toContain("converted from vendor prompt-count guidance");
   });
 });
 

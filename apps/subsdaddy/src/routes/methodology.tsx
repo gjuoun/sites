@@ -64,7 +64,7 @@ function MethodologyPage() {
       </section>
       <section className="space-y-2">
         <h2 className="text-lg font-medium">Model prices by prompt length</h2>
-        <p>OpenRouter prices some models by prompt length. A request whose prompt reaches a threshold is priced at that band's rates for the whole request. Claude Haiku 5.5 moves to 5× the base input price from 100k prompt tokens; GPT-6 Luna moves to 2× from 272k. Estimates use two standard contexts, 100K and 350K (see Standard context below).</p>
+        <p>OpenRouter prices some models by prompt length. A request whose prompt is above a threshold is priced at that band's rates for the whole request; a prompt of exactly the threshold stays in the band below. Claude Haiku 5.5 moves to 5× the base input price above 100k prompt tokens; GPT-6 Luna moves to 2× above 272k. Estimates use two standard contexts, 100K and 350K (see Standard context below).</p>
         <p>Cache writes have their own price (1.25× input for Haiku and Luna). The measured traffic writes no cache, so this term is zero today; it is priced, not folded into input, so a future write share is counted.</p>
         <p>A plan with an offered model but no published dollar allowance shows N/A and its reason in the title. A third-party figure is used only with its link and date, labelled third-party. None is used on this site yet.</p>
       </section>
@@ -119,9 +119,9 @@ function ContextSection() {
       </p>
       {off && hw && (
         <p className={SMALL_NOTE}>
-          Price basis: the arithmetic mean of the peak and off-peak bands, as ruled. Peak hours (UTC): {off.peak_hours_utc}. Source: {off.source}, read {off.fetched_at.slice(0, 10)}.
-          Sensitivity, not used: weighting each band by the hours it covers (peak is 7 of 168 hours a week) would give {"$"}{hw.in_per_m.toFixed(3)} input,
-          {" "}{"$"}{hw.cache_per_m.toFixed(4)} cache and {"$"}{hw.out_per_m.toFixed(3)} output per M tokens.
+          Price basis: each band weighted by the hours it covers. Peak is 35 of 168 hours (01:00-04:00 and 06:00-10:00 UTC, Monday to Friday; the page excludes Chinese public holidays,
+          the weight does not). Result: {"$"}{hw.in_per_m.toFixed(5)} input, {"$"}{hw.cache_per_m.toFixed(6)} cache and {"$"}{hw.out_per_m.toFixed(3)} output per M tokens.
+          Why not the arithmetic mean: it weights peak as half the day, but peak covers about a fifth of it. Peak hours (UTC): {off.peak_hours_utc}. Source: {off.source}, read {off.fetched_at.slice(0, 10)}.
         </p>
       )}
     </section>
@@ -283,9 +283,10 @@ function ClaudeSection() {
     <section className="space-y-3" aria-labelledby="m-claude">
       <h2 id="m-claude" className={SECTION_TITLE}>Claude Code prompt counts (archived)</h2>
       <p>
-        Anthropic's current help page states percentage limits only. The prompt counts above are the former Anthropic text, quoted word for word in anthropics/claude-code issue 6611 (created 2025-08-26):
-        Pro 10-40, Max 5x 50-200 and Max 20x 200-800 prompts per five hours. They are converted with the Codex convention: 1 prompt = 100,000 standard context + 462 output tokens; the lower bound; 3 active windows a day; 30 days.
-        Realistic is 3 windows a day; the ceiling is 24 hours of continuous use, 24 ÷ 5 = 4.8 windows a day. These counts are the old (Sonnet 4 era) limits, not today's.
+        The table shows N/A for all three plans. Anthropic's current help page states percentage limits only, and no sourced dollar allowance was found (checked 2026-10-27), so no dollar figure is shown.
+        The prompt counts below are the former Anthropic text, quoted in anthropics/claude-code issue 6611 (created 2025-08-26): Pro 10-40, Max 5x 50-200 and Max 20x 200-800 prompts per five hours.
+        They are converted with the Codex convention (1 prompt = 100,000 standard context + 462 output tokens), and they are a lower bound: one Claude Code prompt runs a tool loop of several model requests, each reading the context again, so a prompt is not one standard-context request.
+        Lower bound, 3 windows a day; the ceiling is 24 hours of continuous use (4.8 windows a day). These are the old limits, not today's.
       </p>
       <p>
         A month of one's own Claude Code logs (ccusage-style, the same window method as the lanes above) would replace these conversions with a measured figure; that is the only change that should be made.

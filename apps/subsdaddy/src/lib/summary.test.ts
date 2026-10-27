@@ -71,7 +71,7 @@ describe("model view: only the plans that offer the model", () => {
   test("a model-view $/B title names the 100K context and the prompt band it used", () => {
     const t = summaryTable(ds, "claude-haiku-5.5");
     const oc = t.rows.find((r) => r.key === "opencode-go-go")!;
-    expect(oc.cells.usd.title).toContain("≥100k ×5");
+    expect(oc.cells.usd.title).toContain("≤100k base");
     expect(oc.cells.usd.title).toContain("100K-token context");
   });
 
