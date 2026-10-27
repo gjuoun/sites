@@ -24,7 +24,7 @@ import {
 
 export interface Finding {
 	section: string;
-	defect: "A" | "B" | "C" | "D";
+	defect: "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H";
 	kind: string;
 	detail: string;
 }
@@ -39,6 +39,14 @@ export function census(): CensusResult {
 	const CELL =
 		"td > span, [data-demo], [data-frame], div.flex.min-w-0.flex-wrap.items-center.gap-3, div.flex.min-w-0.flex-col.items-start.gap-1\\.5";
 	const findings: Finding[] = [];
+	// A box that paints something: text, a background, a border, or a form control. Transparent wrappers paint nothing and are not measured.
+	const isPaint = (x: Element) => {
+		const s = getComputedStyle(x) as unknown as Record<string, string>;
+		const bg = s.backgroundColor;
+		const bw = ["Top", "Right", "Bottom", "Left"].some((d) => parseFloat(s["border" + d + "Width"] || "0") > 0 && s["border" + d + "Style"] !== "none");
+		const text = Array.from(x.childNodes).some((n) => n.nodeType === 3 && (n.textContent || "").trim() !== "");
+		return text || bw || (bg !== "rgba(0, 0, 0, 0)" && bg !== "transparent") || /^(svg|img|input|select|textarea)$/i.test(x.tagName);
+	};
 	const inSec = (el: Element) =>
 		el.closest("section[id]") !== null && el.closest("details") === null;
 	const secId = (el: Element) => (el.closest("section[id]") as HTMLElement).id;
@@ -283,7 +291,7 @@ export function census(): CensusResult {
 	const cellSet = new Set<Element>(cells);
 	for (const cell of cells) {
 		const cr = cell.getBoundingClientRect();
-		if (cell.scrollWidth > cell.clientWidth + 1)
+		if (cell.scrollWidth > cell.clientWidth + 1 && Array.from(cell.querySelectorAll("*")).some((x) => isPaint(x) && x.getBoundingClientRect().right > cell.getBoundingClientRect().right + 1))
 			add(
 				cell,
 				"D",
@@ -291,7 +299,8 @@ export function census(): CensusResult {
 				name(cell) + " scroll " + cell.scrollWidth + " > " + cell.clientWidth,
 			);
 		for (const d of Array.from(cell.querySelectorAll("*"))) {
-			if (getComputedStyle(d).position === "absolute") continue;
+			if (getComputedStyle(d).position === "absolute" || getComputedStyle(d).transform !== "none") continue;
+			if (!isPaint(d)) continue; // rotating or moving boxes: their bounding box is not their layout box
 			const r = d.getBoundingClientRect();
 			if (r.width <= 2 || r.height <= 2) continue; // 1px focus guards and screen-reader text
 			// Clipped by a scrolling or hidden ancestor between it and the cell: contained by design, not a defect.
@@ -328,6 +337,98 @@ export function census(): CensusResult {
 			);
 	}
 
+	// E: text collisions. Two text-bearing boxes that overlap (neither contains the other), and a button whose text runs out of its box.
+	const textRect = (e: Element) => {
+		const rg = document.createRange();
+		rg.selectNodeContents(e);
+		return rg.getBoundingClientRect();
+	};
+	const hasText = (e: Element) => Array.from(e.childNodes).some((n) => n.nodeType === 3 && (n.textContent || "").trim() !== "");
+	// The part of a text box that is on screen: clipped by an overflow ancestor, or a 1px screen-reader box, counts for nothing.
+	const visRect = (e: Element): DOMRect | null => {
+		const r = textRect(e);
+		if (r.width <= 2 || r.height <= 2) return null;
+		let l = r.left;
+		let t = r.top;
+		let rt = r.right;
+		let b = r.bottom;
+		for (let p: Element | null = e; p && p !== document.body; p = p.parentElement) {
+			const s = getComputedStyle(p);
+			if (s.overflowX !== "visible" || s.overflowY !== "visible") {
+				const q = p.getBoundingClientRect();
+				l = Math.max(l, q.left);
+				t = Math.max(t, q.top);
+				rt = Math.min(rt, q.right);
+				b = Math.min(b, q.bottom);
+			}
+		}
+		if (rt - l <= 2 || b - t <= 2) return null;
+		return new DOMRect(l, t, rt - l, b - t);
+	};
+	for (const cell of cells) {
+		const texty = Array.from(cell.querySelectorAll("*")).filter((e) => !e.closest("details") && hasText(e));
+		for (let i = 0; i < texty.length; i++)
+			for (let j = i + 1; j < texty.length; j++) {
+				const a = texty[i] as Element;
+				const b = texty[j] as Element;
+				if (a.contains(b) || b.contains(a)) continue;
+				const ra = visRect(a);
+				const rb = visRect(b);
+				if (!ra || !rb) continue;
+				const ix = Math.min(ra.right, rb.right) - Math.max(ra.left, rb.left);
+				const iy = Math.min(ra.bottom, rb.bottom) - Math.max(ra.top, rb.top);
+				if (ix > 2 && iy > 2)
+					add(b, "E", "text collision", "'" + (a.textContent || "").trim().slice(0, 22) + "' overlaps '" + (b.textContent || "").trim().slice(0, 22) + "' by " + Math.round(ix) + "x" + Math.round(iy) + "px");
+			}
+		for (const btn of Array.from(cell.querySelectorAll("button, a, [role=button]"))) {
+			if (!hasText(btn)) continue;
+			// A control that clips its own overflow (overflow hidden) shows the part that fits by design: not a defect.
+			if (getComputedStyle(btn).overflowX !== "visible") continue;
+			const br = btn.getBoundingClientRect();
+			const tr = textRect(btn);
+			if (tr.width > 0 && (tr.right > br.right + 1 || tr.left < br.left - 1))
+				add(btn, "E", "text overflows control", "'" + (btn.textContent || "").trim().slice(0, 22) + "' runs " + Math.round(Math.max(tr.right - br.right, br.left - tr.left)) + "px out of its " + Math.round(br.width) + "px box");
+		}
+	}
+	// F: double borders. A bordered element with a bordered ancestor within two levels, inside one specimen cell.
+	const bordered = (e: Element) => {
+		const s = getComputedStyle(e) as unknown as Record<string, string>;
+		return ["Top", "Right", "Bottom", "Left"].some((d) => parseFloat(s["border" + d + "Width"] || "0") > 0 && s["border" + d + "Style"] !== "none");
+	};
+	for (const cell of cells) {
+		for (const e of Array.from(cell.querySelectorAll("*"))) {
+			if (e.closest("details") || !bordered(e)) continue;
+			let a: Element | null = e.parentElement;
+			for (let depth = 0; a && depth < 2; depth++) {
+				if (bordered(a) && (a === cell || a.matches("td > span, [data-demo], [data-frame]"))) {
+					add(e, "F", "double border", "bordered " + name(e) + " inside bordered " + name(a));
+					break;
+				}
+				if (a === cell) break;
+				a = a.parentElement;
+			}
+		}
+	}
+	// G: empty matrix cells. A table row with an empty cell beside filled ones (a column with nothing in it).
+	const filled = (td: Element) => td.textContent?.trim() !== "" || td.querySelector("svg, img, input, button, select, textarea, [role], [data-slot]") !== null;
+	for (const tr of Array.from(document.querySelectorAll("section[id] tbody tr"))) {
+		if (!inSec(tr) || tr.closest("details")) continue;
+		const tds = Array.from(tr.querySelectorAll(":scope > td"));
+		const full = tds.filter(filled).length;
+		if (full > 0 && full < tds.length)
+			add(tr, "G", "empty matrix cell", "row '" + (tr.querySelector("th")?.textContent || "").trim() + "' has " + (tds.length - full) + " empty of " + tds.length + " cells");
+	}
+	// H: label drift. One section writes both tight and spaced forms of = or / in its labels (code paths excluded).
+	for (const sec2 of Array.from(document.querySelectorAll("section[id]"))) {
+		if (sec2.closest("details")) continue;
+		const labels = Array.from(sec2.querySelectorAll("div.grid > span.font-mono, th.font-mono, figcaption.font-mono")).filter((e) => !e.closest("details") && !e.closest("code") && !e.closest("[data-slot*=code]")).map((e) => (e.textContent || "").trim()).filter((t) => t.length > 0 && t.length < 60);
+		const eqTight = labels.some((t) => /\S=\S/.test(t));
+		const eqSpaced = labels.some((t) => /\s=\s/.test(t));
+		const slTight = labels.some((t) => /[A-Za-z0-9]\/[A-Za-z0-9]/.test(t));
+		const slSpaced = labels.some((t) => /\s\/\s/.test(t));
+		if ((eqTight && eqSpaced) || (slTight && slSpaced))
+			add(sec2, "H", "label drift", "tight and spaced forms in one section: '=' " + (eqTight && eqSpaced ? "both" : "one") + ", '/' " + (slTight && slSpaced ? "both" : "one"));
+	}
 	// Dedupe identical findings (nested cells report the same node twice).
 	const seen = new Set<string>();
 	const unique = findings.filter((f) => {
@@ -344,12 +445,12 @@ export function census(): CensusResult {
 
 // ---- runner (outside the page) ------------------------------------------------------------------
 
-const DEFECTS = ["A", "B", "C", "D"] as const;
+const DEFECTS = ["A", "B", "C", "D", "E", "F", "G", "H"] as const;
 
 function summarise(res: CensusResult): Map<string, Record<string, number>> {
 	const by = new Map<string, Record<string, number>>();
 	for (const f of res.findings) {
-		const row = by.get(f.section) ?? { A: 0, B: 0, C: 0, D: 0 };
+		const row = by.get(f.section) ?? { A: 0, B: 0, C: 0, D: 0, E: 0, F: 0, G: 0, H: 0 };
 		row[f.defect] = (row[f.defect] ?? 0) + 1;
 		by.set(f.section, row);
 	}
@@ -358,9 +459,9 @@ function summarise(res: CensusResult): Map<string, Record<string, number>> {
 
 function printTable(label: string, res: CensusResult) {
 	const by = summarise(res);
-	const total = { A: 0, B: 0, C: 0, D: 0 };
+	const total = { A: 0, B: 0, C: 0, D: 0, E: 0, F: 0, G: 0, H: 0 };
 	console.log("\n" + label + "  specimens=" + res.specimens);
-	console.log("  section                     A     B     C     D");
+	console.log("  section                     A     B     C     D     E     F     G     H");
 	for (const [sec, row] of [...by.entries()].sort()) {
 		for (const d of DEFECTS) total[d] += row[d] ?? 0;
 		console.log(
@@ -398,15 +499,15 @@ function compare(beforePath: string, afterPath: string) {
 				(a[key]?.specimens ?? "n/a"),
 		);
 		console.log(
-			"  section                     A before→after   B before→after   C before→after   D before→after",
+			"  section                     A before→after   B before→after   C before→after   D before→after   E   F   G   H",
 		);
 		const tot = {
-			before: { A: 0, B: 0, C: 0, D: 0 },
-			after: { A: 0, B: 0, C: 0, D: 0 },
+			before: { A: 0, B: 0, C: 0, D: 0, E: 0, F: 0, G: 0, H: 0 },
+			after: { A: 0, B: 0, C: 0, D: 0, E: 0, F: 0, G: 0, H: 0 },
 		};
 		for (const s of secs) {
-			const x = bb.get(s) ?? { A: 0, B: 0, C: 0, D: 0 },
-				y = aa.get(s) ?? { A: 0, B: 0, C: 0, D: 0 };
+			const x = bb.get(s) ?? { A: 0, B: 0, C: 0, D: 0, E: 0, F: 0, G: 0, H: 0 },
+				y = aa.get(s) ?? { A: 0, B: 0, C: 0, D: 0, E: 0, F: 0, G: 0, H: 0 };
 			for (const d of DEFECTS) {
 				tot.before[d] += x[d] ?? 0;
 				tot.after[d] += y[d] ?? 0;
