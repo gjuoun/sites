@@ -150,9 +150,10 @@ export function summaryTable(ds: DS, view: ViewId, ctx: ContextId = "short"): Su
       ttft: r.ttft === null ? naShort("no latency data") : value("~" + sig2(r.ttft) + " ms", [], r.ttftTitle),
     },
   }));
-  const footnote =
-    view === MEASURED
-      ? data.some((r) => r.derived) ? DERIVED_FOOTNOTE : null
-      : "Prices assume a " + contextLabel(ctx) + "-token context";
+  // a measured $/B does not depend on the context size; a model view says which context its prices assume
+  const parts = view === MEASURED
+    ? [data.some((r) => r.derived) ? DERIVED_FOOTNOTE : null, "Measured $/B does not depend on the context size."]
+    : ["Prices assume a " + contextLabel(ctx) + "-token context"];
+  const footnote = parts.filter((x): x is string => x !== null).join(" ");
   return { columns: SUMMARY_COLUMNS, rows, footnote, basisLine: basisLine(ds, view) };
 }

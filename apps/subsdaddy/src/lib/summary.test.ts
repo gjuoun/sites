@@ -180,7 +180,7 @@ describe("derived $/B is marked, and only derived $/B", () => {
   });
 
   test("the footnote is the one derived line, and it appears only when a row is derived", () => {
-    expect(summaryTable(ds, MEASURED).footnote).toBe(DERIVED_FOOTNOTE);
+    expect(summaryTable(ds, MEASURED).footnote).toContain(DERIVED_FOOTNOTE);
     expect(DERIVED_FOOTNOTE.startsWith("* derived from the same-rate peer plan")).toBe(true);
   });
 

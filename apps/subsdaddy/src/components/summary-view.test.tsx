@@ -45,3 +45,29 @@ describe("switch labels", () => {
     expect(ctxPart).not.toContain("data-chip=");
   });
 });
+
+describe('one chip style, no disabled state, one note style', () => {
+  const itemTags = (attr: string) => [...html.matchAll(new RegExp('<button[^>]*' + attr + '[^>]*>', 'g'))].map((m) => m[0]);
+  const classOf = (tag: string) => (tag.match(/class="([^"]*)"/) ?? [])[1] ?? '';
+  test('every chip in both groups carries the same class string', () => {
+    const modelTags = itemTags('data-chip=');
+    const ctxTags = itemTags('data-context=');
+    expect(modelTags.length).toBe(chips.length);
+    expect(ctxTags.length).toBe(2);
+    const classes = new Set([...modelTags, ...ctxTags].map(classOf));
+    expect(classes.size).toBe(1);
+    expect([...classes][0]).toContain('data-[state=on]:bg-foreground');
+  });
+  test('the context switch is never disabled, so its chips are never faded', () => {
+    expect(html).not.toContain('disabled=""');
+    expect(html).not.toContain('data-disabled');
+  });
+  test('the basis line and the footnote share one note style', () => {
+    const note = (name: string) => (html.match(new RegExp('<p class="([^"]*)" data-note="' + name + '"')) ?? [])[1];
+    expect(note('basis')).toBeTruthy();
+    expect(note('basis')).toBe(note('footnote'));
+  });
+  test('the measured footnote says the context does not apply to it', () => {
+    expect(html).toContain('Measured $/B does not depend on the context size.');
+  });
+});
