@@ -1,9 +1,0 @@
----
-interface Props {
-	text: string;
-}
-// A value that starts with [ is a missing fact: it renders marked, so it cannot pass for a real one.
-const { text } = Astro.props;
----
-
-{text.startsWith("[") ? <span class="placeholder">{text}</span> : text}

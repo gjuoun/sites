@@ -1,10 +1,11 @@
-// Resume content. Sources: the 2026-10 profile (current title) and ~/code/gjuoun/blog/src/pages/about.md (older roles).
-// Facts that no source gives are "[...]" placeholders: the page marks them, and smoke counts them.
-// Bullets are starter copy, drawn only from about.md, and the page tags them as starter.
+// Resume content. Every fact comes from Jun's resume (notebook: Private/resume/jun-guo-2025.md).
+// The phone number is deliberately not here: the public site never carries it.
+// The source has no Skills section; the skills line names the technologies its bullets name.
 
 export interface Role {
 	title: string;
 	organization: string;
+	location: string;
 	start: string;
 	end: string;
 	bullets: string[];
@@ -21,7 +22,12 @@ export interface Resume {
 	name: string;
 	headline: string;
 	summary: string;
-	contact: { email: string; github: string };
+	contact: {
+		email: string;
+		github: string;
+		linkedin: string;
+		location: string;
+	};
 	roles: Role[];
 	education: Education[];
 	skills: string[];
@@ -30,61 +36,96 @@ export interface Resume {
 // Dates are one format everywhere: "Mon YYYY", or "Present" for a role still held.
 export const resume: Resume = {
 	name: "Jun Guo",
-	headline: "Software engineer focused on backend systems and AI features",
+	headline: "Senior Software Engineer",
 	summary:
-		"About five years building scalable web applications in JavaScript and TypeScript. Integrates AI features into backend systems and applies large language models to everyday work processes.",
+		"Jun Guo is a team player and open-source contributor with 5 years of experience building scalable web applications in JavaScript and TypeScript, leading teams to deliver complex projects from ideation to completion. He works closely with data teams and diverse stakeholders to integrate AI features into backend systems, learns new technologies quickly through hands-on work, and applies large language models to enhance work processes.",
 	contact: {
-		email: "[email to add]",
+		email: "gjuoun@gmail.com",
 		github: "https://github.com/gjuoun",
+		linkedin: "https://linkedin.com/in/gjuoun",
+		location: "Montreal, Canada",
 	},
 	roles: [
 		{
-			title: "Software Engineer",
+			title: "Lead Software Developer",
 			organization: "Mistplay",
-			start: "Feb 2022",
+			location: "On-site · Montreal, QC, Canada",
+			start: "Feb 2024",
+			end: "Aug 2024",
+			bullets: [
+				"Delivered a mobile loyalty platform on IOS.",
+				"Lead and build an internal facing admin panel.",
+			],
+		},
+		{
+			title: "Senior Developer II",
+			organization: "Mistplay",
+			location: "On-site · Montreal, QC, Canada",
+			start: "Aug 2024",
 			end: "Present",
 			bullets: [
-				"Built scalable web applications in TypeScript and JavaScript.",
-				"Integrated AI features into backend systems, working closely with data teams.",
-				"Applied large language models to enhance work processes.",
+				"Developed a backend-driven notification system that serves over 1 million active users in real time.",
+				"Collaborate with the data team to integrate AI features into the backend, driving significant revenue impact for the company.",
+				"Created an innovative approach to analyze Google Play reviews using large language models (LLMs), enhancing user sentiment analysis.",
 			],
 		},
 		{
 			title: "Senior Developer",
 			organization: "Curbie Cars",
+			location: "Remote · Saskatoon, SK, Canada",
 			start: "May 2021",
 			end: "Feb 2022",
-			bullets: ["[what was built: to add]", "[result or scope: to add]"],
+			bullets: [
+				"Lead building core product with modern web technologies (React & TypeScript).",
+				"Design and implement DevOps workflows using AWS codebuild, ECS, ECR.",
+				"Use cloudflare workers as an innovative way for web traffic control and routing.",
+			],
 		},
 		{
 			title: "Full-stack Developer",
 			organization: "Affinio",
+			location: "Remote · Halifax, NS, Canada",
 			start: "Jul 2020",
 			end: "May 2021",
-			bullets: [],
+			bullets: [
+				"Develop core product with React.js and Node.js (Typescript).",
+				"Building Restful API and GraphQL microservices (Scala, Java, Node.js).",
+				"Maintain Kubernetes (K8S) clusters on Azure.",
+				"Migrated CI platform from Jenkins to Github Actions, CD platform from DC/OS to Kubernetes.",
+			],
 		},
 		{
-			title: "[title to confirm]",
-			organization: "IBM Canada",
+			title: "Software Engineer",
+			organization: "IBM",
+			location: "On-site · Halifax, NS, Canada",
 			start: "Jun 2019",
 			end: "Oct 2019",
-			bullets: [],
+			bullets: [
+				"Develop and maintain a CURAM (Java) application for the public sector.",
+				"Work with large datasets (Db2) and troubleshooting.",
+			],
 		},
 	],
 	education: [
 		{
 			school: "Dalhousie University",
-			degree: "[degree to confirm]",
-			start: "[Mon] 2014",
-			end: "[Mon] 2019",
+			degree: "Bachelor's Degree, Computer Science",
+			start: "2014",
+			end: "2019",
 		},
 	],
 	skills: [
+		"React",
 		"TypeScript",
 		"JavaScript",
-		"Bun",
-		"Effect",
-		"Astro",
-		"LLM integration",
+		"Node.js",
+		"GraphQL",
+		"Kubernetes",
+		"AWS",
+		"Cloudflare Workers",
+		"Java",
+		"Scala",
+		"Db2",
+		"Large language models",
 	],
 };

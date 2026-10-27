@@ -205,7 +205,8 @@ pre {
 	padding: 0.75rem 0;
 	border-top: 1px solid var(--theme-border);
 }
-.entry h3 {
+.entry h3,
+.entry h4 {
 	margin: 0;
 	font-size: 1rem;
 }
@@ -218,23 +219,18 @@ pre {
 	font-variant-numeric: tabular-nums;
 	color: var(--theme-muted-ink);
 }
-.starter-tag {
-	display: inline-block;
-	margin-left: 0.4rem;
-	padding: 0 0.4rem;
-	border: 1px solid var(--theme-border);
-	font-size: 0.75rem;
-	font-weight: 400;
-	vertical-align: middle;
+/* Narrow screens: the date sits above its entry, so the title keeps the full width. */
+@media (max-width: 30rem) {
+	.entry {
+		grid-template-columns: minmax(0, 1fr);
+	}
+	.entry-date {
+		text-align: left;
+	}
 }
 .bullets {
 	margin: 0.2rem 0 0;
 	padding-left: 1.1rem;
-}
-.placeholder {
-	color: var(--theme-ink);
-	background: var(--theme-highlight-tint);
-	padding: 0 0.2em;
 }
 
 /* Actions: the theme's own button treatment (primary fill, outline for the rest). Theme variables only. */
@@ -265,12 +261,17 @@ pre {
 	background: var(--theme-frame);
 	border-color: var(--theme-ink);
 }
+/* Stock theme buttons keep their own variant colour (the layered utility) and no underline; the link rules above skip them. */
+a[data-slot="button"] {
+	text-decoration: none;
+	color: revert-layer;
+}
 /* Text links: a heavier underline and a tint on hover, so they read as interactive without a new colour. */
-main a:not(.button) {
+main a:not(.button, [data-slot="button"]) {
 	font-weight: 600;
 	text-decoration-thickness: 3px;
 }
-main a:not(.button):hover {
+main a:not(.button, [data-slot="button"]):hover {
 	background: var(--theme-primary-tint);
 }
 

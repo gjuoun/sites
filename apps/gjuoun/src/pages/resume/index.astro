@@ -1,62 +1,10 @@
 ---
-import Fact from "../../components/Fact.astro";
+import ResumeFacts from "../../components/ResumeFacts.astro";
 import { resume } from "../../data/resume";
 import Base from "../../layouts/Base.astro";
-import { siteOrigin } from "../../lib/seo";
-
-// The contact line shows the configured origin: astro.config.mjs is the only place a host is named.
-const site = siteOrigin(Astro.site);
 ---
 
-<Base title="Resume" description={resume.summary} starter={false}>
+<Base title="Resume" description="Resume of Jun Guo, Senior Software Engineer, Montreal." starter={false}>
 	<h1>{resume.name}</h1>
-	<p class="headline">{resume.headline}</p>
-	<p class="contact">
-		<Fact text={resume.contact.email} /> ·
-		<a href={resume.contact.github}>GitHub</a> ·
-		<a href={site.href}>{site.host}</a>
-	</p>
-	<p>{resume.summary}</p>
-
-	<h2>Experience</h2>
-	<ol class="entries">
-		{
-			resume.roles.map((role) => (
-				<li class="entry">
-					<div class="entry-main">
-						<h3>
-							<Fact text={role.title} />, {role.organization}
-							{role.bullets.length > 0 && <span class="starter-tag">starter</span>}
-						</h3>
-						{
-							role.bullets.length > 0 && (
-								<ul class="bullets">
-									{role.bullets.map((b) => <li><Fact text={b} /></li>)}
-								</ul>
-							)
-						}
-					</div>
-					<time class="entry-date"><Fact text={role.start} /> – <Fact text={role.end} /></time>
-				</li>
-			))
-		}
-	</ol>
-
-	<h2>Education</h2>
-	<ol class="entries">
-		{
-			resume.education.map((e) => (
-				<li class="entry">
-					<div class="entry-main">
-						<h3>{e.school}</h3>
-						<p><Fact text={e.degree} /></p>
-					</div>
-					<time class="entry-date"><Fact text={e.start} /> – <Fact text={e.end} /></time>
-				</li>
-			))
-		}
-	</ol>
-
-	<h2>Skills</h2>
-	<p>{resume.skills.join(" · ")}</p>
+	<ResumeFacts level={2} />
 </Base>

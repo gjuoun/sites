@@ -1,8 +1,8 @@
 ---
 import { getCollection } from "astro:content";
 import PostList from "../components/PostList.astro";
-import ProjectCard from "../components/ProjectCard.astro";
-import { resume } from "../data/resume";
+import { renderProjectGrid } from "../components/ProjectGrid";
+import ResumeFacts from "../components/ResumeFacts.astro";
 import Base from "../layouts/Base.astro";
 import { livePosts } from "../lib/collections";
 
@@ -14,6 +14,7 @@ const seriesTitles = new Map(
 		(e) => [e.data.slug, e.data.title] as const,
 	),
 );
+const grid = renderProjectGrid(projects);
 const posts = await livePosts();
 // Latest lessons: newest first. Ties keep series order, so a course with one date starts at lesson 1.
 const latest = posts
@@ -24,19 +25,17 @@ const latest = posts
 			(a.data.order ?? 0) - (b.data.order ?? 0),
 	)
 	.slice(0, 3);
-const current = resume.roles[0];
 ---
 
 <Base description="Portfolio, resume and numbered posts by Jun Guo." starter={true}>
 	<h1>Jun Guo</h1>
 	<section class="home-section" aria-labelledby="portfolio-heading">
 		<h2 id="portfolio-heading">Portfolio</h2>
-		{projects.map((project) => <ProjectCard project={project} />)}
+		<Fragment set:html={grid} />
 	</section>
 	<section class="home-section" aria-labelledby="resume-heading">
 		<h2 id="resume-heading">Resume</h2>
-		<p>{resume.summary}</p>
-		{current && <p class="kicker meta-line">{current.title} · {current.organization}</p>}
+		<ResumeFacts level={3} />
 		<p><a class="button" href="/resume/">Full resume</a></p>
 	</section>
 	<section class="home-section" aria-labelledby="posts-heading">
