@@ -6,7 +6,7 @@ import ProjectCard from "../../components/ProjectCard.astro";
 const projects = (await getCollection("projects")).map((e) => e.data).sort((a, b) => a.order - b.order);
 ---
 
-<Base title="Projects — Jun Guo" description="Projects by Jun Guo, public and private." starter={true}>
+<Base title="Projects" description="Projects by Jun Guo, public and private." starter={true}>
 	<h1>Projects</h1>
 	{projects.map((project) => <ProjectCard project={project} />)}
 </Base>

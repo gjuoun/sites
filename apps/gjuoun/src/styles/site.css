@@ -43,6 +43,17 @@ button:focus-visible {
 	outline: 2px solid var(--theme-ink);
 	outline-offset: 3px;
 }
+.skip-link {
+	position: absolute;
+	left: 1rem;
+	top: -3rem;
+	background: var(--theme-canvas);
+	color: var(--theme-ink);
+	padding: 0.5rem 0.75rem;
+}
+.skip-link:focus {
+	top: 0.5rem;
+}
 code,
 pre {
 	font-family: "QuBlack Mono", ui-monospace, monospace;

@@ -10,7 +10,7 @@ const standalone = publishedPosts(await getCollection("posts"))
 	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 ---
 
-<Base title="Posts — Jun Guo" description="Numbered series and standalone posts by Jun Guo.">
+<Base title="Posts" description="Numbered series and standalone posts by Jun Guo.">
 	<h1>Posts</h1>
 	<PostList items={series.map((s) => ({ href: `/posts/${s.slug}/`, title: s.title, summary: s.summary }))} />
 	<PostList items={standalone.map((p) => ({ href: `/posts/${p.data.slug}/`, title: p.data.title, summary: p.data.summary }))} />

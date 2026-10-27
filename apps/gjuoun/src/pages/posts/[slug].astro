@@ -41,7 +41,7 @@ const postBody = props.kind === "post" ? await render(props.post) : undefined;
 {
 	props.kind === "series" && seriesBody && (
 		<Base
-			title={`${props.series.data.title} — Jun Guo`}
+			title={props.series.data.title}
 			description={props.series.data.summary}
 			starter={props.items.some((p) => p.data.starter)}
 		>
@@ -62,7 +62,7 @@ const postBody = props.kind === "post" ? await render(props.post) : undefined;
 }
 {
 	props.kind === "post" && postBody && (
-		<Base title={`${props.post.data.title} — Jun Guo`} description={props.post.data.summary} starter={props.post.data.starter}>
+		<Base title={props.post.data.title} description={props.post.data.summary} type="article" starter={props.post.data.starter}>
 			<article>
 				<h1>{props.post.data.title}</h1>
 				<p>{props.post.data.summary}</p>
