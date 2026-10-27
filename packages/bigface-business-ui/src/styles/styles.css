@@ -151,10 +151,6 @@
   --popover-foreground: var(--theme-fg);
   --border: var(--theme-border);
   --chart-1: var(--theme-blue);
-  --chart-2: var(--theme-lightBlue);
-  --chart-3: var(--theme-paleBlue);
-  --chart-4: var(--theme-cyan);
-  --chart-5: var(--theme-green);
   --sidebar-accent: var(--theme-panel);
   --sidebar-border: var(--theme-border);
 }
