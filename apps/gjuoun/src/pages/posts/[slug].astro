@@ -1,18 +1,29 @@
 ---
-import { getCollection, render, type CollectionEntry } from "astro:content";
-import Base from "../../layouts/Base.astro";
+import { type CollectionEntry, getCollection, render } from "astro:content";
 import PostList from "../../components/PostList.astro";
-import { publishedPosts } from "../../lib/content-rules";
+import Base from "../../layouts/Base.astro";
+import { livePosts } from "../../lib/collections";
 
 type Props =
-	| { kind: "series"; series: CollectionEntry<"series">; items: CollectionEntry<"posts">[] }
-	| { kind: "post"; post: CollectionEntry<"posts">; prev?: CollectionEntry<"posts">; next?: CollectionEntry<"posts"> };
+	| {
+			kind: "series";
+			series: CollectionEntry<"series">;
+			items: CollectionEntry<"posts">[];
+	  }
+	| {
+			kind: "post";
+			post: CollectionEntry<"posts">;
+			prev?: CollectionEntry<"posts">;
+			next?: CollectionEntry<"posts">;
+	  };
 
 export async function getStaticPaths() {
-	const posts = publishedPosts(await getCollection("posts"));
+	const posts = await livePosts();
 	const series = await getCollection("series");
 	const inSeries = (name: string) =>
-		posts.filter((p) => p.data.series === name).sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
+		posts
+			.filter((p) => p.data.series === name)
+			.sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
 	const seriesPaths = series.map((s) => ({
 		params: { slug: s.data.slug },
 		props: { kind: "series" as const, series: s, items: inSeries(s.data.slug) },
@@ -26,7 +37,10 @@ export async function getStaticPaths() {
 				kind: "post" as const,
 				post: p,
 				prev: index > 0 ? siblings[index - 1] : undefined,
-				next: index >= 0 && index < siblings.length - 1 ? siblings[index + 1] : undefined,
+				next:
+					index >= 0 && index < siblings.length - 1
+						? siblings[index + 1]
+						: undefined,
 			},
 		};
 	});
@@ -34,7 +48,8 @@ export async function getStaticPaths() {
 }
 
 const props = Astro.props;
-const seriesBody = props.kind === "series" ? await render(props.series) : undefined;
+const seriesBody =
+	props.kind === "series" ? await render(props.series) : undefined;
 const postBody = props.kind === "post" ? await render(props.post) : undefined;
 ---
 

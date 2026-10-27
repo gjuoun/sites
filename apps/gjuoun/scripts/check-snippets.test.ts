@@ -6,7 +6,21 @@ const appRoot = join(import.meta.dir, "..");
 
 describe("extractTsBlocks", () => {
 	test("returns only ts fences, in order", () => {
-		const md = ["intro", "", "\`\`\`ts", "const a = 1;", "\`\`\`", "", "\`\`\`sh", "echo no", "\`\`\`", "", "\`\`\`ts", "const b = 2;", "\`\`\`"].join("\n");
+		const md = [
+			"intro",
+			"",
+			"```ts",
+			"const a = 1;",
+			"```",
+			"",
+			"```sh",
+			"echo no",
+			"```",
+			"",
+			"```ts",
+			"const b = 2;",
+			"```",
+		].join("\n");
 		expect(extractTsBlocks(md)).toEqual(["const a = 1;\n", "const b = 2;\n"]);
 	});
 });
@@ -20,7 +34,9 @@ describe("checkSnippets", () => {
 			'export const g = f.pipe(Effect.catchTag("Nope", () => Effect.succeed(1)));',
 			"",
 		].join("\n");
-		const result = await checkSnippets(appRoot, "fixture", [{ id: "wrong-tag", code: fixture }]);
+		const result = await checkSnippets(appRoot, "fixture", [
+			{ id: "wrong-tag", code: fixture },
+		]);
 		expect(result.errors).toBeGreaterThan(0);
 	}, 60_000);
 

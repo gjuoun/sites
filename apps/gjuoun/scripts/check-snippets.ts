@@ -17,26 +17,37 @@ export interface CheckResult {
 /** The body of every \`\`\`ts fence in a markdown document, in order. */
 export function extractTsBlocks(markdown: string): string[] {
 	const blocks: string[] = [];
-	const fence = /^\`\`\`ts[ \t]*\n([\s\S]*?)^\`\`\`[ \t]*$/gm;
+	const fence = /^```ts[ \t]*\n([\s\S]*?)^```[ \t]*$/gm;
 	for (const match of markdown.matchAll(fence)) blocks.push(match[1] ?? "");
 	return blocks;
 }
 
 /** Compiles the snippets in an isolated directory under appRoot and counts TypeScript errors. */
-export async function checkSnippets(appRoot: string, name: string, snippets: Snippet[]): Promise<CheckResult> {
+export async function checkSnippets(
+	appRoot: string,
+	name: string,
+	snippets: Snippet[],
+): Promise<CheckResult> {
 	const dir = join(appRoot, ".snippets", name);
 	await rm(dir, { recursive: true, force: true });
 	await mkdir(dir, { recursive: true });
 	for (const s of snippets) await writeFile(join(dir, `${s.id}.ts`), s.code);
 	await writeFile(
 		join(dir, "tsconfig.json"),
-		JSON.stringify({ extends: "../../tsconfig.snippets.json", include: ["./*.ts"] }, null, 2),
+		JSON.stringify(
+			{ extends: "../../tsconfig.snippets.json", include: ["./*.ts"] },
+			null,
+			2,
+		),
 	);
-	const proc = Bun.spawn(["bun", "x", "tsc", "--noEmit", "-p", join(dir, "tsconfig.json")], {
-		cwd: appRoot,
-		stdout: "pipe",
-		stderr: "pipe",
-	});
+	const proc = Bun.spawn(
+		["bun", "x", "tsc", "--noEmit", "-p", join(dir, "tsconfig.json")],
+		{
+			cwd: appRoot,
+			stdout: "pipe",
+			stderr: "pipe",
+		},
+	);
 	const [out, err, code] = await Promise.all([
 		new Response(proc.stdout).text(),
 		new Response(proc.stderr).text(),
@@ -44,19 +55,32 @@ export async function checkSnippets(appRoot: string, name: string, snippets: Sni
 	]);
 	const output = out + err;
 	const counted = (output.match(/error TS\d+/g) ?? []).length;
-	return { blocks: snippets.length, errors: Math.max(counted, code === 0 ? 0 : 1), output };
+	return {
+		blocks: snippets.length,
+		errors: Math.max(counted, code === 0 ? 0 : 1),
+		output,
+	};
 }
 
 /** Reads every post under src/content/posts and returns its ts blocks as snippets. */
-export async function postSnippets(appRoot: string): Promise<{ posts: number; snippets: Snippet[] }> {
+export async function postSnippets(
+	appRoot: string,
+): Promise<{ posts: number; snippets: Snippet[] }> {
 	const snippets: Snippet[] = [];
 	let posts = 0;
 	const glob = new Bun.Glob("**/*.md");
-	for await (const rel of glob.scan({ cwd: join(appRoot, "src/content/posts") })) {
+	for await (const rel of glob.scan({
+		cwd: join(appRoot, "src/content/posts"),
+	})) {
 		posts++;
-		const text = await readFile(join(appRoot, "src/content/posts", rel), "utf8");
+		const text = await readFile(
+			join(appRoot, "src/content/posts", rel),
+			"utf8",
+		);
 		const slug = /^slug:\s*"?([^"\n]+)"?\s*$/m.exec(text)?.[1] ?? rel;
-		extractTsBlocks(text).forEach((code, i) => snippets.push({ id: `${slug}-${i + 1}`, code }));
+		for (const [i, code] of extractTsBlocks(text).entries()) {
+			snippets.push({ id: `${slug}-${i + 1}`, code });
+		}
 	}
 	return { posts, snippets };
 }
@@ -69,7 +93,9 @@ if (import.meta.main) {
 		console.log(`snippets ok posts=${posts} blocks=${result.blocks} errors=0`);
 	} else {
 		console.error(result.output);
-		console.error(`snippets failed posts=${posts} blocks=${result.blocks} errors=${result.errors}`);
+		console.error(
+			`snippets failed posts=${posts} blocks=${result.blocks} errors=${result.errors}`,
+		);
 		process.exit(1);
 	}
 }

@@ -1,10 +1,11 @@
 import rss from "@astrojs/rss";
 import type { APIContext } from "astro";
-import { getCollection } from "astro:content";
-import { publishedPosts } from "../lib/content-rules";
+import { livePosts } from "../lib/collections";
 
 export async function GET(context: APIContext) {
-	const posts = publishedPosts(await getCollection("posts")).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+	const posts = (await livePosts()).sort(
+		(a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+	);
 	return rss({
 		title: "Jun Guo — posts",
 		description: "Numbered posts by Jun Guo.",

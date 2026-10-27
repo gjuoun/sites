@@ -1,5 +1,6 @@
-import { defineCollection, z } from "astro:content";
+import { defineCollection } from "astro:content";
 import { glob } from "astro/loaders";
+import { z } from "astro/zod";
 import { PROJECT_STATUSES } from "./lib/content-rules";
 
 const posts = defineCollection({
@@ -11,7 +12,7 @@ const posts = defineCollection({
 		date: z.coerce.date(),
 		draft: z.boolean().default(false),
 		series: z.string().optional(),
-		order: z.number().int().min(1).optional(),
+		order: z.int().min(1).optional(),
 		tags: z.array(z.string()).default([]),
 		starter: z.boolean().default(false),
 	}),
@@ -23,7 +24,7 @@ const series = defineCollection({
 		title: z.string(),
 		slug: z.string(),
 		summary: z.string().max(160),
-		order: z.number().int().min(1),
+		order: z.int().min(1),
 	}),
 });
 
@@ -34,10 +35,10 @@ const projects = defineCollection({
 		slug: z.string(),
 		summary: z.string().max(160),
 		status: z.enum(PROJECT_STATUSES),
-		url: z.string().url().optional(),
+		url: z.url().optional(),
 		repo: z.string().optional(),
 		stack: z.array(z.string()).default([]),
-		order: z.number().int().min(1),
+		order: z.int().min(1),
 	}),
 });
 

@@ -2,7 +2,11 @@
 // off-origin script, link, img, or font requests. The origin comes from astro.config.mjs.
 import { join } from "node:path";
 
-export const LIMITS = { htmlBytes: 30 * 1024, cssBytes: 25 * 1024, jsBytes: 4 * 1024 } as const;
+export const LIMITS = {
+	htmlBytes: 30 * 1024,
+	cssBytes: 25 * 1024,
+	jsBytes: 4 * 1024,
+} as const;
 
 const INLINE_SCRIPT = /<script(?![^>]*\ssrc=)[^>]*>([\s\S]*?)<\/script>/g;
 const SCRIPT_SRC = /<script[^>]*\ssrc="([^"]+)"/g;
@@ -12,7 +16,8 @@ const CSS_URL = /url\(\s*["']?(https?:\/\/[^"')\s]+)/g;
 
 export function inlineScriptBytes(html: string): number {
 	let bytes = 0;
-	for (const m of html.matchAll(INLINE_SCRIPT)) bytes += new TextEncoder().encode(m[1] ?? "").length;
+	for (const m of html.matchAll(INLINE_SCRIPT))
+		bytes += new TextEncoder().encode(m[1] ?? "").length;
 	return bytes;
 }
 
@@ -21,7 +26,8 @@ export function offOriginRequests(html: string, origin: string): string[] {
 	const out: string[] = [];
 	for (const re of [SCRIPT_SRC, LINK_HREF, IMG_SRC]) {
 		for (const m of html.matchAll(re)) {
-			if (/^https?:/i.test(m[1] ?? "") && !(m[1] ?? "").startsWith(origin)) out.push(m[1] ?? "");
+			if (/^https?:/i.test(m[1] ?? "") && !(m[1] ?? "").startsWith(origin))
+				out.push(m[1] ?? "");
 		}
 	}
 	return out;
@@ -57,7 +63,8 @@ if (import.meta.main) {
 			maxHtml = size;
 			maxHtmlFile = rel;
 		}
-		if (size > LIMITS.htmlBytes) problems.push(`${rel} is ${size} B (limit ${LIMITS.htmlBytes})`);
+		if (size > LIMITS.htmlBytes)
+			problems.push(`${rel} is ${size} B (limit ${LIMITS.htmlBytes})`);
 		jsInlineMax = Math.max(jsInlineMax, inlineScriptBytes(html));
 		const off = offOriginRequests(html, origin);
 		third += off.length;
@@ -67,19 +74,27 @@ if (import.meta.main) {
 		const css = await Bun.file(join(dist, rel)).text();
 		const size = new TextEncoder().encode(css).length;
 		cssMax = Math.max(cssMax, size);
-		if (size > LIMITS.cssBytes) problems.push(`${rel} is ${size} B (limit ${LIMITS.cssBytes})`);
+		if (size > LIMITS.cssBytes)
+			problems.push(`${rel} is ${size} B (limit ${LIMITS.cssBytes})`);
 		const off = offOriginCssRequests(css);
 		third += off.length;
 		for (const u of off) problems.push(`${rel} off-origin url() ${u}`);
 	}
 	const js = jsAstro + jsInlineMax;
-	if (js > LIMITS.jsBytes) problems.push(`inline + _astro js is ${js} B (limit ${LIMITS.jsBytes})`);
+	if (js > LIMITS.jsBytes)
+		problems.push(`inline + _astro js is ${js} B (limit ${LIMITS.jsBytes})`);
 
 	if (problems.length > 0) {
 		for (const p of problems) console.error(`BUDGET ${p}`);
-		console.error(`budget failed max_html=${maxHtml} js=${js} third_party_requests=${third}`);
+		console.error(
+			`budget failed max_html=${maxHtml} js=${js} third_party_requests=${third}`,
+		);
 		process.exit(1);
 	}
-	console.log(`budget ok max_html=${maxHtml} js=${js} third_party_requests=${third}`);
-	console.log(`budget detail: max_html_file=${maxHtmlFile} max_css=${cssMax} astro_js=${jsAstro} inline_js_max=${jsInlineMax}`);
+	console.log(
+		`budget ok max_html=${maxHtml} js=${js} third_party_requests=${third}`,
+	);
+	console.log(
+		`budget detail: max_html_file=${maxHtmlFile} max_css=${cssMax} astro_js=${jsAstro} inline_js_max=${jsInlineMax}`,
+	);
 }

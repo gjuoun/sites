@@ -8,7 +8,8 @@ const links = [
 	{ href: "/resume/", label: "Resume" },
 ];
 const path = Astro.url.pathname;
-const isCurrent = (href: string) => (href === "/" ? path === "/" : path.startsWith(href));
+const isCurrent = (href: string) =>
+	href === "/" ? path === "/" : path.startsWith(href);
 ---
 
 <header class="site-header">

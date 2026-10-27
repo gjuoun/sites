@@ -4,9 +4,18 @@ import { checkLinks } from "./check-links";
 describe("checkLinks", () => {
 	test("a clean site has no broken links", () => {
 		const pages = new Map([
-			["index.html", '<a href="/posts/">Posts</a><a href="#top" id="top">top</a><img src="/favicon.svg">'],
-			["posts/index.html", '<a href="/">Home</a><a href="/posts/effect-gen/#step">step</a>'],
-			["posts/effect-gen/index.html", '<h2 id="step">Step</h2><a href="../">back</a>'],
+			[
+				"index.html",
+				'<a href="/posts/">Posts</a><a href="#top" id="top">top</a><img src="/favicon.svg">',
+			],
+			[
+				"posts/index.html",
+				'<a href="/">Home</a><a href="/posts/effect-gen/#step">step</a>',
+			],
+			[
+				"posts/effect-gen/index.html",
+				'<h2 id="step">Step</h2><a href="../">back</a>',
+			],
 		]);
 		const result = checkLinks(pages, new Set(["favicon.svg"]));
 		expect(result.broken).toEqual([]);
@@ -31,7 +40,12 @@ describe("checkLinks", () => {
 	});
 
 	test("external links are listed, not fetched", () => {
-		const pages = new Map([["index.html", '<a href="https://example.com/">x</a><a href="mailto:a@b.c">m</a>']]);
+		const pages = new Map([
+			[
+				"index.html",
+				'<a href="https://example.com/">x</a><a href="mailto:a@b.c">m</a>',
+			],
+		]);
 		const result = checkLinks(pages, new Set());
 		expect(result.broken).toEqual([]);
 		expect(result.external).toEqual(["https://example.com/", "mailto:a@b.c"]);

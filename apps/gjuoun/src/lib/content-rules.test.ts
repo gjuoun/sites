@@ -94,7 +94,10 @@ describe("checkContent", () => {
 
 describe("publishedPosts", () => {
 	test("draft posts are excluded", () => {
-		const kept = publishedPosts([post({ slug: "live" }), post({ slug: "wip", draft: true })]);
+		const kept = publishedPosts([
+			post({ slug: "live" }),
+			post({ slug: "wip", draft: true }),
+		]);
 		expect(kept.map((p) => p.slug)).toEqual(["live"]);
 	});
 });

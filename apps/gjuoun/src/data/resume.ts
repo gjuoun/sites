@@ -29,12 +29,34 @@ export const resume: Resume = {
 	summary:
 		"Software engineer with about five years building scalable web applications in TypeScript. Works on AI features in backend systems and on typed services built with Effect.",
 	roles: [
-		{ title: "Software Engineer", organization: "Mistplay", start: "Feb 2022", end: "Present" },
-		{ title: "Senior Developer", organization: "Curbie Cars", start: "May 2021", end: "Feb 2022" },
-		{ title: "Full-stack Developer", organization: "Affinio", start: "Jul 2020", end: "May 2021" },
+		{
+			title: "Software Engineer",
+			organization: "Mistplay",
+			start: "Feb 2022",
+			end: "Present",
+		},
+		{
+			title: "Senior Developer",
+			organization: "Curbie Cars",
+			start: "May 2021",
+			end: "Feb 2022",
+		},
+		{
+			title: "Full-stack Developer",
+			organization: "Affinio",
+			start: "Jul 2020",
+			end: "May 2021",
+		},
 		{ organization: "IBM Canada", start: "Jun 2019", end: "Oct 2019" },
 	],
 	education: [{ school: "Dalhousie University", years: "2014–2019" }],
-	skills: ["TypeScript", "JavaScript", "Bun", "Effect", "Astro", "LLM integration"],
+	skills: [
+		"TypeScript",
+		"JavaScript",
+		"Bun",
+		"Effect",
+		"Astro",
+		"LLM integration",
+	],
 	starter: true,
 };

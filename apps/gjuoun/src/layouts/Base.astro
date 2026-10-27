@@ -2,9 +2,12 @@
 import "@gjuoun/bigface-business-ui/themes/_reset.css";
 import "@gjuoun/bigface-business-ui/themes/business.css";
 import "../styles/site.css";
-import { DEFAULT_MODE, themeInitScript } from "@gjuoun/bigface-business-ui/lib/themes";
-import SiteHeader from "../components/SiteHeader.astro";
+import {
+	DEFAULT_MODE,
+	themeInitScript,
+} from "@gjuoun/bigface-business-ui/lib/themes";
 import SiteFooter from "../components/SiteFooter.astro";
+import SiteHeader from "../components/SiteHeader.astro";
 import { buildMeta, type PageType } from "../lib/seo";
 
 interface Props {
@@ -14,9 +17,21 @@ interface Props {
 	starter?: boolean;
 	indexable?: boolean;
 }
-const { title, description, type = "website", starter = false, indexable = true } = Astro.props;
+const {
+	title,
+	description,
+	type = "website",
+	starter = false,
+	indexable = true,
+} = Astro.props;
 const site = Astro.site ?? new URL("https://jun.qqntt.com");
-const meta = buildMeta({ site, path: Astro.url.pathname, title, description, type });
+const meta = buildMeta({
+	site,
+	path: Astro.url.pathname,
+	title,
+	description,
+	type,
+});
 ---
 
 <!doctype html>

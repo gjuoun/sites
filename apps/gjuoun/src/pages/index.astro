@@ -1,14 +1,18 @@
 ---
 import { getCollection } from "astro:content";
-import Base from "../layouts/Base.astro";
 import PostList from "../components/PostList.astro";
 import ProjectCard from "../components/ProjectCard.astro";
-import { publishedPosts } from "../lib/content-rules";
 import { resume } from "../data/resume";
+import Base from "../layouts/Base.astro";
+import { livePosts } from "../lib/collections";
 
-const projects = (await getCollection("projects")).map((e) => e.data).sort((a, b) => a.order - b.order);
-const series = (await getCollection("series")).map((e) => e.data).sort((a, b) => a.order - b.order);
-const posts = publishedPosts(await getCollection("posts"));
+const projects = (await getCollection("projects"))
+	.map((e) => e.data)
+	.sort((a, b) => a.order - b.order);
+const series = (await getCollection("series"))
+	.map((e) => e.data)
+	.sort((a, b) => a.order - b.order);
+const posts = await livePosts();
 const standalone = posts
 	.filter((p) => p.data.series === undefined)
 	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())

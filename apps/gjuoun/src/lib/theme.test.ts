@@ -3,7 +3,8 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { MODE_STORAGE_KEY } from "@gjuoun/bigface-business-ui/lib/themes";
 
-const src = (rel: string) => readFileSync(join(import.meta.dir, "..", rel), "utf8");
+const src = (rel: string) =>
+	readFileSync(join(import.meta.dir, "..", rel), "utf8");
 
 test("the toggle writes the package's mode key", () => {
 	expect(MODE_STORAGE_KEY).toBe("bigface-mode");

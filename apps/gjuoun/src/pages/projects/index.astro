@@ -1,9 +1,11 @@
 ---
 import { getCollection } from "astro:content";
-import Base from "../../layouts/Base.astro";
 import ProjectCard from "../../components/ProjectCard.astro";
+import Base from "../../layouts/Base.astro";
 
-const projects = (await getCollection("projects")).map((e) => e.data).sort((a, b) => a.order - b.order);
+const projects = (await getCollection("projects"))
+	.map((e) => e.data)
+	.sort((a, b) => a.order - b.order);
 ---
 
 <Base title="Projects" description="Projects by Jun Guo, public and private." starter={true}>

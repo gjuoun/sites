@@ -4,14 +4,26 @@
     "indentStyle": "tab"
   },
   "linter": {
-    "enabled": true,
-    "rules": {
-      "recommended": true
-    }
+    "enabled": true
   },
   "javascript": {
     "formatter": {
       "quoteStyle": "double"
     }
-  }
+  },
+  "overrides": [
+    {
+      "includes": [
+        "**/*.astro"
+      ],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUnusedImports": "off",
+            "noUnusedVariables": "off"
+          }
+        }
+      }
+    }
+  ]
 }

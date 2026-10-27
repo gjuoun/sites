@@ -37,14 +37,15 @@ export function canonicalFor(site: URL, path: string): string {
 	const url = new URL(path, site);
 	url.search = "";
 	url.hash = "";
-	if (!url.pathname.endsWith("/") && !/\.[a-z0-9]+$/i.test(url.pathname)) url.pathname += "/";
+	if (!url.pathname.endsWith("/") && !/\.[a-z0-9]+$/i.test(url.pathname))
+		url.pathname += "/";
 	return url.href;
 }
 
 /** Clips at a word-safe length and marks the cut with an ellipsis. */
 export function clipDescription(text: string): string {
 	if (text.length <= MAX_DESCRIPTION) return text;
-	return text.slice(0, MAX_DESCRIPTION - 1).trimEnd() + "…";
+	return `${text.slice(0, MAX_DESCRIPTION - 1).trimEnd()}…`;
 }
 
 export function buildMeta(input: MetaInput): Meta {
