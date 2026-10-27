@@ -37,7 +37,7 @@ export interface CensusResult {
 export function census(): CensusResult {
 	// Specimen scaffolding only: matrix cells, demo boxes, labelled-row and state containers. Component internals are not cells.
 	const CELL =
-		"td > span, [data-demo], div.flex.min-w-0.flex-wrap.items-center.gap-3, div.flex.min-w-0.flex-col.items-start.gap-1\\.5";
+		"td > span, [data-demo], [data-frame], div.flex.min-w-0.flex-wrap.items-center.gap-3, div.flex.min-w-0.flex-col.items-start.gap-1\\.5";
 	const findings: Finding[] = [];
 	const inSec = (el: Element) =>
 		el.closest("section[id]") !== null && el.closest("details") === null;

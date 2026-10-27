@@ -102,7 +102,7 @@ function Matrix<R extends string, C extends string>({ corner, rows, cols, cell, 
     is its own provider, so the value it names is the only thing that differs between frames. */
 function SidebarFrame({ label, variant = "sidebar", collapsible, side = "left", open }: { label: string; variant?: "sidebar" | "floating" | "inset"; collapsible: "offcanvas" | "icon" | "none"; side?: "left" | "right"; open: boolean }) {
 	return (
-		<figure data-demo={"sidebar " + label} className="m-0 flex min-w-0 flex-col gap-1.5">
+		<figure data-frame={label} className="m-0 flex min-w-0 flex-col gap-1.5">
 			<figcaption className="font-mono text-xs text-muted-foreground">{label}</figcaption>
 			<div className="relative h-56 w-full overflow-hidden rounded-md border [transform:translateZ(0)]">
 				<SidebarProvider defaultOpen={open} className="h-full min-h-0">
