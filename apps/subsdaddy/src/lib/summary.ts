@@ -1,7 +1,7 @@
 import { na, value, type Cell } from "./cells";
 import { REF_IDS, REF_NAMES, type RefId } from "../data/estimate";
 import { contextLabel, type ContextId } from "../data/context";
-import { CONTEXTS, WINDOWS_PER_DAY, monthlyTokens, usdPerBOfTokens } from "../data/messages";
+import { CONTEXTS, WINDOWS_PER_DAY, monthlyTokens, tokensPerMessage, usdPerBOfTokens } from "../data/messages";
 import type { CatalogRow } from "../data/catalog";
 import { orForModel } from "./or-stats";
 import { money, usd, type Column, type DS, type Table } from "./sections";
@@ -88,21 +88,24 @@ function measuredRows(ds: DS): ViewRow[] {
   }));
 }
 
-/** A plan published as messages per five-hour window: its value at the context, realistic rhythm, with the ceiling in the title. */
+/** A plan published as messages per five-hour window: its value at the lower bound of the vendor range, realistic rhythm. The upper bound and the ceiling are in the title. */
 function messageRow(r: CatalogRow, ref: RefId, ctx: ContextId): ViewRow | null {
   const ml = r.message_limit;
   if (!ml || ml.model !== ref || r.price_month_usd === null) return null;
-  const realistic = monthlyTokens(ml, CONTEXTS[ctx], WINDOWS_PER_DAY.realistic);
-  const ceiling = monthlyTokens(ml, CONTEXTS[ctx], WINDOWS_PER_DAY.ceiling);
-  const usdVal = usdPerBOfTokens(r.price_month_usd, realistic);
+  const fee = r.price_month_usd;
+  const low = monthlyTokens(ml, CONTEXTS[ctx], WINDOWS_PER_DAY.realistic, "low");
+  const high = monthlyTokens(ml, CONTEXTS[ctx], WINDOWS_PER_DAY.realistic, "high");
+  const ceiling = monthlyTokens(ml, CONTEXTS[ctx], WINDOWS_PER_DAY.ceiling, "low");
+  const usdVal = usdPerBOfTokens(fee, low);
+  const k = (n: number) => n.toLocaleString("en-US");
   return {
     key: r.plan_id,
     label: r.label,
-    fee: r.price_month_usd,
-    capacity: (realistic / 1e9).toFixed(2) + "B/mo",
+    fee,
+    capacity: (low / 1e9).toFixed(2) + "B/mo",
     capacityReason: "",
     usd: usdVal,
-    usdTitle: "converted: " + ml.low.toLocaleString("en-US") + "-" + ml.high.toLocaleString("en-US") + " messages per 5h (midpoint) × 3 windows a day × 30 days × tokens per message at " + contextLabel(ctx) + " context; ceiling (4.8 windows a day) gives " + usdPerBOfTokens(r.price_month_usd, ceiling).toFixed(2) + " $/B",
+    usdTitle: "converted at the lower bound: " + k(ml.low) + " messages per 5h × 3 windows a day × 30 days × " + k(tokensPerMessage(CONTEXTS[ctx])) + " tokens per message (" + contextLabel(ctx) + " context); upper bound " + k(ml.high) + " messages gives " + usdPerBOfTokens(fee, high).toFixed(2) + " $/B; ceiling (4.8 windows a day) at the lower bound gives " + usdPerBOfTokens(fee, ceiling).toFixed(2) + " $/B",
     marker: "†",
     tps: null,
     tpsTitle: "",

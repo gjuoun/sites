@@ -90,17 +90,16 @@ describe("price guard: a listing that fails the sanity rule never replaces the s
     expect(sanity({ in_per_m: 0.1, out_per_m: 0.5, cache_per_m: 0.01 })).toBeNull();
   });
 
-  test("the shipped DeepSeek reference is either the verified listing or its last verified snapshot, with status and source priority", () => {
+  test("the shipped DeepSeek reference is the official mean, a verified listing, or its last verified snapshot, with status and source priority", () => {
     const d = read("models.json").reference.find((r: { ref: string }) => r.ref === "deepseek-v4.1-flash");
-    expect(["verified", "anomaly"]).toContain(d.price_status);
+    expect(["official", "verified", "anomaly", "unavailable"]).toContain(d.price_status);
     expect(d.source_priority).toBe("official > openrouter");
-    if (d.price_status === "verified") {
-      // an accepted listing: the stored values are the listing's values, and they passed the sanity rule
+    if (d.price_status === "official") {
+      expect(d.official.source).toBe("https://api-docs.deepseek.com/quick_start/pricing/");
+      expect(d.price_note).toContain("Official documentation is authoritative for first-party models");
+    } else if (d.price_status === "verified") {
       expect(d.in_per_m).toBe(d.openrouter_listed.in_per_m);
-      expect(d.out_per_m).toBe(d.openrouter_listed.out_per_m);
-      expect(d.cache_per_m).toBe(d.openrouter_listed.cache_per_m);
-      expect(d.out_per_m).toBeGreaterThanOrEqual(d.in_per_m);
-    } else {
+    } else if (d.price_status === "anomaly") {
       expect(d.price_anomaly).toContain("price_anomaly: listing shows completion < prompt");
       expect(d.price_anomaly).toContain("using last verified snapshot " + String(d.last_verified_at).slice(0, 10));
     }

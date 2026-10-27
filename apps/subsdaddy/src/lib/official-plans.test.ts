@@ -36,20 +36,20 @@ describe("Copilot: a dollar allowance from base credits", () => {
 });
 
 describe("Codex: messages per window converted to tokens", () => {
-  test("Plus on GPT-6 Luna is a converted row with a dagger, not a dollar allowance", () => {
+  test("Plus on GPT-6 Luna, at the lower bound, is a converted row with a dagger, not a dollar allowance", () => {
     const plus = catalog.rows.find((r) => r.plan_id === "codex-plus")!;
     expect(plus.allowance).toEqual([]);
     expect(plus.message_limit).toMatchObject({ model: "gpt-6-luna", low: 350, high: 3000, window_hours: 5 });
     const row = viewRows(ds, "gpt-6-luna", "short").find((r) => r.key === "codex-plus")!;
     expect(row.marker).toBe("†");
-    expect(row.capacity).toBe("15.15B/mo");
-    expect(row.usd).toBeCloseTo(20 / 15.1475, 1);
+    expect(row.capacity).toBe("3.16B/mo");
+    expect(row.usd).toBeCloseTo(20 / (350 * 3 * 30 * 100462 / 1e9), 6);
   });
 
-  test("at the 350K standard the same Plus row is 52.83B/mo and its $/B is lower", () => {
+  test("at the 350K standard the same Plus row is 11.04B/mo and its $/B is lower", () => {
     const short = viewRows(ds, "gpt-6-luna", "short").find((r) => r.key === "codex-plus")!;
     const long = viewRows(ds, "gpt-6-luna", "long").find((r) => r.key === "codex-plus")!;
-    expect(long.capacity).toBe("52.83B/mo");
+    expect(long.capacity).toBe("11.04B/mo");
     expect(long.usd!).toBeLessThan(short.usd!);
   });
 

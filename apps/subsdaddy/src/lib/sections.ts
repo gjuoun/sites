@@ -378,26 +378,26 @@ export function contextCompareTable(ds: DS): Table {
   };
 }
 
-/** The Codex plans as converted rows: messages per five-hour window to a monthly token capacity and $/B, at both standard contexts. */
+/** The Codex plans as converted rows: messages per five-hour window to tokens and $/B, at both ends of the range and both contexts. */
 export function messageTable(ds: DS): Table {
   const rows = ds.catalog.rows.filter((r) => r.product === "OpenAI Codex").map((r) => {
     const ml = r.message_limit;
     const fee = r.price_month_usd;
     if (!ml || fee === null) {
       const reason = r.allowance_reason ?? "no message limit on the vendor page";
-      return { key: r.plan_id, cells: { plan: value(r.label), limit: na(reason), tokens: na(reason), s100: na(reason), s350: na(reason), c100: na(reason), c350: na(reason) } };
+      return { key: r.plan_id, cells: { plan: value(r.label), limit: na(reason), tokens: na(reason), lo100: na(reason), lo350: na(reason), hi100: na(reason), hi350: na(reason) } };
     }
-    const at = (ctx: "short" | "long", w: number) => monthlyTokens(ml, CONTEXTS[ctx], w);
+    const tok = (ctx: "short" | "long", b: "low" | "high") => monthlyTokens(ml, CONTEXTS[ctx], WINDOWS_PER_DAY.realistic, b);
     return {
       key: r.plan_id,
       cells: {
         plan: value(r.label),
         limit: value(ml.low.toLocaleString("en-US") + "-" + ml.high.toLocaleString("en-US") + " per 5h", [], ml.note),
-        tokens: value((at("short", WINDOWS_PER_DAY.realistic) / 1e9).toFixed(2) + "B/mo", [], "midpoint × 3 windows a day × 30 days × 100,467 tokens"),
-        s100: value(usd(usdPerBOfTokens(fee, at("short", WINDOWS_PER_DAY.realistic))) + "†", [], "realistic rhythm, 100K context"),
-        s350: value(usd(usdPerBOfTokens(fee, at("long", WINDOWS_PER_DAY.realistic))) + "†", [], "realistic rhythm, 350K context"),
-        c100: value(usd(usdPerBOfTokens(fee, at("short", WINDOWS_PER_DAY.ceiling))) + "†", [], "ceiling: 4.8 windows a day, 100K context"),
-        c350: value(usd(usdPerBOfTokens(fee, at("long", WINDOWS_PER_DAY.ceiling))) + "†", [], "ceiling: 4.8 windows a day, 350K context"),
+        tokens: value((tok("short", "low") / 1e9).toFixed(2) + "B/mo", [], "lower bound × 3 windows a day × 30 days × 100,462 tokens"),
+        lo100: value(usd(usdPerBOfTokens(fee, tok("short", "low"))) + "†", [], "lower bound, 100K context"),
+        lo350: value(usd(usdPerBOfTokens(fee, tok("long", "low"))) + "†", [], "lower bound, 350K context"),
+        hi100: value(usd(usdPerBOfTokens(fee, tok("short", "high"))) + "†", [], "upper bound, 100K context"),
+        hi350: value(usd(usdPerBOfTokens(fee, tok("long", "high"))) + "†", [], "upper bound, 350K context"),
       },
     };
   });
@@ -405,11 +405,11 @@ export function messageTable(ds: DS): Table {
     columns: [
       { key: "plan", label: "Plan", width: "22%" },
       { key: "limit", label: "Messages per 5h", width: "16%", numeric: true },
-      { key: "tokens", label: "Tokens/mo, realistic", width: "14%", numeric: true },
-      { key: "s100", label: "$/B 100K", width: "11%", numeric: true },
-      { key: "s350", label: "$/B 350K", width: "11%", numeric: true },
-      { key: "c100", label: "Ceiling $/B 100K", width: "13%", numeric: true },
-      { key: "c350", label: "Ceiling $/B 350K", width: "13%", numeric: true },
+      { key: "tokens", label: "Tokens/mo, lower", width: "14%", numeric: true },
+      { key: "lo100", label: "$/B lower 100K", width: "12%", numeric: true },
+      { key: "lo350", label: "$/B lower 350K", width: "12%", numeric: true },
+      { key: "hi100", label: "$/B upper 100K", width: "12%", numeric: true },
+      { key: "hi350", label: "$/B upper 350K", width: "12%", numeric: true },
     ],
     rows,
   };

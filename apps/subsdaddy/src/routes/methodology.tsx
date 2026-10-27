@@ -5,6 +5,8 @@ import { MODEL_BLOCK, MODEL_TITLE, NOTE, PAGE_TITLE, SECTION_TITLE, SMALL_NOTE }
 import { dataset } from "@/lib/dataset";
 import { catalogTable, contextCompareTable, contextDistributionTable, dsRankingTable, measuredTable, messageTable, modelTables, officialTable, type DS } from "@/lib/sections";
 import { contextLabel } from "@/data/context";
+import { CONTEXTS, OUTPUT_TOKENS_PER_MESSAGE, WINDOWS_PER_DAY, monthlyTokens, tokensPerMessage, usdPerBOfTokens } from "@/data/messages";
+import { hourWeighted } from "@/lib/official-prices";
 
 export const Route = createFileRoute("/methodology")({
   component: MethodologyPage,
@@ -85,6 +87,8 @@ function ContextSection() {
   const dist = contextDistributionTable(ds);
   const cmp = contextCompareTable(ds);
   const dsRef = ds.models.reference.find((r) => r.ref === "deepseek-v4.1-flash")!;
+  const off = dsRef.official;
+  const hw = off ? hourWeighted({ peak: off.peak, off_peak: off.off_peak, peak_hours_utc: off.peak_hours_utc }) : null;
   return (
     <section className="space-y-3" aria-labelledby="m-context">
       <h2 id="m-context" className={SECTION_TITLE}>Standard context</h2>
@@ -101,9 +105,16 @@ function ContextSection() {
       <p>$/B by standard context (agent shape). A value changes only where a prompt-length band is crossed, so a model with no band in the range does not move.</p>
       <UnifiedTable testId="context-compare" columns={cmp.columns} rows={cmp.rows} />
       <p className={SMALL_NOTE}>
-        DeepSeek V4.1 Flash list price used: {"$"}{dsRef.in_per_m} in / {"$"}{dsRef.out_per_m} out / {"$"}{dsRef.cache_per_m} cache per M tokens; status {dsRef.price_status ?? "unknown"}; last verified{" "}
-        {dsRef.last_verified_at ?? "unknown"}. {dsRef.price_anomaly ?? ""} Official: {dsRef.official_status ?? "not checked"}. Source priority: official above OpenRouter.
+        DeepSeek V4.1 Flash reference price in use: {"$"}{dsRef.in_per_m} in / {"$"}{dsRef.out_per_m} out / {"$"}{dsRef.cache_per_m} cache per M tokens (cache read); status {dsRef.price_status ?? "unknown"};
+        last verified {dsRef.last_verified_at ?? "unknown"}. {dsRef.price_note ?? dsRef.price_anomaly ?? ""} Official: {dsRef.official_status ?? "not checked"}. Source priority: official above OpenRouter.
       </p>
+      {off && hw && (
+        <p className={SMALL_NOTE}>
+          Price basis: the arithmetic mean of the peak and off-peak bands, as ruled. Peak hours (UTC): {off.peak_hours_utc}. Source: {off.source}, read {off.fetched_at.slice(0, 10)}.
+          Sensitivity, not used: weighting each band by the hours it covers (peak is 7 of 168 hours a week) would give {"$"}{hw.in_per_m.toFixed(3)} input,
+          {" "}{"$"}{hw.cache_per_m.toFixed(4)} cache and {"$"}{hw.out_per_m.toFixed(3)} output per M tokens.
+        </p>
+      )}
     </section>
   );
 }
@@ -112,6 +123,8 @@ function ContextSection() {
 function OfficialPlansSection() {
   const ds = dataset as unknown as DS;
   const msg = messageTable(ds);
+  const ceilingTokens = monthlyTokens({ low: 350, high: 3000 }, CONTEXTS.short, WINDOWS_PER_DAY.ceiling, "low");
+  const per = tokensPerMessage(CONTEXTS.short);
   return (
     <section className="space-y-3" aria-labelledby="m-official-plans">
       <h2 id="m-official-plans" className={SECTION_TITLE}>Official consumer plans</h2>
@@ -126,14 +139,14 @@ function OfficialPlansSection() {
         are no longer on the page.
       </p>
       <p>
-        Conversion, one convention (src/data/messages.ts): 1 message = 100,467 tokens = 100,000 standard context + 467 output tokens, the median output of one assistant turn in our pi
-        session logs. Monthly capacity = the range's midpoint × windows a day × 30 × tokens per message. Realistic is 3 active windows a day; the ceiling is 24 hours of continuous use,
-        24 ÷ 5 = 4.8 windows a day. The front page shows realistic; the ceiling is here so the range is visible.
+        Conversion, one convention (src/data/messages.ts): 1 message = {per.toLocaleString("en-US")} tokens = 100,000 standard context + {OUTPUT_TOKENS_PER_MESSAGE} output tokens, the median output
+        of one assistant turn in our pi session logs. Monthly capacity = messages per window × windows a day × 30 × tokens per message. The vendor gives a range; the front page uses its
+        lower bound, and the table shows both ends. Realistic is 3 active windows a day. The ceiling is 24 hours of continuous use, 24 ÷ 5 = 4.8 windows a day: at the lower bound, Plus on GPT-6 Luna
+        would run {(ceilingTokens / 1e9).toFixed(2)}B tokens a month at 100K, which is {"$"}{usdPerBOfTokens(20, ceilingTokens).toFixed(2)} per billion tokens.
       </p>
       <p>
-        Measured figures behind the output constant: a recount on 2026-10-26 found 43,582 assistant turns with usage in 45 days and a median output of 462 tokens. The constant of 467
-        is the earlier measurement and is kept as ruled. The per-turn median prompt is 192K tokens, not 100K; 100K per message is the standard context convention (the session-end median),
-        so per-turn prompts would roughly double the token counts.
+        Measured output constant: a recount on 2026-10-26 found 43,582 assistant turns with usage in 45 days and a median output of 462 tokens. It replaces the earlier 467. The per-turn
+        median prompt is 192K tokens, not 100K; 100K per message is the standard context convention (the session-end median), so per-turn prompts would roughly double the token counts.
       </p>
       <UnifiedTable testId="messages" columns={msg.columns} rows={msg.rows} />
       <p>Anthropic publishes percentage-based limits only; no measured token conversion is available. A month of own usage on any Max plan would replace this estimate.</p>
