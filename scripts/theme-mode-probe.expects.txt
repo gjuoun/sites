@@ -23,7 +23,3 @@ light@1440:cls:bg-scrim/10=~^oklab\(0\.315
 dark@1440:cls:bg-scrim/10=~^oklab\(0\.275
 light@1440:cls:bg-danger-veil=~^oklab\(0\.681.*/ 0\.1\)
 dark@1440:cls:bg-danger-veil=~^oklab\(0\.681.*/ 0\.2\)
-light@1440:--theme-lime=rgb(198, 255, 0)
-dark@1440:--theme-lime=rgb(198, 255, 0)
-light@390:--theme-lime=rgb(198, 255, 0)
-dark@390:--theme-lime=rgb(198, 255, 0)

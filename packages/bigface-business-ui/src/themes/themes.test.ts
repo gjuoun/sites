@@ -79,14 +79,13 @@ describe("bigface-business-ui: colour only", () => {
 		for (const role of ["bg", "panel", "fg", "fgDim", "border"]) {
 			expect(r[role], role).toBe("light-dark(" + hex(light, role) + ", " + hex(dark, role) + ")");
 		}
-		for (const role of ["blue", "lightBlue", "paleBlue", "cyan", "green", "burntOrange", "lime"]) {
+		for (const role of ["blue", "lightBlue", "paleBlue", "cyan", "green", "burntOrange"]) {
 			const paletteName = THEMES[0]!.roles[role] as string;
 			expect(r[role], role).toBe(hex(dark, paletteName));
 			expect(r[role], role + " is the same in both palettes").toBe(hex(light, paletteName));
 		}
-		// lime is a role (the glow rim's gradient end); yellow and purple are accent-docs data, no CSS variable carries them
-		expect(r.lime, "lime is the same in both palettes").toBe(hex(dark, "lime"));
-		expect(r.lime).toBe(hex(light, "lime"));
+		// lime, yellow and purple are accent-docs data: no CSS variable carries them
+		expect(r.lime).toBeUndefined();
 		expect(r.yellow).toBeUndefined();
 		expect(r.purple).toBeUndefined();
 	});

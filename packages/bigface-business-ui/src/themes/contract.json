@@ -12,8 +12,7 @@
     "--theme-paleBlue": "chart-3. Palette paleBlue.",
     "--theme-cyan": "info, chart-4. Palette cyan.",
     "--theme-green": "success, chart-5. Palette green.",
-    "--theme-burntOrange": "danger and destructive. Palette burntOrange.",
-    "--theme-lime": "glow rim gradient end (button glow variant). Palette lime, the same hex in both modes."
+    "--theme-burntOrange": "danger and destructive. Palette burntOrange."
   },
   "optional": {}
 }
