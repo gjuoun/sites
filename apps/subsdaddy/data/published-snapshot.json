@@ -2,8 +2,8 @@
   "source": "last stable capacity per lane (src/data/published.ts): written only by a fresh reading, never by a low-signal one",
   "lanes": {
     "commandcode-goat": {
-      "read_at": "2026-10-27T22:02:40.664Z",
-      "measured_at": "2026-10-27T22:02:40.664Z",
+      "read_at": "2026-10-27T22:06:24.603Z",
+      "measured_at": "2026-10-27T22:06:24.603Z",
       "source": "codexbar quota reading (binding window), priced at list",
       "published_on": "2026-10-27",
       "binding_window": "monthly",
@@ -17,46 +17,46 @@
         {
           "window": "weekly",
           "used_pct": 100,
-          "measured_at": "2026-10-27T22:02:40.664Z",
+          "measured_at": "2026-10-27T22:06:24.603Z",
           "source": "codexbar quota reading"
         },
         {
           "window": "monthly",
           "used_pct": 50.000967357571426,
-          "measured_at": "2026-10-27T22:02:40.664Z",
+          "measured_at": "2026-10-27T22:06:24.603Z",
           "source": "codexbar quota reading"
         }
       ]
     },
     "opencode-go": {
-      "read_at": "2026-10-27T22:02:40.664Z",
-      "measured_at": "2026-10-27T22:02:40.664Z",
+      "read_at": "2026-10-27T22:06:24.603Z",
+      "measured_at": "2026-10-27T22:06:24.603Z",
       "source": "codexbar quota reading (binding window), priced at list",
       "published_on": "2026-10-27",
       "binding_window": "monthly",
       "cycle_days": 30,
       "fee_per_cycle_usd": 10,
-      "tokens_per_cycle": 2077343683.5197496,
+      "tokens_per_cycle": 2075932862.4549696,
       "allowance_usd_per_cycle": 80,
       "allowance_basis": "vendor_published_per_model",
-      "usd_per_b_measured": 4.813839943449554,
+      "usd_per_b_measured": 4.8171114687081635,
       "windows": [
         {
           "window": "5h",
-          "used_pct": 3.6210513333333334,
-          "measured_at": "2026-10-27T22:02:40.664Z",
+          "used_pct": 3.6940695000000003,
+          "measured_at": "2026-10-27T22:06:24.603Z",
           "source": "codexbar quota reading"
         },
         {
           "window": "weekly",
-          "used_pct": 47.058681433333334,
-          "measured_at": "2026-10-27T22:02:40.664Z",
+          "used_pct": 47.0878887,
+          "measured_at": "2026-10-27T22:06:24.603Z",
           "source": "codexbar quota reading"
         },
         {
           "window": "monthly",
-          "used_pct": 73.52934071666667,
-          "measured_at": "2026-10-27T22:02:40.664Z",
+          "used_pct": 73.54394435,
+          "measured_at": "2026-10-27T22:06:24.603Z",
           "source": "codexbar quota reading"
         }
       ]
@@ -91,8 +91,8 @@
       "seed_source": "seeded from build 8779751 (2026-10-27); the lane has never read above 2% used"
     },
     "qwen-cloud-token": {
-      "read_at": "2026-10-27T22:02:40.664Z",
-      "measured_at": "2026-10-27T22:02:40.664Z",
+      "read_at": "2026-10-27T22:06:24.603Z",
+      "measured_at": "2026-10-27T22:06:24.603Z",
       "source": "codexbar quota reading (binding window), priced at list",
       "published_on": "2026-10-27",
       "binding_window": "monthly",
@@ -106,7 +106,7 @@
         {
           "window": "monthly",
           "used_pct": 55.06530853025255,
-          "measured_at": "2026-10-27T22:02:40.664Z",
+          "measured_at": "2026-10-27T22:06:24.603Z",
           "source": "codexbar quota reading"
         }
       ]
