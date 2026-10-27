@@ -124,6 +124,23 @@ pre {
 .theme-toggle[aria-pressed="true"] {
 	background: var(--theme-frame);
 }
+.theme-toggle {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+}
+.theme-toggle-icon {
+	display: inline-flex;
+}
+.theme-toggle .icon-sun {
+	display: none;
+}
+.theme-toggle[aria-pressed="true"] .icon-moon {
+	display: none;
+}
+.theme-toggle[aria-pressed="true"] .icon-sun {
+	display: inline-block;
+}
 /* Narrow screens: the nav and the toggle share one row, and the toggle shrinks to a control, not a banner. */
 @media (max-width: 40rem) {
 	.site-header {
@@ -138,9 +155,20 @@ pre {
 		padding: 0.2rem 0.45rem;
 		font-size: 0.875rem;
 	}
+	/* Icon-only on phones: the label is hidden visually but still the button's accessible name. */
 	.theme-toggle {
 		font-size: 0.8125rem;
-		padding: 0.2rem 0.5rem;
+		padding: 0.35rem;
+		white-space: nowrap;
+	}
+	.theme-toggle-label {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		margin: -1px;
+		padding: 0;
+		overflow: hidden;
+		clip-path: inset(50%);
 		white-space: nowrap;
 	}
 }
@@ -161,6 +189,9 @@ pre {
 	.theme-toggle {
 		font-size: 0.75rem;
 		padding: 0.15rem 0.4rem;
+		min-width: 1.75rem;
+		min-height: 1.75rem;
+		justify-content: center;
 	}
 }
 @media (prefers-reduced-motion: reduce) {

@@ -2,7 +2,13 @@
 import { MODE_STORAGE_KEY } from "@gjuoun/bigface-business-ui/lib/themes";
 ---
 
-<button type="button" id="theme-toggle" class="theme-toggle" aria-pressed="false">Dark mode</button>
+<button type="button" id="theme-toggle" class="theme-toggle" aria-pressed="false" aria-label="Dark mode">
+	<span class="theme-toggle-icon" aria-hidden="true">
+		<svg class="icon-moon" viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13.5 9.5A5.5 5.5 0 0 1 6.5 2.5a5.5 5.5 0 1 0 7 7Z" /></svg>
+		<svg class="icon-sun" viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="3" /><path d="M8 1v1.5M8 13.5V15M1 8h1.5M13.5 8H15M3 3l1 1M12 12l1 1M13 3l-1 1M4 12l-1 1" /></svg>
+	</span>
+	<span class="theme-toggle-label">Dark mode</span>
+</button>
 <script define:vars={{ storageKey: MODE_STORAGE_KEY }}>
 	const root = document.documentElement;
 	const button = document.getElementById("theme-toggle");
