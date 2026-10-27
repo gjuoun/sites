@@ -64,11 +64,11 @@ describe("bigface-business-ui: colour only", () => {
 		expect(Object.keys(roles()).sort()).toEqual([...REQUIRED].sort());
 	});
 
-	test("the theme is one block: no dark-mode selector, 14 declarations", () => {
+	test("the theme is one block: no dark-mode selector, one declaration per role", () => {
 		const text = strip(css("business.css"));
 		expect(text).not.toContain('[data-mode="dark"]');
 		expect(text.match(/\{/g)?.length).toBe(1);
-		expect(Object.keys(roles()).length).toBe(14);
+		expect(Object.keys(roles()).length).toBe(REQUIRED.length);
 	});
 
 	test("every value is light-dark(light, dark) or one bare hex, and the neutrals carry both palettes", () => {

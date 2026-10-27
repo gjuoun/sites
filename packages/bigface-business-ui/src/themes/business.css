@@ -9,6 +9,7 @@
   --theme-fg: light-dark(#2f332f, #e8e9e1);
   --theme-fgDim: light-dark(#70736e, #8c8f89);
   --theme-border: light-dark(#d9dad2, #3c403c);
+  --theme-highlight: light-dark(#c7c9c1, #4b4e49);
   --theme-blue: #00b0ff;
   --theme-lightBlue: #40c4ff;
   --theme-paleBlue: #b3e5fc;

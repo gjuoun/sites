@@ -2,13 +2,13 @@
 //
 // A role IS a palette colour: `bg` means the palette's `bg`. The neutrals and accents the components
 // actually use. light-dark() carries the two modes, so there is no per-mode block, no optional tier and
-// no role that exists only to paper over one mode. The palette's sixth neutral (`highlight`) stays in
-// the palette and is not a role: nothing paints it.
+// no role that exists only to paper over one mode. The six neutrals are the palette's own: bg, panel,
+// fg, fgDim, border and highlight.
 //
 // Anything that is not a palette colour is a formula in styles.css (the ink on the primary fill, the
 // translucent veils) or generated data in accents.ts (the deepened plates for the accent docs). A
 // theme stores only what comes out of the palette.
-export const NEUTRALS = ["bg", "panel", "fg", "fgDim", "border"] as const;
+export const NEUTRALS = ["bg", "panel", "fg", "fgDim", "border", "highlight"] as const;
 
 /**
  * The accents the components read: primary and ring, destructive, success, info, and the chart ramp

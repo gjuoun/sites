@@ -6,6 +6,7 @@
     "--theme-fg": "Body and heading ink, and the ink on frame/solid. Palette fg.",
     "--theme-fgDim": "Muted text and placeholders. Palette fgDim.",
     "--theme-border": "Borders and input outlines. Palette border.",
+    "--theme-highlight": "Hover and selection step between border and fgDim. Palette highlight.",
     "--theme-blue": "primary, ring, focus, chart-1. Palette blue.",
     "--theme-lightBlue": "chart-2. Palette lightBlue.",
     "--theme-paleBlue": "chart-3. Palette paleBlue.",
