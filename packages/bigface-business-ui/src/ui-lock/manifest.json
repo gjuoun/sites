@@ -1,0 +1,326 @@
+{
+	"upstream": {
+		"registry": "https://ui.shadcn.com/r/styles/radix-nova",
+		"shadcn": "4.22.1",
+		"method": "one shadcn add <name> --overwrite per file in a scratch project (scripts/ui-registry-probe.sh); the own file src/components/ui/<name>.tsx is the registry output"
+	},
+	"files": {
+		"accordion.tsx": {
+			"state": "locked",
+			"sha256": "f64526e9f0b923cbdfce130bc357ceec4ef635a5d688740b1756124700fe87ad"
+		},
+		"alert-dialog.tsx": {
+			"state": "declared",
+			"sha256": "75e57b3a6806d77a2514c57c7ad8a6423dba80501cc952022126497e7105708b",
+			"marker": "declared-colour-light-dark",
+			"reason": "light-dark colour edit, registry bg-black/10 swapped for bg-scrim/10; colour to move into tokens (see todo)"
+		},
+		"alert.tsx": {
+			"state": "locked",
+			"sha256": "f253568242c1c69b343f12474002fdbe229f603158171c59e21c491ab79f2e6e"
+		},
+		"aspect-ratio.tsx": {
+			"state": "locked",
+			"sha256": "3ce0684d13f8572abbd3c46fc0beb613ad2d0821ab978480f8576c9a394f03d5"
+		},
+		"attachment.tsx": {
+			"state": "locked",
+			"sha256": "bce99159bda46879319f443e6931efe5dc12ad8b971dae3f135da60f6179d5c2"
+		},
+		"avatar.tsx": {
+			"state": "declared",
+			"sha256": "f2a0a5f1f491378a19a003a2075229a7cfbc10a58a512939a5b92ee52a06c168",
+			"marker": "declared-colour-light-dark",
+			"reason": "light-dark colour edit, registry after:border-border swapped for after:border-avatar-edge and dark: variants dropped; colour to move into tokens (see todo)"
+		},
+		"badge.tsx": {
+			"state": "declared",
+			"sha256": "5a82e107a97654747a7c0fbe103efef7bfd0c467a1c55162ca8084455cd4ff2f",
+			"marker": "declared-colour-light-dark",
+			"reason": "light-dark colour edit, registry aria-invalid:border-destructive swapped for aria-invalid:border-danger-edge and dark: variants dropped; colour to move into tokens (see todo)"
+		},
+		"breadcrumb.tsx": {
+			"state": "locked",
+			"sha256": "0a8bde9cce18e08b8189d86eec603709c6ffa04238f062875685b90a44037154"
+		},
+		"bubble.tsx": {
+			"state": "declared",
+			"sha256": "4e713260b44cbd40d915989ab9ad7e132a6459e0bd4eea953430d8f039395890",
+			"marker": "declared-colour-light-dark",
+			"reason": "light-dark colour edit, registry *:data-[slot=bubble-content]:bg-[oklch(from_var(--primary)_0 swapped for *:data-[slot=bubble-content]:bg-bubble-tint and dark: variants dropped; colour to move into tokens (see todo)"
+		},
+		"button-group.tsx": {
+			"state": "locked",
+			"sha256": "41ded95461f0e36769caf0595ebe9188b6097bfccfa50f220d53f91e2b38fb5c"
+		},
+		"button.tsx": {
+			"state": "declared",
+			"sha256": "5de44742e39f5d835ad535d8b557da08f0efc05b74daf63dedfcdd2c58a2dabf",
+			"marker": "declared-colour-light-dark",
+			"reason": "light-dark colour edit, registry aria-invalid:border-destructive swapped for aria-invalid:border-danger-edge and dark: variants dropped; colour to move into tokens (see todo)"
+		},
+		"calendar.tsx": {
+			"state": "declared",
+			"sha256": "43a8597e16c2887eab529d376ad760da31de2587e332ebce5caf83b257f1870f",
+			"marker": "declared-colour-light-dark",
+			"reason": "light-dark colour edit, registry dark:hover:text-foreground swapped for hover:text-foreground and dark: variants dropped; colour to move into tokens (see todo)"
+		},
+		"card.tsx": {
+			"state": "locked",
+			"sha256": "8ad3a18d36bda0598dc0e9aa96ea22854944d5443ee4946f1d173815e115375f"
+		},
+		"carousel.tsx": {
+			"state": "locked",
+			"sha256": "963770d85f314a0d4ce251288f192d5a43dc9a0d71a971608c698a635d73e3b3"
+		},
+		"chart.tsx": {
+			"state": "locked",
+			"sha256": "3903f6406cd3267d6ffb3502a43369c15f3c193a811f1a7ec77ce7c74ba9410f"
+		},
+		"checkbox.tsx": {
+			"state": "declared",
+			"sha256": "3fd488dabdfe026e207311445c58a166ee980ca246478aa0b0a56712baf86f8f",
+			"marker": "declared-colour-light-dark",
+			"reason": "light-dark colour edit, registry aria-invalid:border-destructive swapped for aria-invalid:border-danger-edge and dark: variants dropped; colour to move into tokens (see todo)"
+		},
+		"code-block.tsx": {
+			"state": "declared",
+			"sha256": "82f5124cb14f3ddf6c7cb869efda288a6c5c9c0bef684a5ed0ffe4c79ee983bf",
+			"marker": "declared-colour-light-dark",
+			"reason": "light-dark colour edit, registry dark:bg-input/30 swapped for bg-input-veil and dark: variants dropped; colour to move into tokens (see todo)"
+		},
+		"collapsible.tsx": {
+			"state": "locked",
+			"sha256": "eb4ee2a9ddb3c566c509753a79e4f4c9425d9f8474d55f61f8c8694928b6a509"
+		},
+		"combobox.tsx": {
+			"state": "declared",
+			"sha256": "720c381d725c292db3e30133d9e2cc19b904a7f206c63b096b610e3f93582b63",
+			"marker": "declared-colour-light-dark",
+			"reason": "light-dark colour edit, registry bg-transparent swapped for bg-input-veil and dark: variants dropped; colour to move into tokens (see todo)"
+		},
+		"command.tsx": {
+			"state": "locked",
+			"sha256": "da170984785f70facac48d7bcc8245869f84dd86bc399fad3fac1c6c1db68fc3"
+		},
+		"context-menu.tsx": {
+			"state": "declared",
+			"sha256": "4fc00afefa726218bfbc72c115d3310686bb06929e434034e5d9e2b17a23ba3b",
+			"marker": "declared-colour-light-dark",
+			"reason": "light-dark colour edit, registry data-[variant=destructive]:focus:bg-destructive/10 swapped for data-[variant=destructive]:focus:bg-danger-veil and dark: variants dropped; colour to move into tokens (see todo)"
+		},
+		"dialog.tsx": {
+			"state": "declared",
+			"sha256": "85cd6627cf91d4b0d2a2f7ff7e69ece1aa2c688255725a6653bea4ae810bf89c",
+			"marker": "declared-colour-light-dark",
+			"reason": "light-dark colour edit, registry bg-black/10 swapped for bg-scrim/10; colour to move into tokens (see todo)"
+		},
+		"direction.tsx": {
+			"state": "locked",
+			"sha256": "cf4e22f59e0c253b9249835ae11a9d755558a9d02a86316f41ff29dbd6d62406"
+		},
+		"drawer.tsx": {
+			"state": "declared",
+			"sha256": "d86be998e0bc0062a3247ff9392c67b347f3d47bcb3ec55e099f8230c7490483",
+			"marker": "declared-colour-light-dark",
+			"reason": "light-dark colour edit, registry bg-black/10 swapped for bg-scrim/10; colour to move into tokens (see todo)"
+		},
+		"dropdown-menu.tsx": {
+			"state": "declared",
+			"sha256": "9fb3e60d0254069a8fe2bddf9e638b32f2020044aca77f07183b029fa60cf9fa",
+			"marker": "declared-colour-light-dark",
+			"reason": "light-dark colour edit, registry data-[variant=destructive]:focus:bg-destructive/10 swapped for data-[variant=destructive]:focus:bg-danger-veil and dark: variants dropped; colour to move into tokens (see todo)"
+		},
+		"empty.tsx": {
+			"state": "locked",
+			"sha256": "1280f9207787f9e7c219f7181459387b5e103606b6d91872de33a7a9752ee7a7"
+		},
+		"field.tsx": {
+			"state": "declared",
+			"sha256": "d4ea1196d94b6b4dd32a6221af5f78bb189e30ea00edfb11f45049200d7094d0",
+			"marker": "declared-colour-light-dark",
+			"reason": "light-dark colour edit, registry has-data-checked:border-primary/30 swapped for has-data-checked:border-check-edge and dark: variants dropped; colour to move into tokens (see todo)"
+		},
+		"hover-card.tsx": {
+			"state": "locked",
+			"sha256": "b8ffc8ff253e275a5aa7581ecda0372214990c88ed86d1d4adccad2f6e73cb63"
+		},
+		"input-group.tsx": {
+			"state": "declared",
+			"sha256": "cb59b669fa2a027d9613e395cd63d6a77d359cf4dfb096284b5fc5ff0c46db10",
+			"marker": "declared-colour-light-dark",
+			"reason": "light-dark colour edit, registry has-disabled:bg-input/50 swapped for has-disabled:bg-input-veil-off and dark: variants dropped; colour to move into tokens (see todo)"
+		},
+		"input-otp.tsx": {
+			"state": "declared",
+			"sha256": "1fa7960dbe7ca7c5dac97b8856ea54de26065da06ed88e692e35503835b91b49",
+			"marker": "declared-colour-light-dark",
+			"reason": "light-dark colour edit, registry has-aria-invalid:ring-destructive/20 swapped for has-aria-invalid:ring-danger-halo and dark: variants dropped; colour to move into tokens (see todo)"
+		},
+		"input.tsx": {
+			"state": "declared",
+			"sha256": "91fa665f8e50e7c7df44b39d383329a79ef4c6716b56a87a9812acdafe41ed3f",
+			"marker": "declared-colour-light-dark",
+			"reason": "light-dark colour edit, registry bg-transparent swapped for bg-input-veil and dark: variants dropped; colour to move into tokens (see todo)"
+		},
+		"item.tsx": {
+			"state": "locked",
+			"sha256": "9be8d83161077b3e471ad65692f3d208f6ce6851f4bf07bba0abef5003d4a1d3"
+		},
+		"kbd.tsx": {
+			"state": "declared",
+			"sha256": "021d9e4675ec9eb8832942eabd3b65b07fe76f3c4c2b290a36812e2659bbcf04",
+			"marker": "declared-colour-light-dark",
+			"reason": "light-dark colour edit, registry in-data-[slot=tooltip-content]:bg-background/20 swapped for in-data-[slot=tooltip-content]:bg-tooltip-veil and dark: variants dropped; colour to move into tokens (see todo)"
+		},
+		"label.tsx": {
+			"state": "locked",
+			"sha256": "b823de7355666bd6a6a2cf88a6630e436d021b38fdbef5b749fac0921b86f44d"
+		},
+		"marker.tsx": {
+			"state": "locked",
+			"sha256": "036277635df058b8dc6e6dbe5cb738bc595e5035b885be42c60f904263725424"
+		},
+		"menubar.tsx": {
+			"state": "declared",
+			"sha256": "135c1479300bd6f11f84bcd2af18aedd7405cdaee5bafc667dd5d6450aff7300",
+			"marker": "declared-colour-light-dark",
+			"reason": "light-dark colour edit, registry data-[variant=destructive]:focus:bg-destructive/10 swapped for data-[variant=destructive]:focus:bg-danger-veil and dark: variants dropped; colour to move into tokens (see todo)"
+		},
+		"message-scroller.tsx": {
+			"state": "locked",
+			"sha256": "b6687a9cdeb8dc93fa04a2fd7723e3610469d047a7d13f2a3b753c4b7acbc1f5"
+		},
+		"message.tsx": {
+			"state": "locked",
+			"sha256": "64e9ae0f9d1e268b0ed7b738a53d374d273fe1e7e2dd7b35ad7417e50a9bbe6c"
+		},
+		"native-select.tsx": {
+			"state": "declared",
+			"sha256": "d7b47f3ef93394cce50d09929d658201e0d5068b011a845caf8458f7c8ed727f",
+			"marker": "declared-colour-light-dark",
+			"reason": "light-dark colour edit, registry bg-transparent swapped for bg-input-veil and dark: variants dropped; colour to move into tokens (see todo)"
+		},
+		"navigation-menu.tsx": {
+			"state": "locked",
+			"sha256": "d02aeb5e4a2e553ff6ba6283092f30c81bd1e557d9397a9f9f37742284f805b5"
+		},
+		"pagination.tsx": {
+			"state": "locked",
+			"sha256": "60b7dc5fd0c8129714879a1e575ff4984d1ea15ef23fd5164e35747b17459bfe"
+		},
+		"popover.tsx": {
+			"state": "locked",
+			"sha256": "adfe7bd916596c7e73388ad5e184db5f6f7a47288abe3c04e2f4a6b2090be981"
+		},
+		"progress.tsx": {
+			"state": "locked",
+			"sha256": "64645ac35c13d5b9862b5535fcecc3471dcc153e8427f562046d5a7f37c8592a"
+		},
+		"questionnaire.tsx": {
+			"state": "declared",
+			"sha256": "01e94d5eb7abcfc2c425e72728c1aed9b75b1fad264ef400438d48818e20f233",
+			"marker": "declared-colour-light-dark",
+			"reason": "light-dark colour edit, registry bg-transparent swapped for bg-input-veil-soft and dark: variants dropped; colour to move into tokens (see todo)"
+		},
+		"radio-group.tsx": {
+			"state": "declared",
+			"sha256": "93b4d2a0cb82c56ef9858378ce7887d3875a94e17b440516fcc8c496dadfb345",
+			"marker": "declared-colour-light-dark",
+			"reason": "light-dark colour edit, registry aria-invalid:border-destructive swapped for aria-invalid:border-danger-edge and dark: variants dropped; colour to move into tokens (see todo)"
+		},
+		"resizable.tsx": {
+			"state": "locked",
+			"sha256": "565714189484affdabde40be5028fa7232c91a045ad7e955423703fd8ed8c73b"
+		},
+		"scroll-area.tsx": {
+			"state": "locked",
+			"sha256": "9c6cff5fff536a8d042f956df6fb6f128970bcbac2115482989288292464e4ca"
+		},
+		"select.tsx": {
+			"state": "declared",
+			"sha256": "d7e5324e84780a592a9e1676e3935e03742684e31bcace9a354d413c3ee16f1f",
+			"marker": "declared-colour-light-dark",
+			"reason": "light-dark colour edit, registry bg-transparent swapped for bg-input-veil and dark: variants dropped; colour to move into tokens (see todo)"
+		},
+		"separator.tsx": {
+			"state": "locked",
+			"sha256": "42aa6209fe9bec178e4009cf042c16f7e8730bfc4edbc0c39972c1f0482e7d19"
+		},
+		"sheet.tsx": {
+			"state": "declared",
+			"sha256": "b93481ce6b030aeef17e3b5b666decb5923a3b6dbb1b3b1af79874c561bd1708",
+			"marker": "declared-colour-light-dark",
+			"reason": "light-dark colour edit, registry bg-black/10 swapped for bg-scrim/10; colour to move into tokens (see todo)"
+		},
+		"sidebar.tsx": {
+			"state": "locked",
+			"sha256": "66622b71ed46b2c6c96be1a2e5f45e2e4a5960bd0e1c0d386ca62d88c889d928"
+		},
+		"skeleton.tsx": {
+			"state": "locked",
+			"sha256": "4c2af7fa9c645358a0fb188779deab6f0b981733b62befc25e18aaebea1350dc"
+		},
+		"slider.tsx": {
+			"state": "declared",
+			"sha256": "3bb417b705d21ec928ee2de84fc8aad470cefe14de74ebfe3835987b08217e94",
+			"marker": "declared-colour-light-dark",
+			"reason": "light-dark colour edit, registry bg-white swapped for bg-thumb; colour to move into tokens (see todo)"
+		},
+		"sonner.tsx": {
+			"state": "locked",
+			"sha256": "0c729f9f1ada0b0bedd9296710cc257dc43559fa6b8cc40f010d129e8ff85fdd"
+		},
+		"spinner.tsx": {
+			"state": "locked",
+			"sha256": "6916679a40ad1c7624520de5eaa7b337635e81f9a76413201267f8619844646f"
+		},
+		"switch.tsx": {
+			"state": "declared",
+			"sha256": "4f5b51cbf79d11a0467f4e1e885b32f43da77dd1eacc1d4921164367f8fc5da6",
+			"marker": "declared-colour-light-dark",
+			"reason": "light-dark colour edit, registry aria-invalid:border-destructive swapped for aria-invalid:border-danger-edge and dark: variants dropped; colour to move into tokens (see todo)"
+		},
+		"table.tsx": {
+			"state": "locked",
+			"sha256": "300dc171ff0e09543dce0787f43a3ceb0d168fa800eaecb98b6c5630f3c6d7e9"
+		},
+		"tabs.tsx": {
+			"state": "declared",
+			"sha256": "b86a4f99f342ad3655c04ae02b03dcce2c852306572ac22ef529ca28cdeafd7e",
+			"marker": "declared-colour-light-dark",
+			"reason": "light-dark colour edit, registry text-foreground/60 swapped for text-tab-ink and dark: variants dropped; colour to move into tokens (see todo)"
+		},
+		"textarea.tsx": {
+			"state": "declared",
+			"sha256": "4a1e044a115ede28ab289345ef79b5eae715537014e71c45e9a4816dc289b827",
+			"marker": "declared-colour-light-dark",
+			"reason": "light-dark colour edit, registry bg-transparent swapped for bg-input-veil and dark: variants dropped; colour to move into tokens (see todo)"
+		},
+		"toggle-group.tsx": {
+			"state": "locked",
+			"sha256": "ce5ab9d016f32f96e8e02178a0b29d19d458614fa6625b2d2beece7d25740fb6"
+		},
+		"toggle.tsx": {
+			"state": "declared",
+			"sha256": "ac8d5371fc9f9f12c384ec7a2a16c9bcc4bf082accfa340b6d3da1ce8e3ae050",
+			"marker": "declared-colour-light-dark",
+			"reason": "light-dark colour edit, registry aria-invalid:border-destructive swapped for aria-invalid:border-danger-edge and dark: variants dropped; colour to move into tokens (see todo)"
+		},
+		"tooltip.tsx": {
+			"state": "locked",
+			"sha256": "fc4380a53b7c847ff3d692c320f8d889eaaf3d6878dcba1da926ec4ab3a7c037"
+		},
+		"trace.tsx": {
+			"state": "locked",
+			"sha256": "286a09e9e528979ed6f2297f8b492a134aabda511d90b428bb95c1aee259b4ea"
+		}
+	},
+	"variants": {},
+	"todo": [
+		{
+			"id": "colour-to-tokens",
+			"text": "Move the light-dark() colour edits of the 29 declared components out of the components and into tokens (styles.css utilities over the business theme, scrim and thumb formulas), so each file can return to registry bytes. Remove its declared entry as it returns to stock. Until then the colour work stays: Jun reviewed and approved the current look."
+		}
+	]
+}
