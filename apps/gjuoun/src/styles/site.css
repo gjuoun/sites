@@ -64,10 +64,11 @@ pre {
 	padding: 0.75rem;
 	overflow-x: auto;
 }
-.starter {
-	background: var(--theme-highlight-tint);
-	border: 1px solid var(--theme-border);
-	padding: 0.5rem 0.75rem;
+/* Starter copy is a discreet footer note, never part of the content flow. */
+.starter-note {
+	color: var(--theme-muted-ink);
+	font-size: 0.85rem;
+	margin: 0.25rem 0 0;
 }
 .site-header {
 	display: flex;
@@ -115,5 +116,13 @@ pre {
 	*::after {
 		transition: none;
 		animation: none;
+	}
+}
+
+@media print {
+	.skip-link,
+	.site-header,
+	footer {
+		display: none;
 	}
 }

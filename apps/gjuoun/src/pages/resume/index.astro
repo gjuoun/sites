@@ -3,7 +3,7 @@ import { resume } from "../../data/resume";
 import Base from "../../layouts/Base.astro";
 ---
 
-<Base title="Resume" description={resume.summary} starter={resume.starter}>
+<Base title="Resume" description={resume.summary} starter={false}>
 	<h1>{resume.name}</h1>
 	<p>{resume.headline}</p>
 	<p>{resume.summary}</p>

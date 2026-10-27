@@ -56,9 +56,8 @@ const meta = buildMeta({
 		<a class="skip-link" href="#main">Skip to content</a>
 		<SiteHeader />
 		<main id="main">
-			{starter && <p class="starter">Starter copy: written to be reviewed and replaced.</p>}
 			<slot />
 		</main>
-		<SiteFooter />
+		<SiteFooter starter={starter} />
 	</body>
 </html>
