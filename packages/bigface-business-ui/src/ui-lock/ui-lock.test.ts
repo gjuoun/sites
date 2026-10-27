@@ -63,24 +63,29 @@ describe("components/ui lock", () => {
 		extra.set("zz-extra.tsx", "export {};\n");
 		expect(checkLock(extra, m).some((f) => f.includes("zz-extra.tsx"))).toBe(true);
 	});
-	test("the glow variant is a paleBlue halo: gradient primary fill, on-primary ink, outer paleBlue glow, hover lift", () => {
+	test("the glow variant is the reference rim: plain primary fill at rest, a 1px hover rim over the fill edge, and a hover lift", () => {
 		const glow = buttonVariants({ variant: "glow" }).split(/\s+/);
-		// the halo is the theme's existing paleBlue, read through --theme-paleBlue; the fill is a gradient to a darker primary
-		expect(glow).toContain("shadow-[0_0_20px_-2px_var(--theme-paleBlue)]");
-		expect(glow).toContain("hover:shadow-[0_0_20px_-2px_var(--theme-paleBlue)]");
-		expect(glow).toContain("bg-linear-135/srgb");
-		expect(glow).toContain("from-primary");
+		// rest: the plain primary fill with on-primary ink, no gradient and no shadow
+		expect(glow).toContain("bg-primary");
 		expect(glow).toContain("text-primary-foreground");
+		expect(glow.some((c) => /^shadow-|bg-linear-135/.test(c))).toBe(false);
+		// the rim is a pseudo-element over the padding box, faded in on hover (it must be the border-box edge, not a halo)
+		for (const c of ["relative", "before:absolute", "before:inset-0", "before:p-px", "before:opacity-0", "hover:before:opacity-100"]) expect(glow, c).toContain(c);
+		// the reference card gradient: 140deg, blue at 55 percent, lime at 12 percent at 45 percent, transparent at 70 percent
+		for (const c of ["before:bg-linear-140/srgb", "before:from-[var(--theme-blue)]/55", "before:via-[var(--theme-lime)]/12", "before:via-45%", "before:to-transparent", "before:to-70%"]) expect(glow, c).toContain(c);
+		// the hairline: the content box is excluded from the padding box, so only the 1px ring paints
+		expect(glow).toContain("before:[mask-composite:exclude]");
+		expect(glow).toContain("before:[mask-clip:content-box,border-box]");
+		// hover lifts the button 2px and keeps the fill (no hover colour change)
 		expect(glow).toContain("hover:-translate-y-0.5");
-		// no inset ring and no ring in the canvas colour: the glow is an outside halo
-		expect(glow.some((c) => /inset-ring|ring-background/.test(c))).toBe(false);
+		expect(glow).toContain("hover:bg-primary");
 		// no new custom property: every var() the variant reads is one the theme already declares
 		const used = [...buttonVariants({ variant: "glow" }).matchAll(/var\((--[\w-]+)\)/g)].map((m) => m[1]);
 		const declared = readFileSync(join(import.meta.dir, "../themes/business.css"), "utf8");
 		for (const name of new Set(used)) expect(declared, name).toContain(name + ":");
-		expect(new Set(used)).toEqual(new Set(["--theme-blue", "--theme-fg", "--theme-bg", "--theme-paleBlue"]));
-		// the stock default keeps no glow
-		expect(buttonVariants({ variant: "default" })).not.toContain("paleBlue");
+		expect(new Set(used)).toEqual(new Set(["--theme-blue", "--theme-lime"]));
+		// the stock default keeps no rim
+		expect(buttonVariants({ variant: "default" })).not.toContain("before:absolute");
 	});
 
 	test("button.tsx diverges from registry bytes only by its declared colour lines and the marked glow lines", () => {
