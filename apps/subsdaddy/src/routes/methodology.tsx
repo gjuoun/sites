@@ -323,8 +323,9 @@ function ShapeSection() {
       </p>
       <UnifiedTable testId="shape-compare" columns={cols} rows={rows} />
       <p>
-        CommandCode and OpenCode Go both carry a published {"$"}{cc.capacity.allowance_published_usd?.toFixed(2)} pool: CommandCode's published usage allowance, and Go's official DeepSeek V4.1 Flash monthly limit.
-        Their fee and blend match under each shape, so their $/B is equal in every shape and both contexts. Go's derived figure of {"$"}{go.capacity.allowance_derived_usd?.toFixed(2)} stays in its allowance tooltip for comparison.
+        CommandCode carries a published {"$"}{cc.capacity.allowance_published_usd?.toFixed(2)} pool for every model. OpenCode Go has no pool: it publishes a monthly limit per model, so its allowance
+        is the limit of the model being priced ({"$"}80 for DeepSeek V4.1 Flash, {"$"}15 for Claude Haiku 5.5). With the same fee and blend, CommandCode and Go are equal under every shape in the DeepSeek view;
+        under Haiku or Luna, Go's limit is smaller, so they are not equal. Go's derived pool of {"$"}{go.capacity.allowance_derived_usd?.toFixed(2)} stays in the Measured view and in the allowance tooltip.
       </p>
       {assumed.map((l) => (
         <p key={l.lane} className={SMALL_NOTE}>
@@ -345,6 +346,10 @@ function AllowanceColumnSection() {
       <p>
         Allowance is the usage dollars a plan pays for in one cycle, with the cycle length. Each value carries one source marker: p published by the vendor, r the vendor's dashboard reading,
         d derived from quota windows and list prices, c a credit value measured on the plan. Where a plan has more than one figure, the tooltip lists them all; the published figure is the one the model views price with.
+      </p>
+      <p>
+        Source priority, first match wins: a per-model official limit (OpenCode Go and Go Plus, basis vendor_published_per_model), then the official pool (CommandCode, vendor_published),
+        then the vendor's dashboard reading (vendor_reported), then a figure derived from quota windows (derived), or a credit value (credits). A plan with per-model limits has no pool, so a model it does not list has no allowance.
       </p>
       <p className={SMALL_NOTE}>
         The Measured view's Allowance does not depend on Shape or context. In a model view, the allowance is the same value under every shape: Shape changes only the price per token.

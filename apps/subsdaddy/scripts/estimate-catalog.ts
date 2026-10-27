@@ -88,15 +88,16 @@ function estimateRow(row: CatalogRow) {
     const wildcard = row.allowance.find((a) => a.ref === "*") ?? null;
     const entry = refPub ?? wildcard;
     // precedence: the official limit for this model, then the lane allowance (published, vendor pool or derived), then a wildcard
-    const allowanceUsd = refPub ? refPub.usd : measuredUsd ?? (wildcard ? wildcard.usd : null);
-    const allowanceBasis = refPub ? "vendor_published" : measured ? measured.allowance_basis : wildcard ? (row.allowance_model === "credits" ? "credits" : "vendor_published") : null;
+    // a plan with per-model limits has no pool: a model it does not list has no allowance
+    const allowanceUsd = refPub ? refPub.usd : row.per_model_limit_plan ? null : measuredUsd ?? (wildcard ? wildcard.usd : null);
+    const allowanceBasis = refPub ? (row.per_model_limit_plan ? "vendor_published_per_model" : "vendor_published") : row.per_model_limit_plan ? null : measured ? measured.allowance_basis : wildcard ? (row.allowance_model === "credits" || /credit/i.test(wildcard.basis) ? "credits" : "vendor_published") : null;
     const allowanceCycle = measured ? measured.cycle_days : 30;
     const pr = priceFor(row, ref);
     if (pr.note) tierNotes.add(pr.note);
     const meta = refMeta.get(ref);
     if (meta?.price_status === "anomaly" && meta.price_anomaly) anomalies.add(ref + " " + meta.price_anomaly);
     for (const shape of SHAPES) {
-      const base = { fee_usd: fee, allowance_usd: allowanceUsd, allowance_basis: allowanceBasis, allowance_cycle_days: allowanceCycle, allowance_reason: allowanceUsd !== null ? null : "no published allowance for this model in this plan", price: pr.price, mix: rowMix, shape };
+      const base = { fee_usd: fee, allowance_usd: allowanceUsd, allowance_basis: allowanceBasis, allowance_cycle_days: allowanceCycle, allowance_reason: allowanceUsd !== null ? null : row.per_model_limit_plan ? row.per_model_limit_plan + " publishes no monthly limit for this model" : "no published allowance for this model in this plan", price: pr.price, mix: rowMix, shape };
       const s = estimateOne({ ...base, prompt_tokens: LMC_CONTEXT_SHORT });
       const l = estimateOne({ ...base, prompt_tokens: LMC_CONTEXT_LONG });
       const p = estimateOne({ ...base, prompt_tokens: P75 });

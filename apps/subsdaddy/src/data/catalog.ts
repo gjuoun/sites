@@ -108,6 +108,8 @@ export const catalogRowSchema = z
     offered_basis: z.string().min(1).nullable().default(null),
     // the allowance the vendor publishes for this plan, in usage dollars per cycle; null when it publishes none
     published_allowance_usd: z.number().positive().nullable().optional(),
+    /** The plan whose per-model monthly limits this row carries (OpenCode Go docs): such a row has no pool, only per-model limits. */
+    per_model_limit_plan: z.enum(["Go", "Go Plus"]).nullable().optional(),
     published_allowance_basis: z.string().min(1).nullable().optional(),
     // the measured lane whose $/B is this plan's own measurement, when there is one
     measured_lane: z.enum(LANES).nullable().default(null),

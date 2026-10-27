@@ -21,6 +21,7 @@ const stages: Array<[string, string[]]> = [
   ["collect:context", ["bun", "run", "scripts/collect-session-context.ts"]],
   ["collect:prices", ["bun", "run", "scripts/collect-prices.ts"]],
   ["collect:catalog", ["bun", "run", "scripts/collect-catalog.ts"]],
+  ["collect:opencode-go", ["bun", "run", "scripts/collect-opencode-go.ts"]],
   // the probe stage gets ZAI_API_KEY from 1Password into the child env only; nothing is written to disk
   ["probe:quota", ["opk", "get", "ZAI_API_KEY", "--", "bun", "run", "scripts/collect-quota.ts"]],
   ["build:allowance", ["bun", "run", "scripts/build-allowance.ts"]],

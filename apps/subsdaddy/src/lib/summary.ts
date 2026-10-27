@@ -95,7 +95,7 @@ export function isCreditRow(r: CatalogRow | undefined): boolean {
 /** The source marker: p published, r vendor reading, d derived from quota windows, c credit value. */
 export function supOf(basis: string | null | undefined, credit: boolean): Sup | null {
   if (basis === "credits") return "c";
-  if (basis === "vendor_published") return "p";
+  if (basis === "vendor_published" || basis === "vendor_published_per_model") return "p";
   if (basis === "vendor_reported") return "r";
   if (basis === "derived") return credit ? "c" : "d";
   return null;
