@@ -75,7 +75,7 @@
         "terminal.ansi.black": "#3c403c",
         "terminal.ansi.red": "#fc5d23",
         "terminal.ansi.green": "#00c853",
-        "terminal.ansi.yellow": "#e5e500",
+        "terminal.ansi.yellow": "#ffeb3b",
         "terminal.ansi.blue": "#00b0ff",
         "terminal.ansi.magenta": "#ae81ff",
         "terminal.ansi.cyan": "#66d9ef",
@@ -142,9 +142,9 @@
             "selection": "#fc5d2340"
           },
           {
-            "cursor": "#e5e500",
-            "background": "#e5e500",
-            "selection": "#e5e50040"
+            "cursor": "#ffeb3b",
+            "background": "#ffeb3b",
+            "selection": "#ffeb3b40"
           },
           {
             "cursor": "#00c853",
@@ -168,7 +168,7 @@
             "color": "#ffeb3b"
           },
           "string": {
-            "color": "#e5e500"
+            "color": "#ffeb3b"
           },
           "string.escape": {
             "color": "#fc5d23"
@@ -240,7 +240,7 @@
             "color": "#ffeb3b"
           },
           "text.literal": {
-            "color": "#e5e500"
+            "color": "#ffeb3b"
           },
           "title": {
             "color": "#c6ff00",

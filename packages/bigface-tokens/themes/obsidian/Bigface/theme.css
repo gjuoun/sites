@@ -6,8 +6,8 @@
   --color-red-rgb: 252, 93, 35;
   --color-orange: #fc5d23;
   --color-orange-rgb: 252, 93, 35;
-  --color-yellow: #e5e500;
-  --color-yellow-rgb: 229, 229, 0;
+  --color-yellow: #ffeb3b;
+  --color-yellow-rgb: 255, 235, 59;
   --color-green: #00c853;
   --color-green-rgb: 0, 200, 83;
   --color-cyan: #66d9ef;
@@ -133,7 +133,7 @@
   --code-operator: #ffeb3b;
   --code-property: #00c853;
   --code-punctuation: #e8e9e1;
-  --code-string: #e5e500;
+  --code-string: #ffeb3b;
   --code-tag: #40c4ff;
   --code-value: #fc5d23;
 
@@ -182,7 +182,7 @@
   --graph-node-unresolved: #8c8f89;
   --graph-node-focused: #00b0ff;
   --graph-node-tag: #00c853;
-  --graph-node-attachment: #e5e500;
+  --graph-node-attachment: #ffeb3b;
   --graph-text: #e8e9e1;
   --canvas-background: #252925;
 }
@@ -191,7 +191,7 @@
 .markdown-rendered :not(pre) > code,
 .cm-s-obsidian span.cm-inline-code,
 .cm-inline-code {
-  color: #e5e500;
+  color: #ffeb3b;
 }
 
 /* Highlights (==text==): dark text on the scheme's search-yellow. */

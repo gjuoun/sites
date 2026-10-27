@@ -112,7 +112,7 @@
     "terminal.ansiBlack": "#3c403c",
     "terminal.ansiRed": "#fc5d23",
     "terminal.ansiGreen": "#00c853",
-    "terminal.ansiYellow": "#e5e500",
+    "terminal.ansiYellow": "#ffeb3b",
     "terminal.ansiBlue": "#00b0ff",
     "terminal.ansiMagenta": "#ae81ff",
     "terminal.ansiCyan": "#66d9ef",
@@ -163,7 +163,7 @@
         "punctuation.definition.string"
       ],
       "settings": {
-        "foreground": "#e5e500"
+        "foreground": "#ffeb3b"
       }
     },
     {
@@ -293,7 +293,7 @@
         "markup.fenced_code"
       ],
       "settings": {
-        "foreground": "#e5e500"
+        "foreground": "#ffeb3b"
       }
     },
     {
