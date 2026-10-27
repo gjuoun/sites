@@ -7,7 +7,8 @@ import { Alert, AlertDescription, AlertTitle } from "@gjuoun/bigface-business-ui
 import { Attachment, AttachmentContent, AttachmentMedia, AttachmentTitle } from "@gjuoun/bigface-business-ui/components/ui/attachment";
 import { Avatar, AvatarFallback } from "@gjuoun/bigface-business-ui/components/ui/avatar";
 import { Badge } from "@gjuoun/bigface-business-ui/components/ui/badge";
-import { Bubble, BubbleContent } from "@gjuoun/bigface-business-ui/components/ui/bubble";
+import { Bubble, BubbleContent, BubbleReactions } from "@gjuoun/bigface-business-ui/components/ui/bubble";
+import { Folder, Home } from "lucide-react";
 import { Button } from "@gjuoun/bigface-business-ui/components/ui/button";
 import { ButtonGroup } from "@gjuoun/bigface-business-ui/components/ui/button-group";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@gjuoun/bigface-business-ui/components/ui/card";
@@ -19,7 +20,7 @@ import { DirectionProvider } from "@gjuoun/bigface-business-ui/components/ui/dir
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@gjuoun/bigface-business-ui/components/ui/drawer";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@gjuoun/bigface-business-ui/components/ui/dropdown-menu";
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@gjuoun/bigface-business-ui/components/ui/empty";
-import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@gjuoun/bigface-business-ui/components/ui/field";
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldLegend, FieldSet } from "@gjuoun/bigface-business-ui/components/ui/field";
 import { Input } from "@gjuoun/bigface-business-ui/components/ui/input";
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput, InputGroupText } from "@gjuoun/bigface-business-ui/components/ui/input-group";
 import { Item, ItemContent, ItemDescription, ItemMedia, ItemTitle } from "@gjuoun/bigface-business-ui/components/ui/item";
@@ -33,7 +34,7 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@gjuoun/bi
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@gjuoun/bigface-business-ui/components/ui/select";
 import { Separator } from "@gjuoun/bigface-business-ui/components/ui/separator";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@gjuoun/bigface-business-ui/components/ui/sheet";
-import { Sidebar, SidebarContent, SidebarGroup, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider } from "@gjuoun/bigface-business-ui/components/ui/sidebar";
+import { Sidebar, SidebarContent, SidebarGroup, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem, SidebarProvider } from "@gjuoun/bigface-business-ui/components/ui/sidebar";
 import { Slider } from "@gjuoun/bigface-business-ui/components/ui/slider";
 import { Switch } from "@gjuoun/bigface-business-ui/components/ui/switch";
 import { Tabs, TabsList, TabsTrigger } from "@gjuoun/bigface-business-ui/components/ui/tabs";
@@ -97,6 +98,35 @@ function Matrix<R extends string, C extends string>({ corner, rows, cols, cell, 
 	);
 }
 
+/** One sidebar frame: the stock sidebar and its page in a box tall enough to read the sidebar's own chrome. Each frame
+    is its own provider, so the value it names is the only thing that differs between frames. */
+function SidebarFrame({ label, variant = "sidebar", collapsible, side = "left", open }: { label: string; variant?: "sidebar" | "floating" | "inset"; collapsible: "offcanvas" | "icon" | "none"; side?: "left" | "right"; open: boolean }) {
+	return (
+		<figure data-demo={"sidebar " + label} className="m-0 flex min-w-0 flex-col gap-1.5">
+			<figcaption className="font-mono text-xs text-muted-foreground">{label}</figcaption>
+			<div className="relative h-56 w-full overflow-hidden rounded-md border [transform:translateZ(0)]">
+				<SidebarProvider defaultOpen={open} className="h-full min-h-0">
+					<Sidebar variant={variant} collapsible={collapsible} side={side}>
+						<SidebarContent>
+							<SidebarGroup>
+								<SidebarMenu>
+									<SidebarMenuItem><SidebarMenuButton isActive><Home />Home</SidebarMenuButton></SidebarMenuItem>
+									<SidebarMenuItem><SidebarMenuButton><Folder />Projects</SidebarMenuButton></SidebarMenuItem>
+								</SidebarMenu>
+								<SidebarMenuSub>
+									<SidebarMenuSubItem><SidebarMenuSubButton size="sm">Sub small</SidebarMenuSubButton></SidebarMenuSubItem>
+									<SidebarMenuSubItem><SidebarMenuSubButton size="md">Sub medium</SidebarMenuSubButton></SidebarMenuSubItem>
+								</SidebarMenuSub>
+							</SidebarGroup>
+						</SidebarContent>
+					</Sidebar>
+					<SidebarInset className="p-3 text-sm">Content</SidebarInset>
+				</SidebarProvider>
+			</div>
+		</figure>
+	);
+}
+
 /** A sub-heading inside a card, styled like the group labels so the matrices read as named blocks. */
 function SubHead({ children }: { children: React.ReactNode }) {
 	return <h5 className="border-b pb-1 text-xs font-semibold tracking-[0.08em] text-foreground uppercase">{children}</h5>;
@@ -128,6 +158,13 @@ const states = (...cells: React.ReactNode[]) => (
 );
 
 export const VARIANTS: Record<string, React.ReactNode> = {
+	switch: (
+		<div className="flex flex-col divide-y">
+			{(["default", "sm"] as const).map((s) => (
+				<Row key={s} label={"size=" + s}><Switch size={s} /><Switch size={s} defaultChecked /></Row>
+			))}
+		</div>
+	),
 	alert: (
 		<div className="flex flex-col divide-y">
 			<Row label="variant=default"><Alert className="w-full max-w-md"><AlertTitle>Heads up</AlertTitle><AlertDescription>A default alert.</AlertDescription></Alert></Row>
@@ -187,9 +224,18 @@ export const VARIANTS: Record<string, React.ReactNode> = {
 		</Row>
 	),
 	bubble: (
+		<div className="flex flex-col gap-4">
+		<SubHead>Variant × align</SubHead>
 		<Matrix corner="variant / align" track="column" rows={["default", "secondary", "muted", "tinted", "outline", "ghost", "destructive"] as const} cols={["start", "end"] as const} cell={(r, c) => (
 			<Bubble align={c} variant={r}><BubbleContent>{r}</BubbleContent></Bubble>
 		)} />
+		<SubHead>Reactions (side × align)</SubHead>
+		<Matrix corner="side / align" track="column" rows={["top", "bottom"] as const} cols={["start", "end"] as const} cell={(r, c) => (
+			<div className="flex w-full flex-col py-6">
+				<Bubble align={c}><BubbleContent>{c}</BubbleContent><BubbleReactions side={r} align={c}>+1</BubbleReactions></Bubble>
+			</div>
+		)} />
+		</div>
 	),
 	button: (
 		<div className="flex flex-col gap-4">
@@ -242,6 +288,11 @@ export const VARIANTS: Record<string, React.ReactNode> = {
 			{(["default", "destructive"] as const).map((v) => (
 				<Row key={v} label={"variant=" + v}>
 					<CodeBlock variant={v} className="w-full max-w-md"><CodeBlockContent><CodeBlockLine>bun add @gjuoun/bigface-business-ui</CodeBlockLine></CodeBlockContent></CodeBlock>
+				</Row>
+			))}
+			{(["default", "sm"] as const).map((s) => (
+				<Row key={s} label={"size=" + s}>
+					<CodeBlock size={s} className="w-full max-w-md"><CodeBlockContent><CodeBlockLine>bun add @gjuoun/bigface-business-ui</CodeBlockLine></CodeBlockContent></CodeBlock>
 				</Row>
 			))}
 			{(["default", "added", "removed", "highlighted"] as const).map((v) => (
@@ -319,6 +370,11 @@ export const VARIANTS: Record<string, React.ReactNode> = {
 	),
 	field: (
 		<div className="flex flex-col divide-y">
+			{(["legend", "label"] as const).map((v) => (
+				<Row key={v} label={"variant=" + v}>
+					<FieldSet className="w-full max-w-md"><FieldLegend variant={v}>Account</FieldLegend><FieldDescription>Rendered as a {v}.</FieldDescription></FieldSet>
+				</Row>
+			))}
 			{(["vertical", "horizontal", "responsive"] as const).map((o) => (
 				<Row key={o} label={"orientation=" + o}>
 					<FieldGroup className="w-full max-w-md">
@@ -464,35 +520,31 @@ export const VARIANTS: Record<string, React.ReactNode> = {
 	),
 	sidebar: (
 		<div className="flex flex-col gap-4">
+			<SubHead>Menu button (variant × size)</SubHead>
 			<SidebarProvider className="min-h-0">
 				<Matrix corner="variant / size" rows={["default", "outline"] as const} cols={["default", "sm", "lg"] as const} cell={(r, c) => (
 					<SidebarMenu className="w-48"><SidebarMenuItem><SidebarMenuButton variant={r} size={c}>Home</SidebarMenuButton></SidebarMenuItem></SidebarMenu>
 				)} />
 			</SidebarProvider>
-			<div className="flex flex-col divide-y">
+			<p className="text-sm text-muted-foreground">Below 768px the stock sidebar is a sheet, so these frames show their inline form from the md breakpoint up.</p>
+			<SubHead>Variant (expanded)</SubHead>
+			<div className="grid gap-3 md:grid-cols-3">
 				{(["sidebar", "floating", "inset"] as const).map((v) => (
-					<Row key={v} label={"variant=" + v}>
-						<div className="relative h-40 w-full max-w-md overflow-hidden rounded-md border [transform:translateZ(0)]">
-							<SidebarProvider className="h-full min-h-0">
-								<Sidebar variant={v} collapsible="none">
-									<SidebarContent><SidebarGroup><SidebarMenu><SidebarMenuItem><SidebarMenuButton>{v}</SidebarMenuButton></SidebarMenuItem></SidebarMenu></SidebarGroup></SidebarContent>
-								</Sidebar>
-								<SidebarInset className="p-3 text-sm">Content</SidebarInset>
-							</SidebarProvider>
-						</div>
-					</Row>
+					<SidebarFrame key={v} label={"variant=" + v} variant={v} collapsible="icon" open />
 				))}
-				{(["left", "right"] as const).map((side) => (
-					<Row key={side} label={"side=" + side}>
-						<div className="relative h-40 w-full max-w-md overflow-hidden rounded-md border [transform:translateZ(0)]">
-							<SidebarProvider className="h-full min-h-0">
-								<Sidebar side={side} collapsible="none">
-									<SidebarContent><SidebarGroup><SidebarMenu><SidebarMenuItem><SidebarMenuButton>{side}</SidebarMenuButton></SidebarMenuItem></SidebarMenu></SidebarGroup></SidebarContent>
-								</Sidebar>
-								<SidebarInset className="p-3 text-sm">Content</SidebarInset>
-							</SidebarProvider>
-						</div>
-					</Row>
+			</div>
+			<SubHead>Collapsible (offcanvas and icon, expanded and collapsed; none ignores state)</SubHead>
+			<div className="grid gap-3 md:grid-cols-3">
+				<SidebarFrame label="collapsible=offcanvas, expanded" collapsible="offcanvas" open />
+				<SidebarFrame label="collapsible=offcanvas, collapsed" collapsible="offcanvas" open={false} />
+				<SidebarFrame label="collapsible=icon, expanded" collapsible="icon" open />
+				<SidebarFrame label="collapsible=icon, collapsed" collapsible="icon" open={false} />
+				<SidebarFrame label="collapsible=none" collapsible="none" open />
+			</div>
+			<SubHead>Side (expanded)</SubHead>
+			<div className="grid gap-3 md:grid-cols-2">
+				{(["left", "right"] as const).map((s) => (
+					<SidebarFrame key={s} label={"side=" + s} collapsible="icon" side={s} open />
 				))}
 			</div>
 		</div>
