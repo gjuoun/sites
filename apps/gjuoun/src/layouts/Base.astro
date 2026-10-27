@@ -12,8 +12,9 @@ interface Props {
 	description: string;
 	type?: PageType;
 	starter?: boolean;
+	indexable?: boolean;
 }
-const { title, description, type = "website", starter = false } = Astro.props;
+const { title, description, type = "website", starter = false, indexable = true } = Astro.props;
 const site = Astro.site ?? new URL("https://jun.qqntt.com");
 const meta = buildMeta({ site, path: Astro.url.pathname, title, description, type });
 ---
@@ -25,7 +26,7 @@ const meta = buildMeta({ site, path: Astro.url.pathname, title, description, typ
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="description" content={meta.description} />
 		<title>{meta.title}</title>
-		<link rel="canonical" href={meta.canonical} />
+		{indexable ? <link rel="canonical" href={meta.canonical} /> : <meta name="robots" content="noindex" />}
 		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 		<meta property="og:type" content={meta.og.type} />
 		<meta property="og:title" content={meta.og.title} />
