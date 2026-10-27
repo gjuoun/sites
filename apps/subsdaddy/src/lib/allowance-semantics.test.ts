@@ -84,11 +84,10 @@ describe("every token is priced: no binding window has unpriced tokens", () => {
     expect(fast.source).toContain("no public listing");
   });
 
-  test("glm-5.3 is priced at the GLM-5.3-Flash rate, marked as an assumed alias", () => {
+  test("glm-5.3 is priced at the QwenCloud listed rate, not as an assumed alias", () => {
     const g = read("models.json").usage_prices.find((p: any) => p.openrouter === "z-ai/glm-5.3");
-    const f = read("models.json").reference.find((r: any) => r.ref === "glm-5.3-flash");
-    expect(g.price_basis).toBe("assumed_alias_rate");
-    expect([g.in_per_m, g.out_per_m, g.cache_per_m]).toEqual([f.in_per_m, f.out_per_m, f.cache_per_m]);
+    expect(g.price_basis).toBe("list price");
+    expect([g.in_per_m, g.out_per_m, g.cache_per_m]).toEqual([1.4, 4.4, 0.28]);
   });
 });
 

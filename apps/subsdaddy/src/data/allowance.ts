@@ -168,6 +168,7 @@ const windowSchema = z.object({
   allowance_usd_cycle: z.number().positive().nullable(),
   tokens_cycle: z.number().positive().nullable(),
   source: z.string().min(1),
+  assumed_share: z.number().min(0).max(1).optional(),
 });
 
 const modelCell = z.object({ tokens_per_cycle: z.number().positive(), usd_per_b: z.number().positive(), blended_usd_per_b: z.number().positive(), measured_at: z.string().min(1), source: z.string().min(1) });
@@ -197,6 +198,7 @@ export const allowanceFileSchema = z.object({
       binding_window: z.enum(["5h", "weekly", "monthly"]).nullable(),
       binding_coverage: z.number().min(0).max(1).nullable(),
       binding_unpriced_share: z.number().min(0).max(1).nullable(),
+      binding_assumed_share: z.number().min(0).max(1).nullable().optional(),
       low_coverage: z.boolean(),
       confidence: z.enum(["low", "normal"]).nullable(),
       list_usd_per_b_effective: z.number().positive().nullable(),

@@ -94,6 +94,11 @@ if (!/aria-labelledby="switch-label-model"/.test(html.index) || !/>Model<\/span>
 if (!/aria-labelledby="switch-label-context"/.test(html.index) || !/>Context size<\/span>/.test(html.index)) fail("Context size label missing on the front page");
 if (html.index.indexOf(">Model</span>") > html.index.indexOf(">Context size</span>")) fail("Context size label comes before Model");
 
+// 4e. the Shape switch: three shapes, Cache-heavy default
+const shapeOpts = [...html.index.matchAll(/data-shape="([^"]+)"/g)].map((m) => m[1]);
+if (shapeOpts.join(",") !== "cache_heavy,agent,cold") fail("shape switch options are " + shapeOpts.join(",") + ", expected cache_heavy,agent,cold");
+if (html.index.indexOf(">Shape</span>") < 0) fail("Shape label missing on the front page");
+
 // 5. methodology: every detail table, in full
 const meth = main(html.methodology);
 const mt = tables(html.methodology);

@@ -297,6 +297,7 @@ export const laneRecordSchema = z.object({
     allowance_derived_usd: z.number().positive().nullable().optional(),
     fee_per_cycle_usd: z.number().positive().nullable().optional(),
     fee_basis: z.string().nullable().optional(),
+    assumed_share: z.number().min(0).max(1).nullable().optional(),
     tokens_per_cycle: z.number().positive().nullable(),
     allowance_usd_per_cycle: z.number().positive().nullable(),
     coverage: z.number().min(0).max(1).nullable(),

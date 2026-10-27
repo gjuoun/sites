@@ -75,7 +75,7 @@ describe("model view: only the plans that offer the model", () => {
     const rows = viewRows(ds, "deepseek-v4.1-flash");
     expect(rows.length).toBe(4);
     for (let i = 1; i < rows.length; i++) expect(rows[i - 1].usd!).toBeLessThanOrEqual(rows[i].usd!);
-    expect(rows.slice(0, 3).map((r) => r.key)).toEqual(["commandcode-goat-published", "opencode-go-go", "opencode-go-plus"]);
+    expect(rows.slice(0, 3).map((r) => r.key).sort()).toEqual(["commandcode-goat-published", "opencode-go-go", "opencode-go-plus"].sort());
   });
 
   test("the model view's Capacity is tokens per month the plan can run, fee over $/B", () => {

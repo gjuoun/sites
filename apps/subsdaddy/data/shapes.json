@@ -1,0 +1,30 @@
+{
+  "source": "three token shapes Jun defined (2026-10-26). output_share_of_all is fixed at 0.64%, the pooled measured output share of all tokens (usage.json, 2026-10-27); cache write is zero in every shape, as measured.",
+  "default": "cache_heavy",
+  "shapes": [
+    {
+      "id": "cache_heavy",
+      "label": "Cache-heavy (97%)",
+      "description": "97% of prompt tokens are cache reads: long agent sessions that reuse their context",
+      "cache_read_share_of_prompt": 0.97,
+      "input_share_of_prompt": 0.03,
+      "output_share_of_all": 0.0064
+    },
+    {
+      "id": "agent",
+      "label": "Agent (80%)",
+      "description": "80% of prompt tokens are cache reads",
+      "cache_read_share_of_prompt": 0.8,
+      "input_share_of_prompt": 0.2,
+      "output_share_of_all": 0.0064
+    },
+    {
+      "id": "cold",
+      "label": "Cold (0%)",
+      "description": "no cache reads: every prompt token is fresh input",
+      "cache_read_share_of_prompt": 0,
+      "input_share_of_prompt": 1,
+      "output_share_of_all": 0.0064
+    }
+  ]
+}

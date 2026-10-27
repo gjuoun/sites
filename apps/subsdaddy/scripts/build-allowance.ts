@@ -46,6 +46,13 @@ const MODEL_LABEL: Record<string, string> = {
 };
 const labelOf = (m: string) => MODEL_LABEL[m] ?? m;
 
+/** True when the model id resolves to a list price marked as an assumed alias rate. */
+function assumedOf(lane: string, model: string): boolean {
+  const mapped = models.models.find((x: any) => x.lane === lane && x.upstream_model === model)?.openrouter ?? null;
+  const orId = aliases[model] ?? (model.includes("/") ? model : mapped);
+  return !!orId && usagePrices.some((p: any) => p.openrouter === orId && String(p.price_basis ?? "").startsWith("assumed"));
+}
+
 /** The list price of a model on a lane, or null when no list price exists. Never zero. */
 function resolverFor(lane: string): PriceLookup {
   return (model) => {
@@ -89,7 +96,7 @@ const lanes = LANES.map((lane) => {
   const empty = (reason: string, extra: Record<string, unknown> = {}) => ({
     ...base, fee_usd: fee, fee_per_cycle_usd: null, fee_basis: null, cycle_minutes: cycle?.minutes ?? null, cycle_days: cycle ? cycle.minutes / 1440 : null, cycle_billed: cycle?.billed ?? false,
     allowance_usd_per_cycle: null, allowance_basis: null, allowance_published_usd: null, allowance_vendor_usd: null, allowance_vendor_reason: null, allowance_derived_usd: null,
-    tokens_per_cycle: null, binding_window: null, binding_coverage: null, binding_unpriced_share: null, low_coverage: false, confidence: null,
+    tokens_per_cycle: null, binding_window: null, binding_coverage: null, binding_unpriced_share: null, binding_assumed_share: null, low_coverage: false, confidence: null,
     list_usd_per_b_effective: null, usd_per_b_measured: null, reason, top_models: [], windows: [], models: [], ...extra,
   });
   if (!cycle) return empty("no quota windows in the reading");
@@ -99,7 +106,19 @@ const lanes = LANES.map((lane) => {
     .map((r) => ({ ms: Date.parse(String(r.created_at_utc)), model: String(r.upstream_model), input: Number(r.input), cache_creation: Number(r.cache_creation), cache_read: Number(r.cache_read), output: Number(r.output) }));
   const lookup = resolverFor(lane);
   const analyses = readings.map((r) => analyzeWindow(r, rows, lookup, covStart, cycle.minutes));
-  const windows = analyses.map((w) => ({ ...w, source: "codexbar quota reading" }));
+  const assumedShare = (w: { measured_at: string; resets_at: string; window_minutes: number }) => {
+    const end = Date.parse(w.measured_at);
+    const from = Date.parse(w.resets_at) - w.window_minutes * 60_000;
+    let t = 0, a = 0;
+    for (const r of rows) {
+      if (r.ms < from || r.ms > end) continue;
+      const x = r.input + r.cache_creation + r.cache_read + r.output;
+      t += x;
+      if (assumedOf(lane, r.model)) a += x;
+    }
+    return t > 0 ? a / t : 0;
+  };
+  const windows = analyses.map((w) => ({ ...w, source: "codexbar quota reading", assumed_share: assumedShare(w) }));
   const monthly = analyses.find((w) => w.window === "monthly");
   const b = bindingWindow(analyses);
   const vendor = vendorAllowance(obs?.vendor_pool ?? null, monthly);
@@ -150,6 +169,7 @@ const lanes = LANES.map((lane) => {
     binding_window: b.window,
     binding_coverage: b.coverage,
     binding_unpriced_share: b.unpriced_share,
+    binding_assumed_share: windows.find((w) => w.window === b.window)?.assumed_share ?? null,
     low_coverage: b.unpriced_share > 0.05,
     confidence: b.confidence,
     list_usd_per_b_effective: b.tokens > 0 && b.cost_usd > 0 ? (b.cost_usd / b.tokens) * 1e9 : null,

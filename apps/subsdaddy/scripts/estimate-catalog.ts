@@ -59,7 +59,7 @@ function priceFor(row: CatalogRow, ref: RefId): { price: RefPrice; note: string 
 
 type Value = {
   ref: RefId; shape: Shape; usd_per_b: number | null; reason: string | null; fee_over_allowance: number | null; blended_usd_per_b: number;
-  measured_at: string; source: string; usd_per_b_long: number | null; usd_per_b_p75: number | null; band_short: string; band_long: string; band_p75: string;
+  measured_at: string; source: string; usd_per_b_long: number | null; usd_per_b_p75: number | null; band_short: string; band_long: string; band_p75: string; allowance_usd?: number | null; fee_usd?: number | null; price_used?: RefPrice | null;
 };
 
 function estimateRow(row: CatalogRow) {
@@ -97,7 +97,7 @@ function estimateRow(row: CatalogRow) {
       values.push({
         ref, shape, usd_per_b: s.usd_per_b, reason: s.reason, fee_over_allowance: s.fee_over_allowance, blended_usd_per_b: s.blended_usd_per_b,
         measured_at: now, source: SOURCE, usd_per_b_long: l.usd_per_b, usd_per_b_p75: p.usd_per_b,
-        band_short: s.band, band_long: l.band, band_p75: p.band,
+        band_short: s.band, band_long: l.band, band_p75: p.band, allowance_usd: base.allowance_usd, fee_usd: base.fee_usd, price_used: base.price,
       });
       if (shape === "agent" && s.fee_over_allowance !== null) ratios.push(ref + " " + Number(s.fee_over_allowance.toPrecision(3)));
     }

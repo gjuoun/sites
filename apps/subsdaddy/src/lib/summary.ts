@@ -1,3 +1,12 @@
+import shapesRaw from "../../data/shapes.json";
+import { shapesFileSchema, mixOf, type ShapeDef } from "../data/shapes";
+import { priceAt, blendedUsdPerB, type RefPrice } from "../data/estimate";
+
+/** The Shape switch: the token mixes every plan is priced at (data/shapes.json). */
+export const SHAPES: ShapeDef[] = shapesFileSchema.parse(shapesRaw).shapes;
+export const DEFAULT_SHAPE_ID = shapesFileSchema.parse(shapesRaw).default;
+export const DEFAULT_SHAPE: ShapeDef = SHAPES.find((s) => s.id === DEFAULT_SHAPE_ID) ?? SHAPES[0];
+
 import { na, value, type Cell } from "./cells";
 import { REF_IDS, REF_NAMES, pooledMix, type RefId } from "../data/estimate";
 import { contextLabel, type ContextId } from "../data/context";
@@ -188,7 +197,15 @@ function messageRow(r: CatalogRow, ref: RefId, ctx: ContextId): ViewRow | null {
   };
 }
 
-function modelRows(ds: DS, ref: RefId, ctx: ContextId): ViewRow[] {
+/** One value under a shape: the blended list $/B at the context, the tokens an allowance buys, and the $/B of the fee. */
+export function shapeUsd(input: { fee: number; allowance: number; price: RefPrice; ctx_tokens: number; shape: ShapeDef }): { usd: number; tokens_b: number; blend: number; band: string } {
+  const p = priceAt(input.price, input.ctx_tokens);
+  const blend = blendedUsdPerB(p.price, mixOf(input.shape));
+  const tokensB = input.allowance / blend;
+  return { usd: input.fee / tokensB, tokens_b: tokensB, blend, band: p.band };
+}
+
+function modelRows(ds: DS, ref: RefId, ctx: ContextId, shape: ShapeDef): ViewRow[] {
   const or = orWeighted(ds, ref);
   const out: ViewRow[] = [];
   for (const r of ds.catalog.rows) {
@@ -202,23 +219,29 @@ function modelRows(ds: DS, ref: RefId, ctx: ContextId): ViewRow[] {
       out.push(msg);
       continue;
     }
-    // a plan that offers the model but has no dollar allowance is a row with N/A and its reason
+    // the value's own allowance, fee and price, re-blended under the chosen shape; no allowance means N/A with its reason
     const v = r.estimate?.status === "estimated" ? r.estimate.values.find((x) => x.ref === ref && x.shape === "agent") : undefined;
-    const usdVal = !v ? null : ctx === "short" ? v.usd_per_b : (v.usd_per_b_long ?? null);
-    const band = !v ? null : ctx === "short" ? (v.band_short ?? null) : (v.band_long ?? null);
     const reason = r.estimate?.reason ?? "no estimate for this model";
-    const shape = cacheShare(ds, r.measured_lane);
-    const derived = isDerivedLane(ds, r.measured_lane);
-    const shapeNote = "its own traffic shape: cache read " + pct(shape.share) + " of prompt tokens (" + shape.scope + ")" + (derived ? "; its own window is saturated, so the * marks a rate-derived allowance" : "");
+    let usdVal: number | null = null;
+    let capacity: string | null = null;
+    let band: string | null = null;
+    if (v && v.allowance_usd && v.fee_usd && v.price_used) {
+      const x = shapeUsd({ fee: v.fee_usd, allowance: v.allowance_usd, price: v.price_used as RefPrice, ctx_tokens: CONTEXTS[ctx], shape });
+      usdVal = x.usd;
+      capacity = x.tokens_b.toFixed(2) + "B/mo";
+      band = x.band;
+    }
     out.push({
       key: r.plan_id,
       label: r.label,
       fee: r.price_month_usd,
-      capacity: usdVal === null ? null : (r.price_month_usd / usdVal).toFixed(2) + "B/mo",
+      capacity,
       capacityReason: reason,
+      capDetail: null,
+      capNote: null,
       usd: usdVal,
-      usdTitle: usdVal === null ? reason : "estimate at a " + contextLabel(ctx) + "-token context: fee ÷ allowance × blended $/B for " + REF_NAMES[ref] + (band ? "; prices " + band : "") + "; " + shapeNote,
-      marker: derived ? "*" : "",
+      usdTitle: usdVal === null ? reason : "fee ÷ (allowance ÷ blended list $/B) for " + REF_NAMES[ref] + " at a " + contextLabel(ctx) + "-token context, " + shape.label + (band ? "; prices " + band : ""),
+      marker: "",
       tps: or.tps,
       tpsTitle: or.title || (or.reason ?? "no OpenRouter data"),
       ttft: or.ttft,
@@ -228,8 +251,8 @@ function modelRows(ds: DS, ref: RefId, ctx: ContextId): ViewRow[] {
   return out;
 }
 
-export function viewRows(ds: DS, view: ViewId, ctx: ContextId = "short"): ViewRow[] {
-  const rows = view === MEASURED ? measuredRows(ds) : modelRows(ds, view, ctx);
+export function viewRows(ds: DS, view: ViewId, ctx: ContextId = "short", shape: ShapeDef = DEFAULT_SHAPE): ViewRow[] {
+  const rows = view === MEASURED ? measuredRows(ds) : modelRows(ds, view, ctx, shape);
   return rows.sort((a, b) => (a.usd ?? Infinity) - (b.usd ?? Infinity) || a.label.localeCompare(b.label));
 }
 
@@ -253,8 +276,8 @@ export type SummaryTable = Table & { rows: Array<{ key: string; cells: Record<st
 
 const naShort = (reason: string): Cell => ({ ...na(reason), reason: "" });
 
-export function summaryTable(ds: DS, view: ViewId, ctx: ContextId = "short"): SummaryTable {
-  const data = viewRows(ds, view, ctx);
+export function summaryTable(ds: DS, view: ViewId, ctx: ContextId = "short", shape: ShapeDef = DEFAULT_SHAPE): SummaryTable {
+  const data = viewRows(ds, view, ctx, shape);
   const rows = data.map((r) => ({
     key: r.key,
     cells: {
@@ -266,16 +289,15 @@ export function summaryTable(ds: DS, view: ViewId, ctx: ContextId = "short"): Su
       ttft: r.ttft === null ? naShort(r.ttftTitle || "no latency data") : value("~" + sig2(r.ttft) + " ms", [], r.ttftTitle),
     },
   }));
-  // at most two lines: the view's own marks, then the context or the measured note
+  // at most two lines: the view's own marks, then the context and shape (model views) or the measured note
   const lines: string[] = [];
   if (view === MEASURED) {
     if (data.some((r) => r.marker === "*")) lines.push(DERIVED_FOOTNOTE);
-    lines.push("Measured $/B does not depend on the context size.");
+    lines.push("Measured $/B does not depend on the context size or the shape; it uses each plan's own traffic.");
   } else {
-    lines.push("Prices assume a " + contextLabel(ctx) + "-token context");
+    lines.push("Prices assume a " + contextLabel(ctx) + "-token context and the " + shape.label + " shape. Shape sets the token mix used to price every plan; Measured uses each plan's own traffic.");
     if (data.some((r) => r.marker === "†")) lines.push(CONVERTED_FOOTNOTE(ctx));
     if (data.some((r) => r.marker === "‡")) lines.push(ARCHIVED_FOOTNOTE(ctx));
-    if (data.some((r) => r.marker === "*")) lines.push(DERIVED_FOOTNOTE);
   }
   return { columns: SUMMARY_COLUMNS, rows, footnote: lines.join("\n"), basisLine: basisLine(ds, view) };
 }

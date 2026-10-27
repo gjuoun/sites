@@ -3,6 +3,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { UnifiedTable } from "@/components/unified-table";
 import { MODEL_BLOCK, MODEL_TITLE, NOTE, PAGE_TITLE, SECTION_TITLE, SMALL_NOTE } from "@/components/layout";
 import { dataset } from "@/lib/dataset";
+import { SHAPES, summaryTable } from "@/lib/summary";
 import { catalogTable, contextCompareTable, contextDistributionTable, dsRankingTable, measuredTable, messageTable, modelTables, officialTable, type DS } from "@/lib/sections";
 import { contextLabel } from "@/data/context";
 import { CONTEXTS, OUTPUT_TOKENS_PER_MESSAGE, WINDOWS_PER_DAY, monthlyTokens, tokensPerMessage, usdPerBOfTokens } from "@/data/messages";
@@ -68,6 +69,7 @@ function MethodologyPage() {
         <p>A plan with an offered model but no published dollar allowance shows N/A and its reason in the title. A third-party figure is used only with its link and date, labelled third-party. None is used on this site yet.</p>
       </section>
       <CacheShapeSection />
+      <ShapeSection />
       <AllowanceSection />
       <ClaudeSection />
       <ContextSection />
@@ -238,7 +240,7 @@ function AllowanceSection() {
       <p>CommandCode publishes $80 of usage; our dashboard read on 2026-10-27 showed a $70 pool at 50% used. Both are recorded; the published figure is used.</p>
       <p>Where a plan publishes an allowance, that figure is the allowance (basis vendor_published). Where codexbar states a pool whose used share matches the monthly window, that pool is the allowance (vendor_reported). Otherwise the allowance is derived from the quota windows, and the derived figure is kept beside any other. OpenCode Go publishes no per-cycle figure and states no pool, so its allowance is derived. Model views use the allowance chosen; the Measured $/B does not depend on it.</p>
       <p>deepseek-v4.1-flash-fast has no public listing; it is priced at the same rate as deepseek-v4.1-flash (assumed_alias_rate).</p>
-      <p>glm-5.3 has no public list price on OpenRouter; it is priced at the GLM-5.3-Flash rate (assumed_alias_rate).</p>
+      <p>glm-5.3 is priced at the QwenCloud pricing page rate: $1.4 input, $4.4 output and $0.28 cache read per million tokens (read 2026-10-27). OpenRouter lists z-ai/glm-5.3 differently ($0.07 input, $1.40 output); the QwenCloud table is used as ruled. Its share of any window is small, and it is not an assumed rate.</p>
     </section>
   );
 }
@@ -288,6 +290,50 @@ function ClaudeSection() {
         A month of one's own Claude Code logs (ccusage-style, the same window method as the lanes above) would replace these conversions with a measured figure; that is the only change that should be made.
       </p>
       <UnifiedTable testId="claude-prompts" columns={cols} rows={rows} />
+    </section>
+  );
+}
+
+/** The Shape switch: one token mix for every plan, so the same fee and allowance give the same $/B. */
+function ShapeSection() {
+  const ds = dataset as unknown as DS;
+  const tables = SHAPES.map((sh) => summaryTable(ds, "deepseek-v4.1-flash", "short", sh));
+  const plans = tables[0].rows.map((r) => r.key);
+  const rows = plans.map((key) => ({
+    key,
+    cells: {
+      plan: value(tables[0].rows.find((r) => r.key === key)!.cells.plan.text),
+      ...Object.fromEntries(SHAPES.map((sh, i) => [sh.id, tables[i].rows.find((r) => r.key === key)!.cells.usd])),
+    },
+  }));
+  const cols = [
+    { key: "plan", label: "Plan (DeepSeek V4.1 Flash, 100K)", width: "34%" },
+    ...SHAPES.map((sh) => ({ key: sh.id, label: "$/B " + sh.label, width: "22%", numeric: true })),
+  ];
+  const cc = ds.lanes.lanes.find((l) => l.lane === "commandcode-goat")!;
+  const go = ds.lanes.lanes.find((l) => l.lane === "opencode-go")!;
+  const assumed = ds.lanes.lanes.filter((l) => (l.capacity.assumed_share ?? 0) > 0);
+  return (
+    <section className="space-y-3" aria-labelledby="m-shape">
+      <h2 id="m-shape" className={SECTION_TITLE}>Shape: one token mix for every plan</h2>
+      <p>
+        Shape sets the token mix used to price every plan in the model views: the cache-read share of prompt tokens and the output share (data/shapes.json). Under one shape, a plan's $/B
+        is its fee over the tokens its allowance buys at that mix, so two plans with the same fee and the same allowance show the same $/B. Measured uses each plan's own traffic and does not change with Shape.
+      </p>
+      <UnifiedTable testId="shape-compare" columns={cols} rows={rows} />
+      <p>
+        CommandCode and OpenCode Go have the same fee and the same blend under each shape, so their $/B differs only by their allowance. CommandCode uses its published {"$"}{cc.capacity.allowance_usd_per_cycle?.toFixed(2)} of usage;
+        OpenCode Go uses its derived {"$"}{go.capacity.allowance_usd_per_cycle?.toFixed(2)} per cycle. The ratio of the two $/B figures is the ratio of the allowances in every shape. OpenCode Go's catalog
+        also records an official $80 monthly limit for DeepSeek V4.1 Flash; with that figure in place of the derived one, the two would be equal under every shape.
+      </p>
+      {assumed.map((l) => (
+        <p key={l.lane} className={SMALL_NOTE}>
+          {l.label}: {Math.round((l.capacity.assumed_share ?? 0) * 100)}% of its binding window is priced at an assumed alias rate (usage_prices, price_basis assumed_alias_rate), the same rate as deepseek-v4.1-flash.
+        </p>
+      ))}
+      <p className={SMALL_NOTE}>
+        Codex message rows convert a message count to tokens at a fixed 100,462 per message, with no blended price, so Shape does not apply to them.
+      </p>
     </section>
   );
 }

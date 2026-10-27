@@ -1,15 +1,15 @@
 import { describe, expect, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
-import { SummaryView, MODEL_LABEL, CONTEXT_LABEL } from "./summary-view";
+import { SummaryView, MODEL_LABEL, CONTEXT_LABEL, SHAPE_LABEL } from "./summary-view";
 import { dataset } from "@/lib/dataset";
-import { MEASURED, summaryTable, viewChips, type SummaryTable } from "@/lib/summary";
+import { DEFAULT_SHAPE_ID, MEASURED, SHAPES, summaryTable, viewChips, type SummaryTable } from "@/lib/summary";
 import type { DS } from "@/lib/sections";
 
 const ds = dataset as unknown as DS;
 const chips = viewChips(ds);
 const tables: Record<string, SummaryTable> = {};
-for (const c of chips) for (const k of ["short", "long"] as const) tables[c.id + "|" + k] = summaryTable(ds, c.id, k);
-const html = renderToStaticMarkup(<SummaryView chips={chips} tables={tables} initial={MEASURED} />);
+for (const c of chips) for (const k of ["short", "long"] as const) for (const sh of SHAPES) tables[c.id + "|" + k + "|" + sh.id] = summaryTable(ds, c.id, k, sh);
+const html = renderToStaticMarkup(<SummaryView chips={chips} tables={tables} initial={MEASURED} shapes={SHAPES.map((x) => ({ id: x.id, label: x.label }))} initialShape={DEFAULT_SHAPE_ID} />);
 
 const labelOf = (id: string) => {
   const m = html.match(new RegExp("<span id=\"" + id + "\"[^>]*>([^<]*)</span>"));
@@ -31,7 +31,7 @@ describe("switch labels", () => {
 
   test("each group is named by its label through aria-labelledby, and the id it names holds that label", () => {
     const groups = [...html.matchAll(/role="group" aria-labelledby="([^"]+)"/g)].map((m) => m[1]);
-    expect(groups.length).toBe(2);
+    expect(groups.length).toBe(3);
     expect(labelOf(groups[0])).toBe("Model");
     expect(labelOf(groups[1])).toBe("Context size");
   });
@@ -68,6 +68,17 @@ describe('one chip style, no disabled state, one note style', () => {
     expect(note('basis')).toBe(note('footnote'));
   });
   test('the measured footnote says the context does not apply to it', () => {
-    expect(html).toContain('Measured $/B does not depend on the context size.');
+    expect(html).toContain('Measured $/B does not depend on the context size or the shape');
+  });
+});
+
+describe("the Shape switch", () => {
+  test("it is the third group, labelled Shape, with the three shapes and Cache-heavy as default", () => {
+    expect(SHAPE_LABEL).toBe("Shape");
+    expect(html).toContain(">Shape</span>");
+    const shapeTags = [...html.matchAll(/data-shape="([^"]+)"/g)].map((m) => m[1]);
+    expect(shapeTags).toEqual(["cache_heavy", "agent", "cold"]);
+    expect(html.indexOf(">Context size</span>")).toBeLessThan(html.indexOf(">Shape</span>"));
+    expect(DEFAULT_SHAPE_ID).toBe("cache_heavy");
   });
 });

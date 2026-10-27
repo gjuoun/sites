@@ -97,6 +97,7 @@ const lanes: LaneRecord[] = LANES.map((lane) => {
       allowance_derived_usd: a.allowance_derived_usd,
       fee_per_cycle_usd: a.fee_per_cycle_usd,
       fee_basis: a.fee_basis,
+      assumed_share: a.binding_assumed_share,
       seeded: false,
       reason: a.reason,
       confidence: confidence?.confidence ?? null,

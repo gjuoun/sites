@@ -41,7 +41,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-27T00:08:28Z",
@@ -104,7 +104,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-27T00:08:28Z",
@@ -162,7 +162,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-27T00:08:28Z",
@@ -220,22 +220,22 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "window_readings": [
         {
           "window": "5h",
           "used_pct": 0,
-          "resets_at": "2026-10-27T06:34:54Z",
-          "measured_at": "2026-10-27T01:34:52.405Z",
+          "resets_at": "2026-10-27T06:42:24Z",
+          "measured_at": "2026-10-27T01:42:22.195Z",
           "source": "codexbar usage --provider codex"
         },
         {
           "window": "weekly",
           "used_pct": 0,
-          "resets_at": "2026-11-03T01:34:54Z",
-          "measured_at": "2026-10-27T01:34:52.405Z",
+          "resets_at": "2026-11-03T01:42:24Z",
+          "measured_at": "2026-10-27T01:42:22.195Z",
           "source": "codexbar usage --provider codex"
         }
       ],
@@ -278,7 +278,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -319,7 +319,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -371,104 +371,206 @@
       "estimate": {
         "status": "estimated",
         "reason": null,
-        "basis": "fee $10/mo ÷ published usage-dollar allowance (claude-haiku-5.5 1, gpt-6-luna 1) × blended list cost per billion tokens of each reference model; pooled measured mix: output share 0.67%, agent cache share 90.59%, cache write share 0.00% (interactive 0%, cache_heavy 94%); standard contexts: 100K (table) and 350K, with p75 218K as sensitivity (session-end median 96K, p90 362K, 532 sessions).",
+        "basis": "fee $10/mo ÷ published usage-dollar allowance (claude-haiku-5.5 1, gpt-6-luna 1) × blended list cost per billion tokens of each reference model; pooled measured mix: output share 0.67%, agent cache share 90.59%, cache write share 0.00% (interactive 0%, cache_heavy 94%); standard contexts: 100K (table) and 350K, with p75 218K as sensitivity (session-end median 97K, p90 362K, 532 sessions).",
         "values": [
           {
             "ref": "claude-haiku-5.5",
             "shape": "interactive",
-            "usd_per_b": 513.4262456736076,
+            "usd_per_b": 513.4349503604403,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 513.4262456736076,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "blended_usd_per_b": 513.4349503604403,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 513.4262456736076,
-            "usd_per_b_p75": 513.4262456736076,
+            "usd_per_b_long": 513.4349503604403,
+            "usd_per_b_p75": 513.4349503604403,
             "band_short": "band: ≥100k ×5",
             "band_long": "band: ≥100k ×5",
-            "band_p75": "band: ≥100k ×5"
+            "band_p75": "band: ≥100k ×5",
+            "allowance_usd": 10,
+            "fee_usd": 10,
+            "price_used": {
+              "in_per_m": 0.1,
+              "out_per_m": 0.5,
+              "cache_per_m": 0.01,
+              "cache_write_per_m": 0.125,
+              "overrides": [
+                {
+                  "min_prompt_tokens": 100000,
+                  "in_per_m": 0.5,
+                  "out_per_m": 2.5,
+                  "cache_per_m": 0.05,
+                  "cache_write_per_m": 0.625
+                }
+              ]
+            }
           },
           {
             "ref": "claude-haiku-5.5",
             "shape": "agent",
-            "usd_per_b": 108.49501953459625,
+            "usd_per_b": 108.52523910684651,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 108.49501953459625,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "blended_usd_per_b": 108.52523910684651,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 108.49501953459625,
-            "usd_per_b_p75": 108.49501953459625,
+            "usd_per_b_long": 108.52523910684651,
+            "usd_per_b_p75": 108.52523910684651,
             "band_short": "band: ≥100k ×5",
             "band_long": "band: ≥100k ×5",
-            "band_p75": "band: ≥100k ×5"
+            "band_p75": "band: ≥100k ×5",
+            "allowance_usd": 10,
+            "fee_usd": 10,
+            "price_used": {
+              "in_per_m": 0.1,
+              "out_per_m": 0.5,
+              "cache_per_m": 0.01,
+              "cache_write_per_m": 0.125,
+              "overrides": [
+                {
+                  "min_prompt_tokens": 100000,
+                  "in_per_m": 0.5,
+                  "out_per_m": 2.5,
+                  "cache_per_m": 0.05,
+                  "cache_write_per_m": 0.625
+                }
+              ]
+            }
           },
           {
             "ref": "claude-haiku-5.5",
             "shape": "cache_heavy",
-            "usd_per_b": 93.2658966335756,
+            "usd_per_b": 93.27644236167349,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 93.2658966335756,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "blended_usd_per_b": 93.27644236167349,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 93.2658966335756,
-            "usd_per_b_p75": 93.2658966335756,
+            "usd_per_b_long": 93.27644236167349,
+            "usd_per_b_p75": 93.27644236167349,
             "band_short": "band: ≥100k ×5",
             "band_long": "band: ≥100k ×5",
-            "band_p75": "band: ≥100k ×5"
+            "band_p75": "band: ≥100k ×5",
+            "allowance_usd": 10,
+            "fee_usd": 10,
+            "price_used": {
+              "in_per_m": 0.1,
+              "out_per_m": 0.5,
+              "cache_per_m": 0.01,
+              "cache_write_per_m": 0.125,
+              "overrides": [
+                {
+                  "min_prompt_tokens": 100000,
+                  "in_per_m": 0.5,
+                  "out_per_m": 2.5,
+                  "cache_per_m": 0.05,
+                  "cache_write_per_m": 0.625
+                }
+              ]
+            }
           },
           {
             "ref": "gpt-6-luna",
             "shape": "interactive",
-            "usd_per_b": 102.68524913472152,
+            "usd_per_b": 102.68699007208808,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 102.68524913472152,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "blended_usd_per_b": 102.68699007208808,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 203.69221756024209,
-            "usd_per_b_p75": 102.68524913472152,
+            "usd_per_b_long": 203.69461134912112,
+            "usd_per_b_p75": 102.68699007208808,
             "band_short": "band: <272k base",
             "band_long": "band: ≥272k ×2",
-            "band_p75": "band: <272k base"
+            "band_p75": "band: <272k base",
+            "allowance_usd": 10,
+            "fee_usd": 10,
+            "price_used": {
+              "in_per_m": 0.1,
+              "out_per_m": 0.5,
+              "cache_per_m": 0.01,
+              "cache_write_per_m": 0.125,
+              "overrides": [
+                {
+                  "min_prompt_tokens": 272000,
+                  "in_per_m": 0.2,
+                  "out_per_m": 0.75,
+                  "cache_per_m": 0.02,
+                  "cache_write_per_m": 0.25
+                }
+              ]
+            }
           },
           {
             "ref": "gpt-6-luna",
             "shape": "agent",
-            "usd_per_b": 21.699003906919252,
+            "usd_per_b": 21.705047821369302,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 21.699003906919252,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "blended_usd_per_b": 21.705047821369302,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 41.71972710463755,
-            "usd_per_b_p75": 21.699003906919252,
+            "usd_per_b_long": 41.730726847683556,
+            "usd_per_b_p75": 21.705047821369302,
             "band_short": "band: <272k base",
             "band_long": "band: ≥272k ×2",
-            "band_p75": "band: <272k base"
+            "band_p75": "band: <272k base",
+            "allowance_usd": 10,
+            "fee_usd": 10,
+            "price_used": {
+              "in_per_m": 0.1,
+              "out_per_m": 0.5,
+              "cache_per_m": 0.01,
+              "cache_write_per_m": 0.125,
+              "overrides": [
+                {
+                  "min_prompt_tokens": 272000,
+                  "in_per_m": 0.2,
+                  "out_per_m": 0.75,
+                  "cache_per_m": 0.02,
+                  "cache_write_per_m": 0.25
+                }
+              ]
+            }
           },
           {
             "ref": "gpt-6-luna",
             "shape": "cache_heavy",
-            "usd_per_b": 18.65317932671512,
+            "usd_per_b": 18.655288472334696,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 18.65317932671512,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "blended_usd_per_b": 18.655288472334696,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 35.62807794422929,
-            "usd_per_b_p75": 18.65317932671512,
+            "usd_per_b_long": 35.63120814961435,
+            "usd_per_b_p75": 18.655288472334696,
             "band_short": "band: <272k base",
             "band_long": "band: ≥272k ×2",
-            "band_p75": "band: <272k base"
+            "band_p75": "band: <272k base",
+            "allowance_usd": 10,
+            "fee_usd": 10,
+            "price_used": {
+              "in_per_m": 0.1,
+              "out_per_m": 0.5,
+              "cache_per_m": 0.01,
+              "cache_write_per_m": 0.125,
+              "overrides": [
+                {
+                  "min_prompt_tokens": 272000,
+                  "in_per_m": 0.2,
+                  "out_per_m": 0.75,
+                  "cache_per_m": 0.02,
+                  "cache_write_per_m": 0.25
+                }
+              ]
+            }
           }
         ],
         "range_agent": [
-          21.699003906919252,
-          108.49501953459625
+          21.705047821369302,
+          108.52523910684651
         ],
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-27T00:08:28Z",
@@ -520,104 +622,206 @@
       "estimate": {
         "status": "estimated",
         "reason": null,
-        "basis": "fee $39/mo ÷ published usage-dollar allowance (claude-haiku-5.5 1, gpt-6-luna 1) × blended list cost per billion tokens of each reference model; pooled measured mix: output share 0.67%, agent cache share 90.59%, cache write share 0.00% (interactive 0%, cache_heavy 94%); standard contexts: 100K (table) and 350K, with p75 218K as sensitivity (session-end median 96K, p90 362K, 532 sessions).",
+        "basis": "fee $39/mo ÷ published usage-dollar allowance (claude-haiku-5.5 1, gpt-6-luna 1) × blended list cost per billion tokens of each reference model; pooled measured mix: output share 0.67%, agent cache share 90.59%, cache write share 0.00% (interactive 0%, cache_heavy 94%); standard contexts: 100K (table) and 350K, with p75 218K as sensitivity (session-end median 97K, p90 362K, 532 sessions).",
         "values": [
           {
             "ref": "claude-haiku-5.5",
             "shape": "interactive",
-            "usd_per_b": 513.4262456736076,
+            "usd_per_b": 513.4349503604403,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 513.4262456736076,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "blended_usd_per_b": 513.4349503604403,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 513.4262456736076,
-            "usd_per_b_p75": 513.4262456736076,
+            "usd_per_b_long": 513.4349503604403,
+            "usd_per_b_p75": 513.4349503604403,
             "band_short": "band: ≥100k ×5",
             "band_long": "band: ≥100k ×5",
-            "band_p75": "band: ≥100k ×5"
+            "band_p75": "band: ≥100k ×5",
+            "allowance_usd": 39,
+            "fee_usd": 39,
+            "price_used": {
+              "in_per_m": 0.1,
+              "out_per_m": 0.5,
+              "cache_per_m": 0.01,
+              "cache_write_per_m": 0.125,
+              "overrides": [
+                {
+                  "min_prompt_tokens": 100000,
+                  "in_per_m": 0.5,
+                  "out_per_m": 2.5,
+                  "cache_per_m": 0.05,
+                  "cache_write_per_m": 0.625
+                }
+              ]
+            }
           },
           {
             "ref": "claude-haiku-5.5",
             "shape": "agent",
-            "usd_per_b": 108.49501953459625,
+            "usd_per_b": 108.52523910684651,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 108.49501953459625,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "blended_usd_per_b": 108.52523910684651,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 108.49501953459625,
-            "usd_per_b_p75": 108.49501953459625,
+            "usd_per_b_long": 108.52523910684651,
+            "usd_per_b_p75": 108.52523910684651,
             "band_short": "band: ≥100k ×5",
             "band_long": "band: ≥100k ×5",
-            "band_p75": "band: ≥100k ×5"
+            "band_p75": "band: ≥100k ×5",
+            "allowance_usd": 39,
+            "fee_usd": 39,
+            "price_used": {
+              "in_per_m": 0.1,
+              "out_per_m": 0.5,
+              "cache_per_m": 0.01,
+              "cache_write_per_m": 0.125,
+              "overrides": [
+                {
+                  "min_prompt_tokens": 100000,
+                  "in_per_m": 0.5,
+                  "out_per_m": 2.5,
+                  "cache_per_m": 0.05,
+                  "cache_write_per_m": 0.625
+                }
+              ]
+            }
           },
           {
             "ref": "claude-haiku-5.5",
             "shape": "cache_heavy",
-            "usd_per_b": 93.2658966335756,
+            "usd_per_b": 93.27644236167349,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 93.2658966335756,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "blended_usd_per_b": 93.27644236167349,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 93.2658966335756,
-            "usd_per_b_p75": 93.2658966335756,
+            "usd_per_b_long": 93.27644236167349,
+            "usd_per_b_p75": 93.27644236167349,
             "band_short": "band: ≥100k ×5",
             "band_long": "band: ≥100k ×5",
-            "band_p75": "band: ≥100k ×5"
+            "band_p75": "band: ≥100k ×5",
+            "allowance_usd": 39,
+            "fee_usd": 39,
+            "price_used": {
+              "in_per_m": 0.1,
+              "out_per_m": 0.5,
+              "cache_per_m": 0.01,
+              "cache_write_per_m": 0.125,
+              "overrides": [
+                {
+                  "min_prompt_tokens": 100000,
+                  "in_per_m": 0.5,
+                  "out_per_m": 2.5,
+                  "cache_per_m": 0.05,
+                  "cache_write_per_m": 0.625
+                }
+              ]
+            }
           },
           {
             "ref": "gpt-6-luna",
             "shape": "interactive",
-            "usd_per_b": 102.68524913472152,
+            "usd_per_b": 102.68699007208808,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 102.68524913472152,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "blended_usd_per_b": 102.68699007208808,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 203.69221756024209,
-            "usd_per_b_p75": 102.68524913472152,
+            "usd_per_b_long": 203.69461134912112,
+            "usd_per_b_p75": 102.68699007208808,
             "band_short": "band: <272k base",
             "band_long": "band: ≥272k ×2",
-            "band_p75": "band: <272k base"
+            "band_p75": "band: <272k base",
+            "allowance_usd": 39,
+            "fee_usd": 39,
+            "price_used": {
+              "in_per_m": 0.1,
+              "out_per_m": 0.5,
+              "cache_per_m": 0.01,
+              "cache_write_per_m": 0.125,
+              "overrides": [
+                {
+                  "min_prompt_tokens": 272000,
+                  "in_per_m": 0.2,
+                  "out_per_m": 0.75,
+                  "cache_per_m": 0.02,
+                  "cache_write_per_m": 0.25
+                }
+              ]
+            }
           },
           {
             "ref": "gpt-6-luna",
             "shape": "agent",
-            "usd_per_b": 21.699003906919252,
+            "usd_per_b": 21.705047821369302,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 21.699003906919252,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "blended_usd_per_b": 21.705047821369302,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 41.71972710463755,
-            "usd_per_b_p75": 21.699003906919252,
+            "usd_per_b_long": 41.730726847683556,
+            "usd_per_b_p75": 21.705047821369302,
             "band_short": "band: <272k base",
             "band_long": "band: ≥272k ×2",
-            "band_p75": "band: <272k base"
+            "band_p75": "band: <272k base",
+            "allowance_usd": 39,
+            "fee_usd": 39,
+            "price_used": {
+              "in_per_m": 0.1,
+              "out_per_m": 0.5,
+              "cache_per_m": 0.01,
+              "cache_write_per_m": 0.125,
+              "overrides": [
+                {
+                  "min_prompt_tokens": 272000,
+                  "in_per_m": 0.2,
+                  "out_per_m": 0.75,
+                  "cache_per_m": 0.02,
+                  "cache_write_per_m": 0.25
+                }
+              ]
+            }
           },
           {
             "ref": "gpt-6-luna",
             "shape": "cache_heavy",
-            "usd_per_b": 18.65317932671512,
+            "usd_per_b": 18.655288472334696,
             "reason": null,
             "fee_over_allowance": 1,
-            "blended_usd_per_b": 18.65317932671512,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "blended_usd_per_b": 18.655288472334696,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 35.62807794422929,
-            "usd_per_b_p75": 18.65317932671512,
+            "usd_per_b_long": 35.63120814961435,
+            "usd_per_b_p75": 18.655288472334696,
             "band_short": "band: <272k base",
             "band_long": "band: ≥272k ×2",
-            "band_p75": "band: <272k base"
+            "band_p75": "band: <272k base",
+            "allowance_usd": 39,
+            "fee_usd": 39,
+            "price_used": {
+              "in_per_m": 0.1,
+              "out_per_m": 0.5,
+              "cache_per_m": 0.01,
+              "cache_write_per_m": 0.125,
+              "overrides": [
+                {
+                  "min_prompt_tokens": 272000,
+                  "in_per_m": 0.2,
+                  "out_per_m": 0.75,
+                  "cache_per_m": 0.02,
+                  "cache_write_per_m": 0.25
+                }
+              ]
+            }
           }
         ],
         "range_agent": [
-          21.699003906919252,
-          108.49501953459625
+          21.705047821369302,
+          108.52523910684651
         ],
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-27T00:08:28Z",
@@ -663,7 +867,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -704,7 +908,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -745,7 +949,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -792,7 +996,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -839,7 +1043,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -886,7 +1090,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -927,7 +1131,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -973,7 +1177,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -1019,7 +1223,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -1060,7 +1264,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -1106,7 +1310,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -1147,7 +1351,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -1193,7 +1397,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -1234,7 +1438,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T16:00:00Z",
@@ -1292,7 +1496,7 @@
       "estimate": {
         "status": "estimated",
         "reason": null,
-        "basis": "fee $10 per cycle ÷ published allowance (deepseek-v4.1-flash 0.125, glm-5.3-flash 0.125) × blended list cost per billion tokens of each reference model; this plan's own measured mix: output share 0.38%, agent cache share 97.24%, cache write share 0.00% (interactive 0%, cache_heavy 94%); standard contexts: 100K (table) and 350K, with p75 218K as sensitivity (session-end median 96K, p90 362K, 532 sessions); allowance is the published allowance (monthly window, 30-day cycle): $80.00 per cycle, replacing the published allowance.",
+        "basis": "fee $10 per cycle ÷ published allowance (deepseek-v4.1-flash 0.125, glm-5.3-flash 0.125) × blended list cost per billion tokens of each reference model; this plan's own measured mix: output share 0.38%, agent cache share 97.24%, cache write share 0.00% (interactive 0%, cache_heavy 94%); standard contexts: 100K (table) and 350K, with p75 218K as sensitivity (session-end median 97K, p90 362K, 532 sessions); allowance is the published allowance (monthly window, 30-day cycle): $80.00 per cycle, replacing the published allowance.",
         "values": [
           {
             "ref": "deepseek-v4.1-flash",
@@ -1301,13 +1505,22 @@
             "reason": null,
             "fee_over_allowance": 0.125,
             "blended_usd_per_b": 227.53180975518913,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
             "usd_per_b_long": 28.44147621939864,
             "usd_per_b_p75": 28.44147621939864,
             "band_short": "base price (no prompt-length band)",
             "band_long": "base price (no prompt-length band)",
-            "band_p75": "base price (no prompt-length band)"
+            "band_p75": "base price (no prompt-length band)",
+            "allowance_usd": 80,
+            "fee_usd": 10,
+            "price_used": {
+              "in_per_m": 0.225,
+              "out_per_m": 0.9,
+              "cache_per_m": 0.0045,
+              "cache_write_per_m": null,
+              "overrides": []
+            }
           },
           {
             "ref": "deepseek-v4.1-flash",
@@ -1316,13 +1529,22 @@
             "reason": null,
             "fee_over_allowance": 0.125,
             "blended_usd_per_b": 13.924301837469374,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
             "usd_per_b_long": 1.7405377296836717,
             "usd_per_b_p75": 1.7405377296836717,
             "band_short": "base price (no prompt-length band)",
             "band_long": "base price (no prompt-length band)",
-            "band_p75": "base price (no prompt-length band)"
+            "band_p75": "base price (no prompt-length band)",
+            "allowance_usd": 80,
+            "fee_usd": 10,
+            "price_used": {
+              "in_per_m": 0.225,
+              "out_per_m": 0.9,
+              "cache_per_m": 0.0045,
+              "cache_write_per_m": null,
+              "overrides": []
+            }
           },
           {
             "ref": "deepseek-v4.1-flash",
@@ -1331,13 +1553,22 @@
             "reason": null,
             "fee_over_allowance": 0.125,
             "blended_usd_per_b": 21.03924413734924,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
             "usd_per_b_long": 2.629905517168655,
             "usd_per_b_p75": 2.629905517168655,
             "band_short": "base price (no prompt-length band)",
             "band_long": "base price (no prompt-length band)",
-            "band_p75": "base price (no prompt-length band)"
+            "band_p75": "base price (no prompt-length band)",
+            "allowance_usd": 80,
+            "fee_usd": 10,
+            "price_used": {
+              "in_per_m": 0.225,
+              "out_per_m": 0.9,
+              "cache_per_m": 0.0045,
+              "cache_write_per_m": null,
+              "overrides": []
+            }
           },
           {
             "ref": "glm-5.3-flash",
@@ -1346,13 +1577,22 @@
             "reason": null,
             "fee_over_allowance": 0.125,
             "blended_usd_per_b": 151.3127902434314,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
             "usd_per_b_long": 18.914098780428926,
             "usd_per_b_p75": 18.914098780428926,
             "band_short": "base price (no prompt-length band)",
             "band_long": "base price (no prompt-length band)",
-            "band_p75": "base price (no prompt-length band)"
+            "band_p75": "base price (no prompt-length band)",
+            "allowance_usd": 80,
+            "fee_usd": 10,
+            "price_used": {
+              "in_per_m": 0.15,
+              "out_per_m": 0.5,
+              "cache_per_m": 0.03,
+              "cache_write_per_m": null,
+              "overrides": []
+            }
           },
           {
             "ref": "glm-5.3-flash",
@@ -1361,13 +1601,22 @@
             "reason": null,
             "fee_over_allowance": 0.125,
             "blended_usd_per_b": 35.06380634263153,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
             "usd_per_b_long": 4.382975792828941,
             "usd_per_b_p75": 4.382975792828941,
             "band_short": "base price (no prompt-length band)",
             "band_long": "base price (no prompt-length band)",
-            "band_p75": "base price (no prompt-length band)"
+            "band_p75": "base price (no prompt-length band)",
+            "allowance_usd": 80,
+            "fee_usd": 10,
+            "price_used": {
+              "in_per_m": 0.15,
+              "out_per_m": 0.5,
+              "cache_per_m": 0.03,
+              "cache_write_per_m": null,
+              "overrides": []
+            }
           },
           {
             "ref": "glm-5.3-flash",
@@ -1376,20 +1625,29 @@
             "reason": null,
             "fee_over_allowance": 0.125,
             "blended_usd_per_b": 38.93588378474302,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
             "usd_per_b_long": 4.866985473092877,
             "usd_per_b_p75": 4.866985473092877,
             "band_short": "base price (no prompt-length band)",
             "band_long": "base price (no prompt-length band)",
-            "band_p75": "base price (no prompt-length band)"
+            "band_p75": "base price (no prompt-length band)",
+            "allowance_usd": 80,
+            "fee_usd": 10,
+            "price_used": {
+              "in_per_m": 0.15,
+              "out_per_m": 0.5,
+              "cache_per_m": 0.03,
+              "cache_write_per_m": null,
+              "overrides": []
+            }
           }
         ],
         "range_agent": [
           1.7405377296836717,
           4.382975792828941
         ],
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T16:38:14.752Z",
@@ -1458,194 +1716,350 @@
       "estimate": {
         "status": "estimated",
         "reason": null,
-        "basis": "fee $10 per cycle ÷ derived allowance (deepseek-v4.1-flash 0.085, claude-haiku-5.5 0.085, gpt-6-luna 0.085, glm-5.3-flash 0.085) × blended list cost per billion tokens of each reference model; this plan's own measured mix: output share 0.69%, agent cache share 78.77%, cache write share 0.00% (interactive 0%, cache_heavy 94%); standard contexts: 100K (table) and 350K, with p75 218K as sensitivity (session-end median 96K, p90 362K, 532 sessions); allowance is derived from the quota windows (monthly window, 30-day cycle): $117.70 per cycle, replacing the published allowance.",
+        "basis": "fee $10 per cycle ÷ derived allowance (deepseek-v4.1-flash 0.0849, claude-haiku-5.5 0.0849, gpt-6-luna 0.0849, glm-5.3-flash 0.0849) × blended list cost per billion tokens of each reference model; this plan's own measured mix: output share 0.69%, agent cache share 78.79%, cache write share 0.00% (interactive 0%, cache_heavy 94%); standard contexts: 100K (table) and 350K, with p75 218K as sensitivity (session-end median 97K, p90 362K, 532 sessions); allowance is derived from the quota windows (monthly window, 30-day cycle): $117.84 per cycle, replacing the published allowance.",
         "values": [
           {
             "ref": "deepseek-v4.1-flash",
             "shape": "interactive",
-            "usd_per_b": 19.511908328293778,
+            "usd_per_b": 19.48989781512301,
             "reason": null,
-            "fee_over_allowance": 0.08495818671636324,
-            "blended_usd_per_b": 229.66483963970617,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "fee_over_allowance": 0.08485922419368912,
+            "blended_usd_per_b": 229.6732971613998,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 19.511908328293778,
-            "usd_per_b_p75": 19.511908328293778,
+            "usd_per_b_long": 19.48989781512301,
+            "usd_per_b_p75": 19.48989781512301,
             "band_short": "base price (no prompt-length band)",
             "band_long": "base price (no prompt-length band)",
-            "band_p75": "base price (no prompt-length band)"
+            "band_p75": "base price (no prompt-length band)",
+            "allowance_usd": 117.8422274657525,
+            "fee_usd": 10,
+            "price_used": {
+              "in_per_m": 0.225,
+              "out_per_m": 0.9,
+              "cache_per_m": 0.0045,
+              "cache_write_per_m": null,
+              "overrides": []
+            }
           },
           {
             "ref": "deepseek-v4.1-flash",
             "shape": "agent",
-            "usd_per_b": 4.857536072613596,
+            "usd_per_b": 4.849336831024988,
             "reason": null,
-            "fee_over_allowance": 0.08495818671636324,
-            "blended_usd_per_b": 57.175609089100504,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "fee_over_allowance": 0.08485922419368912,
+            "blended_usd_per_b": 57.14566538996979,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 4.857536072613596,
-            "usd_per_b_p75": 4.857536072613596,
+            "usd_per_b_long": 4.849336831024988,
+            "usd_per_b_p75": 4.849336831024988,
             "band_short": "base price (no prompt-length band)",
             "band_long": "base price (no prompt-length band)",
-            "band_p75": "base price (no prompt-length band)"
+            "band_p75": "base price (no prompt-length band)",
+            "allowance_usd": 117.8422274657525,
+            "fee_usd": 10,
+            "price_used": {
+              "in_per_m": 0.225,
+              "out_per_m": 0.9,
+              "cache_per_m": 0.0045,
+              "cache_write_per_m": null,
+              "overrides": []
+            }
           },
           {
             "ref": "deepseek-v4.1-flash",
             "shape": "cache_heavy",
-            "usd_per_b": 2.024320498034375,
+            "usd_per_b": 2.022900572718857,
             "reason": null,
-            "fee_over_allowance": 0.08495818671636324,
-            "blended_usd_per_b": 23.82725639840526,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "fee_over_allowance": 0.08485922419368912,
+            "blended_usd_per_b": 23.838310943093653,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 2.024320498034375,
-            "usd_per_b_p75": 2.024320498034375,
+            "usd_per_b_long": 2.022900572718857,
+            "usd_per_b_p75": 2.022900572718857,
             "band_short": "base price (no prompt-length band)",
             "band_long": "base price (no prompt-length band)",
-            "band_p75": "base price (no prompt-length band)"
+            "band_p75": "base price (no prompt-length band)",
+            "allowance_usd": 117.8422274657525,
+            "fee_usd": 10,
+            "price_used": {
+              "in_per_m": 0.225,
+              "out_per_m": 0.9,
+              "cache_per_m": 0.0045,
+              "cache_write_per_m": null,
+              "overrides": []
+            }
           },
           {
             "ref": "claude-haiku-5.5",
             "shape": "interactive",
-            "usd_per_b": 43.6533639274025,
+            "usd_per_b": 43.604641345860735,
             "reason": null,
-            "fee_over_allowance": 0.08495818671636324,
-            "blended_usd_per_b": 513.8217470806109,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "fee_over_allowance": 0.08485922419368912,
+            "blended_usd_per_b": 513.8468064041476,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 43.6533639274025,
-            "usd_per_b_p75": 43.6533639274025,
+            "usd_per_b_long": 43.604641345860735,
+            "usd_per_b_p75": 43.604641345860735,
             "band_short": "band: ≥100k ×5",
             "band_long": "band: ≥100k ×5",
-            "band_p75": "band: ≥100k ×5"
+            "band_p75": "band: ≥100k ×5",
+            "allowance_usd": 117.8422274657525,
+            "fee_usd": 10,
+            "price_used": {
+              "in_per_m": 0.1,
+              "out_per_m": 0.5,
+              "cache_per_m": 0.01,
+              "cache_write_per_m": 0.125,
+              "overrides": [
+                {
+                  "min_prompt_tokens": 100000,
+                  "in_per_m": 0.5,
+                  "out_per_m": 2.5,
+                  "cache_per_m": 0.05,
+                  "cache_write_per_m": 0.625
+                }
+              ]
+            }
           },
           {
             "ref": "claude-haiku-5.5",
             "shape": "agent",
-            "usd_per_b": 13.746481772953157,
+            "usd_per_b": 13.725945459946399,
             "reason": null,
-            "fee_over_allowance": 0.08495818671636324,
-            "blended_usd_per_b": 161.802909222232,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "fee_over_allowance": 0.08485922419368912,
+            "blended_usd_per_b": 161.74959870735162,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 13.746481772953157,
-            "usd_per_b_p75": 13.746481772953157,
+            "usd_per_b_long": 13.725945459946399,
+            "usd_per_b_p75": 13.725945459946399,
             "band_short": "band: ≥100k ×5",
             "band_long": "band: ≥100k ×5",
-            "band_p75": "band: ≥100k ×5"
+            "band_p75": "band: ≥100k ×5",
+            "allowance_usd": 117.8422274657525,
+            "fee_usd": 10,
+            "price_used": {
+              "in_per_m": 0.1,
+              "out_per_m": 0.5,
+              "cache_per_m": 0.01,
+              "cache_write_per_m": 0.125,
+              "overrides": [
+                {
+                  "min_prompt_tokens": 100000,
+                  "in_per_m": 0.5,
+                  "out_per_m": 2.5,
+                  "cache_per_m": 0.05,
+                  "cache_write_per_m": 0.625
+                }
+              ]
+            }
           },
           {
             "ref": "claude-haiku-5.5",
             "shape": "cache_heavy",
-            "usd_per_b": 7.964409171771069,
+            "usd_per_b": 7.957708198097152,
             "reason": null,
-            "fee_over_allowance": 0.08495818671636324,
-            "blended_usd_per_b": 93.74504658816002,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "fee_over_allowance": 0.08485922419368912,
+            "blended_usd_per_b": 93.7754059586248,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 7.964409171771069,
-            "usd_per_b_p75": 7.964409171771069,
+            "usd_per_b_long": 7.957708198097152,
+            "usd_per_b_p75": 7.957708198097152,
             "band_short": "band: ≥100k ×5",
             "band_long": "band: ≥100k ×5",
-            "band_p75": "band: ≥100k ×5"
+            "band_p75": "band: ≥100k ×5",
+            "allowance_usd": 117.8422274657525,
+            "fee_usd": 10,
+            "price_used": {
+              "in_per_m": 0.1,
+              "out_per_m": 0.5,
+              "cache_per_m": 0.01,
+              "cache_write_per_m": 0.125,
+              "overrides": [
+                {
+                  "min_prompt_tokens": 100000,
+                  "in_per_m": 0.5,
+                  "out_per_m": 2.5,
+                  "cache_per_m": 0.05,
+                  "cache_write_per_m": 0.625
+                }
+              ]
+            }
           },
           {
             "ref": "gpt-6-luna",
             "shape": "interactive",
-            "usd_per_b": 8.7306727854805,
+            "usd_per_b": 8.720928269172148,
             "reason": null,
-            "fee_over_allowance": 0.08495818671636324,
-            "blended_usd_per_b": 102.76434941612217,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "fee_over_allowance": 0.08485922419368912,
+            "blended_usd_per_b": 102.76936128082954,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 17.31456174980839,
-            "usd_per_b_p75": 8.7306727854805,
+            "usd_per_b_long": 17.29497788221727,
+            "usd_per_b_p75": 8.720928269172148,
             "band_short": "band: <272k base",
             "band_long": "band: ≥272k ×2",
-            "band_p75": "band: <272k base"
+            "band_p75": "band: <272k base",
+            "allowance_usd": 117.8422274657525,
+            "fee_usd": 10,
+            "price_used": {
+              "in_per_m": 0.1,
+              "out_per_m": 0.5,
+              "cache_per_m": 0.01,
+              "cache_write_per_m": 0.125,
+              "overrides": [
+                {
+                  "min_prompt_tokens": 272000,
+                  "in_per_m": 0.2,
+                  "out_per_m": 0.75,
+                  "cache_per_m": 0.02,
+                  "cache_write_per_m": 0.25
+                }
+              ]
+            }
           },
           {
             "ref": "gpt-6-luna",
             "shape": "agent",
-            "usd_per_b": 2.749296354590631,
+            "usd_per_b": 2.74518909198928,
             "reason": null,
-            "fee_over_allowance": 0.08495818671636324,
-            "blended_usd_per_b": 32.36058184444639,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "fee_over_allowance": 0.08485922419368912,
+            "blended_usd_per_b": 32.34991974147033,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 5.351808888028651,
-            "usd_per_b_p75": 2.749296354590631,
+            "usd_per_b_long": 5.343499527851538,
+            "usd_per_b_p75": 2.74518909198928,
             "band_short": "band: <272k base",
             "band_long": "band: ≥272k ×2",
-            "band_p75": "band: <272k base"
+            "band_p75": "band: <272k base",
+            "allowance_usd": 117.8422274657525,
+            "fee_usd": 10,
+            "price_used": {
+              "in_per_m": 0.1,
+              "out_per_m": 0.5,
+              "cache_per_m": 0.01,
+              "cache_write_per_m": 0.125,
+              "overrides": [
+                {
+                  "min_prompt_tokens": 272000,
+                  "in_per_m": 0.2,
+                  "out_per_m": 0.75,
+                  "cache_per_m": 0.02,
+                  "cache_write_per_m": 0.25
+                }
+              ]
+            }
           },
           {
             "ref": "gpt-6-luna",
             "shape": "cache_heavy",
-            "usd_per_b": 1.592881834354214,
+            "usd_per_b": 1.5915416396194306,
             "reason": null,
-            "fee_over_allowance": 0.08495818671636324,
-            "blended_usd_per_b": 18.749009317632005,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "fee_over_allowance": 0.08485922419368912,
+            "blended_usd_per_b": 18.755081191724962,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 3.0389798475558183,
-            "usd_per_b_p75": 1.592881834354214,
+            "usd_per_b_long": 3.0362046231118405,
+            "usd_per_b_p75": 1.5915416396194306,
             "band_short": "band: <272k base",
             "band_long": "band: ≥272k ×2",
-            "band_p75": "band: <272k base"
+            "band_p75": "band: <272k base",
+            "allowance_usd": 117.8422274657525,
+            "fee_usd": 10,
+            "price_used": {
+              "in_per_m": 0.1,
+              "out_per_m": 0.5,
+              "cache_per_m": 0.01,
+              "cache_write_per_m": 0.125,
+              "overrides": [
+                {
+                  "min_prompt_tokens": 272000,
+                  "in_per_m": 0.2,
+                  "out_per_m": 0.75,
+                  "cache_per_m": 0.02,
+                  "cache_write_per_m": 0.25
+                }
+              ]
+            }
           },
           {
             "ref": "glm-5.3-flash",
             "shape": "interactive",
-            "usd_per_b": 12.949225357068139,
+            "usd_per_b": 12.934513747631197,
             "reason": null,
-            "fee_over_allowance": 0.08495818671636324,
-            "blended_usd_per_b": 152.4188057391069,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "fee_over_allowance": 0.08485922419368912,
+            "blended_usd_per_b": 152.42319112072582,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 12.949225357068139,
-            "usd_per_b_p75": 12.949225357068139,
+            "usd_per_b_long": 12.934513747631197,
+            "usd_per_b_p75": 12.934513747631197,
             "band_short": "base price (no prompt-length band)",
             "band_long": "base price (no prompt-length band)",
-            "band_p75": "base price (no prompt-length band)"
+            "band_p75": "base price (no prompt-length band)",
+            "allowance_usd": 117.8422274657525,
+            "fee_usd": 10,
+            "price_used": {
+              "in_per_m": 0.15,
+              "out_per_m": 0.5,
+              "cache_per_m": 0.03,
+              "cache_write_per_m": null,
+              "overrides": []
+            }
           },
           {
             "ref": "glm-5.3-flash",
             "shape": "agent",
-            "usd_per_b": 4.974056782548315,
+            "usd_per_b": 4.966861511387377,
             "reason": null,
-            "fee_over_allowance": 0.08495818671636324,
-            "blended_usd_per_b": 58.54711564353921,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "fee_over_allowance": 0.08485922419368912,
+            "blended_usd_per_b": 58.53060240158024,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 4.974056782548315,
-            "usd_per_b_p75": 4.974056782548315,
+            "usd_per_b_long": 4.966861511387377,
+            "usd_per_b_p75": 4.966861511387377,
             "band_short": "base price (no prompt-length band)",
             "band_long": "base price (no prompt-length band)",
-            "band_p75": "base price (no prompt-length band)"
+            "band_p75": "base price (no prompt-length band)",
+            "allowance_usd": 117.8422274657525,
+            "fee_usd": 10,
+            "price_used": {
+              "in_per_m": 0.15,
+              "out_per_m": 0.5,
+              "cache_per_m": 0.03,
+              "cache_write_per_m": null,
+              "overrides": []
+            }
           },
           {
             "ref": "glm-5.3-flash",
             "shape": "cache_heavy",
-            "usd_per_b": 3.4321707555664247,
+            "usd_per_b": 3.4286649082275775,
             "reason": null,
-            "fee_over_allowance": 0.08495818671636324,
-            "blended_usd_per_b": 40.398352274453345,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "fee_over_allowance": 0.08485922419368912,
+            "blended_usd_per_b": 40.40415100191976,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 3.4321707555664247,
-            "usd_per_b_p75": 3.4321707555664247,
+            "usd_per_b_long": 3.4286649082275775,
+            "usd_per_b_p75": 3.4286649082275775,
             "band_short": "base price (no prompt-length band)",
             "band_long": "base price (no prompt-length band)",
-            "band_p75": "base price (no prompt-length band)"
+            "band_p75": "base price (no prompt-length band)",
+            "allowance_usd": 117.8422274657525,
+            "fee_usd": 10,
+            "price_used": {
+              "in_per_m": 0.15,
+              "out_per_m": 0.5,
+              "cache_per_m": 0.03,
+              "cache_write_per_m": null,
+              "overrides": []
+            }
           }
         ],
         "range_agent": [
-          2.749296354590631,
-          13.746481772953157
+          2.74518909198928,
+          13.725945459946399
         ],
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T16:38:14.752Z",
@@ -1709,194 +2123,350 @@
       "estimate": {
         "status": "estimated",
         "reason": null,
-        "basis": "fee $40/mo ÷ published usage-dollar allowance (deepseek-v4.1-flash 0.25, claude-haiku-5.5 0.667, gpt-6-luna 0.667, glm-5.3-flash 0.222) × blended list cost per billion tokens of each reference model; pooled measured mix: output share 0.67%, agent cache share 90.59%, cache write share 0.00% (interactive 0%, cache_heavy 94%); standard contexts: 100K (table) and 350K, with p75 218K as sensitivity (session-end median 96K, p90 362K, 532 sessions).",
+        "basis": "fee $40/mo ÷ published usage-dollar allowance (deepseek-v4.1-flash 0.25, claude-haiku-5.5 0.667, gpt-6-luna 0.667, glm-5.3-flash 0.222) × blended list cost per billion tokens of each reference model; pooled measured mix: output share 0.67%, agent cache share 90.59%, cache write share 0.00% (interactive 0%, cache_heavy 94%); standard contexts: 100K (table) and 350K, with p75 218K as sensitivity (session-end median 97K, p90 362K, 532 sessions).",
         "values": [
           {
             "ref": "deepseek-v4.1-flash",
             "shape": "interactive",
-            "usd_per_b": 57.382839478710636,
+            "usd_per_b": 57.38357393666215,
             "reason": null,
             "fee_over_allowance": 0.25,
-            "blended_usd_per_b": 229.53135791484254,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "blended_usd_per_b": 229.5342957466486,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 57.382839478710636,
-            "usd_per_b_p75": 57.382839478710636,
+            "usd_per_b_long": 57.38357393666215,
+            "usd_per_b_p75": 57.38357393666215,
             "band_short": "base price (no prompt-length band)",
             "band_long": "base price (no prompt-length band)",
-            "band_p75": "base price (no prompt-length band)"
+            "band_p75": "base price (no prompt-length band)",
+            "allowance_usd": 160,
+            "fee_usd": 40,
+            "price_used": {
+              "in_per_m": 0.225,
+              "out_per_m": 0.9,
+              "cache_per_m": 0.0045,
+              "cache_write_per_m": null,
+              "overrides": []
+            }
           },
           {
             "ref": "deepseek-v4.1-flash",
             "shape": "agent",
-            "usd_per_b": 7.778764276681751,
+            "usd_per_b": 7.782134308096912,
             "reason": null,
             "fee_over_allowance": 0.25,
-            "blended_usd_per_b": 31.115057106727004,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "blended_usd_per_b": 31.128537232387647,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 7.778764276681751,
-            "usd_per_b_p75": 7.778764276681751,
+            "usd_per_b_long": 7.782134308096912,
+            "usd_per_b_p75": 7.782134308096912,
             "band_short": "base price (no prompt-length band)",
             "band_long": "base price (no prompt-length band)",
-            "band_p75": "base price (no prompt-length band)"
+            "band_p75": "base price (no prompt-length band)",
+            "allowance_usd": 160,
+            "fee_usd": 40,
+            "price_used": {
+              "in_per_m": 0.225,
+              "out_per_m": 0.9,
+              "cache_per_m": 0.0045,
+              "cache_write_per_m": null,
+              "overrides": []
+            }
           },
           {
             "ref": "deepseek-v4.1-flash",
             "shape": "cache_heavy",
-            "usd_per_b": 5.91319672130672,
+            "usd_per_b": 5.914156706813214,
             "reason": null,
             "fee_over_allowance": 0.25,
-            "blended_usd_per_b": 23.65278688522688,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "blended_usd_per_b": 23.656626827252857,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 5.91319672130672,
-            "usd_per_b_p75": 5.91319672130672,
+            "usd_per_b_long": 5.914156706813214,
+            "usd_per_b_p75": 5.914156706813214,
             "band_short": "base price (no prompt-length band)",
             "band_long": "base price (no prompt-length band)",
-            "band_p75": "base price (no prompt-length band)"
+            "band_p75": "base price (no prompt-length band)",
+            "allowance_usd": 160,
+            "fee_usd": 40,
+            "price_used": {
+              "in_per_m": 0.225,
+              "out_per_m": 0.9,
+              "cache_per_m": 0.0045,
+              "cache_write_per_m": null,
+              "overrides": []
+            }
           },
           {
             "ref": "claude-haiku-5.5",
             "shape": "interactive",
-            "usd_per_b": 342.284163782405,
+            "usd_per_b": 342.2899669069602,
             "reason": null,
             "fee_over_allowance": 0.6666666666666666,
-            "blended_usd_per_b": 513.4262456736076,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "blended_usd_per_b": 513.4349503604403,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 342.284163782405,
-            "usd_per_b_p75": 342.284163782405,
+            "usd_per_b_long": 342.2899669069602,
+            "usd_per_b_p75": 342.2899669069602,
             "band_short": "band: ≥100k ×5",
             "band_long": "band: ≥100k ×5",
-            "band_p75": "band: ≥100k ×5"
+            "band_p75": "band: ≥100k ×5",
+            "allowance_usd": 60,
+            "fee_usd": 40,
+            "price_used": {
+              "in_per_m": 0.1,
+              "out_per_m": 0.5,
+              "cache_per_m": 0.01,
+              "cache_write_per_m": 0.125,
+              "overrides": [
+                {
+                  "min_prompt_tokens": 100000,
+                  "in_per_m": 0.5,
+                  "out_per_m": 2.5,
+                  "cache_per_m": 0.05,
+                  "cache_write_per_m": 0.625
+                }
+              ]
+            }
           },
           {
             "ref": "claude-haiku-5.5",
             "shape": "agent",
-            "usd_per_b": 72.33001302306417,
+            "usd_per_b": 72.35015940456434,
             "reason": null,
             "fee_over_allowance": 0.6666666666666666,
-            "blended_usd_per_b": 108.49501953459625,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "blended_usd_per_b": 108.52523910684651,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 72.33001302306417,
-            "usd_per_b_p75": 72.33001302306417,
+            "usd_per_b_long": 72.35015940456434,
+            "usd_per_b_p75": 72.35015940456434,
             "band_short": "band: ≥100k ×5",
             "band_long": "band: ≥100k ×5",
-            "band_p75": "band: ≥100k ×5"
+            "band_p75": "band: ≥100k ×5",
+            "allowance_usd": 60,
+            "fee_usd": 40,
+            "price_used": {
+              "in_per_m": 0.1,
+              "out_per_m": 0.5,
+              "cache_per_m": 0.01,
+              "cache_write_per_m": 0.125,
+              "overrides": [
+                {
+                  "min_prompt_tokens": 100000,
+                  "in_per_m": 0.5,
+                  "out_per_m": 2.5,
+                  "cache_per_m": 0.05,
+                  "cache_write_per_m": 0.625
+                }
+              ]
+            }
           },
           {
             "ref": "claude-haiku-5.5",
             "shape": "cache_heavy",
-            "usd_per_b": 62.17726442238373,
+            "usd_per_b": 62.18429490778232,
             "reason": null,
             "fee_over_allowance": 0.6666666666666666,
-            "blended_usd_per_b": 93.2658966335756,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "blended_usd_per_b": 93.27644236167349,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 62.17726442238373,
-            "usd_per_b_p75": 62.17726442238373,
+            "usd_per_b_long": 62.18429490778232,
+            "usd_per_b_p75": 62.18429490778232,
             "band_short": "band: ≥100k ×5",
             "band_long": "band: ≥100k ×5",
-            "band_p75": "band: ≥100k ×5"
+            "band_p75": "band: ≥100k ×5",
+            "allowance_usd": 60,
+            "fee_usd": 40,
+            "price_used": {
+              "in_per_m": 0.1,
+              "out_per_m": 0.5,
+              "cache_per_m": 0.01,
+              "cache_write_per_m": 0.125,
+              "overrides": [
+                {
+                  "min_prompt_tokens": 100000,
+                  "in_per_m": 0.5,
+                  "out_per_m": 2.5,
+                  "cache_per_m": 0.05,
+                  "cache_write_per_m": 0.625
+                }
+              ]
+            }
           },
           {
             "ref": "gpt-6-luna",
             "shape": "interactive",
-            "usd_per_b": 68.456832756481,
+            "usd_per_b": 68.45799338139204,
             "reason": null,
             "fee_over_allowance": 0.6666666666666666,
-            "blended_usd_per_b": 102.68524913472152,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "blended_usd_per_b": 102.68699007208808,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 135.79481170682806,
-            "usd_per_b_p75": 68.456832756481,
+            "usd_per_b_long": 135.79640756608075,
+            "usd_per_b_p75": 68.45799338139204,
             "band_short": "band: <272k base",
             "band_long": "band: ≥272k ×2",
-            "band_p75": "band: <272k base"
+            "band_p75": "band: <272k base",
+            "allowance_usd": 60,
+            "fee_usd": 40,
+            "price_used": {
+              "in_per_m": 0.1,
+              "out_per_m": 0.5,
+              "cache_per_m": 0.01,
+              "cache_write_per_m": 0.125,
+              "overrides": [
+                {
+                  "min_prompt_tokens": 272000,
+                  "in_per_m": 0.2,
+                  "out_per_m": 0.75,
+                  "cache_per_m": 0.02,
+                  "cache_write_per_m": 0.25
+                }
+              ]
+            }
           },
           {
             "ref": "gpt-6-luna",
             "shape": "agent",
-            "usd_per_b": 14.466002604612834,
+            "usd_per_b": 14.470031880912867,
             "reason": null,
             "fee_over_allowance": 0.6666666666666666,
-            "blended_usd_per_b": 21.699003906919252,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "blended_usd_per_b": 21.705047821369302,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 27.813151403091698,
-            "usd_per_b_p75": 14.466002604612834,
+            "usd_per_b_long": 27.82048456512237,
+            "usd_per_b_p75": 14.470031880912867,
             "band_short": "band: <272k base",
             "band_long": "band: ≥272k ×2",
-            "band_p75": "band: <272k base"
+            "band_p75": "band: <272k base",
+            "allowance_usd": 60,
+            "fee_usd": 40,
+            "price_used": {
+              "in_per_m": 0.1,
+              "out_per_m": 0.5,
+              "cache_per_m": 0.01,
+              "cache_write_per_m": 0.125,
+              "overrides": [
+                {
+                  "min_prompt_tokens": 272000,
+                  "in_per_m": 0.2,
+                  "out_per_m": 0.75,
+                  "cache_per_m": 0.02,
+                  "cache_write_per_m": 0.25
+                }
+              ]
+            }
           },
           {
             "ref": "gpt-6-luna",
             "shape": "cache_heavy",
-            "usd_per_b": 12.435452884476746,
+            "usd_per_b": 12.436858981556464,
             "reason": null,
             "fee_over_allowance": 0.6666666666666666,
-            "blended_usd_per_b": 18.65317932671512,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "blended_usd_per_b": 18.655288472334696,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 23.752051962819525,
-            "usd_per_b_p75": 12.435452884476746,
+            "usd_per_b_long": 23.754138766409568,
+            "usd_per_b_p75": 12.436858981556464,
             "band_short": "band: <272k base",
             "band_long": "band: ≥272k ×2",
-            "band_p75": "band: <272k base"
+            "band_p75": "band: <272k base",
+            "allowance_usd": 60,
+            "fee_usd": 40,
+            "price_used": {
+              "in_per_m": 0.1,
+              "out_per_m": 0.5,
+              "cache_per_m": 0.01,
+              "cache_write_per_m": 0.125,
+              "overrides": [
+                {
+                  "min_prompt_tokens": 272000,
+                  "in_per_m": 0.2,
+                  "out_per_m": 0.75,
+                  "cache_per_m": 0.02,
+                  "cache_write_per_m": 0.25
+                }
+              ]
+            }
           },
           {
             "ref": "glm-5.3-flash",
             "shape": "interactive",
-            "usd_per_b": 33.855465109529185,
+            "usd_per_b": 33.85580362512823,
             "reason": null,
             "fee_over_allowance": 0.2222222222222222,
-            "blended_usd_per_b": 152.34959299288133,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "blended_usd_per_b": 152.35111631307706,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 33.855465109529185,
-            "usd_per_b_p75": 33.855465109529185,
+            "usd_per_b_long": 33.85580362512823,
+            "usd_per_b_p75": 33.85580362512823,
             "band_short": "base price (no prompt-length band)",
             "band_long": "base price (no prompt-length band)",
-            "band_p75": "base price (no prompt-length band)"
+            "band_p75": "base price (no prompt-length band)",
+            "allowance_usd": 180,
+            "fee_usd": 40,
+            "price_used": {
+              "in_per_m": 0.15,
+              "out_per_m": 0.5,
+              "cache_per_m": 0.03,
+              "cache_write_per_m": null,
+              "overrides": []
+            }
           },
           {
             "ref": "glm-5.3-flash",
             "shape": "agent",
-            "usd_per_b": 9.85954059758777,
+            "usd_per_b": 9.861154069359715,
             "reason": null,
             "fee_over_allowance": 0.2222222222222222,
-            "blended_usd_per_b": 44.36793268914497,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "blended_usd_per_b": 44.37519331211872,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 9.85954059758777,
-            "usd_per_b_p75": 9.85954059758777,
+            "usd_per_b_long": 9.861154069359715,
+            "usd_per_b_p75": 9.861154069359715,
             "band_short": "base price (no prompt-length band)",
             "band_long": "base price (no prompt-length band)",
-            "band_p75": "base price (no prompt-length band)"
+            "band_p75": "base price (no prompt-length band)",
+            "allowance_usd": 180,
+            "fee_usd": 40,
+            "price_used": {
+              "in_per_m": 0.15,
+              "out_per_m": 0.5,
+              "cache_per_m": 0.03,
+              "cache_write_per_m": null,
+              "overrides": []
+            }
           },
           {
             "ref": "glm-5.3-flash",
             "shape": "cache_heavy",
-            "usd_per_b": 8.957074055305064,
+            "usd_per_b": 8.957521669645756,
             "reason": null,
             "fee_over_allowance": 0.2222222222222222,
-            "blended_usd_per_b": 40.30683324887279,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "blended_usd_per_b": 40.3088475134059,
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
-            "usd_per_b_long": 8.957074055305064,
-            "usd_per_b_p75": 8.957074055305064,
+            "usd_per_b_long": 8.957521669645756,
+            "usd_per_b_p75": 8.957521669645756,
             "band_short": "base price (no prompt-length band)",
             "band_long": "base price (no prompt-length band)",
-            "band_p75": "base price (no prompt-length band)"
+            "band_p75": "base price (no prompt-length band)",
+            "allowance_usd": 180,
+            "fee_usd": 40,
+            "price_used": {
+              "in_per_m": 0.15,
+              "out_per_m": 0.5,
+              "cache_per_m": 0.03,
+              "cache_write_per_m": null,
+              "overrides": []
+            }
           }
         ],
         "range_agent": [
-          7.778764276681751,
-          72.33001302306417
+          7.782134308096912,
+          72.35015940456434
         ],
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T16:38:14.752Z",
@@ -1923,7 +2493,7 @@
       "allowance_detail": "25,500 credits in the monthly window (console reading); window resets monthly",
       "credits_to_usd": {
         "usd_per_credit": 0.0007944331163004354,
-        "basis": "window 2026-10-25T16:00Z to 2026-10-27T01:34Z: 193,169,199 tokens over 1020 rows (deepseek-v4.1-flash-1017 100,666,378 tokens ($4.18); deepseek-v4.1-flash 46,689,191 tokens ($2.64); qwen3.8-max 11,767,035 tokens ($3.58); qwen3.8-flash 34,046,595 tokens ($0.759)), priced at official QwenCloud prices, hour-weighted average of peak (14h) and off-peak (10h) = $11.2 of usage; ÷ 14,041.65 credits used (codexbar reading) = $0.000794 usage value per credit; 13800 tokens per credit. Tiers: deepseek-v4.1-flash-1017: peak $0.3 / $1.2 / $0.03 × 14h, off-peak $0.15 / $0.6 / $0.015 × 10h → avg $0.2375 / $0.95 / $0.02375 per M (in / out / cache); priced_as: deepseek-v4.1-flash; deepseek-v4.1-flash: peak $0.3 / $1.2 / $0.03 × 14h, off-peak $0.15 / $0.6 / $0.015 × 10h → avg $0.2375 / $0.95 / $0.02375 per M (in / out / cache); qwen3.8-flash: peak $0.15 / $0.47 / $0.016 × 14h, off-peak $0.09 / $0.282 / $0.0096 × 10h → avg $0.125 / $0.3917 / $0.01333 per M (in / out / cache); band_inherited_from: deepseek-v4.1-flash; qwen3.8-max: peak $2 / $6 / $0.25 × 14h, off-peak $1.2 / $3.6 / $0.15 × 10h → avg $1.667 / $5 / $0.2083 per M (in / out / cache); band_inherited_from: deepseek-v4.1-flash.",
+        "basis": "window 2026-10-25T16:00Z to 2026-10-27T01:42Z: 193,169,199 tokens over 1020 rows (deepseek-v4.1-flash-1017 100,666,378 tokens ($4.18); deepseek-v4.1-flash 46,689,191 tokens ($2.64); qwen3.8-max 11,767,035 tokens ($3.58); qwen3.8-flash 34,046,595 tokens ($0.759)), priced at official QwenCloud prices, hour-weighted average of peak (14h) and off-peak (10h) = $11.2 of usage; ÷ 14,041.65 credits used (codexbar reading) = $0.000794 usage value per credit; 13800 tokens per credit. Tiers: deepseek-v4.1-flash-1017: peak $0.3 / $1.2 / $0.03 × 14h, off-peak $0.15 / $0.6 / $0.015 × 10h → avg $0.2375 / $0.95 / $0.02375 per M (in / out / cache); priced_as: deepseek-v4.1-flash; deepseek-v4.1-flash: peak $0.3 / $1.2 / $0.03 × 14h, off-peak $0.15 / $0.6 / $0.015 × 10h → avg $0.2375 / $0.95 / $0.02375 per M (in / out / cache); qwen3.8-flash: peak $0.15 / $0.47 / $0.016 × 14h, off-peak $0.09 / $0.282 / $0.0096 × 10h → avg $0.125 / $0.3917 / $0.01333 per M (in / out / cache); band_inherited_from: deepseek-v4.1-flash; qwen3.8-max: peak $2 / $6 / $0.25 × 14h, off-peak $1.2 / $3.6 / $0.15 × 10h → avg $1.667 / $5 / $0.2083 per M (in / out / cache); band_inherited_from: deepseek-v4.1-flash.",
         "meaning": "usage_value"
       },
       "cli_compat": "Agent tools via Token Plan; CLI not verified",
@@ -1946,7 +2516,7 @@
       "estimate": {
         "status": "estimated",
         "reason": null,
-        "basis": "fee $10 per cycle ÷ derived allowance (deepseek-v4.1-flash 0.494) × blended list cost per billion tokens of each reference model; this plan's own measured mix: output share 0.92%, agent cache share 92.85%, cache write share 0.00% (interactive 0%, cache_heavy 94%); standard contexts: 100K (table) and 350K, with p75 218K as sensitivity (session-end median 96K, p90 362K, 532 sessions); allowance is derived from the quota windows (monthly window, 30-day cycle): $20.26 per cycle, replacing the published allowance; prices: deepseek-v4.1-flash-1017: peak $0.3 / $1.2 / $0.03 × 14h, off-peak $0.15 / $0.6 / $0.015 × 10h → avg $0.2375 / $0.95 / $0.02375 per M (in / out / cache); priced_as: deepseek-v4.1-flash.",
+        "basis": "fee $10 per cycle ÷ derived allowance (deepseek-v4.1-flash 0.494) × blended list cost per billion tokens of each reference model; this plan's own measured mix: output share 0.92%, agent cache share 92.85%, cache write share 0.00% (interactive 0%, cache_heavy 94%); standard contexts: 100K (table) and 350K, with p75 218K as sensitivity (session-end median 97K, p90 362K, 532 sessions); allowance is derived from the quota windows (monthly window, 30-day cycle): $20.26 per cycle, replacing the published allowance; prices: deepseek-v4.1-flash-1017: peak $0.3 / $1.2 / $0.03 × 14h, off-peak $0.15 / $0.6 / $0.015 × 10h → avg $0.2375 / $0.95 / $0.02375 per M (in / out / cache); priced_as: deepseek-v4.1-flash.",
         "values": [
           {
             "ref": "deepseek-v4.1-flash",
@@ -1955,13 +2525,20 @@
             "reason": null,
             "fee_over_allowance": 0.49363119102227415,
             "blended_usd_per_b": 244.0656517864397,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
             "usd_per_b_long": 120.47841837896786,
             "usd_per_b_p75": 120.47841837896786,
             "band_short": "base price (no prompt-length band)",
             "band_long": "base price (no prompt-length band)",
-            "band_p75": "base price (no prompt-length band)"
+            "band_p75": "base price (no prompt-length band)",
+            "allowance_usd": 20.25803916338984,
+            "fee_usd": 10,
+            "price_used": {
+              "in_per_m": 0.23750000000000002,
+              "out_per_m": 0.9500000000000001,
+              "cache_per_m": 0.023749999999999997
+            }
           },
           {
             "ref": "deepseek-v4.1-flash",
@@ -1970,13 +2547,20 @@
             "reason": null,
             "fee_over_allowance": 0.49363119102227415,
             "blended_usd_per_b": 47.42250521873685,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
             "usd_per_b_long": 23.409227732385084,
             "usd_per_b_p75": 23.409227732385084,
             "band_short": "base price (no prompt-length band)",
             "band_long": "base price (no prompt-length band)",
-            "band_p75": "base price (no prompt-length band)"
+            "band_p75": "base price (no prompt-length band)",
+            "allowance_usd": 20.25803916338984,
+            "fee_usd": 10,
+            "price_used": {
+              "in_per_m": 0.23750000000000002,
+              "out_per_m": 0.9500000000000001,
+              "cache_per_m": 0.023749999999999997
+            }
           },
           {
             "ref": "deepseek-v4.1-flash",
@@ -1985,23 +2569,30 @@
             "reason": null,
             "fee_over_allowance": 0.49363119102227415,
             "blended_usd_per_b": 44.99216559021566,
-            "measured_at": "2026-10-27T01:35:04.567Z",
+            "measured_at": "2026-10-27T01:42:33.926Z",
             "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
             "usd_per_b_long": 22.209536286969538,
             "usd_per_b_p75": 22.209536286969538,
             "band_short": "base price (no prompt-length band)",
             "band_long": "base price (no prompt-length band)",
-            "band_p75": "base price (no prompt-length band)"
+            "band_p75": "base price (no prompt-length band)",
+            "allowance_usd": 20.25803916338984,
+            "fee_usd": 10,
+            "price_used": {
+              "in_per_m": 0.23750000000000002,
+              "out_per_m": 0.9500000000000001,
+              "cache_per_m": 0.023749999999999997
+            }
           }
         ],
         "range_agent": [
           23.409227732385084,
           23.409227732385084
         ],
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
-      "measured_at": "2026-10-27T01:35:04.447Z",
+      "measured_at": "2026-10-27T01:42:33.822Z",
       "sources": [
         {
           "kind": "owner_confirmed",
@@ -2044,7 +2635,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T17:00:00Z",
@@ -2090,7 +2681,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T17:00:00Z",
@@ -2138,7 +2729,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-27T00:08:28Z",
@@ -2182,7 +2773,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-27T00:08:28Z",
@@ -2223,7 +2814,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T21:14:16Z",
@@ -2264,7 +2855,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T21:14:16Z",
@@ -2305,7 +2896,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T21:14:16Z",
@@ -2346,7 +2937,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T21:14:16Z",
@@ -2392,7 +2983,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T21:14:16Z",
@@ -2433,7 +3024,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T21:14:16Z",
@@ -2474,7 +3065,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T21:14:16Z",
@@ -2521,7 +3112,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T21:14:16Z",
@@ -2562,7 +3153,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T21:14:16Z",
@@ -2603,7 +3194,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T21:14:16Z",
@@ -2644,7 +3235,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T21:14:16Z",
@@ -2685,7 +3276,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T21:14:16Z",
@@ -2726,7 +3317,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T21:14:16Z",
@@ -2767,7 +3358,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T21:14:16Z",
@@ -2808,7 +3399,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T21:14:16Z",
@@ -2854,7 +3445,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T21:14:16Z",
@@ -2900,7 +3491,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T21:14:16Z",
@@ -2946,7 +3537,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-26T21:14:16Z",
@@ -2995,7 +3586,7 @@
         "basis": null,
         "values": [],
         "range_agent": null,
-        "measured_at": "2026-10-27T01:35:04.567Z",
+        "measured_at": "2026-10-27T01:42:33.926Z",
         "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
       },
       "measured_at": "2026-10-27T00:08:28Z",
@@ -3008,6 +3599,6 @@
       ]
     }
   ],
-  "measured_at": "2026-10-27T01:34:52.405Z",
+  "measured_at": "2026-10-27T01:42:22.195Z",
   "source": "public pricing pages, public posts and owner confirmations, read 2026-10-26"
 }
