@@ -20,6 +20,9 @@ const REF_GRAD = "before:bg-linear-140/srgb before:from-[var(--theme-blue)]/55 b
 export const CANDIDATES = [
 	{ n: 1, name: "reference, inside", note: "blue/55 via lime/12 at 45%, to transparent at 70%; 1px on the fill's edge", cls: [RIM_SHARED, RIM_INSIDE, REF_GRAD].join(" ") },
 	{ n: 2, name: "reference, outside", note: "the same stops, 1px on the canvas just outside the edge", cls: [RIM_SHARED, RIM_OUTSIDE, REF_GRAD].join(" ") },
+	{ n: 3, name: "stronger lime, outside", note: "blue/40 via lime/60 at 50%, to transparent at 80%; 1px outside", cls: [RIM_SHARED, RIM_OUTSIDE, "before:bg-linear-140/srgb before:from-[var(--theme-blue)]/40 before:via-[var(--theme-lime)]/60 before:via-50% before:to-transparent before:to-80%"].join(" ") },
+	{ n: 4, name: "lime to blue diagonal, outside", note: "lime/70 to blue/70 across the rim at 135deg; 1px outside", cls: [RIM_SHARED, RIM_OUTSIDE, "before:bg-linear-135/srgb before:from-[var(--theme-lime)]/70 before:to-[var(--theme-blue)]/70"].join(" ") },
+	{ n: 5, name: "thin outer ring, soft bloom", note: "1px lime ring at 60% and a 10px lime bloom at 50%; no pseudo-element", cls: "hover:shadow-[0_0_0_1px_color-mix(in_oklab,var(--theme-lime)_60%,transparent),0_0_10px_-2px_color-mix(in_oklab,var(--theme-lime)_50%,transparent)]" },
 ];
 
 export function ButtonCandidates() {
