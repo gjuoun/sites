@@ -8,11 +8,15 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { catalogFileSchema } from "../src/data/catalog";
 import { thirdPartyFileSchema, monthlyUsd } from "../src/data/third-party";
+import { blendedUsdPerB, pooledMix } from "../src/data/estimate";
 
 const APP = resolve(import.meta.dir, "..");
 const read = (f: string) => JSON.parse(readFileSync(join(APP, "data", f), "utf8"));
 const file = thirdPartyFileSchema.parse(read("third-party-allowances.json"));
 const catalogRaw = read("catalog.json");
+const usage = read("usage.json") as { lanes: Array<{ tokens: { input: number; cache_creation: number; cache_read: number; output: number } }> };
+const pooled = pooledMix(usage.lanes.map((l) => ({ tokens: l.tokens })));
+const mix = { output_share: pooled.output_share, cache_share: pooled.agent_cache_share, cache_write_share: pooled.cache_write_share ?? 0 };
 const catalog = catalogFileSchema.parse(catalogRaw);
 
 const fail = (m: string): never => {
@@ -32,9 +36,11 @@ for (const e of file.entries) {
     : "projected by " + e.publisher + ", not measured: weekly API-equivalent $" + e.weekly_usd.toLocaleString("en-US") + " (" + e.sample + ")";
   const basis = how + " × 30/7 = $" + monthly.toFixed(2) + " per 30 days";
   const target = rows.find((r) => r.plan_id === e.plan_id)!;
-  target.allowance = [{ ref: "*", usd: monthly, basis, kind, source: { publisher: e.publisher, url: e.url, published: e.published, note: e.value_kind === "measured" ? "weekly API-equivalent, lower bound of the stated figure: " + (e.value_rule === "headline" ? "headline value" : "range low end") : "projection, not a measurement" } }];
+  const cls = file.mix_classes[e.mix_class];
+  const classUsdPerB = blendedUsdPerB({ in_per_m: cls.in_per_m, out_per_m: cls.out_per_m, cache_per_m: cls.cache_per_m, cache_write_per_m: cls.cache_write_per_m }, mix);
+  target.allowance = [{ ref: "*", usd: monthly, basis, kind, mix_class: e.mix_class, mix_blend_usd_per_million: Number((classUsdPerB / 1000).toPrecision(12)), source: { publisher: e.publisher, url: e.url, published: e.published, note: e.value_kind === "measured" ? "weekly API-equivalent, lower bound of the stated figure: " + (e.value_rule === "headline" ? "headline value" : "range low end") : "projection, not a measurement" } }];
   target.allowance_reason = null;
-  console.log("build:third-party " + e.plan_id + " weekly=$" + e.weekly_usd + " monthly=$" + monthly.toFixed(2) + " " + kind);
+  console.log("build:third-party " + e.plan_id + " weekly=$" + e.weekly_usd + " monthly=$" + monthly.toFixed(2) + " " + kind + " class=" + e.mix_class + " $/B=" + classUsdPerB.toFixed(2));
 }
 
 const out = { ...catalogRaw, rows };

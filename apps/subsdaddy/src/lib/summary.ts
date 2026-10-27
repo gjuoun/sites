@@ -12,6 +12,12 @@ export const DEFAULT_SHAPE: ShapeDef = SHAPES.find((s) => s.id === DEFAULT_SHAPE
 import { na, value, type BadgeKind, type Cell } from "./cells";
 import { REF_IDS, REF_NAMES, pooledMix, type RefId } from "../data/estimate";
 import { contextLabel, type ContextId } from "../data/context";
+import { staleSentence } from "../data/published";
+
+/** The held-lane sentence: the date of its last stable reading and its current windows; a seed adds its own clause (r49). */
+export function heldLine(s: { read_at: string; current_windows: Array<{ window: string; used_pct: number; measured_at: string; source: string }>; seed?: boolean | null }): string {
+  return staleSentence(s.read_at, s.current_windows) + (s.seed ? "; seeded from the last computed reading; no window has exceeded 2% used" : "");
+}
 import { CONTEXTS, WINDOWS_PER_DAY, monthlyTokens, tokensPerMessage, usdPerBOfTokens } from "../data/messages";
 import type { CatalogRow } from "../data/catalog";
 import { orForModel } from "./or-stats";
@@ -153,6 +159,8 @@ const pct = (s: number) => Math.round(s * 100) + "%";
 type ViewRow = {
   key: string; label: string; fee: number; capacity: string | null; capacityReason: string; capDetail?: string[] | null; capNote?: string | null; capBadges?: BadgeKind[];
   allowance: AllowanceCell | null; allowanceReason: string;
+  /** Tokens per 30 days the row's capacity implies; null when there is no capacity. Checked against the physical bound in viewRows. */
+  tokens30d: number | null; capTitle?: string | null;
   usd: number | null; usdTitle: string; marker: "" | "*" | "†" | "‡";
   tps: number | null; tpsTitle: string; ttft: number | null; ttftTitle: string;
 };
@@ -172,13 +180,22 @@ export function orWeighted(ds: DS, ref: RefId): { tps: number | null; ttft: numb
 
 type DsLane = DS["lanes"]["lanes"][number];
 
+/** A dollar figure in the hover panel: a sub-cent amount is under a cent, never $0.00 (r48). */
+export function smallUsd(v: number): string {
+  return v > 0 && v < 0.005 ? "under $0.01" : "$" + v.toFixed(2);
+}
+/** Tokens in the hover panel: billions, or millions when a billion would round to 0.00 (r48). */
+export function smallTokens(t: number): string {
+  return t > 0 && t < 5e6 ? (t / 1e6).toFixed(1) + "M" : (t / 1e9).toFixed(2) + "B";
+}
+
 /** The capacity hover panel: the windows, the allowance (vendor-reported and derived), the binding window and the model mix. */
 export function capDetailOf(l: DsLane): string[] {
   const c = l.capacity as DsLane["capacity"];
   const lines: string[] = c.windows.map((w) => {
     const head = w.window + " · used " + w.used_pct.toFixed(1) + "% · " + w.status;
     if (w.tokens <= 0) return head;
-    const cost = "$" + w.cost_usd.toFixed(2) + " at list · " + (w.tokens / 1e9).toFixed(2) + "B in window · " + Math.round(w.unpriced_share * 100) + "% unpriced";
+    const cost = smallUsd(w.cost_usd) + " at list · " + smallTokens(w.tokens) + " in window · " + Math.round(w.unpriced_share * 100) + "% unpriced";
     const allow = w.allowance_usd_cycle === null ? "" : " · allowance $" + w.allowance_usd_cycle.toFixed(2) + " per cycle";
     return head + " · " + cost + allow;
   });
@@ -195,12 +212,18 @@ export function capDetailOf(l: DsLane): string[] {
     lines.push("vendor-reported pool: $" + vendor.toFixed(2) + " per cycle (used by the model views)");
     lines.push("derived: $" + derived.toFixed(2) + " (lower estimate" + unpricedNote + ")");
   } else if (derived !== null) {
-    lines.push("allowance: derived $" + derived.toFixed(2) + " per cycle" + (c.allowance_vendor_reason ? " (" + c.allowance_vendor_reason + ")" : ""));
+    lines.push(
+      l.capacity.stale && c.allowance_usd_per_cycle !== null && c.allowance_usd_per_cycle !== undefined
+        ? "allowance held at $" + c.allowance_usd_per_cycle.toFixed(2) + " per cycle (last stable reading); the current reading gives $" + derived.toFixed(2)
+        : "allowance: derived $" + derived.toFixed(2) + " per cycle" + (c.allowance_vendor_reason ? " (" + c.allowance_vendor_reason + ")" : "")
+    );
   }
   const binding = c.windows.find((w) => w.window === c.window);
   if (c.confidence === "low" && binding) lines.push("used " + Math.round(binding.used_pct) + "% — capacity estimate has a wide error bar");
   if (c.top_models.length > 0) lines.push("model mix (binding window): " + c.top_models.map((m) => m.label + " " + Math.round(m.share * 100) + "%").join(", "));
   if (c.low_coverage) lines.push("low coverage: more than 5% of the binding window's tokens have no list price");
+  if (l.capacity.stale) lines.push(heldLine(l.capacity.stale) + "; capacity held, not recomputed from the current reading");
+  if (c.windows.length > 0 && c.windows.every((w) => w.status === "low_signal")) lines.push("all windows under 2% used; capacity uses the longest window and has a wide error bar");
   return lines;
 }
 
@@ -217,20 +240,21 @@ const withDetail = (cell: Cell, detail: string[] | null): Cell => (detail && det
 function measuredRows(ds: DS): ViewRow[] {
   return ds.lanes.lanes.map((l) => {
     const cm = cacheMixOf(ds, l.lane);
-    const sourceNote = l.usd_per_b === null ? (l.capacity.reason ?? "no measured $/B") : (l.usd_per_b_basis === "derived" ? "derived: " : "") + (l.usd_per_b_source ?? "measured $/B");
+    const sourceNote = l.usd_per_b === null ? (l.usd_per_b_reason ?? l.capacity.reason ?? "no measured $/B") : (l.usd_per_b_basis === "derived" ? "derived: " : "") + (l.usd_per_b_source ?? "measured $/B");
     return {
+      tokens30d: l.capacity.tokens_per_cycle === null || !l.capacity.cycle_days ? null : (l.capacity.tokens_per_cycle * 30) / l.capacity.cycle_days,
       key: l.lane,
       label: l.label,
       fee: l.price_month_usd,
       capacity: l.capacity.tokens_per_cycle === null ? null : (l.capacity.tokens_per_cycle / 1e9).toFixed(2) + "B/" + l.capacity.cycle_days + "d",
       capDetail: capDetailOf(l),
       capNote: cm ? cm.short : null,
-      capBadges: l.capacity.confidence === "low" ? ["low confidence"] : [],
+      capBadges: [...(l.capacity.confidence === "low" ? (["low confidence"] as const) : []), ...(l.capacity.stale ? (["stale reading"] as const) : [])],
       capacityReason: l.capacity.reason ?? "no capacity reading",
       allowance: laneAllowance(ds, l),
       allowanceReason: "no allowance reading for this lane",
       usd: l.usd_per_b,
-      usdTitle: sourceNote + " · " + (cm ? cm.line : "own traffic"),
+      usdTitle: sourceNote + " · " + (cm ? cm.line : "own traffic") + (l.capacity.stale ? " · " + heldLine(l.capacity.stale) : ""),
       marker: l.usd_per_b_basis === "derived" ? "*" : "",
       tps: l.measured.p50_output_tps,
       tpsTitle: "our usage logs, p50 output tok/s",
@@ -253,6 +277,7 @@ function messageRow(r: CatalogRow, ref: RefId, ctx: ContextId, ds: DS, shape: Sh
   const blend = refRow ? shapeUsd({ fee: 1, allowance: 1, price: refRow as unknown as RefPrice, ctx_tokens: CONTEXTS[ctx], shape }).blend : null;
   const listUsd = blend === null ? null : (low / 1e9) * blend;
   return {
+    tokens30d: low,
     key: r.plan_id,
     label: r.label,
     fee,
@@ -278,6 +303,52 @@ export function shapeUsd(input: { fee: number; allowance: number; price: RefPric
   return { usd: input.fee / tokensB, tokens_b: tokensB, blend, band: p.band };
 }
 
+/**
+ * A third-party allowance, priced in the list blend of the class it was measured on (Sonnet for Claude, Luna for Codex).
+ * The chip model does not change it: a cheaper model would stretch the same dollars over more tokens, which is not how
+ * the measured window behaves. The blend is fixed at the measured mix, so $/B does not move with Shape or context.
+ */
+function mixRow(r: CatalogRow, a: CatalogRow["allowance"][number], ds: DS, or: ReturnType<typeof orWeighted>): ViewRow {
+  const cls = a.mix_class ?? "";
+  const label = cls.charAt(0).toUpperCase() + cls.slice(1);
+  const fee = r.price_month_usd ?? 0;
+  const perB = (a.mix_blend_usd_per_million ?? 0.001) * 1000;
+  const capB = a.usd / perB;
+  void ds;
+  return {
+    key: r.plan_id,
+    label: r.label,
+    fee,
+    tokens30d: capB * 1e9,
+    capacity: capB.toFixed(2) + "B/mo",
+    capNote: "@" + cls + " mix",
+    capTitle: "measured under a " + label + "-class mix; a cheaper model does not stretch the same window proportionally",
+    capacityReason: "",
+    capDetail: null,
+    allowance: { usd: a.usd, cycle: 30, sup: supOf(a.kind ?? "", false) ?? "t", title: thirdPartyTitle(r) ?? a.basis },
+    allowanceReason: "",
+    usd: fee / capB,
+    usdTitle: "fee ÷ allowance at the " + label + " list blend, measured mix: fixed under every Shape and context",
+    marker: "",
+    tps: or.tps,
+    tpsTitle: or.title || (or.reason ?? "no OpenRouter data"),
+    ttft: or.ttft,
+    ttftTitle: or.title || (or.reason ?? "no OpenRouter data"),
+  };
+}
+
+export const HOURS_PER_MONTH = 730;
+export const PHYSICS_MARK = "more than the 730 hours a month there are";
+
+/** A row whose capacity needs more agent hours a month than exist is N/A, with the hours it would need. Applies to every row. */
+export function physicsOf(r: ViewRow, ds: DS): ViewRow {
+  const heavy = ds.context.throughput.tokens_per_active_hour.p50;
+  if (r.tokens30d === null || r.tokens30d <= heavy * HOURS_PER_MONTH) return r;
+  const hours = Math.round(r.tokens30d / heavy);
+  const reason = "at the measured burn rate (" + (heavy / 1e6).toFixed(1) + "M tokens per active hour) this allowance needs about " + hours.toLocaleString("en-US") + " hours of agent use a month, " + PHYSICS_MARK;
+  return { ...r, capacity: null, capacityReason: reason, capDetail: null, capNote: null, capTitle: null, usd: null, usdTitle: reason, marker: "" };
+}
+
 function modelRows(ds: DS, ref: RefId, ctx: ContextId, shape: ShapeDef): ViewRow[] {
   const or = orWeighted(ds, ref);
   const out: ViewRow[] = [];
@@ -292,16 +363,23 @@ function modelRows(ds: DS, ref: RefId, ctx: ContextId, shape: ShapeDef): ViewRow
       out.push(msg);
       continue;
     }
+    const mixA = r.allowance.find((a) => a.mix_class && a.mix_blend_usd_per_million);
+    if (mixA) {
+      out.push(mixRow(r, mixA, ds, or));
+      continue;
+    }
     // the value's own allowance, fee and price, re-blended under the chosen shape; no allowance means N/A with its reason
     const v = r.estimate?.status === "estimated" ? r.estimate.values.find((x) => x.ref === ref && x.shape === "agent") : undefined;
     const reason = r.estimate?.reason ?? "no estimate for this model";
     let usdVal: number | null = null;
     let capacity: string | null = null;
     let band: string | null = null;
+    let tokens30d: number | null = null;
     if (v && v.allowance_usd && v.fee_usd && v.price_used) {
       const x = shapeUsd({ fee: v.fee_usd, allowance: v.allowance_usd, price: v.price_used as RefPrice, ctx_tokens: CONTEXTS[ctx], shape });
       usdVal = x.usd;
       capacity = x.tokens_b.toFixed(2) + "B/mo";
+      tokens30d = (x.tokens_b * 1e9 * 30) / (v.allowance_cycle_days ?? 30);
       band = x.band;
     }
     const laneRow = r.measured_lane ? ds.lanes.lanes.find((l) => l.lane === r.measured_lane) : undefined;
@@ -314,6 +392,7 @@ function modelRows(ds: DS, ref: RefId, ctx: ContextId, shape: ShapeDef): ViewRow
       key: r.plan_id,
       label: r.label,
       fee: r.price_month_usd,
+      tokens30d,
       capacity,
       capacityReason: reason,
       capDetail: null,
@@ -332,7 +411,7 @@ function modelRows(ds: DS, ref: RefId, ctx: ContextId, shape: ShapeDef): ViewRow
   return out;
 }
 export function viewRows(ds: DS, view: ViewId, ctx: ContextId = "short", shape: ShapeDef = DEFAULT_SHAPE): ViewRow[] {
-  const rows = view === MEASURED ? measuredRows(ds) : modelRows(ds, view, ctx, shape);
+  const rows = (view === MEASURED ? measuredRows(ds) : modelRows(ds, view, ctx, shape)).map((r) => physicsOf(r, ds));
   return rows.sort((a, b) => (a.usd ?? Infinity) - (b.usd ?? Infinity) || a.label.localeCompare(b.label));
 }
 
@@ -358,6 +437,8 @@ const naShort = (reason: string): Cell => ({ ...na(reason), reason: "" });
 
 export const BRING_YOUR_OWN = "Bring your own shape: a local collector is planned; the site will price every plan against your own cache share.";
 export const MEASURED_FOOTNOTE = "Measured $/B is per plan and reflects that plans own cache share; use Shape to compare on equal terms.";
+export const MIX_FOOTNOTE = "Rows marked @ are measured under one model class, so their $/B does not change with Shape or context.";
+export const PHYSICS_FOOTNOTE = "N/A where an allowance would need more agent hours a month than there are, at the measured burn rate.";
 export const SHAPE_FOOTNOTE = "Shape sets the token mix used to price every plan; Measured uses each plans own traffic.";
 
 /** The one-line legend of the four allowance sources, each with a real example from the data. */
@@ -386,7 +467,7 @@ export function summaryTable(ds: DS, view: ViewId, ctx: ContextId = "short", sha
       plan: value(r.label),
       fee: value(money(r.fee) + "/mo"),
       allowance: r.allowance === null ? naShort(r.allowanceReason) : withSup(value("$" + r.allowance.usd.toFixed(2) + "/" + r.allowance.cycle + "d", [], r.allowance.title), r.allowance.sup),
-      capacity: r.capacity === null ? naShort(r.capacityReason) : withDetail(value(r.capacity, r.capBadges ?? [], null, r.capNote ?? null), r.capDetail ?? null),
+      capacity: r.capacity === null ? naShort(r.capacityReason) : withDetail(value(r.capacity, r.capBadges ?? [], r.capTitle ?? null, r.capNote ?? null), r.capDetail ?? null),
       usd: r.usd === null ? naShort(r.usdTitle) : value(usd(r.usd) + r.marker, [], r.usdTitle),
       tps: r.tps === null ? naShort(r.tpsTitle || "no speed data") : value("~" + sig2(r.tps), [], r.tpsTitle),
       ttft: r.ttft === null ? naShort(r.ttftTitle || "no latency data") : value("~" + sig2(r.ttft) + " ms", [], r.ttftTitle),
@@ -401,6 +482,8 @@ export function summaryTable(ds: DS, view: ViewId, ctx: ContextId = "short", sha
     if (data.some((r) => r.marker === "†")) lines.push(CONVERTED_FOOTNOTE(ctx));
     if (data.some((r) => r.marker === "‡")) lines.push(ARCHIVED_FOOTNOTE(ctx));
   }
+  if (data.some((r) => r.capTitle)) lines.push(MIX_FOOTNOTE);
+  if (data.some((r) => r.capacity === null && r.capacityReason.includes(PHYSICS_MARK))) lines.push(PHYSICS_FOOTNOTE);
   lines.push(allowanceLegend(ds));
   lines.push(BRING_YOUR_OWN);
   return { columns: SUMMARY_COLUMNS, rows, footnote: lines.join("\n"), basisLine: basisLine(ds, view) };

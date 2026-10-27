@@ -6,6 +6,16 @@ import { z } from "zod";
  */
 const iso = z.iso.date();
 
+export const mixClassSchema = z.strictObject({
+  label: z.string().min(1),
+  short: z.string().min(1),
+  in_per_m: z.number().nonnegative(),
+  out_per_m: z.number().nonnegative(),
+  cache_per_m: z.number().nonnegative(),
+  cache_write_per_m: z.number().nonnegative(),
+  source: z.strictObject({ url: z.url(), read_date: iso, quote: z.string().min(1) }),
+});
+
 export const thirdPartyEntrySchema = z.strictObject({
   plan_id: z.string().min(1),
   plan: z.string().min(1),
@@ -22,6 +32,8 @@ export const thirdPartyEntrySchema = z.strictObject({
   sample: z.string().min(1),
   read_date: iso,
   quote: z.string().min(1),
+  mix_class: z.enum(["sonnet", "luna"]),
+  mix_class_note: z.string().min(1),
   cross_check: z.strictObject({ publisher: z.string().min(1), url: z.url(), published: iso, value_usd: z.number().positive(), note: z.string().min(1) }).nullable(),
 }).superRefine((e, ctx) => {
   if (e.value_rule === "lower_bound") {
@@ -39,6 +51,7 @@ export const thirdPartyFileSchema = z.object({
   policy: z.string().min(1),
   cycle_days: z.literal(30),
   entries: z.array(thirdPartyEntrySchema).min(1),
+  mix_classes: z.record(z.enum(["sonnet", "luna"]), mixClassSchema),
   not_found: z.array(z.strictObject({ plan_id: z.string().min(1), note: z.string().min(1) })),
 });
 export type ThirdPartyEntry = z.infer<typeof thirdPartyEntrySchema>;

@@ -272,6 +272,14 @@ function ClaudeSection() {
 function ThirdPartySection() {
   const ds = dataset as unknown as DS;
   const file = thirdPartyFileSchema.parse(thirdPartyRaw);
+  const tp = ds.context.throughput;
+  const heavy = tp.tokens_per_active_hour.p50;
+  const hoursOf = (id: string): number => {
+    const row = ds.catalog.rows.find((r) => r.plan_id === id);
+    const a = row?.allowance.find((x) => x.mix_class && x.mix_blend_usd_per_million);
+    if (!a || !a.mix_blend_usd_per_million) return 0;
+    return Math.round(((a.usd / (a.mix_blend_usd_per_million * 1000)) * 1e9) / heavy);
+  };
   const rows = file.entries.map((e) => {
     const cat = ds.catalog.rows.find((r) => r.plan_id === e.plan_id);
     const allow = cat?.allowance.find((a) => a.ref === "*");
@@ -320,7 +328,13 @@ function ThirdPartySection() {
         Anthropic meters subscription usage in model-weighted units, so an all-Haiku workload stretches the same allowance across far more tokens than a Sonnet workload.
       </p>
       <p className={SMALL_NOTE}>
-        The model views price the same dollars at the selected model's list price. Dollars here are the vendor's list price for the models each account actually used, so a Haiku or Luna view is the dollar pool priced at a cheap model.
+        Each third-party row is priced in the list blend of the class it was measured on: Claude at Sonnet 5.5, Codex at GPT-6 Luna, both at the measured token mix. A cheaper chip model does not stretch the same dollars over more tokens,
+        because Anthropic meters usage in model-weighted units. So the Claude and Codex $/B does not change with Shape, context or the model view.
+      </p>
+      <p className={SMALL_NOTE}>
+        Physical check, applied to every row: a capacity is shown only if it needs at most 730 agent hours a month at the measured burn rate ({(heavy / 1e6).toFixed(1)}M tokens per active hour, from {tp.sample_sessions} pi sessions in data/context.json).
+        The Claude rows pass (Max 20x needs about {hoursOf("claude-code-max-20x")} hours a month). The Codex rows do not: at GPT-6 Luna pricing their allowances need more hours than a month has, so they are N/A.
+        The Codex measurement was on GPT-6 Astra, which our tables do not price; it would only pass at a Luna price above 272K tokens per prompt, and the source does not state its prompt length.
       </p>
       <p className={SMALL_NOTE}>
         ChatGPT Plus (Codex Plus): no third-party measurement was found (read {file.entries[0].read_date}). Its estimate stays on the five-hour message table, marked dagger.
@@ -390,6 +404,14 @@ function AllowanceColumnSection() {
       </p>
       <p className={SMALL_NOTE}>
         The Measured view's Allowance does not depend on Shape or context. In a model view, the allowance is the same value under every shape: Shape changes only the price per token.
+      </p>
+      <p className={SMALL_NOTE}>
+        Low-signal readings. When every quota window of a lane reads 2% used or less, its capacity and $/B hold the last stable reading (data/published-snapshot.json), and the lane shows the badge stale reading.
+        A reading above 2% replaces the stored one. A lane with no stored reading shows N/A. The reason: the allowance is cost over the used share, so at 1% used a tenth of a point moves the $/B by about 10%.
+      </p>
+      <p className={SMALL_NOTE}>
+        Z.ai exception (r49). A lane with no stored reading is N/A, but Z.ai is kept on the board: its value is the reading computed in build 8779751 (2026-10-27), taken from git and not re-derived,
+        and it is marked seed. No Z.ai window has read above 2% used in any build since r35, so this is the only computed Z.ai reading on record. The first window above 2% used recomputes the lane and removes the seed mark.
       </p>
       <p className={SMALL_NOTE}>
         Bring your own shape: a local collector is planned; the site will price every plan against your own cache share. Its contract is written, and the custom shape stays disabled until it ships.

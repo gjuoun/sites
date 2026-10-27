@@ -308,6 +308,8 @@ export const laneRecordSchema = z.object({
     reason: z.string().nullable(),
     confidence: z.enum(["low", "normal"]).nullable(),
     confidence_reason: z.string().nullable(),
+    /** Set when the lane holds its last stable reading (r48). */
+    stale: z.object({ read_at: z.string().min(1), published_on: z.string().min(1), current_windows: z.array(z.object({ window: z.string().min(1), used_pct: z.number().min(0).max(100), measured_at: z.string().min(1), source: z.string().min(1) })), reason: z.string().min(1), seed: z.boolean().optional(), seed_source: z.string().min(1).optional() }).nullable().optional(),
     badge: z.string().nullable(),
     windows: z.array(
       z.object({
@@ -334,6 +336,8 @@ export const laneRecordSchema = z.object({
   usd_per_b_basis: z.enum(["measured", "derived"]).nullable(),
   usd_per_b_derived_from: laneSchema.nullable(),
   usd_per_b_source: z.string().nullable(),
+  /** Why a $/B is not published although the lane has a reading (r47: an outlier against the other lanes). */
+  usd_per_b_reason: z.string().nullable().optional(),
   measured: z.object({
     p50_ttft_ms: z.number().nullable(),
     p90_ttft_ms: z.number().nullable(),

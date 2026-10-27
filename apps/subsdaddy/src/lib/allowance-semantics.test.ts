@@ -67,7 +67,8 @@ describe("allowance: the tightest usable window binds, from the window's own cos
 
 describe("every token is priced: no binding window has unpriced tokens", () => {
   test("no lane has an unpriced binding window; CommandCode is not flagged low coverage", () => {
-    for (const id of ["commandcode-goat", "opencode-go", "zai-glm-max", "qwen-cloud-token"]) {
+    // Z.ai has no binding window while no stable reading is stored (r48), so it has no unpriced share to check
+    for (const id of ["commandcode-goat", "opencode-go", "qwen-cloud-token"]) {
       expect(byLane(id).binding_unpriced_share).toBe(0);
       expect(byLane(id).low_coverage).toBe(false);
     }
@@ -91,29 +92,19 @@ describe("every token is priced: no binding window has unpriced tokens", () => {
   });
 });
 
-describe("Z.ai stays on the board: its weekly window binds at low confidence", () => {
-  test("both readings are low_signal (1% used), both are usable, and the weekly window binds", () => {
+describe("Z.ai is held on its seed: its reading is low-signal, so the record keeps the seeded reading (r49)", () => {
+  test("both readings are low_signal (at or under 2% used), and the record is held: stale, with the seed mark", () => {
     const z = byLane("zai-glm-max");
+    expect(z.windows.every((w: any) => w.used_pct <= 2)).toBe(true);
     expect(z.windows.every((w: any) => w.status === "low_signal")).toBe(true);
+    expect(z.stale).not.toBeNull();
+    expect(z.stale.seed).toBe(true);
     expect(z.binding_window).toBe("weekly");
-    expect(z.allowance_usd_per_cycle).toBeGreaterThan(0);
   });
-
-  test("Z.ai is ranked with a $/B, its confidence is low, and the basis is the annual fee prorated to 7 days", () => {
+  test("the lane is ranked by its held $/B, and the reason is cleared", () => {
     const rec = laneRec("zai-glm-max");
     expect(rec.usd_per_b).not.toBeNull();
-    expect(rec.usd_per_b_basis).toBe("measured");
-    expect(rec.capacity.confidence).toBe("low");
-    expect(rec.capacity.fee_basis).toContain("annual fee prorated");
-  });
-
-  test("the prorated fee is the $672 annual price times 7 days over 365", () => {
-    expect(byLane("zai-glm-max").fee_per_cycle_usd).toBeCloseTo(672 * 7 / 365, 6);
-  });
-
-  test("Z.ai's $/B is its fee per cycle over its weekly tokens per cycle", () => {
-    const z = byLane("zai-glm-max");
-    expect(laneRec("zai-glm-max").usd_per_b).toBeCloseTo(z.fee_per_cycle_usd / (z.tokens_per_cycle / 1e9), 6);
+    expect(rec.capacity.reason ?? null).toBeNull();
   });
 });
 

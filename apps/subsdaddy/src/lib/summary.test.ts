@@ -38,7 +38,7 @@ describe("the one table: seven columns and nothing else", () => {
   test("no badges on the front page, in any view", () => {
     for (const c of viewChips(ds)) for (const row of cellsOf(c.id)) for (const [col, cell] of Object.entries(row)) {
       // the one badge on the front page is low confidence, on a Capacity cell (its third line)
-      if (col === "capacity") expect(cell.badges.every((x) => x === "low confidence")).toBe(true);
+      if (col === "capacity") expect(cell.badges.every((x) => x === "low confidence" || x === "stale reading")).toBe(true);
       else expect(cell.badges).toEqual([]);
     }
   });
@@ -64,7 +64,7 @@ describe("model view: only the plans that offer the model", () => {
   test("GPT-6 Luna lists the OpenCode plans, the Copilot plans, Codex Plus and the two Codex Pro plans with values; Codex Go is N/A (r45)", () => {
     const rows = viewRows(ds, "gpt-6-luna");
     expect(rows.map((r) => r.key).sort()).toEqual(["codex-go", "codex-plus", "codex-pro", "codex-pro-20x", "github-copilot-pro", "github-copilot-pro-plus", "opencode-go-go", "opencode-go-plus"]);
-    expect(rows.filter((r) => r.usd === null).map((r) => r.key).sort()).toEqual(["codex-go"]);
+    expect(rows.filter((r) => r.usd === null).map((r) => r.key).sort()).toEqual(["codex-go", "codex-pro", "codex-pro-20x"]);
   });
 
 

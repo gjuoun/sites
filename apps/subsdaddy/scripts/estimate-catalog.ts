@@ -72,6 +72,9 @@ function estimateRow(row: CatalogRow) {
     const reason = row.status === "excluded" ? (row.exclusion_reason ?? "excluded") : (row.allowance_reason ?? "no published usage-dollar allowance");
     return { status: "unavailable" as const, reason, basis: null, values: [] as Value[], range_agent: null };
   }
+  if (row.allowance.some((a) => a.mix_class)) {
+    return { status: "unavailable" as const, reason: "measured under a " + row.allowance.find((a) => a.mix_class)!.mix_class + "-class mix; its capacity and price use that class's list blend, not a reference model", basis: null, values: [] as Value[], range_agent: null };
+  }
   if (row.offered_models.length === 0) {
     return { status: "unavailable" as const, reason: "its checked model list names no reference model, so no estimate is made for one", basis: null, values: [] as Value[], range_agent: null };
   }

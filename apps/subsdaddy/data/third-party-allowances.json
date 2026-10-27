@@ -21,7 +21,9 @@
       "sample": "103 real subscription accounts",
       "read_date": "2026-10-27",
       "quote": "Claude Pro $20/mo $157 ($142–$170), ≈ $681/mo",
-      "cross_check": null
+      "cross_check": null,
+      "mix_class": "sonnet",
+      "mix_class_note": "measured on Claude Sonnet-class usage (uncached and output tokens priced at Sonnet 5.5 list)"
     },
     {
       "plan_id": "claude-code-max-5x",
@@ -42,7 +44,9 @@
       "sample": "1 account (one engineer); wokey has no Max 5x figure yet (Collecting, 2 accounts)",
       "read_date": "2026-10-27",
       "quote": "Claude delivered about $940–1,170 a week",
-      "cross_check": null
+      "cross_check": null,
+      "mix_class": "sonnet",
+      "mix_class_note": "measured on Claude Sonnet-class usage (uncached and output tokens priced at Sonnet 5.5 list)"
     },
     {
       "plan_id": "claude-code-max-20x",
@@ -69,7 +73,9 @@
         "published": "2026-10-10",
         "value_usd": 1860,
         "note": "Measured cap, scaled to 125%; 60 days of logs. Not an independent measurement of the same quantity; shown for reference."
-      }
+      },
+      "mix_class": "sonnet",
+      "mix_class_note": "measured on Claude Sonnet-class usage (uncached and output tokens priced at Sonnet 5.5 list)"
     },
     {
       "plan_id": "codex-pro",
@@ -90,7 +96,9 @@
       "sample": "1 account (one engineer)",
       "read_date": "2026-10-27",
       "quote": "Codex about $270–340 a week",
-      "cross_check": null
+      "cross_check": null,
+      "mix_class": "luna",
+      "mix_class_note": "measured on GPT-6-class usage; priced here at GPT-6 Luna list, the closest class in our tables"
     },
     {
       "plan_id": "codex-pro-20x",
@@ -108,7 +116,9 @@
       "sample": "none: a projection from ChatGPT Plus × OpenAI's 20x multiplier",
       "read_date": "2026-10-27",
       "quote": "ChatGPT Pro 20x $200 $1,340 Plus × 20, projected",
-      "cross_check": null
+      "cross_check": null,
+      "mix_class": "luna",
+      "mix_class_note": "measured on GPT-6-class usage; priced here at GPT-6 Luna list, the closest class in our tables"
     }
   ],
   "not_found": [
@@ -116,5 +126,33 @@
       "plan_id": "codex-plus",
       "note": "No third-party measurement of ChatGPT Plus / Codex Plus was found (read 2026-10-27). Its estimate stays on the five-hour message table (dagger)."
     }
-  ]
+  ],
+  "mix_classes": {
+    "sonnet": {
+      "label": "Claude Sonnet 5.5",
+      "short": "Sonnet",
+      "in_per_m": 2,
+      "out_per_m": 10,
+      "cache_per_m": 0.1,
+      "cache_write_per_m": 2.5,
+      "source": {
+        "url": "https://platform.claude.com/docs/en/about-claude/pricing",
+        "read_date": "2026-10-27",
+        "quote": "Sonnet 5.5 ... Prompt caching Read $0.10 / MTok Write $2.50 / MTok Input $2 / MTok Output $10 / MTok"
+      }
+    },
+    "luna": {
+      "label": "GPT-6 Luna (up to 272K tokens)",
+      "short": "Luna",
+      "in_per_m": 0.1,
+      "out_per_m": 0.5,
+      "cache_per_m": 0.01,
+      "cache_write_per_m": 0.125,
+      "source": {
+        "url": "https://openrouter.ai/api/v1/models",
+        "read_date": "2026-10-27",
+        "quote": "models.json reference gpt-6-luna: in 0.10, out 0.50, cache read 0.01, cache write 0.125 per million (listing read 2026-10-27)"
+      }
+    }
+  }
 }
