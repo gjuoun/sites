@@ -23,6 +23,7 @@
   ],
   "exports": {
     "./components/*": "./src/components/*.tsx",
+    "./bg2/*": "./src/bg2/*.ts",
     "./hooks/*": "./src/hooks/*.ts",
     "./lib/utils": "./src/lib/utils.ts",
     "./lib/themes": "./src/lib/themes.ts",
@@ -41,7 +42,9 @@
     "biz:drift": "bash scripts/ui-registry-probe.sh /tmp/bigface-ui-registry && bun run scripts/ui-lock.ts --registry /tmp/bigface-ui-registry",
     "ui-lock": "bun run scripts/ui-lock.ts",
     "ui-registry": "bash scripts/ui-registry-probe.sh /tmp/bigface-ui-registry",
-    "ui-lock:write": "bun run scripts/ui-lock.ts --write --registry /tmp/bigface-ui-registry"
+    "ui-lock:write": "bun run scripts/ui-lock.ts --write --registry /tmp/bigface-ui-registry",
+    "bg2:sync": "bun run scripts/gen-bg2.ts",
+    "bg2:check": "bun run scripts/gen-bg2.ts --check"
   },
   "dependencies": {
     "cn": "^0.5.0"
