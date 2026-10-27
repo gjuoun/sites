@@ -1,7 +1,8 @@
 # gjuoun — Jun's blog
 
 Static Astro site on the bigface business theme (light by default, dark via the toggle). Pages
-project `jun-blog`. Routes: home, posts, projects, resume, a numbered series, 404, RSS, sitemap.
+project `jun-blog`. Routes: home (portfolio, resume, latest lessons), `/projects/` (titled Portfolio), posts,
+a numbered series page, resume, 404, RSS, sitemap.
 
 ## Commands
 
@@ -32,9 +33,13 @@ point at it with `series: <slug>`.
 
 ## Clear the starter flag
 
-Starter copy is marked `starter: true` in each post and in `src/data/resume.ts`. Once Jun has
-rewritten an entry, set its flag to `false` (or remove the field). The banner shows while any
-entry on the page is still starter.
+Starter copy is marked `starter: true` in each post. Once Jun has rewritten an entry, set its flag to
+`false` (or remove the field). A small note in the footer shows while any entry on the page is still
+starter. It is never in the content flow, and the resume page never shows it.
+
+The resume (`src/data/resume.ts`) has no flag. Its bullets are tagged `starter` on the page, and a fact
+that no source gives is a `[...]` value, rendered as a marked placeholder. Replace each placeholder, then
+remove its brackets.
 
 ## Notes
 

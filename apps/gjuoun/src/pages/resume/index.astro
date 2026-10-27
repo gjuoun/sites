@@ -3,7 +3,9 @@ import Fact from "../../components/Fact.astro";
 import { resume } from "../../data/resume";
 import Base from "../../layouts/Base.astro";
 
-const siteLabel = resume.contact.site.replace(/^https?:\/\//, "").replace(/\/$/, "");
+const siteLabel = resume.contact.site
+	.replace(/^https?:\/\//, "")
+	.replace(/\/$/, "");
 ---
 
 <Base title="Resume" description={resume.summary} starter={false}>

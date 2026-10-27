@@ -16,7 +16,7 @@ const standalone = posts
 	.filter((p) => p.data.series === undefined)
 	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 const toItem = (p: (typeof posts)[number]) => ({
-	href: "/posts/" + p.data.slug + "/",
+	href: `/posts/${p.data.slug}/`,
 	title: p.data.title,
 	summary: p.data.summary,
 	order: p.data.order,

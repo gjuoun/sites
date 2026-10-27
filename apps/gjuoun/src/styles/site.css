@@ -256,9 +256,6 @@ main a:not(.button):hover {
 }
 
 @media print {
-
-
-
 	.skip-link,
 	.site-header,
 	footer {

@@ -80,5 +80,12 @@ export const resume: Resume = {
 			end: "[Mon] 2019",
 		},
 	],
-	skills: ["TypeScript", "JavaScript", "Bun", "Effect", "Astro", "LLM integration"],
+	skills: [
+		"TypeScript",
+		"JavaScript",
+		"Bun",
+		"Effect",
+		"Astro",
+		"LLM integration",
+	],
 };

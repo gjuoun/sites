@@ -39,7 +39,8 @@ export async function getStaticPaths() {
 			props: {
 				kind: "post" as const,
 				post: p,
-				seriesTitle: series.find((s) => s.data.slug === p.data.series)?.data.title,
+				seriesTitle: series.find((s) => s.data.slug === p.data.series)?.data
+					.title,
 				total: siblings.length,
 				prev: index > 0 ? siblings[index - 1] : undefined,
 				next:
@@ -57,7 +58,7 @@ const seriesBody =
 	props.kind === "series" ? await render(props.series) : undefined;
 const postBody = props.kind === "post" ? await render(props.post) : undefined;
 const pad = (n: number | undefined) => String(n ?? 0).padStart(2, "0");
-const lessonHref = (slug: string) => "/posts/" + slug + "/";
+const lessonHref = (slug: string) => `/posts/${slug}/`;
 ---
 
 {

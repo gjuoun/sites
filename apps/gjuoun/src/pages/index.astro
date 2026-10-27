@@ -10,7 +10,9 @@ const projects = (await getCollection("projects"))
 	.map((e) => e.data)
 	.sort((a, b) => a.order - b.order);
 const seriesTitles = new Map(
-	(await getCollection("series")).map((e) => [e.data.slug, e.data.title] as const),
+	(await getCollection("series")).map(
+		(e) => [e.data.slug, e.data.title] as const,
+	),
 );
 const posts = await livePosts();
 // Latest lessons: newest first. Ties keep series order, so a course with one date starts at lesson 1.
