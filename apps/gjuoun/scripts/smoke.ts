@@ -83,7 +83,12 @@ type Facts = {
 	metaGaps: number[];
 };
 type Geometry = {
-	lists: { ordinals: number[]; texts: number[]; kickers: number[]; titles: number[] }[];
+	lists: {
+		ordinals: number[];
+		texts: number[];
+		kickers: number[];
+		titles: number[];
+	}[];
 	footerGap: number;
 };
 // Nav order is Home, then the page sections in the order the home page flows them.
@@ -145,16 +150,27 @@ const readFacts = (): Facts => {
 		),
 		starterTags: document.querySelectorAll("main .starter-tag").length,
 		placeholders: document.querySelectorAll("main .placeholder").length,
-		canonical: document.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.href ?? "",
+		canonical:
+			document.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.href ??
+			"",
 		starterInHeadings: document.querySelectorAll("main h3 .starter-tag").length,
 		starterLabels: document.querySelectorAll("main .starter-label").length,
-		bullets: [...document.querySelectorAll("main ul.bullets > li")].map((li) => txt(li)),
-		metaGaps: [...document.querySelectorAll<HTMLElement>("main .meta-line, main .contact")].map(
-			(el) => {
-				const prev = el.previousElementSibling;
-				return prev ? Math.round(el.getBoundingClientRect().top - prev.getBoundingClientRect().bottom) : -1;
-			},
+		bullets: [...document.querySelectorAll("main ul.bullets > li")].map((li) =>
+			txt(li),
 		),
+		metaGaps: [
+			...document.querySelectorAll<HTMLElement>(
+				"main .meta-line, main .contact",
+			),
+		].map((el) => {
+			const prev = el.previousElementSibling;
+			return prev
+				? Math.round(
+						el.getBoundingClientRect().top -
+							prev.getBoundingClientRect().bottom,
+					)
+				: -1;
+		}),
 	};
 };
 
@@ -166,7 +182,9 @@ function contractFailures(route: string, f: Facts): string[] {
 		bad(`nav labels ${f.navLabels.join("|")}`);
 	const navSections = f.navLabels.filter((l) => SECTIONS.includes(l));
 	if (navSections.join("|") !== SECTIONS.join("|"))
-		bad(`nav section order ${navSections.join("|")}, want ${SECTIONS.join("|")}`);
+		bad(
+			`nav section order ${navSections.join("|")}, want ${SECTIONS.join("|")}`,
+		);
 	if (f.starterInMain !== 0)
 		bad(`starter copy inside main: ${f.starterInMain}`);
 	const wantNav = route.startsWith("/posts/") ? "Posts" : SECTION_NAV[route];
@@ -186,7 +204,9 @@ function contractFailures(route: string, f: Facts): string[] {
 		if (f.headings.join("|") !== "Portfolio|Resume|Posts")
 			bad(`home sections ${f.headings.join("|")}`);
 		if (f.metaGaps.length !== 1 || f.metaGaps[0] < META_GAP_MIN)
-			bad(`home meta line gap ${JSON.stringify(f.metaGaps)}, want >= ${META_GAP_MIN}`);
+			bad(
+				`home meta line gap ${JSON.stringify(f.metaGaps)}, want >= ${META_GAP_MIN}`,
+			);
 		if (!lists.some((l) => l.length >= 3 && sequential(l)))
 			bad("home has no numbered lesson list with 3+ ordinals");
 	}
@@ -225,13 +245,19 @@ function contractFailures(route: string, f: Facts): string[] {
 		if (!origin || !f.hrefs.includes(origin))
 			bad(`contact line lacks the canonical site URL ${origin}`);
 		if (f.starterTags !== 2 || f.starterInHeadings !== 2)
-			bad(`want one starter tag per role with bullets, got ${f.starterTags} (in headings ${f.starterInHeadings})`);
+			bad(
+				`want one starter tag per role with bullets, got ${f.starterTags} (in headings ${f.starterInHeadings})`,
+			);
 		if (f.starterLabels !== 0) bad("inline starter label still present");
 		const real = f.bullets.filter((b) => !b.startsWith("["));
 		if (real.length < 3 || !real.every((b) => PAST_TENSE.test(b)))
-			bad(`resume bullets are not past-tense action phrases: ${JSON.stringify(f.bullets)}`);
+			bad(
+				`resume bullets are not past-tense action phrases: ${JSON.stringify(f.bullets)}`,
+			);
 		if (f.metaGaps.length !== 1 || f.metaGaps[0] < META_GAP_MIN)
-			bad(`contact line gap ${JSON.stringify(f.metaGaps)}, want >= ${META_GAP_MIN}`);
+			bad(
+				`contact line gap ${JSON.stringify(f.metaGaps)}, want >= ${META_GAP_MIN}`,
+			);
 		if (f.placeholders < 2)
 			bad(`missing facts not marked as placeholders: ${f.placeholders}`);
 	}
@@ -242,17 +268,19 @@ function contractFailures(route: string, f: Facts): string[] {
 const readGeometry = (): Geometry => {
 	const x = (els: Element[]) =>
 		els.map((el) => Math.round(el.getBoundingClientRect().left * 10) / 10);
-	const lists = [...document.querySelectorAll<HTMLElement>("main ol.lesson-list")].map(
-		(ol) => ({
-			ordinals: x([...ol.querySelectorAll(":scope > li > .ordinal")]),
-			texts: x([...ol.querySelectorAll(":scope > li > div")]),
-			kickers: x([...ol.querySelectorAll(".kicker")]),
-			titles: x([...ol.querySelectorAll(":scope > li > div > a")]),
-		}),
-	);
+	const lists = [
+		...document.querySelectorAll<HTMLElement>("main ol.lesson-list"),
+	].map((ol) => ({
+		ordinals: x([...ol.querySelectorAll(":scope > li > .ordinal")]),
+		texts: x([...ol.querySelectorAll(":scope > li > div")]),
+		kickers: x([...ol.querySelectorAll(".kicker")]),
+		titles: x([...ol.querySelectorAll(":scope > li > div > a")]),
+	}));
 	const main = document.querySelector("main");
 	const footer = document.querySelector("footer");
-	const bottoms = [...(main?.children ?? [])].map((c) => c.getBoundingClientRect().bottom);
+	const bottoms = [...(main?.children ?? [])].map(
+		(c) => c.getBoundingClientRect().bottom,
+	);
 	const footerGap =
 		footer && bottoms.length > 0
 			? Math.round(footer.getBoundingClientRect().top - Math.max(...bottoms))
@@ -265,10 +293,12 @@ function geometryFailures(route: string, width: number, g: Geometry): string[] {
 	const out: string[] = [];
 	const bad = (msg: string) => out.push(`${route} @${width} ${msg}`);
 	const ordinals = new Set(g.lists.flatMap((l) => l.ordinals));
-	if (ordinals.size > 1) bad(`ordinal left edges differ: ${[...ordinals].join(",")}`);
+	if (ordinals.size > 1)
+		bad(`ordinal left edges differ: ${[...ordinals].join(",")}`);
 	for (const list of g.lists) {
 		const text = new Set([...list.texts, ...list.kickers, ...list.titles]);
-		if (text.size > 1) bad(`label/title left edges differ: ${[...text].join(",")}`);
+		if (text.size > 1)
+			bad(`label/title left edges differ: ${[...text].join(",")}`);
 	}
 	if (Math.abs(g.footerGap - FOOTER_GAP) > 1)
 		bad(`footer ${g.footerGap}px below the last content, want ${FOOTER_GAP}`);
@@ -343,7 +373,13 @@ try {
 
 		const facts = await page.evaluate(readFacts);
 		failures.push(...contractFailures(route, facts));
-		failures.push(...geometryFailures(route, DESKTOP.width, await page.evaluate(readGeometry)));
+		failures.push(
+			...geometryFailures(
+				route,
+				DESKTOP.width,
+				await page.evaluate(readGeometry),
+			),
+		);
 		if (route === "/" || route === "/posts/")
 			lessonCounts.push(
 				`${route}=${facts.lessonLists.map((l) => l.length).join("+")}`,
@@ -387,8 +423,16 @@ try {
 		await Bun.sleep(100);
 		const mobileNav = (await page.evaluate(readFacts)).navLabels;
 		if (mobileNav.join("|") !== NAV_LABELS.join("|"))
-			failures.push(`${route} @${MOBILE.width} nav order ${mobileNav.join("|")}`);
-		failures.push(...geometryFailures(route, MOBILE.width, await page.evaluate(readGeometry)));
+			failures.push(
+				`${route} @${MOBILE.width} nav order ${mobileNav.join("|")}`,
+			);
+		failures.push(
+			...geometryFailures(
+				route,
+				MOBILE.width,
+				await page.evaluate(readGeometry),
+			),
+		);
 		await context.close();
 	}
 } finally {
