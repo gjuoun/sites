@@ -1,5 +1,10 @@
 ---
+import "@gjuoun/bigface-business-ui/themes/_reset.css";
+import "@gjuoun/bigface-business-ui/themes/business.css";
 import "../styles/site.css";
+import { DEFAULT_MODE, themeInitScript } from "@gjuoun/bigface-business-ui/lib/themes";
+import SiteHeader from "../components/SiteHeader.astro";
+import SiteFooter from "../components/SiteFooter.astro";
 
 interface Props {
 	title: string;
@@ -10,17 +15,22 @@ const { title, description, starter = false } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="business" data-mode={DEFAULT_MODE}>
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="description" content={description} />
 		<title>{title}</title>
+		<link rel="preload" href="/fonts/QuBlackSans-Latin-VF.woff2" as="font" type="font/woff2" crossorigin />
+		<!-- Before first paint: a stored mode (set by the toggle) is applied, so a reload keeps the reader's choice. -->
+		<script is:inline set:html={themeInitScript}></script>
 	</head>
 	<body>
+		<SiteHeader />
 		<main id="main">
 			{starter && <p class="starter">Starter copy: written to be reviewed and replaced.</p>}
 			<slot />
 		</main>
+		<SiteFooter />
 	</body>
 </html>

@@ -1,2 +1,96 @@
-/* Step 7 placeholder; Step 8 replaces this with theme-variable styles. */
-body { margin: 0; }
+/* Only theme variables here: no hex, no new palette. Theme: business (light default, dark via data-mode). */
+@font-face {
+	font-family: "QuBlack Sans";
+	src: url("/fonts/QuBlackSans-Latin-VF.woff2") format("woff2");
+	font-weight: 100 900;
+	font-display: swap;
+}
+@font-face {
+	font-family: "QuBlack Mono";
+	src: url("/fonts/QuBlackMono-Latin-VF.woff2") format("woff2");
+	font-weight: 100 900;
+	font-display: swap;
+}
+
+body {
+	margin: 0;
+	background: var(--theme-canvas);
+	color: var(--theme-ink);
+	font-family: "QuBlack Sans", system-ui, sans-serif;
+	line-height: 1.6;
+}
+main,
+.site-header,
+footer {
+	max-width: 68ch;
+	margin-inline: auto;
+	padding: 1rem;
+}
+h1,
+h2,
+h3 {
+	color: var(--theme-heading);
+}
+a {
+	color: var(--theme-ink);
+	text-decoration: underline;
+	text-decoration-color: var(--theme-primary);
+	text-decoration-thickness: 2px;
+	text-underline-offset: 0.2em;
+}
+a:focus-visible,
+button:focus-visible {
+	outline: 2px solid var(--theme-ink);
+	outline-offset: 3px;
+}
+code,
+pre {
+	font-family: "QuBlack Mono", ui-monospace, monospace;
+}
+pre {
+	background: var(--theme-surface);
+	border: 1px solid var(--theme-border);
+	padding: 0.75rem;
+	overflow-x: auto;
+}
+.starter {
+	background: var(--theme-highlight-tint);
+	border: 1px solid var(--theme-border);
+	padding: 0.5rem 0.75rem;
+}
+.site-header {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	gap: 1rem;
+}
+.site-header ul {
+	display: flex;
+	gap: 1rem;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+[aria-current="page"] {
+	font-weight: 700;
+}
+.theme-toggle {
+	font: inherit;
+	color: var(--theme-ink);
+	background: var(--theme-surface);
+	border: 1px solid var(--theme-border);
+	padding: 0.25rem 0.6rem;
+	cursor: pointer;
+}
+.theme-toggle[aria-pressed="true"] {
+	background: var(--theme-frame);
+}
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		transition: none !important;
+		animation: none !important;
+	}
+}

@@ -1,0 +1,18 @@
+---
+import { MODE_STORAGE_KEY } from "@gjuoun/bigface-business-ui/lib/themes";
+---
+
+<button type="button" id="theme-toggle" class="theme-toggle" aria-pressed="false">Dark mode</button>
+<script define:vars={{ storageKey: MODE_STORAGE_KEY }}>
+	const root = document.documentElement;
+	const button = document.getElementById("theme-toggle");
+	const sync = () => button.setAttribute("aria-pressed", String(root.dataset.mode === "dark"));
+	button.addEventListener("click", () => {
+		root.dataset.mode = root.dataset.mode === "dark" ? "light" : "dark";
+		try {
+			localStorage.setItem(storageKey, root.dataset.mode);
+		} catch (e) {}
+		sync();
+	});
+	sync();
+</script>
