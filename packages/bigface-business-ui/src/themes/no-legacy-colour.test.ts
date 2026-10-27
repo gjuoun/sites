@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { REQUIRED } from "./roles.ts";
+import { DERIVED_KEYS, REQUIRED } from "./roles.ts";
 
 // The colour contract as a guard, not a convention. The mode lives in color-scheme and every mode-dependent
 // colour is a light-dark() token, so a `dark:` utility anywhere is a regression (a shadcn registry add or an
@@ -38,7 +38,7 @@ describe("no legacy mode syntax in the package", () => {
 	});
 
 	test("every --theme-* read is a declared role, and the block declares exactly the roles", () => {
-		const declared = new Set(REQUIRED.map((k) => "--theme-" + k));
+		const declared = new Set([...REQUIRED, ...DERIVED_KEYS].map((k) => "--theme-" + k));
 		const readers = [
 			...sources("components"),
 			...sources("lib"),

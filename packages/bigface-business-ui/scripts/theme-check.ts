@@ -9,7 +9,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import contract from "../src/themes/contract.json";
-import { REQUIRED, THEMES } from "../src/themes/roles.ts";
+import { DERIVED_KEYS, REQUIRED, THEMES } from "../src/themes/roles.ts";
 
 export interface Violation {
 	file: string;
@@ -70,7 +70,7 @@ const SHAPE = /^(?:light-dark\(#[0-9a-f]{6}, #[0-9a-f]{6}\)|#[0-9a-f]{6})$/;
 /** The checks, over the files in dir and the registry. */
 export function checkThemes(dir: string): Violation[] {
 	const violations: Violation[] = [];
-	const known = new Set(REQUIRED.map((k) => "--theme-" + k));
+	const known = new Set([...REQUIRED, ...DERIVED_KEYS].map((k) => "--theme-" + k));
 	const files = existsSync(dir) ? readdirSync(dir, { encoding: "utf8" }) : [];
 	const themeFiles = files.filter(
 		(f) => f.endsWith(".css") && !f.startsWith("_"),
@@ -121,6 +121,7 @@ export function checkThemes(dir: string): Violation[] {
 	const declared = new Set([
 		...Object.keys(contract.required),
 		...Object.keys(contract.optional),
+		...Object.keys(contract.derived),
 	]);
 	const missingInContract = [...known].filter((k) => !declared.has(k));
 	const extraInContract = [...declared].filter((k) => !known.has(k));

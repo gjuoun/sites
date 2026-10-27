@@ -5,7 +5,7 @@ import darkJson from "../../../bigface-tokens/palette/bigface.json";
 import lightJson from "../../../bigface-tokens/palette/bigface-light.json";
 import contract from "./contract.json";
 import { ACCENT_DOCS } from "./accents.ts";
-import { DEFAULT_MODE, REQUIRED, THEMES } from "./roles.ts";
+import { DEFAULT_MODE, DERIVED, DERIVED_KEYS, REQUIRED, THEMES } from "./roles.ts";
 import { mixHex, PLATE_FLOOR, renderAll, solvePlate, themesDir } from "../../scripts/gen-tokens.ts";
 import { contrastRatio } from "../../../bigface-tokens/src/contrast-math.ts";
 
@@ -52,23 +52,23 @@ describe("bigface-business-ui: colour only", () => {
 	});
 
 	test("the contract is colour only: no size, radius, shadow geometry, font or motion role", () => {
-		const keys = [...Object.keys(contract.required), ...Object.keys(contract.optional)];
+		const keys = [...Object.keys(contract.required), ...Object.keys(contract.optional), ...Object.keys(contract.derived)];
 		const feel = /radius|space|text-|shadow-(2xs|xs|sm|md|lg|xl|2xl|card|modal)|duration|ease|hover|press|weight|font-/;
 		expect(keys.filter((k) => feel.test(k))).toEqual([]);
-		expect([...REQUIRED].length).toBe(keys.length);
+		expect(Object.keys(contract.required).length).toBe(REQUIRED.length);
 	});
 
 	test("the contract lists exactly the keys the theme sets", () => {
-		const known = REQUIRED.map((k) => "--theme-" + k).sort();
-		expect([...Object.keys(contract.required), ...Object.keys(contract.optional)].sort()).toEqual(known);
-		expect(Object.keys(roles()).sort()).toEqual([...REQUIRED].sort());
+		const known = [...REQUIRED, ...DERIVED_KEYS].map((k) => "--theme-" + k).sort();
+		expect([...Object.keys(contract.required), ...Object.keys(contract.optional), ...Object.keys(contract.derived)].sort()).toEqual(known);
+		expect(Object.keys(roles()).sort()).toEqual([...REQUIRED, ...DERIVED_KEYS].sort());
 	});
 
 	test("the theme is one block: no dark-mode selector, one declaration per role", () => {
 		const text = strip(css("business.css"));
 		expect(text).not.toContain('[data-mode="dark"]');
 		expect(text.match(/\{/g)?.length).toBe(1);
-		expect(Object.keys(roles()).length).toBe(REQUIRED.length);
+		expect(Object.keys(roles()).length).toBe(REQUIRED.length + DERIVED_KEYS.length);
 	});
 
 	test("every value is light-dark(light, dark) or one bare hex, and the neutrals carry both palettes", () => {
@@ -157,4 +157,35 @@ test("mixHex is OKLab and deterministic, and lands on the accent at 100%", () =>
 	expect(mixHex("#00b0ff", 100, "#252925")).toBe("#00b0ff");
 	expect(mixHex("#00b0ff", 0, "#252925")).toBe("#252925");
 	expect(mixHex("#00b0ff", 50, "#252925")).toBe(mixHex("#00b0ff", 50, "#252925"));
+});
+
+// The glow token (ruling Q2-A): a DERIVED role, generated from the palette by the same OKLab mix as the plates and not
+// typed by hand. It is not one of the 12 REQUIRED roles, so REQUIRED stays 12. The halo is decorative: a ring around a
+// filled button, with no text on it.
+
+describe("the derived glow token", () => {
+	test("--theme-glow-halo is mixHex(blue, 40, bg) in each mode, and is written as light-dark()", () => {
+		const want =
+			"light-dark(" +
+			mixHex(hex(light, "blue"), 40, hex(light, "bg")) +
+			", " +
+			mixHex(hex(dark, "blue"), 40, hex(dark, "bg")) +
+			")";
+		expect(want).toBe("light-dark(#afddf9, #2e5c75)");
+		expect(roles()["glow-halo"]).toBe(want);
+	});
+
+	test("the halo differs from the canvas by at least 1.25:1 in both modes", () => {
+		const r = roles();
+		for (const mode of ["light", "dark"] as const) {
+			const ratio = contrastRatio(pick(r["glow-halo"] as string, mode), pick(r.bg as string, mode));
+			expect(ratio, mode + " halo on canvas").toBeGreaterThanOrEqual(1.25);
+		}
+	});
+
+	test("the derived group is exactly glow-halo, with the stated formula, and REQUIRED is still 12", () => {
+		expect(Object.keys(DERIVED)).toEqual(["glow-halo"]);
+		expect(DERIVED["glow-halo"]).toEqual({ from: "blue", pct: 40, into: "bg" });
+		expect(REQUIRED.length).toBe(12);
+	});
 });
