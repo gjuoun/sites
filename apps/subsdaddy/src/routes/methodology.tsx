@@ -79,6 +79,7 @@ function MethodologyPage() {
       <AllowanceColumnSection />
       <AllowanceSection />
       <ThirdPartySection />
+      <CommunitySection />
       <ThreadsSection />
       <ClaudeSection />
       <ContextSection />
@@ -294,6 +295,39 @@ function ThreadsSection() {
       </ul>
       <p className={SMALL_NOTE}>
         Read the number as the parallel work the dollars could cover, not as a limit the plan sets. A Claude row reads above one thread because its allowance buys far more tokens a week than one thread's occupancy.
+      </p>
+    </section>
+  );
+}
+
+/** Community corroboration (r56): the X posts behind the median rows, each with its author, date, quote, and link. */
+function CommunitySection() {
+  const file = thirdPartyFileSchema.parse(thirdPartyRaw);
+  const withPosts = file.entries.filter((e) => e.community_observations.length > 0);
+  return (
+    <section className="space-y-3" aria-labelledby="m-community">
+      <h2 id="m-community" className={SECTION_TITLE}>Community corroboration</h2>
+      <p>
+        A median row takes the median of its publisher's value and the X posts that report the same plan's weekly value. The median is the headline. The highest report is never used.
+      </p>
+      {withPosts.map((e) => (
+        <p key={e.plan_id} className={SMALL_NOTE}>
+          {e.plan + ": median of " + (e.community_observations.length + 1) + " values, $" + e.primary_weekly_usd + " from " + e.publisher + ", with " + e.community_observations.map((o) => "$" + o.weekly_usd.toLocaleString("en-US")).join(" and ") + " from X. The headline is $" + e.weekly_usd.toLocaleString("en-US") + " a week."}
+        </p>
+      ))}
+      {withPosts.flatMap((e) => e.community_observations.map((o) => (
+        <p key={o.tweet_id + o.weekly_usd} className={SMALL_NOTE}>
+          {"@" + o.author + " · " + o.date + " · " + e.plan + " · $" + o.weekly_usd.toLocaleString("en-US") + " a week · "}
+          <a className="underline" href={o.url}>{"tweet " + o.tweet_id}</a>
+          {": \u201C" + o.quote + "\u201D. " + o.note + "."}
+        </p>
+      )))}
+      <p className={SMALL_NOTE}>
+        {(() => {
+          const all = withPosts.flatMap((e) => e.community_observations.map((o) => o.weekly_usd));
+          const ratio = all.length > 1 ? (Math.max(...all) / Math.min(...all)).toFixed(1) : "1.0";
+          return "Why the reports differ. The Max 5x reports are about " + ratio + " times apart. The likely causes are model mix and cache pricing; we did not check each report against its own traffic. The site therefore takes the median and shows the spread.";
+        })()}
       </p>
     </section>
   );

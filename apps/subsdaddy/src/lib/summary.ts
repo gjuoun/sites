@@ -172,6 +172,14 @@ export function cacheMixOf(ds: DS, lane: string): { share: number; short: string
 }
 export const withSup = (c: Cell, sup: Sup): Cell => ({ ...c, sup });
 
+/** The community line in a third-party tooltip: the range of the X reports behind a median row, with their count and month (r56). */
+export function communityLine(c: { min: number; max: number; count: number; period: string } | null | undefined): string | null {
+  if (!c || c.count <= 0) return null;
+  const money = (v: number) => "$" + v.toLocaleString("en-US");
+  const range = c.min === c.max ? money(c.min) : money(c.min) + "–" + c.max.toLocaleString("en-US");
+  return "community range " + range + "/week (" + c.count + (c.count === 1 ? " report" : " reports") + " on X, " + c.period + ")";
+}
+
 /** A third-party allowance's tooltip: its basis (publisher, window, sample, weekly value) with the source's domain and publication date. */
 export function thirdPartyTitle(r: CatalogRow): string | null {
   const a = r.allowance.find((x) => x.ref === "*");
@@ -369,10 +377,10 @@ export function thirdPartyRow(r: CatalogRow, a: CatalogRow["allowance"][number],
     capTitle: parts.join(" · "),
     capacityReason: "",
     capDetail: null,
-    allowance: { usd: a.usd, cycle: 30, sup: supOf(a.kind ?? "", false) ?? "t", title: thirdPartyTitle(r) ?? a.basis },
+    allowance: { usd: a.usd, cycle: 30, sup: supOf(a.kind ?? "", false) ?? "t", title: [thirdPartyTitle(r) ?? a.basis, communityLine(a.community)].filter(Boolean).join("\n") },
     allowanceReason: "",
     usd: fee / capB,
-    usdTitle: "fee ÷ capacity at " + REF_NAMES[ref] + " list price (" + price.band + "), " + shape.label + ", " + contextLabel(ctx) + " context",
+    usdTitle: ["fee ÷ capacity at " + REF_NAMES[ref] + " list price (" + price.band + "), " + shape.label + ", " + contextLabel(ctx) + " context", communityLine(a.community)].filter(Boolean).join("\n"),
     marker: "",
     tps: or.tps,
     tpsTitle: or.title || (or.reason ?? "no OpenRouter data"),

@@ -1,12 +1,12 @@
 {
   "window_days": 45,
-  "measured_at": "2026-10-27T22:34:55.913Z",
+  "measured_at": "2026-10-27T22:40:49.684Z",
   "source": "local pi session logs (read-only, aggregated): session-end prompt = input + cache read + cache write of the last assistant call",
   "method": "quantiles by linear interpolation between order statistics (R-7); a session counts once, at its last call",
   "sample_sessions": 579,
   "quantiles": {
     "p50": 109274,
-    "p75": 228405,
+    "p75": 228669,
     "p90": 372632,
     "max": 963868
   },
@@ -25,11 +25,11 @@
     },
     {
       "bucket": "100-200k",
-      "sessions": 126
+      "sessions": 125
     },
     {
       "bucket": "200k+",
-      "sessions": 178
+      "sessions": 179
     }
   ],
   "throughput": {
@@ -38,11 +38,11 @@
     "method": "session-hour = one session with usage in one clock hour; aggregate = all tokens / session-hours; median, mean and p90 are over session-hours (R-7); concurrency = distinct sessions per clock hour that has usage",
     "active_hours": 249,
     "session_hours": 915,
-    "tokens": 11223737051,
+    "tokens": 11255070700,
     "tokens_per_session_hour": {
-      "aggregate": 12266379,
+      "aggregate": 12300624,
       "median": 3638732,
-      "mean": 12266379,
+      "mean": 12300624,
       "p90": 34963343
     },
     "concurrency": {

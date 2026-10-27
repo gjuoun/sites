@@ -12,7 +12,7 @@ const ref = (id: string): RefPrice => {
   return { in_per_m: r.in_per_m, out_per_m: r.out_per_m, cache_per_m: r.cache_per_m, cache_write_per_m: r.cache_write_per_m ?? null, overrides: r.overrides ?? [] };
 };
 const blendAt = (id: string, shape: number, ctx: "short" | "long") => blendedUsdPerB(priceAt(ref(id), CONTEXTS[ctx]).price, mixOf(SHAPES[shape]));
-const CLAUDE = [["claude-code-pro", 20, 672.86], ["claude-code-max-5x", 100, 4028.57], ["claude-code-max-20x", 200, 6865.71]] as const;
+const CLAUDE = [["claude-code-pro", 20, 672.86], ["claude-code-max-5x", 100, 4028.57], ["claude-code-max-20x", 200, 5790]] as const;
 
 describe("pure Haiku pricing: Claude capacity is the allowance over the Haiku blend (r50, r55)", () => {
   test("dollar-implied tokens are the allowance over the Haiku blend at the shape and context", () => {
