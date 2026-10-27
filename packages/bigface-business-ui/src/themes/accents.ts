@@ -16,7 +16,7 @@ export const ACCENT_DOCS: readonly AccentDoc[] = [
 	{ id: "cyan", palette: "cyan", accent: "#66d9ef", plate: "#3c5a5d" },
 	{ id: "green", palette: "green", accent: "#00c853", plate: "#2d4831" },
 	{ id: "lime", palette: "lime", accent: "#c6ff00", plate: "#5c7234" },
-	{ id: "yellow", palette: "brightYellow", accent: "#ffeb3b", plate: "#6d6b38" },
+	{ id: "yellow", palette: "yellow", accent: "#ffeb3b", plate: "#6d6b38" },
 	{ id: "burnt-orange", palette: "burntOrange", accent: "#fc5d23", plate: "#2c2b26" },
 	{ id: "purple", palette: "purple", accent: "#ae81ff", plate: "#303238" },
 ] as const;
