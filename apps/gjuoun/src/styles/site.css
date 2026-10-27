@@ -124,6 +124,45 @@ pre {
 .theme-toggle[aria-pressed="true"] {
 	background: var(--theme-frame);
 }
+/* Narrow screens: the nav and the toggle share one row, and the toggle shrinks to a control, not a banner. */
+@media (max-width: 40rem) {
+	.site-header {
+		flex-wrap: nowrap;
+		gap: 0.5rem;
+		padding: 0.75rem 1rem;
+	}
+	.site-header ul {
+		gap: 0.5rem;
+	}
+	.site-header nav a {
+		padding: 0.2rem 0.45rem;
+		font-size: 0.875rem;
+	}
+	.theme-toggle {
+		font-size: 0.8125rem;
+		padding: 0.2rem 0.5rem;
+		white-space: nowrap;
+	}
+}
+/* Very narrow screens: the nav scrolls inside its own track instead of pushing the page wide. */
+@media (max-width: 23.5rem) {
+	.site-header nav {
+		min-width: 0;
+		overflow-x: auto;
+		scrollbar-width: none;
+	}
+	.site-header ul {
+		flex-wrap: nowrap;
+	}
+	.site-header nav a {
+		padding: 0.2rem 0.35rem;
+		font-size: 0.8125rem;
+	}
+	.theme-toggle {
+		font-size: 0.75rem;
+		padding: 0.15rem 0.4rem;
+	}
+}
 @media (prefers-reduced-motion: reduce) {
 	*,
 	*::before,

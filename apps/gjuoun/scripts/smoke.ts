@@ -624,6 +624,48 @@ try {
 			failures.push(
 				`${route} @${MOBILE.width} nav order ${mobileNav.join("|")}`,
 			);
+		// The toggle is a control, not a banner: compact, and sharing the nav's row.
+		const head = await page.evaluate(() => {
+			const r = (el: Element | null) =>
+				el ? el.getBoundingClientRect() : null;
+			const t = r(document.querySelector("#theme-toggle"));
+			const n = r(document.querySelector(".site-header nav"));
+			const h = r(document.querySelector(".site-header"));
+			return t && n && h
+				? {
+						tw: Math.round(t.width),
+						th: Math.round(t.height),
+						drift: Math.round(Math.abs(t.top - n.top)),
+						hh: Math.round(h.height),
+						tsize: Number.parseFloat(
+							getComputedStyle(
+								document.querySelector("#theme-toggle") as Element,
+							).fontSize,
+						),
+					}
+				: null;
+		});
+		if (!head) failures.push(`${route} @${MOBILE.width} header not measurable`);
+		else {
+			if (head.tw > 96)
+				failures.push(`${route} @${MOBILE.width} toggle width ${head.tw} > 96`);
+			if (head.th > 32)
+				failures.push(
+					`${route} @${MOBILE.width} toggle height ${head.th} > 32`,
+				);
+			if (head.drift > 8)
+				failures.push(
+					`${route} @${MOBILE.width} toggle drops below the nav row by ${head.drift}px`,
+				);
+			if (head.hh > 64)
+				failures.push(
+					`${route} @${MOBILE.width} header height ${head.hh} > 64`,
+				);
+			if (head.tsize > 14)
+				failures.push(
+					`${route} @${MOBILE.width} toggle font ${head.tsize}px > 14px`,
+				);
+		}
 		failures.push(
 			...geometryFailures(
 				route,

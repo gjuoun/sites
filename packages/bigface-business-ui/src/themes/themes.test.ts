@@ -115,8 +115,9 @@ describe("bigface-business-ui: colour only", () => {
 			expect(mode["--theme-primary"]).toBe(nativeBlue);
 			expect(mode["--theme-primary-fill"]).toBe(nativeBlue);
 		}
-		// Ruling 2026-10-26: the light ink on the blue fill is the light fg, the one ink of the light scope.
-		expect(b.light["--theme-on-primary"]).toBe(light.colors.fg.hex);
+		// Ruling 2026-10-27 (Jun): on the blue fill the light ink is the light CANVAS colour, not the fg.
+		// It measures ~2.27:1 against #00b0ff and is recorded as a declared exception below, not hidden.
+		expect(b.light["--theme-on-primary"]).toBe(b.light["--theme-canvas"]);
 		// Ruling 2026-10-26 (B1): dark keeps the dark canvas as the fill ink. Its fg cannot be the ink (checked below).
 		expect(b.dark["--theme-on-primary"]).toBe("#252925");
 		expect(contrastRatio(dark.colors.fg.hex, nativeBlue), "dark fg on the fill").toBeLessThan(4.5);
@@ -177,7 +178,14 @@ describe("bigface-business-ui: colour only", () => {
 		const b = blocks();
 		for (const mode of ["light", "dark"] as const) {
 			const read = (k: string) => evaluate(b[mode]["--theme-" + k] as string);
-			expect(contrastRatio(read("on-primary"), read("primary")), mode + " on-primary").toBeGreaterThanOrEqual(4.5);
+			// Declared exception (2026-10-27): the light fill ink is the canvas colour by Jun's ruling, which
+			// measures ~2.27:1 on #00b0ff. Pinned so it cannot drift, and the number is reported, not waived silently.
+			if (mode === "light") {
+				const measured = contrastRatio(read("on-primary"), read("primary"));
+				expect(Math.round(measured * 100) / 100, "light on-primary (declared)").toBe(2.27);
+			} else {
+				expect(contrastRatio(read("on-primary"), read("primary")), mode + " on-primary").toBeGreaterThanOrEqual(4.5);
+			}
 			expect(contrastRatio(read("ink"), read("canvas")), mode + " ink").toBeGreaterThanOrEqual(4.5);
 			expect(contrastRatio(read("on-frame"), read("frame")), mode + " on-frame").toBeGreaterThanOrEqual(4.5);
 		}

@@ -69,7 +69,7 @@ export const COLOURS: ThemeRoles = {
 	"primary-ink": { color: "blue" },
 	// The fill ink is the mode's own darkest readable value (ruling 2026-10-26, B1). Light: the light fg, #2f332f, 5.29:1 on
 	// the #00b0ff fill. Dark: the dark canvas, 6.08:1. Dark's fg (#e8e9e1) measures 1.98:1 on the fill, so it cannot be the ink.
-	"on-primary": { light: { color: "fg" }, dark: { color: "bg", palette: "dark" } },
+	"on-primary": { light: { color: "bg" }, dark: { color: "bg", palette: "dark" } },
 	"primary-edge": { mix: ["blue", 78, "bg"] },
 	frame: { color: "panel" },
 	"on-frame": { color: "fg" },
