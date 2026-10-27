@@ -16,7 +16,6 @@ import { REF_IDS, SHAPES, estimateOne, pooledMix, type RefId, type RefPrice, typ
 import { modelsFileSchema, usageFileSchema } from "../src/data/schema";
 import { contextFileSchema, LMC_CONTEXT_LONG, LMC_CONTEXT_SHORT } from "../src/data/context";
 import { averagePrice, tierBasis } from "../src/data/peak-offpeak";
-import { applySameRate, type LaneDerivation } from "../src/data/same-rate";
 
 const APP = resolve(import.meta.dir, "..");
 const dataDir = join(APP, "data");
@@ -114,9 +113,6 @@ function estimateRow(row: CatalogRow) {
 for (const row of file.rows) {
   row.estimate = { ...estimateRow(row), measured_at: now, source: SOURCE };
 }
-// a plan whose lane is derived takes its same-rate peer's estimate (lanes.json is built before this step)
-const lanes = (JSON.parse(readFileSync(join(dataDir, "lanes.json"), "utf8")).lanes ?? []) as LaneDerivation[];
-applySameRate(file.rows, lanes);
 const checked = catalogFileSchema.parse(file);
 writeFileSync(join(dataDir, "catalog.json"), JSON.stringify(checked, null, 2) + "\n");
 

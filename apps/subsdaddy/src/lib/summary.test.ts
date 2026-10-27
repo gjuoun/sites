@@ -184,7 +184,7 @@ describe("derived $/B is marked, and only derived $/B", () => {
     expect(DERIVED_FOOTNOTE.startsWith("* derived from the same-rate peer plan")).toBe(true);
   });
 
-  test("model views have no derived $/B except the same-rate copy for CommandCode; a context footnote", () => {
+  test("model views have no derived $/B except CommandCode, whose window is saturated; a context footnote", () => {
     for (const ref of ["deepseek-v4.1-flash", "claude-haiku-5.5", "gpt-6-luna", "glm-5.3-flash"] as const) {
       const t = summaryTable(ds, ref);
       expect(t.footnote).toContain("token context");

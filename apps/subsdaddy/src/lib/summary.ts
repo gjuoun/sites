@@ -1,5 +1,5 @@
 import { na, value, type Cell } from "./cells";
-import { REF_IDS, REF_NAMES, type RefId } from "../data/estimate";
+import { REF_IDS, REF_NAMES, pooledMix, type RefId } from "../data/estimate";
 import { contextLabel, type ContextId } from "../data/context";
 import { CONTEXTS, WINDOWS_PER_DAY, monthlyTokens, tokensPerMessage, usdPerBOfTokens } from "../data/messages";
 import type { CatalogRow } from "../data/catalog";
@@ -10,8 +10,11 @@ import { money, usd, type Column, type DS, type Table } from "./sections";
  * The front page: one table for one view at a time. The views are Measured (our own traffic) and one
  * per reference model that some plan offers. The context switch (100K or 350K) sets the prompt length
  * the model prices are read at; Measured $/B is what the plan delivered, so it does not depend on it.
- * Marks: * a derived measured $/B; † a $/B converted from vendor message limits. Every number is a single
- * value; a missing value is N/A. The footnote carries at most two lines, separated by a newline.
+ *
+ * Each plan's model $/B uses its own measured traffic shape: its own cache-read share and its own allowance.
+ * The Measured view takes a derived $/B from its same-rate peer when the plan's own window is saturated.
+ * Marks: * a derived $/B (its lane is derived); dagger, a $/B converted from vendor message limits.
+ * Every number is a single value; a missing value is N/A. The footnote carries at most two lines.
  */
 
 export const MEASURED = "measured" as const;
@@ -52,6 +55,25 @@ export function orModelOf(ds: DS, ref: RefId): string | null {
   return ds.models.reference.find((r) => r.ref === ref)?.openrouter ?? null;
 }
 
+/**
+ * Cache read as a share of prompt tokens (input + cache write + cache read): the measured traffic shape of one
+ * lane, or of all lanes pooled when the plan has no lane of its own.
+ */
+export function cacheShare(ds: DS, lane: string | null): { share: number; scope: string } {
+  const pooled = pooledMix(ds.usage.lanes.map((l) => ({ tokens: l.tokens })));
+  const own = lane ? ds.usage.lanes.find((l) => l.lane === lane) : undefined;
+  if (!own) return { share: pooled.agent_cache_share, scope: "pooled over all four lanes; this plan has no lane of its own" };
+  return { share: pooledMix([{ tokens: own.tokens }]).agent_cache_share, scope: "its own lane " + own.lane };
+}
+
+/** Whether the plan's own lane has a derived $/B (its own window is saturated). */
+export function isDerivedLane(ds: DS, lane: string | null): boolean {
+  if (!lane) return false;
+  return ds.lanes.lanes.find((l) => l.lane === lane)?.usd_per_b_basis === "derived";
+}
+
+const pct = (s: number) => Math.round(s * 100) + "%";
+
 type ViewRow = {
   key: string; label: string; fee: number; capacity: string | null; capacityReason: string;
   usd: number | null; usdTitle: string; marker: "" | "*" | "†";
@@ -72,20 +94,25 @@ export function orWeighted(ds: DS, ref: RefId): { tps: number | null; ttft: numb
 }
 
 function measuredRows(ds: DS): ViewRow[] {
-  return ds.lanes.lanes.map((l) => ({
-    key: l.lane,
-    label: l.label,
-    fee: l.price_month_usd,
-    capacity: l.capacity.tokens_per_week === null ? null : (l.capacity.tokens_per_week / 1e9).toFixed(2) + "B/wk",
-    capacityReason: l.capacity.reason ?? "no capacity reading",
-    usd: l.usd_per_b,
-    usdTitle: l.usd_per_b === null ? (l.capacity.reason ?? "no measured $/B") : (l.usd_per_b_basis === "derived" ? "derived: " : "") + (l.usd_per_b_source ?? "measured $/B"),
-    marker: l.usd_per_b_basis === "derived" ? "*" : "",
-    tps: l.measured.p50_output_tps,
-    tpsTitle: "our usage logs, p50 output tok/s",
-    ttft: l.measured.p50_ttft_ms,
-    ttftTitle: "our usage logs, p50 time to first token",
-  }));
+  return ds.lanes.lanes.map((l) => {
+    const shape = cacheShare(ds, l.lane);
+    const shapeNote = "own traffic: cache read " + pct(shape.share) + " of prompt tokens (" + shape.scope + ")";
+    const sourceNote = l.usd_per_b === null ? (l.capacity.reason ?? "no measured $/B") : (l.usd_per_b_basis === "derived" ? "derived: " : "") + (l.usd_per_b_source ?? "measured $/B");
+    return {
+      key: l.lane,
+      label: l.label,
+      fee: l.price_month_usd,
+      capacity: l.capacity.tokens_per_week === null ? null : (l.capacity.tokens_per_week / 1e9).toFixed(2) + "B/wk",
+      capacityReason: l.capacity.reason ?? "no capacity reading",
+      usd: l.usd_per_b,
+      usdTitle: sourceNote + " · " + shapeNote,
+      marker: l.usd_per_b_basis === "derived" ? "*" : "",
+      tps: l.measured.p50_output_tps,
+      tpsTitle: "our usage logs, p50 output tok/s",
+      ttft: l.measured.p50_ttft_ms,
+      ttftTitle: "our usage logs, p50 time to first token",
+    };
+  });
 }
 
 /** A plan published as messages per five-hour window: its value at the lower bound of the vendor range, realistic rhythm. The upper bound and the ceiling are in the title. */
@@ -133,6 +160,9 @@ function modelRows(ds: DS, ref: RefId, ctx: ContextId): ViewRow[] {
     const usdVal = !v ? null : ctx === "short" ? v.usd_per_b : (v.usd_per_b_long ?? null);
     const band = !v ? null : ctx === "short" ? (v.band_short ?? null) : (v.band_long ?? null);
     const reason = r.estimate?.reason ?? "no estimate for this model";
+    const shape = cacheShare(ds, r.measured_lane);
+    const derived = isDerivedLane(ds, r.measured_lane);
+    const shapeNote = "its own traffic shape: cache read " + pct(shape.share) + " of prompt tokens (" + shape.scope + ")" + (derived ? "; its own window is saturated, so the * marks a rate-derived allowance" : "");
     out.push({
       key: r.plan_id,
       label: r.label,
@@ -140,8 +170,8 @@ function modelRows(ds: DS, ref: RefId, ctx: ContextId): ViewRow[] {
       capacity: usdVal === null ? null : (r.price_month_usd / usdVal).toFixed(2) + "B/mo",
       capacityReason: reason,
       usd: usdVal,
-      usdTitle: usdVal === null ? reason : "estimate at a " + contextLabel(ctx) + "-token context: fee ÷ allowance × blended $/B for " + REF_NAMES[ref] + (band ? "; prices " + band : "") + (r.estimate?.derived_from ? "; same-rate derivation from " + r.estimate.derived_from + " (owner decision 2026-10-26)" : ""),
-      marker: r.estimate?.derived_from ? "*" : "",
+      usdTitle: usdVal === null ? reason : "estimate at a " + contextLabel(ctx) + "-token context: fee ÷ allowance × blended $/B for " + REF_NAMES[ref] + (band ? "; prices " + band : "") + "; " + shapeNote,
+      marker: derived ? "*" : "",
       tps: or.tps,
       tpsTitle: or.title || (or.reason ?? "no OpenRouter data"),
       ttft: or.ttft,
@@ -189,7 +219,7 @@ export function summaryTable(ds: DS, view: ViewId, ctx: ContextId = "short"): Su
       ttft: r.ttft === null ? naShort(r.ttftTitle || "no latency data") : value("~" + sig2(r.ttft) + " ms", [], r.ttftTitle),
     },
   }));
-  // at most two lines: the view's own marks first, then the context or the measured note
+  // at most two lines: the view's own marks, then the context or the measured note
   const lines: string[] = [];
   if (view === MEASURED) {
     if (data.some((r) => r.marker === "*")) lines.push(DERIVED_FOOTNOTE);
@@ -197,6 +227,7 @@ export function summaryTable(ds: DS, view: ViewId, ctx: ContextId = "short"): Su
   } else {
     lines.push("Prices assume a " + contextLabel(ctx) + "-token context");
     if (data.some((r) => r.marker === "†")) lines.push(CONVERTED_FOOTNOTE(ctx));
+    if (data.some((r) => r.marker === "*")) lines.push(DERIVED_FOOTNOTE);
   }
   return { columns: SUMMARY_COLUMNS, rows, footnote: lines.join("\n"), basisLine: basisLine(ds, view) };
 }

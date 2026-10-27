@@ -55,7 +55,7 @@ export function listDsPrice(models: DsModels): RefPrice {
   return { in_per_m: ref.in_per_m, out_per_m: ref.out_per_m, cache_per_m: ref.cache_per_m };
 }
 
-export function dsRanking(rows: CatalogRow[], models: DsModels, lanes: DsLane[], derivedFrom: Map<string, string> = new Map()): DsRanking {
+export function dsRanking(rows: CatalogRow[], models: DsModels, lanes: DsLane[]): DsRanking {
   const pooled = pooledMix(lanes.map((l) => ({ tokens: l.tokens })));
   const laneMix = new Map<string, MeasuredMix>(lanes.map((l) => [l.lane, pooledMix([{ tokens: l.tokens }])] as const));
   const qw = qwenDsPrice(models);
@@ -81,8 +81,7 @@ export function dsRanking(rows: CatalogRow[], models: DsModels, lanes: DsLane[],
     const entry = row.allowance.find((a) => a.ref === DS_REF) ?? row.allowance.find((a) => a.ref === "*");
     if (!entry) { excluded.push({ plan_id: row.plan_id, label: row.label, reason: "no dollar allowance for DeepSeek V4.1 Flash" }); continue; }
 
-    const mixLane = row.measured_lane ? (derivedFrom.get(row.measured_lane) ?? row.measured_lane) : null;
-    const mix = mixLane ? (laneMix.get(mixLane) ?? pooled) : pooled;
+    const mix = row.measured_lane ? (laneMix.get(row.measured_lane) ?? pooled) : pooled;
     const mixSource = row.measured_lane ? "this plan's measured mix" : "pooled measured mix";
     const cache = cacheFor("agent", mix);
     const blendQw = blendedUsdPerB(qw, { output_share: mix.output_share, cache_share: cache });

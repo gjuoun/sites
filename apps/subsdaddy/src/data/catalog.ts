@@ -45,7 +45,6 @@ const estimateValueSchema = z.strictObject({
   source: z.string().min(1),
   // the standard contexts: usd_per_b is at 100K; usd_per_b_long at 350K; usd_per_b_p75 is the sensitivity point
   usd_per_b_long: z.number().positive().nullable().optional(),
-  // set when the estimate is copied from a same-rate peer (see same-rate.ts)
   usd_per_b_p75: z.number().positive().nullable().optional(),
   band_short: z.string().min(1).optional(),
   band_long: z.string().min(1).optional(),
@@ -59,7 +58,6 @@ export const estimateSchema = z
     reason: z.string().min(1).nullable(),
     basis: z.string().min(1).nullable(),
     values: z.array(estimateValueSchema),
-    derived_from: z.string().min(1).nullable().optional(),
     range_agent: z.tuple([z.number().positive(), z.number().positive()]).nullable(),
     measured_at: z.iso.datetime(),
     source: z.string().min(1),

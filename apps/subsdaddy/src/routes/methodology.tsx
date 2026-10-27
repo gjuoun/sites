@@ -7,6 +7,7 @@ import { catalogTable, contextCompareTable, contextDistributionTable, dsRankingT
 import { contextLabel } from "@/data/context";
 import { CONTEXTS, OUTPUT_TOKENS_PER_MESSAGE, WINDOWS_PER_DAY, monthlyTokens, tokensPerMessage, usdPerBOfTokens } from "@/data/messages";
 import { hourWeighted } from "@/lib/official-prices";
+import { cacheShare } from "@/lib/summary";
 
 export const Route = createFileRoute("/methodology")({
   component: MethodologyPage,
@@ -64,14 +65,14 @@ function MethodologyPage() {
         <p>Cache writes have their own price (1.25× input for Haiku and Luna). The measured traffic writes no cache, so this term is zero today; it is priced, not folded into input, so a future write share is counted.</p>
         <p>A plan with an offered model but no published dollar allowance shows N/A and its reason in the title. A third-party figure is used only with its link and date, labelled third-party. None is used on this site yet.</p>
       </section>
-      <SameRateSection />
+      <CacheShapeSection />
       <ContextSection />
       <OfficialPlansSection />
       <section className="space-y-2">
         <h2 className="text-lg font-medium">Speed on the front page</h2>
         <p>Model view: weighted median over endpoints by request volume, not the unweighted median or the best endpoint. Measured view: our own usage logs, p50. Every speed cell shows one value, rounded to two significant figures.</p>
         <p>weighted median over endpoints by request volume, not the unweighted median or the best endpoint</p>
-        <p>Derived $/B (marked *): a plan whose own window is saturated takes the $/B of a same-rate peer plan, and says so on the front page.</p>
+        <p>Derived $/B (marked *): in the Measured view, a plan whose own window is saturated takes the $/B of its same-rate peer plan. In model views each plan keeps its own traffic shape; a * there marks a rate-derived allowance.</p>
       </section>
       <DetailTables />
       <SiteFooter />
@@ -155,18 +156,32 @@ function OfficialPlansSection() {
   );
 }
 
-/** Same-rate derivation: why CommandCode shows OpenCode Go's $/B, and when that stops. */
-function SameRateSection() {
+/** Why the traffic shape moves $/B: the same fee and allowance buy more tokens when more of them are cache reads. */
+function CacheShapeSection() {
+  const ds = dataset as unknown as DS;
+  const cc = ds.catalog.rows.find((r) => r.plan_id === "commandcode-goat-published")!;
+  const go = ds.catalog.rows.find((r) => r.plan_id === "opencode-go-go")!;
+  const ccV = cc.estimate!.values.find((v) => v.ref === "deepseek-v4.1-flash" && v.shape === "agent")!;
+  const goV = go.estimate!.values.find((v) => v.ref === "deepseek-v4.1-flash" && v.shape === "agent")!;
+  const dsRef = ds.models.reference.find((r) => r.ref === "deepseek-v4.1-flash")!;
+  const ccShare = Math.round(cacheShare(ds, "commandcode-goat").share * 100);
+  const goShare = Math.round(cacheShare(ds, "opencode-go").share * 100);
+  const ratio = Math.round(dsRef.in_per_m / dsRef.cache_per_m);
   return (
-    <section className="space-y-2" aria-labelledby="m-same-rate">
-      <h2 id="m-same-rate" className={SECTION_TITLE}>Same-rate derivation (CommandCode)</h2>
+    <section className="space-y-2" aria-labelledby="m-cache-shape">
+      <h2 id="m-cache-shape" className={SECTION_TITLE}>Why the traffic shape moves $/B</h2>
       <p>
-        CommandCode GOAT ($10 for $80 of credits on DeepSeek V4.1 Flash) and OpenCode Go ($10) have the same fee and the same usage-dollar allowance, so they get the same $/B and
-        capacity in every view. While CommandCode's weekly window is saturated, its lane takes OpenCode Go's value, marked *: in the Measured view and in each model view.
-        When its window resets and it has its own measurement, the lane turns measured and the rule stops applying, with no special case in the code.
+        CommandCode GOAT and OpenCode Go both cost $10 a month and both carry $80 of DeepSeek V4.1 Flash usage. Each model view uses the plan's own measured traffic shape, so they differ
+        only because of what each one carries. CommandCode's own traffic is {ccShare}% cache read of prompt tokens; OpenCode Go's is {goShare}%. A cache read is priced at
+        {" "}{"$"}{dsRef.cache_per_m} per M against {"$"}{dsRef.in_per_m} for an uncached input, about {ratio}×, so the same allowance buys more tokens when more of them are cache reads.
       </p>
       <p>
-        Caveat: on GLM-5.3-Flash the allowances differ (CommandCode $80 of credits against OpenCode Go's $60), and the copy still applies, as ruled.
+        At the list-price blend that gives {"$"}{ccV.blended_usd_per_b.toFixed(2)} per billion tokens for CommandCode's shape and {"$"}{goV.blended_usd_per_b.toFixed(2)} for OpenCode Go's.
+        So on DeepSeek V4.1 Flash, CommandCode shows {"$"}{ccV.usd_per_b!.toFixed(2)} and OpenCode Go {"$"}{goV.usd_per_b!.toFixed(2)}. That gap is real, not a bug.
+      </p>
+      <p>
+        Measured view: CommandCode's own window is saturated, so its Measured $/B is OpenCode Go's measured value, marked *. Its tooltip still shows its own cache share.
+        Hover a $/B cell to see the cache share of the traffic it was computed from.
       </p>
     </section>
   );
