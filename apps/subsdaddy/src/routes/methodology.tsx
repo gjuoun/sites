@@ -406,6 +406,10 @@ function AllowanceColumnSection() {
         The Measured view's Allowance does not depend on Shape or context. In a model view, the allowance is the same value under every shape: Shape changes only the price per token.
       </p>
       <p className={SMALL_NOTE}>
+        Low-signal readings. When every quota window of a lane reads 2% used or less, its capacity and $/B hold the last stable reading (data/published-snapshot.json), and the lane shows the badge stale reading.
+        A reading above 2% replaces the stored one. A lane with no stored reading shows N/A. The reason: the allowance is cost over the used share, so at 1% used a tenth of a point moves the $/B by about 10%.
+      </p>
+      <p className={SMALL_NOTE}>
         Bring your own shape: a local collector is planned; the site will price every plan against your own cache share. Its contract is written, and the custom shape stays disabled until it ships.
       </p>
     </section>

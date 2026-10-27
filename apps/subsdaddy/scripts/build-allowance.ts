@@ -5,13 +5,14 @@
  * model and tokens), usage.json (the lane's measured mix), models.json (list prices, aliases) and catalog.json
  * (annual price, for a plan whose billing period is a year). Writes nothing else.
  */
-import { readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { LANES } from "../src/data/schema";
 import { allowanceFileSchema, analyzeWindow, bindingWindow, cycleOf, modelPerB, vendorAllowance, type PriceLookup, type UsageRow, type WindowReading } from "../src/data/allowance";
 import { pooledMix, type RefPrice } from "../src/data/estimate";
 import { averagePrice } from "../src/data/peak-offpeak";
 import { LMC_CONTEXT_LONG, LMC_CONTEXT_SHORT } from "../src/data/context";
+import { nextSnapshot, resolvePublished, snapshotFileSchema, type Stable } from "../src/data/published";
 
 const APP = resolve(import.meta.dir, "..");
 const dataDir = join(APP, "data");
@@ -76,7 +77,25 @@ function resolverFor(lane: string): PriceLookup {
 
 const refPrice = (r: any): RefPrice => ({ in_per_m: r.in_per_m, out_per_m: r.out_per_m, cache_per_m: r.cache_per_m, cache_write_per_m: r.cache_write_per_m ?? null, overrides: r.overrides ?? [] });
 
-const lanes = LANES.map((lane) => {
+type Mix = { output_share: number; agent_cache_share: number; cache_write_share: number };
+/** The per-model rows of a lane at one allowance: each reference model's tokens and $/B at the 100K and 350K standards. */
+function modelRowsFor(input: { chosen: number; fee: number | null; basis: string; mix: Mix }) {
+  return models.reference.map((r: any) => {
+    const cell = (context: number, label: string) => {
+      if (input.fee === null) return null;
+      const x = modelPerB({ allowance_usd: input.chosen, fee_usd: input.fee, ref: refPrice(r), mix: input.mix, context_tokens: context });
+      return { tokens_per_cycle: x.tokens_cycle, usd_per_b: x.usd_per_b, blended_usd_per_b: x.blended_usd_per_b, measured_at: now, source: "allowance (" + input.basis + ") x list price (models.json) at " + label + " context" };
+    };
+    return { ref: r.ref, short: cell(LMC_CONTEXT_SHORT, "100K"), long: cell(LMC_CONTEXT_LONG, "350K"), reason: input.fee === null ? "no fee for the cycle" : null };
+  });
+}
+
+// the stored stable readings (src/data/published.ts): a build whose windows are all under 2% used holds them; a fresh build replaces them
+const SNAP_PATH = join(dataDir, "published-snapshot.json");
+const snapshotFile = snapshotFileSchema.parse(existsSync(SNAP_PATH) ? JSON.parse(readFileSync(SNAP_PATH, "utf8")) : { source: "none yet", lanes: {} });
+const nextLanes: Record<string, Stable> = {};
+
+const computed = LANES.map((lane) => {
   const obs = quota.observations.find((o: any) => o.lane === lane);
   const plan = plans.plans.find((p: any) => p.plan_id === lane);
   const fee: number | null = plan?.price_month_usd ?? null;
@@ -143,14 +162,7 @@ const lanes = LANES.map((lane) => {
   const allowanceBasis = published !== null ? "vendor_published" : vendor.usd !== null ? "vendor_reported" : "derived";
   const tokensCycle = b.tokens_cycle as number;
   const measuredPerB = feePerCycle !== null ? feePerCycle / (tokensCycle / 1e9) : null;
-  const modelRows = models.reference.map((r: any) => {
-    const cell = (context: number, label: string) => {
-      if (feePerCycle === null) return null;
-      const x = modelPerB({ allowance_usd: chosen, fee_usd: feePerCycle, ref: refPrice(r), mix: base.mix, context_tokens: context });
-      return { tokens_per_cycle: x.tokens_cycle, usd_per_b: x.usd_per_b, blended_usd_per_b: x.blended_usd_per_b, measured_at: now, source: "allowance (" + allowanceBasis + ") x list price (models.json) at " + label + " context" };
-    };
-    return { ref: r.ref, short: cell(LMC_CONTEXT_SHORT, "100K"), long: cell(LMC_CONTEXT_LONG, "350K"), reason: feePerCycle === null ? "no fee for the cycle" : null };
-  });
+  const modelRows = modelRowsFor({ chosen, fee: feePerCycle, basis: allowanceBasis, mix: base.mix });
   return {
     ...base,
     fee_usd: fee,
@@ -181,12 +193,35 @@ const lanes = LANES.map((lane) => {
   };
 });
 
+const lanes = computed.map((rec: any) => {
+  const windowsNow = rec.windows.map((w: any) => ({ window: w.window, used_pct: w.used_pct, measured_at: w.measured_at, source: "codexbar quota reading" }));
+  if (!rec.binding_window) {
+    const snapshot = snapshotFile.lanes[rec.lane] ?? null;
+    if (snapshot) nextLanes[rec.lane] = snapshot;
+    return { ...rec, stale: null };
+  }
+  const bw = rec.windows.find((w: any) => w.window === rec.binding_window);
+  const complete = rec.cycle_days && rec.fee_per_cycle_usd && rec.tokens_per_cycle && rec.allowance_usd_per_cycle && rec.usd_per_b_measured && rec.allowance_basis;
+  const candidate: Stable | null = complete ? { read_at: bw.measured_at, measured_at: bw.measured_at, source: "codexbar quota reading (binding window), priced at list", published_on: now.slice(0, 10), binding_window: rec.binding_window, cycle_days: rec.cycle_days, fee_per_cycle_usd: rec.fee_per_cycle_usd, tokens_per_cycle: rec.tokens_per_cycle, allowance_usd_per_cycle: rec.allowance_usd_per_cycle, allowance_basis: rec.allowance_basis, usd_per_b_measured: rec.usd_per_b_measured, windows: windowsNow } : null;
+  const snapshot = snapshotFile.lanes[rec.lane] ?? null;
+  const res = resolvePublished({ windows: windowsNow, candidate, snapshot });
+  const kept = nextSnapshot(snapshot, res);
+  if (kept) nextLanes[rec.lane] = kept;
+  if (res.mode === "fresh") return { ...rec, stale: null };
+  if (res.mode === "stale") {
+    const s = res.stable;
+    return { ...rec, binding_window: s.binding_window, cycle_days: s.cycle_days, fee_per_cycle_usd: s.fee_per_cycle_usd, tokens_per_cycle: s.tokens_per_cycle, allowance_usd_per_cycle: s.allowance_usd_per_cycle, allowance_basis: s.allowance_basis, usd_per_b_measured: s.usd_per_b_measured, confidence: "low", reason: null, models: modelRowsFor({ chosen: s.allowance_usd_per_cycle, fee: s.fee_per_cycle_usd, basis: s.allowance_basis, mix: rec.mix }), stale: { read_at: s.read_at, published_on: s.published_on, current_windows: res.current, reason: res.reason } };
+  }
+  return { ...rec, allowance_usd_per_cycle: null, allowance_basis: null, allowance_derived_usd: null, tokens_per_cycle: null, binding_window: null, binding_coverage: null, binding_unpriced_share: null, binding_assumed_share: null, usd_per_b_measured: null, list_usd_per_b_effective: null, confidence: null, reason: res.reason, models: [], stale: null };
+});
+
 const file = allowanceFileSchema.parse({
   measured_at: now,
   source: "quota windows (codexbar), vendor-reported pool where stated, usage logs priced at list (models.json)",
   context_standards: { short: LMC_CONTEXT_SHORT, long: LMC_CONTEXT_LONG },
   lanes,
 });
+writeFileSync(SNAP_PATH, JSON.stringify({ source: "last stable capacity per lane (src/data/published.ts): written only by a fresh reading, never by a low-signal one", lanes: nextLanes }, null, 2) + "\n");
 writeFileSync(join(dataDir, "allowance.json"), JSON.stringify(file, null, 2) + "\n");
 for (const l of lanes as any[]) {
   const f = (x: number | null | undefined, d = 2) => (x === null || x === undefined ? "N/A" : x.toFixed(d));

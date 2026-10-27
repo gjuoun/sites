@@ -8,6 +8,7 @@ export const BADGE_VARIANT = {
   measured: "source",
   "OR p50": "source",
   "low confidence": "confidence",
+  "stale reading": "status",
   estimated: "status",
   derived: "status",
   unverified: "status",

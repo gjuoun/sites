@@ -12,6 +12,7 @@ export const DEFAULT_SHAPE: ShapeDef = SHAPES.find((s) => s.id === DEFAULT_SHAPE
 import { na, value, type BadgeKind, type Cell } from "./cells";
 import { REF_IDS, REF_NAMES, pooledMix, type RefId } from "../data/estimate";
 import { contextLabel, type ContextId } from "../data/context";
+import { staleSentence } from "../data/published";
 import { CONTEXTS, WINDOWS_PER_DAY, monthlyTokens, tokensPerMessage, usdPerBOfTokens } from "../data/messages";
 import type { CatalogRow } from "../data/catalog";
 import { orForModel } from "./or-stats";
@@ -174,13 +175,22 @@ export function orWeighted(ds: DS, ref: RefId): { tps: number | null; ttft: numb
 
 type DsLane = DS["lanes"]["lanes"][number];
 
+/** A dollar figure in the hover panel: a sub-cent amount is under a cent, never $0.00 (r48). */
+export function smallUsd(v: number): string {
+  return v > 0 && v < 0.005 ? "under $0.01" : "$" + v.toFixed(2);
+}
+/** Tokens in the hover panel: billions, or millions when a billion would round to 0.00 (r48). */
+export function smallTokens(t: number): string {
+  return t > 0 && t < 5e6 ? (t / 1e6).toFixed(1) + "M" : (t / 1e9).toFixed(2) + "B";
+}
+
 /** The capacity hover panel: the windows, the allowance (vendor-reported and derived), the binding window and the model mix. */
 export function capDetailOf(l: DsLane): string[] {
   const c = l.capacity as DsLane["capacity"];
   const lines: string[] = c.windows.map((w) => {
     const head = w.window + " · used " + w.used_pct.toFixed(1) + "% · " + w.status;
     if (w.tokens <= 0) return head;
-    const cost = "$" + w.cost_usd.toFixed(2) + " at list · " + (w.tokens / 1e9).toFixed(2) + "B in window · " + Math.round(w.unpriced_share * 100) + "% unpriced";
+    const cost = smallUsd(w.cost_usd) + " at list · " + smallTokens(w.tokens) + " in window · " + Math.round(w.unpriced_share * 100) + "% unpriced";
     const allow = w.allowance_usd_cycle === null ? "" : " · allowance $" + w.allowance_usd_cycle.toFixed(2) + " per cycle";
     return head + " · " + cost + allow;
   });
@@ -203,6 +213,8 @@ export function capDetailOf(l: DsLane): string[] {
   if (c.confidence === "low" && binding) lines.push("used " + Math.round(binding.used_pct) + "% — capacity estimate has a wide error bar");
   if (c.top_models.length > 0) lines.push("model mix (binding window): " + c.top_models.map((m) => m.label + " " + Math.round(m.share * 100) + "%").join(", "));
   if (c.low_coverage) lines.push("low coverage: more than 5% of the binding window's tokens have no list price");
+  if (l.capacity.stale) lines.push(staleSentence(l.capacity.stale.read_at, l.capacity.stale.current_windows) + "; capacity held, not recomputed from the current reading");
+  if (c.windows.length > 0 && c.windows.every((w) => w.status === "low_signal")) lines.push("all windows under 2% used; capacity uses the longest window and has a wide error bar");
   return lines;
 }
 
@@ -219,7 +231,7 @@ const withDetail = (cell: Cell, detail: string[] | null): Cell => (detail && det
 function measuredRows(ds: DS): ViewRow[] {
   return ds.lanes.lanes.map((l) => {
     const cm = cacheMixOf(ds, l.lane);
-    const sourceNote = l.usd_per_b === null ? (l.capacity.reason ?? "no measured $/B") : (l.usd_per_b_basis === "derived" ? "derived: " : "") + (l.usd_per_b_source ?? "measured $/B");
+    const sourceNote = l.usd_per_b === null ? (l.usd_per_b_reason ?? l.capacity.reason ?? "no measured $/B") : (l.usd_per_b_basis === "derived" ? "derived: " : "") + (l.usd_per_b_source ?? "measured $/B");
     return {
       tokens30d: l.capacity.tokens_per_cycle === null || !l.capacity.cycle_days ? null : (l.capacity.tokens_per_cycle * 30) / l.capacity.cycle_days,
       key: l.lane,
@@ -228,12 +240,12 @@ function measuredRows(ds: DS): ViewRow[] {
       capacity: l.capacity.tokens_per_cycle === null ? null : (l.capacity.tokens_per_cycle / 1e9).toFixed(2) + "B/" + l.capacity.cycle_days + "d",
       capDetail: capDetailOf(l),
       capNote: cm ? cm.short : null,
-      capBadges: l.capacity.confidence === "low" ? ["low confidence"] : [],
+      capBadges: [...(l.capacity.confidence === "low" ? (["low confidence"] as const) : []), ...(l.capacity.stale ? (["stale reading"] as const) : [])],
       capacityReason: l.capacity.reason ?? "no capacity reading",
       allowance: laneAllowance(ds, l),
       allowanceReason: "no allowance reading for this lane",
       usd: l.usd_per_b,
-      usdTitle: sourceNote + " · " + (cm ? cm.line : "own traffic"),
+      usdTitle: sourceNote + " · " + (cm ? cm.line : "own traffic") + (l.capacity.stale ? " · " + staleSentence(l.capacity.stale.read_at, l.capacity.stale.current_windows) : ""),
       marker: l.usd_per_b_basis === "derived" ? "*" : "",
       tps: l.measured.p50_output_tps,
       tpsTitle: "our usage logs, p50 output tok/s",

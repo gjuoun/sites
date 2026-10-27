@@ -1,0 +1,86 @@
+{
+  "source": "last stable capacity per lane (src/data/published.ts): written only by a fresh reading, never by a low-signal one",
+  "lanes": {
+    "commandcode-goat": {
+      "read_at": "2026-10-27T06:18:51.348Z",
+      "measured_at": "2026-10-27T06:18:51.348Z",
+      "source": "codexbar quota reading (binding window), priced at list",
+      "published_on": "2026-10-27",
+      "binding_window": "monthly",
+      "cycle_days": 30,
+      "fee_per_cycle_usd": 10,
+      "tokens_per_cycle": 3353794887.622449,
+      "allowance_usd_per_cycle": 80,
+      "allowance_basis": "vendor_published",
+      "usd_per_b_measured": 2.981696953772011,
+      "windows": [
+        {
+          "window": "weekly",
+          "used_pct": 100,
+          "measured_at": "2026-10-27T06:18:51.348Z",
+          "source": "codexbar quota reading"
+        },
+        {
+          "window": "monthly",
+          "used_pct": 50.000967357571426,
+          "measured_at": "2026-10-27T06:18:51.348Z",
+          "source": "codexbar quota reading"
+        }
+      ]
+    },
+    "opencode-go": {
+      "read_at": "2026-10-27T06:18:51.348Z",
+      "measured_at": "2026-10-27T06:18:51.348Z",
+      "source": "codexbar quota reading (binding window), priced at list",
+      "published_on": "2026-10-27",
+      "binding_window": "monthly",
+      "cycle_days": 30,
+      "fee_per_cycle_usd": 10,
+      "tokens_per_cycle": 2029395716.911455,
+      "allowance_usd_per_cycle": 89.35080533011532,
+      "allowance_basis": "derived",
+      "usd_per_b_measured": 4.927575197221289,
+      "windows": [
+        {
+          "window": "5h",
+          "used_pct": 0.010232,
+          "measured_at": "2026-10-27T06:18:51.348Z",
+          "source": "codexbar quota reading"
+        },
+        {
+          "window": "weekly",
+          "used_pct": 35.7916125,
+          "measured_at": "2026-10-27T06:18:51.348Z",
+          "source": "codexbar quota reading"
+        },
+        {
+          "window": "monthly",
+          "used_pct": 67.89580625,
+          "measured_at": "2026-10-27T06:18:51.348Z",
+          "source": "codexbar quota reading"
+        }
+      ]
+    },
+    "qwen-cloud-token": {
+      "read_at": "2026-10-27T06:18:51.348Z",
+      "measured_at": "2026-10-27T06:18:51.348Z",
+      "source": "codexbar quota reading (binding window), priced at list",
+      "published_on": "2026-10-27",
+      "binding_window": "monthly",
+      "cycle_days": 30,
+      "fee_per_cycle_usd": 10,
+      "tokens_per_cycle": 350800175.56584466,
+      "allowance_usd_per_cycle": 20.25803916338984,
+      "allowance_basis": "derived",
+      "usd_per_b_measured": 28.506257113098325,
+      "windows": [
+        {
+          "window": "monthly",
+          "used_pct": 55.06530853025255,
+          "measured_at": "2026-10-27T06:18:51.348Z",
+          "source": "codexbar quota reading"
+        }
+      ]
+    }
+  }
+}

@@ -38,7 +38,7 @@ describe("the one table: seven columns and nothing else", () => {
   test("no badges on the front page, in any view", () => {
     for (const c of viewChips(ds)) for (const row of cellsOf(c.id)) for (const [col, cell] of Object.entries(row)) {
       // the one badge on the front page is low confidence, on a Capacity cell (its third line)
-      if (col === "capacity") expect(cell.badges.every((x) => x === "low confidence")).toBe(true);
+      if (col === "capacity") expect(cell.badges.every((x) => x === "low confidence" || x === "stale reading")).toBe(true);
       else expect(cell.badges).toEqual([]);
     }
   });

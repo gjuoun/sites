@@ -39,6 +39,8 @@ describe("Allowance: the seventh column", () => {
       want.set(l.lane, b === "vendor_published" ? "p" : b === "derived" ? (credit ? "c" : "d") : b === "vendor_reported" ? "r" : "?");
     }
     for (const r of summaryTable(ds, MEASURED).rows) {
+      // a lane with no stored stable reading is N/A (r48): it has no marker to check
+      if (r.cells.allowance.na) continue;
       expect((r.cells.allowance as { sup?: string }).sup).toBe(want.get(r.key));
     }
   });
@@ -69,7 +71,10 @@ describe("Measured: the cache share is in the tooltip and matches usage.json", (
   });
 
   test("the capacity line under each lane shows the same cache share", () => {
-    for (const r of summaryTable(ds, MEASURED).rows) expect(r.cells.capacity.note ?? "").toMatch(/cache [\d.]+%/);
+    for (const r of summaryTable(ds, MEASURED).rows) {
+      if (r.cells.capacity.na) continue;
+      expect(r.cells.capacity.note ?? "").toMatch(/cache [\d.]+%/);
+    }
   });
 });
 
@@ -115,11 +120,12 @@ describe("Capacity note and source labels (r40)", () => {
 
   test("the measured Capacity note is the cache share alone, one decimal; low confidence is a badge line", () => {
     for (const r of summaryTable(ds, MEASURED).rows) {
+      if (r.cells.capacity.na) continue;
       expect(r.cells.capacity.note ?? "").toMatch(/^cache \d+\.\d%$/);
       expect(r.cells.capacity.note ?? "").not.toContain("window");
+      // the only badges a capacity cell may carry are the two confidence badges (r48)
+      for (const b of r.cells.capacity.badges) expect(["low confidence", "stale reading"]).toContain(b);
     }
-    const z = summaryTable(ds, MEASURED).rows.find((r) => r.key === "zai-glm-max")!;
-    expect(z.cells.capacity.badges).toContain("low confidence");
   });
 
   test("the allowance text is $X.XX/Nd with no spaces", () => {
