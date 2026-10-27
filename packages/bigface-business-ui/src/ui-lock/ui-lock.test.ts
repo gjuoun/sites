@@ -63,18 +63,26 @@ describe("components/ui lock", () => {
 		extra.set("zz-extra.tsx", "export {};\n");
 		expect(checkLock(extra, m).some((f) => f.includes("zz-extra.tsx"))).toBe(true);
 	});
-	test("the glow variant is the hero look: gradient primary fill, on-primary ink, a translucent blue drop shadow, a deeper one on hover, and a hover lift; no ring, no rim", () => {
+	test("the glow variant is the hero look: gradient primary fill, on-primary ink, the reference blue shadow with an inset top highlight in dark and none in light, a deeper one on dark hover, and a hover lift; no ring, no rim", () => {
 		const cls = buttonVariants({ variant: "glow" });
 		const glow = cls.split(/\s+/);
+		// the gradient paints under the transparent border (bg-clip-border, origin border-box), so the outer 1px is the fill, not a surface ring
+		for (const c of ["bg-clip-border", "bg-origin-border"]) expect(glow, c).toContain(c);
 		// fill: the reference gradient at 135 degrees, from primary to a darker primary edge (a color-mix of blue with the mode's on-primary ink)
 		for (const c of ["bg-linear-135/srgb", "from-primary", "to-[color-mix(in_oklab,var(--theme-blue)_70%,light-dark(var(--theme-fg),var(--theme-bg)))]", "text-primary-foreground"]) expect(glow, c).toContain(c);
-		// shadow at rest: blue at 20 percent in light and 30 percent in dark, 0 8px 26px, through light-dark() so no new custom property is needed
-		expect(cls).toContain("shadow-[0_8px_26px_-6px_light-dark(color-mix(in_oklab,var(--theme-blue)_20%,transparent),color-mix(in_oklab,var(--theme-blue)_30%,transparent))]");
-		// hover: the reference lift, the reference hover fill (flat primary), and a second, larger translucent blue shadow added to the first
+		// shadow: the reference hero shadow, 0 8px 26px blue at 30 percent, plus an inset top highlight (fg at 50 percent), in dark; light-dark() cannot return none,
+		// so each colour is transparent in light and the layers paint nothing there. No custom property is added.
+		const blue = "color-mix(in_srgb,var(--theme-blue)_30%,transparent)";
+		const ink = "color-mix(in_srgb,var(--theme-fg)_50%,transparent)";
+		const drop = "0_8px_26px_light-dark(transparent," + blue + ")";
+		const top = "inset_0_1px_0_light-dark(transparent," + ink + ")";
+		const deep = "0_16px_40px_-8px_light-dark(transparent," + blue + ")";
+		expect(glow).toContain("shadow-[" + drop + "," + top + "]");
+		// hover: the reference lift, the reference hover fill (flat primary), and the dark-only second, larger blue shadow added to the rest layers
 		expect(glow).toContain("hover:-translate-y-0.5");
 		expect(glow).toContain("hover:from-primary");
 		expect(glow).toContain("hover:to-primary");
-		expect(cls).toContain("hover:shadow-[0_8px_26px_-6px_light-dark(color-mix(in_oklab,var(--theme-blue)_20%,transparent),color-mix(in_oklab,var(--theme-blue)_30%,transparent)),0_16px_40px_-8px_light-dark(color-mix(in_oklab,var(--theme-blue)_20%,transparent),color-mix(in_oklab,var(--theme-blue)_30%,transparent))]");
+		expect(glow).toContain("hover:shadow-[" + drop + "," + top + "," + deep + "]");
 		// no ring and no rim: no ring, inset-ring or pseudo-element utility, and no before: or after: layer
 		expect(glow.some((c) => /^(hover:)?(ring|inset-ring|before:|after:)/.test(c))).toBe(false);
 		// no new custom property: every var() the variant reads is one the theme already declares
