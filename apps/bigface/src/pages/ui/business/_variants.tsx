@@ -57,16 +57,17 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
 	return (
 		<div className="grid gap-2 py-3 md:grid-cols-[minmax(0,1fr)_minmax(0,4fr)] md:items-center md:gap-4">
 			<span className="font-mono text-xs text-muted-foreground">{label}</span>
-			<div className="flex min-w-0 flex-wrap items-center gap-3">{children}</div>
+			<div className="flex min-h-9 min-w-0 flex-wrap items-center gap-3">{children}</div>
 		</div>
 	);
 }
 
 /** A two-axis enumeration: rows by one option, columns by the other. Scrolls inside itself on a narrow screen. */
-function Matrix<R extends string, C extends string>({ corner, rows, cols, cell }: { corner: string; rows: readonly R[]; cols: readonly C[]; cell: (r: R, c: C) => React.ReactNode }) {
+function Matrix<R extends string, C extends string>({ corner, rows, cols, cell, track = "row" }: { corner: string; rows: readonly R[]; cols: readonly C[]; cell: (r: R, c: C) => React.ReactNode; track?: "row" | "column" }) {
 	return (
 		<div className="overflow-x-auto">
-			<table className="w-full min-w-[30rem] table-fixed text-sm">
+			{/* Each column keeps 220px at least, so a specimen is never narrower than its label: the table scrolls inside itself instead. */}
+			<table className="w-full table-fixed text-sm" style={{ minWidth: Math.max(480, 220 * cols.length) }}>
 				<colgroup>
 					<col style={{ width: "20%" }} />
 					{cols.map((c) => (
@@ -86,7 +87,7 @@ function Matrix<R extends string, C extends string>({ corner, rows, cols, cell }
 						<tr key={r} className="border-t">
 							<th scope="row" className="px-2 py-3 text-left font-mono text-xs font-normal text-muted-foreground">{r}</th>
 							{cols.map((c) => (
-								<td key={c} className="px-2 py-3 align-middle"><span className="inline-flex max-w-full min-w-0 min-h-9 items-center justify-center rounded-sm border border-dashed border-border px-1.5 py-1">{cell(r, c)}</span></td>
+								<td key={c} className="px-2 py-3 align-middle"><span className={"flex w-full min-w-0 min-h-9 items-center justify-center rounded-sm border border-dashed border-border px-1.5 py-1" + (track === "column" ? " flex-col items-stretch" : "")}>{cell(r, c)}</span></td>
 							))}
 						</tr>
 					))}
@@ -119,7 +120,7 @@ const states = (...cells: React.ReactNode[]) => (
 			return (
 				<div key={i} className="grid items-center gap-2 py-3 md:grid-cols-[minmax(0,1fr)_minmax(0,4fr)] md:gap-4">
 					<span className="font-mono text-xs text-muted-foreground">{el.props.label}</span>
-					<div className="flex min-w-0 flex-wrap items-center gap-3">{el.props.children}</div>
+					<div className="flex min-h-9 min-w-0 flex-wrap items-center gap-3">{el.props.children}</div>
 				</div>
 			);
 		})}
@@ -186,7 +187,7 @@ export const VARIANTS: Record<string, React.ReactNode> = {
 		</Row>
 	),
 	bubble: (
-		<Matrix corner="variant / align" rows={["default", "secondary", "muted", "tinted", "outline", "ghost", "destructive"] as const} cols={["start", "end"] as const} cell={(r, c) => (
+		<Matrix corner="variant / align" track="column" rows={["default", "secondary", "muted", "tinted", "outline", "ghost", "destructive"] as const} cols={["start", "end"] as const} cell={(r, c) => (
 			<Bubble align={c} variant={r}><BubbleContent>{r}</BubbleContent></Bubble>
 		)} />
 	),
@@ -223,7 +224,7 @@ export const VARIANTS: Record<string, React.ReactNode> = {
 		<div className="flex flex-col divide-y">
 			{(["horizontal", "vertical"] as const).map((o) => (
 				<Row key={o} label={"orientation=" + o}>
-					<Carousel orientation={o} className={o === "horizontal" ? "mx-12 w-[calc(100%-6rem)] max-w-xs" : "max-w-xs"}>
+					<Carousel orientation={o} className={o === "horizontal" ? "mx-12 w-[calc(100%-6rem)] max-w-xs" : "my-12 max-w-xs"}>
 						<CarouselContent className={o === "vertical" ? "h-40" : undefined}>
 							{["One", "Two", "Three"].map((label) => (
 								<CarouselItem key={label}><div className="flex h-24 items-center justify-center rounded-md border text-lg font-semibold">{label}</div></CarouselItem>
@@ -343,10 +344,13 @@ export const VARIANTS: Record<string, React.ReactNode> = {
 			))}
 			{(["xs", "sm", "icon-xs", "icon-sm"] as const).map((s) => (
 				<Row key={s} label={"button size=" + s}>
+					{/* A narrow card can be narrower than this group; it scrolls inside its own box rather than spilling its addon. */}
+					<div className="min-w-0 w-full overflow-x-auto p-1">
 					<InputGroup className="w-full max-w-sm">
 						<InputGroupInput placeholder="Search" />
 						<InputGroupAddon align="inline-end"><InputGroupButton size={s}>{s.startsWith("icon") ? "+" : "Go"}</InputGroupButton></InputGroupAddon>
 					</InputGroup>
+					</div>
 				</Row>
 			))}
 		</div>
@@ -399,7 +403,7 @@ export const VARIANTS: Record<string, React.ReactNode> = {
 					<MessageGroup className="w-full max-w-md">
 						<Message align={a}>
 							<MessageAvatar>JG</MessageAvatar>
-							<MessageContent><MessageHeader>Jun</MessageHeader>Aligned to the {a}.<MessageFooter>10:02</MessageFooter></MessageContent>
+							<MessageContent><MessageHeader>Jun</MessageHeader><Bubble variant="muted" align={a}><BubbleContent>Aligned to the {a}.</BubbleContent></Bubble><MessageFooter>10:02</MessageFooter></MessageContent>
 						</Message>
 					</MessageGroup>
 				</Row>
