@@ -3,13 +3,17 @@ import ThemeToggle from "./ThemeToggle.astro";
 
 const links = [
 	{ href: "/", label: "Home" },
+	{ href: "/projects/", label: "Portfolio" },
 	{ href: "/posts/", label: "Posts" },
-	{ href: "/projects/", label: "Projects" },
 	{ href: "/resume/", label: "Resume" },
 ];
 const path = Astro.url.pathname;
-const isCurrent = (href: string) =>
-	href === "/" ? path === "/" : path.startsWith(href);
+// "page" marks the current page. "true" marks a parent of the current page, so a lesson under /posts/ lights up Posts.
+const current = (href: string) => {
+	if (href === "/") return path === "/" ? "page" : undefined;
+	if (path === href) return "page";
+	return path.startsWith(href) ? "true" : undefined;
+};
 ---
 
 <header class="site-header">
@@ -18,7 +22,7 @@ const isCurrent = (href: string) =>
 			{
 				links.map((link) => (
 					<li>
-						<a href={link.href} aria-current={isCurrent(link.href) ? "page" : undefined}>
+						<a href={link.href} aria-current={current(link.href)}>
 							{link.label}
 						</a>
 					</li>

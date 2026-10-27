@@ -83,8 +83,20 @@ pre {
 	margin: 0;
 	padding: 0;
 }
-[aria-current="page"] {
-	font-weight: 700;
+/* Nav: a tile for the current page, and for a parent of it (a lesson lights up Posts). The ink bar carries the state too. */
+.site-header nav a {
+	display: inline-block;
+	padding: 0.25rem 0.6rem;
+	text-decoration: none;
+}
+.site-header nav a:hover {
+	text-decoration: underline;
+	text-decoration-color: var(--theme-primary);
+	text-decoration-thickness: 2px;
+}
+.site-header nav a[aria-current] {
+	background: var(--theme-frame);
+	box-shadow: inset 0 -3px 0 var(--theme-ink);
 }
 .theme-toggle {
 	font: inherit;
