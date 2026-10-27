@@ -12,10 +12,7 @@
     "--theme-paleBlue": "chart-3. Palette paleBlue.",
     "--theme-cyan": "info, chart-4. Palette cyan.",
     "--theme-green": "success, chart-5. Palette green.",
-    "--theme-burntOrange": "danger and destructive. Palette burntOrange.",
-    "--theme-purple": "accent docs. Palette purple.",
-    "--theme-lime": "accent docs. Palette lime.",
-    "--theme-yellow": "accent docs. The palette bright yellow: the theme keeps one yellow."
+    "--theme-burntOrange": "danger and destructive. Palette burntOrange."
   },
   "optional": {}
 }

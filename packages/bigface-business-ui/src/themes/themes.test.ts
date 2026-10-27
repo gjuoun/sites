@@ -79,13 +79,15 @@ describe("bigface-business-ui: colour only", () => {
 		for (const role of ["bg", "panel", "fg", "fgDim", "border"]) {
 			expect(r[role], role).toBe("light-dark(" + hex(light, role) + ", " + hex(dark, role) + ")");
 		}
-		for (const role of ["blue", "lightBlue", "paleBlue", "cyan", "green", "burntOrange", "purple", "lime", "yellow"]) {
+		for (const role of ["blue", "lightBlue", "paleBlue", "cyan", "green", "burntOrange"]) {
 			const paletteName = THEMES[0]!.roles[role] as string;
 			expect(r[role], role).toBe(hex(dark, paletteName));
 			expect(r[role], role + " is the same in both palettes").toBe(hex(light, paletteName));
 		}
-		// the palette carries two yellows; the theme keeps only the bright one, under the name yellow
-		expect(r.yellow).toBe(hex(dark, "brightYellow"));
+		// lime, yellow and purple are accent-docs data, not theme roles: no CSS variable carries them
+		expect(r.lime).toBeUndefined();
+		expect(r.yellow).toBeUndefined();
+		expect(r.purple).toBeUndefined();
 	});
 
 	test("theme.css carries no feel override: no spacing, text size, radius scale, motion or shadow geometry", () => {

@@ -70,9 +70,9 @@ registry, not the copies against each other.
 
 ## The accent family and its plates
 
-The light accents are the palette's own colours (ruling 2026-10-24): blue, light blue, pale blue, cyan, green, lime,
-yellow, bright yellow, burnt orange and purple are the same hex in both modes. Each is a role as text (`--theme-accent-*`),
-and a deepened plate it is read on (`--theme-plate-*`).
+The theme carries six accents as roles, each the palette's own colour in both modes: blue, light blue (chart-2), pale
+blue (chart-3), cyan, green and burnt orange (`--theme-*`). lime, yellow, bright yellow and purple have no CSS variable: they
+appear only as accent-docs data in `accents.ts`, each with its solved plate.
 
 A plate is solved, not picked: it is the lightest mix of the accent into the dark ink that still gives the accent 4.5:1
 as text (`solvePlate` in `scripts/gen-tokens.ts`, `PLATE_FLOOR`). Two facts follow from the measurements:

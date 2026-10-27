@@ -120,8 +120,8 @@ export function renderThemeFile(theme: Theme, dark: PaletteLike, light: PaletteL
 }
 
 /** The accent docs table: every palette accent and the plate it is read on, for the /ui/business colour page. */
-// The accents the THEME carries: the seven roles, with the palette colour each one names. lightBlue,
-// paleBlue and the dim yellow stay in the palette and are not shown: nothing paints them.
+// The accents the docs table shows: the six theme roles, plus lime, yellow and purple, which the accent docs show
+// as data only (no --theme-* variable). The palette's dim yellow is not shown: nothing paints it.
 const ACCENT_DOCS = [
 	["blue", "blue"],
 	["light-blue", "lightBlue"],

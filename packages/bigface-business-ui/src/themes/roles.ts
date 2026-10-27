@@ -12,9 +12,10 @@ export const NEUTRALS = ["bg", "panel", "fg", "fgDim", "border", "highlight"] as
 
 /**
  * The accents the components read: primary and ring, destructive, success, info, and the chart ramp
- * (blue → lightBlue → paleBlue → cyan → green) plus lime, yellow and purple for the accent docs.
+ * (blue → lightBlue → paleBlue → cyan → green) and burntOrange for danger. lime, yellow and purple have no
+ * CSS variable: they are accent-docs data in accents.ts, not roles.
  */
-export const ACCENTS = ["blue", "lightBlue", "paleBlue", "cyan", "green", "lime", "yellow", "burntOrange", "purple"] as const;
+export const ACCENTS = ["blue", "lightBlue", "paleBlue", "cyan", "green", "burntOrange"] as const;
 
 /** Every role a theme must set. There is no optional tier: the contract is the whole list. */
 export const REQUIRED = [...NEUTRALS, ...ACCENTS] as const;
@@ -39,8 +40,6 @@ export interface Theme {
  */
 export const COLOURS: ThemeRoles = {
 	...Object.fromEntries(REQUIRED.map((k) => [k, k])),
-	// The palette carries two yellows; the theme keeps one, the bright one, and it is called yellow.
-	yellow: "brightYellow",
 };
 
 export const THEMES: Theme[] = [
