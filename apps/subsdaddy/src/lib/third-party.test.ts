@@ -107,22 +107,21 @@ describe("Claude and Codex Pro now carry an allowance; the retired hours machine
       expect(r.cells.usd.na).toBe(false);
     }
   });
-  test("Codex Pro 5x in the Luna view has a finite $/B", () => {
+  test("Codex Pro 5x in the Luna view is N/A with the hours it would need (r46)", () => {
     const v = viewRows(ds, "gpt-6-luna" as never, "short", SHAPES[0]).find((r) => r.key === "codex-pro")!;
-    expect(v.usd).not.toBeNull();
-    expect(Number.isFinite(v.usd!)).toBe(true);
-  });
-  test("the hours and throughput machinery is removed from the source files", () => {
-    const files = ["src/lib/summary.ts", "src/routes/methodology.tsx", "scripts/refresh.ts", "scripts/build-third-party.ts", "src/data/context.ts"];
+    expect(v.usd).toBeNull();
+    expect(v.capacityReason).toContain("hours of agent use a month");
+  });  test("the hours machinery is removed; the burn rate is read from context.json, never typed", () => {
+    const files = ["src/lib/summary.ts", "src/routes/methodology.tsx", "scripts/refresh.ts", "scripts/build-third-party.ts"];
     for (const f of files) {
       const text = readFileSync(join(APP_ROOT, f), "utf8");
       expect(text.includes("claude-hours")).toBe(false);
       expect(text.includes("claude-plans")).toBe(false);
       expect(text.includes("vendor_hours")).toBe(false);
-      expect(text.includes("tokens_per_active_hour")).toBe(false);
+      expect(text.includes("hours_per_week")).toBe(false);
     }
-  });
-  test("the Claude hours data file is gone", () => {
+    expect(readFileSync(join(APP_ROOT, "src/lib/summary.ts"), "utf8")).toContain("ds.context.throughput.tokens_per_active_hour.p50");
+  });  test("the Claude hours data file is gone", () => {
     expect(readdirSync(join(APP_ROOT, "data")).includes("claude-plans.json")).toBe(false);
   });
 });

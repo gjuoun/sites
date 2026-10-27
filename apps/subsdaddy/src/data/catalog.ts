@@ -34,6 +34,9 @@ export const allowanceEntrySchema = z.strictObject({
   basis: z.string().min(1),
   /** third_party_measured (t) and third_party_projected (j) carry their source; absent kinds are the build's own bases. */
   kind: z.enum(["third_party_measured", "third_party_projected"]).optional(),
+  /** The measurement class whose list blend prices this allowance (r46): capacity = allowance / blend, shape-invariant. */
+  mix_class: z.enum(["sonnet", "luna"]).optional(),
+  mix_blend_usd_per_million: z.number().positive().optional(),
   source: z.strictObject({ publisher: z.string().min(1), url: z.url(), published: z.iso.date(), note: z.string().min(1) }).optional(),
 });
 

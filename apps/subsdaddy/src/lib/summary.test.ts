@@ -64,7 +64,7 @@ describe("model view: only the plans that offer the model", () => {
   test("GPT-6 Luna lists the OpenCode plans, the Copilot plans, Codex Plus and the two Codex Pro plans with values; Codex Go is N/A (r45)", () => {
     const rows = viewRows(ds, "gpt-6-luna");
     expect(rows.map((r) => r.key).sort()).toEqual(["codex-go", "codex-plus", "codex-pro", "codex-pro-20x", "github-copilot-pro", "github-copilot-pro-plus", "opencode-go-go", "opencode-go-plus"]);
-    expect(rows.filter((r) => r.usd === null).map((r) => r.key).sort()).toEqual(["codex-go"]);
+    expect(rows.filter((r) => r.usd === null).map((r) => r.key).sort()).toEqual(["codex-go", "codex-pro", "codex-pro-20x"]);
   });
 
 

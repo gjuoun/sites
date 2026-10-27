@@ -56,23 +56,25 @@ describe("Codex: messages per window converted to tokens", () => {
     expect(long.usd!).toBeLessThan(short.usd!);
   });
 
-  test("the Codex footnote on the Luna view is the second line, and the view has at most four lines", () => {
+  test("the Codex footnote on the Luna view is the second line, and the view has at most five lines", () => {
     const t = summaryTable(ds, "gpt-6-luna", "short");
     const lines = (t.footnote ?? "").split("\n");
-    expect(lines.length).toBe(4);
+    expect(lines.length).toBe(5);
     expect(lines[1]).toBe("† converted from vendor message limits at 100K context per message");
   });
 
-  test("Codex Pro rows carry a third-party dollar allowance in the Luna view (r45): Pro 5x measured, Pro 20x projected", () => {
+  test("Codex Pro rows keep their third-party allowance (t, j) but are N/A in capacity and $/B: the GPT-6 Luna mix needs more than 730 hours a month (r46)", () => {
+    const rows = viewRows(ds, "gpt-6-luna", "short");
     for (const id of ["codex-pro", "codex-pro-20x"]) {
-      const row = viewRows(ds, "gpt-6-luna", "short").find((r) => r.key === id)!;
-      expect(row.usd).not.toBeNull();
+      const row = rows.find((r) => r.key === id)!;
       expect(row.allowance).not.toBeNull();
+      expect(row.usd).toBeNull();
+      expect(row.capacity).toBeNull();
+      expect(row.capacityReason).toContain("730 hours a month");
     }
-    expect(viewRows(ds, "gpt-6-luna", "short").find((r) => r.key === "codex-pro")!.allowance!.sup).toBe("t");
-    expect(viewRows(ds, "gpt-6-luna", "short").find((r) => r.key === "codex-pro-20x")!.allowance!.sup).toBe("j");
-  });
-});
+    expect(rows.find((r) => r.key === "codex-pro")!.allowance!.sup).toBe("t");
+    expect(rows.find((r) => r.key === "codex-pro-20x")!.allowance!.sup).toBe("j");
+  });});
 
 
 describe("reference models: the Luna and Haiku prices are the ones the official plans are read at", () => {

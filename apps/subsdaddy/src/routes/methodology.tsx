@@ -272,6 +272,14 @@ function ClaudeSection() {
 function ThirdPartySection() {
   const ds = dataset as unknown as DS;
   const file = thirdPartyFileSchema.parse(thirdPartyRaw);
+  const tp = ds.context.throughput;
+  const heavy = tp.tokens_per_active_hour.p50;
+  const hoursOf = (id: string): number => {
+    const row = ds.catalog.rows.find((r) => r.plan_id === id);
+    const a = row?.allowance.find((x) => x.mix_class && x.mix_blend_usd_per_million);
+    if (!a || !a.mix_blend_usd_per_million) return 0;
+    return Math.round(((a.usd / (a.mix_blend_usd_per_million * 1000)) * 1e9) / heavy);
+  };
   const rows = file.entries.map((e) => {
     const cat = ds.catalog.rows.find((r) => r.plan_id === e.plan_id);
     const allow = cat?.allowance.find((a) => a.ref === "*");
@@ -320,7 +328,13 @@ function ThirdPartySection() {
         Anthropic meters subscription usage in model-weighted units, so an all-Haiku workload stretches the same allowance across far more tokens than a Sonnet workload.
       </p>
       <p className={SMALL_NOTE}>
-        The model views price the same dollars at the selected model's list price. Dollars here are the vendor's list price for the models each account actually used, so a Haiku or Luna view is the dollar pool priced at a cheap model.
+        Each third-party row is priced in the list blend of the class it was measured on: Claude at Sonnet 5.5, Codex at GPT-6 Luna, both at the measured token mix. A cheaper chip model does not stretch the same dollars over more tokens,
+        because Anthropic meters usage in model-weighted units. So the Claude and Codex $/B does not change with Shape, context or the model view.
+      </p>
+      <p className={SMALL_NOTE}>
+        Physical check, applied to every row: a capacity is shown only if it needs at most 730 agent hours a month at the measured burn rate ({(heavy / 1e6).toFixed(1)}M tokens per active hour, from {tp.sample_sessions} pi sessions in data/context.json).
+        The Claude rows pass (Max 20x needs about {hoursOf("claude-code-max-20x")} hours a month). The Codex rows do not: at GPT-6 Luna pricing their allowances need more hours than a month has, so they are N/A.
+        The Codex measurement was on GPT-6 Astra, which our tables do not price; it would only pass at a Luna price above 272K tokens per prompt, and the source does not state its prompt length.
       </p>
       <p className={SMALL_NOTE}>
         ChatGPT Plus (Codex Plus): no third-party measurement was found (read {file.entries[0].read_date}). Its estimate stays on the five-hour message table, marked dagger.
