@@ -336,7 +336,7 @@ export const VARIANTS: Record<string, React.ReactNode> = {
 		<div className="flex flex-col divide-y">
 			{(["inline-start", "inline-end", "block-start", "block-end"] as const).map((a) => (
 				<Row key={a} label={"align=" + a}>
-					<InputGroup className="w-full max-w-sm">
+					<InputGroup className="w-full">
 						<InputGroupAddon align={a}><InputGroupText>{a}</InputGroupText></InputGroupAddon>
 						<InputGroupInput placeholder="Type here" />
 					</InputGroup>
@@ -400,7 +400,7 @@ export const VARIANTS: Record<string, React.ReactNode> = {
 		<div className="flex flex-col divide-y">
 			{(["start", "end"] as const).map((a) => (
 				<Row key={a} label={"align=" + a}>
-					<MessageGroup className="w-full max-w-md">
+					<MessageGroup className="w-full">
 						<Message align={a}>
 							<MessageAvatar>JG</MessageAvatar>
 							<MessageContent><MessageHeader>Jun</MessageHeader><Bubble variant="muted" align={a}><BubbleContent>Aligned to the {a}.</BubbleContent></Bubble><MessageFooter>10:02</MessageFooter></MessageContent>
