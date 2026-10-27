@@ -2,7 +2,8 @@ import { describe, expect, test } from "bun:test";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import manifest from "./manifest.json";
-import { checkLock, extractBlocks, stripBlocks, type Manifest } from "../../scripts/ui-lock-lib.ts";
+import { checkLock, extractBlocks, sha256, stripBlocks, type Manifest } from "../../scripts/ui-lock-lib.ts";
+import { buttonVariants } from "../components/ui/button.tsx";
 
 // The components/ui lock. Every file is either LOCKED (its bytes are the shadcn registry output, no edits) or
 // DECLARED (it carries a known, recorded exception: colour written as light-dark() tokens, to be moved into tokens
@@ -62,5 +63,35 @@ describe("components/ui lock", () => {
 		extra.set("zz-extra.tsx", "export {};\n");
 		expect(checkLock(extra, m).some((f) => f.includes("zz-extra.tsx"))).toBe(true);
 	});
-});
+	test("the glow variant exists as a Button variant and resolves to the glow ring", () => {
+		expect(buttonVariants({ variant: "glow" })).toContain("ring-3 ring-glow-halo");
+		expect(buttonVariants({ variant: "default" })).not.toContain("ring-glow-halo");
+	});
 
+	test("button.tsx diverges from registry bytes only by its declared colour lines and the marked glow lines", () => {
+		const text = files.get("button.tsx") as string;
+		const blocks = extractBlocks(text).blocks;
+		expect(blocks.map((b) => b.id)).toEqual(["variant.glow"]);
+		const withoutGlow = stripBlocks(text);
+		// with the marked lines removed, button.tsx is the declared colour exception, byte for byte
+		expect(m.files["button.tsx"]).toMatchObject({ state: "declared" });
+		expect(sha256(withoutGlow)).toBe((m.files["button.tsx"] as { sha256: string }).sha256);
+		// the marked lines are exactly the recorded ones, and nothing else sits outside the declared exception
+		expect(blocks[0]?.body).toEqual(m.variants["button.tsx"]?.[0]?.body);
+		expect(text.split("\n").length - withoutGlow.split("\n").length).toBe(blocks[0]!.body.length + 2);
+	});
+
+	test("control: an upstream overwrite that drops the glow variant fails the checker", () => {
+		// an overwrite restores the stock file; with the glow block removed the colour sha still matches, so the
+		// variant check is what must turn the gate red
+		const dropped = new Map(files);
+		dropped.set("button.tsx", stripBlocks(files.get("button.tsx") as string));
+		expect(checkLock(dropped, m).some((f) => f.includes("button.tsx") && /variant/.test(f))).toBe(true);
+	});
+
+	test("control: a marker with no end fails the checker", () => {
+		const broken = new Map(files);
+		broken.set("button.tsx", (files.get("button.tsx") as string).replace("// bg2:variant end", ""));
+		expect(checkLock(broken, m).length).toBeGreaterThan(0);
+	});
+});

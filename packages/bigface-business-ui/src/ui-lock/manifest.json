@@ -316,7 +316,16 @@
 			"sha256": "286a09e9e528979ed6f2297f8b492a134aabda511d90b428bb95c1aee259b4ea"
 		}
 	},
-	"variants": {},
+	"variants": {
+		"button.tsx": [
+			{
+				"id": "variant.glow",
+				"body": [
+					"        glow: \"bg-primary text-primary-foreground hover:bg-primary/80 ring-3 ring-glow-halo\","
+				]
+			}
+		]
+	},
 	"todo": [
 		{
 			"id": "colour-to-tokens",
