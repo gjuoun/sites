@@ -13,7 +13,6 @@ const BRIGHT = new Set([
   "bf-cyan",
   "bf-lime",
   "bf-yellow",
-  "bf-bright-yellow",
   "bf-ansi-blue",
   "bf-ansi-bright-blue",
   "bf-ansi-cyan",

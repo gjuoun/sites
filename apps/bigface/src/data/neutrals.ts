@@ -14,7 +14,6 @@ export const ACCENT_NAMES = [
   "green",
   "lime",
   "yellow",
-  "brightYellow",
   "burntOrange",
   "purple",
 ] as const;
@@ -22,7 +21,7 @@ export const ACCENT_NAMES = [
 export const lightPalette = lightPaletteJson as Palette;
 
 // The business theme's own vocabulary: the six neutrals its roles carry. The palette holds
-// more (the dim yellow, which no component paints) that the theme does not carry,
+// more (lime, yellow and purple, which the accent docs show as data and no CSS variable carries),
 // so the colour page documents the theme, not the raw palette.
 export const THEME_NEUTRALS = ["bg", "panel", "fg", "fgDim", "border", "highlight"] as const;
 

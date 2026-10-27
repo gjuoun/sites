@@ -160,7 +160,6 @@ test("every swatch prints an ink that actually contrasts on it", () => {
 		"green",
 		"lime",
 		"yellow",
-		"brightYellow",
 		"burntOrange",
 		"purple",
 	]) {
