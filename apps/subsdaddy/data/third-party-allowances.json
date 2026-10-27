@@ -23,7 +23,7 @@
       "quote": "Claude Pro $20/mo $157 ($142–$170), ≈ $681/mo",
       "cross_check": null,
       "mix_class": "sonnet",
-      "mix_class_note": "measured on Claude Sonnet-class usage (uncached and output tokens priced at Sonnet 5.5 list)"
+      "mix_class_note": "counterpart only (r50): the Sonnet 5.5 blend at the measured mix, shown in the tooltip; the row itself is priced at the selected model"
     },
     {
       "plan_id": "claude-code-max-5x",
@@ -46,7 +46,7 @@
       "quote": "Claude delivered about $940–1,170 a week",
       "cross_check": null,
       "mix_class": "sonnet",
-      "mix_class_note": "measured on Claude Sonnet-class usage (uncached and output tokens priced at Sonnet 5.5 list)"
+      "mix_class_note": "counterpart only (r50): the Sonnet 5.5 blend at the measured mix, shown in the tooltip; the row itself is priced at the selected model"
     },
     {
       "plan_id": "claude-code-max-20x",
@@ -75,7 +75,7 @@
         "note": "Measured cap, scaled to 125%; 60 days of logs. Not an independent measurement of the same quantity; shown for reference."
       },
       "mix_class": "sonnet",
-      "mix_class_note": "measured on Claude Sonnet-class usage (uncached and output tokens priced at Sonnet 5.5 list)"
+      "mix_class_note": "counterpart only (r50): the Sonnet 5.5 blend at the measured mix, shown in the tooltip; the row itself is priced at the selected model"
     },
     {
       "plan_id": "codex-pro",
@@ -98,7 +98,7 @@
       "quote": "Codex about $270–340 a week",
       "cross_check": null,
       "mix_class": "luna",
-      "mix_class_note": "measured on GPT-6-class usage; priced here at GPT-6 Luna list, the closest class in our tables"
+      "mix_class_note": "counterpart only (r50): the GPT-6 Luna blend at the measured mix, shown in the tooltip; the row itself is priced at the selected model"
     },
     {
       "plan_id": "codex-pro-20x",
@@ -118,7 +118,7 @@
       "quote": "ChatGPT Pro 20x $200 $1,340 Plus × 20, projected",
       "cross_check": null,
       "mix_class": "luna",
-      "mix_class_note": "measured on GPT-6-class usage; priced here at GPT-6 Luna list, the closest class in our tables"
+      "mix_class_note": "counterpart only (r50): the GPT-6 Luna blend at the measured mix, shown in the tooltip; the row itself is priced at the selected model"
     }
   ],
   "not_found": [

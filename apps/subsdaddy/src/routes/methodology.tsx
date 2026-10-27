@@ -328,13 +328,13 @@ function ThirdPartySection() {
         Anthropic meters subscription usage in model-weighted units, so an all-Haiku workload stretches the same allowance across far more tokens than a Sonnet workload.
       </p>
       <p className={SMALL_NOTE}>
-        Each third-party row is priced in the list blend of the class it was measured on: Claude at Sonnet 5.5, Codex at GPT-6 Luna, both at the measured token mix. A cheaper chip model does not stretch the same dollars over more tokens,
-        because Anthropic meters usage in model-weighted units. So the Claude and Codex $/B does not change with Shape, context or the model view.
+        Pricing (r50). Each third-party row is priced at the model selected in the switch, like every other model row: its allowance buys tokens at that model's blend for the selected shape and context.
+        A Claude row in the Haiku view is therefore priced at pure Haiku. The Sonnet 5.5 and GPT-6 Luna blends at the measured mix appear in the tooltip only, as a counterpart for comparison.
       </p>
       <p className={SMALL_NOTE}>
-        Physical check, applied to every row: a capacity is shown only if it needs at most 730 agent hours a month at the measured burn rate ({(heavy / 1e6).toFixed(1)}M tokens per active hour, from {tp.sample_sessions} pi sessions in data/context.json).
-        The Claude rows pass (Max 20x needs about {hoursOf("claude-code-max-20x")} hours a month). The Codex rows do not: at GPT-6 Luna pricing their allowances need more hours than a month has, so they are N/A.
-        The Codex measurement was on GPT-6 Astra, which our tables do not price; it would only pass at a Luna price above 272K tokens per prompt, and the source does not state its prompt length.
+        The hour ceiling. A capacity cannot need more agent hours in a month than there are. The ceiling is 730 hours at the measured burn rate ({(heavy / 1e6).toFixed(1)}M tokens per active hour, from {tp.sample_sessions} pi sessions in data/context.json).
+        A row's capacity is the smaller of the dollar-implied tokens and the ceiling. A capped row carries the suffix capped by hours, and its $/B is its fee over the ceiling, so it depends on the hours only; the tooltip gives both values.
+        An uncapped row, such as Pro at Cold 100K, takes its $/B from its dollars. The burn rate is measured on mixed agent traffic, not on Haiku alone, so the ceiling is the one figure here that rests on that assumption.
       </p>
       <p className={SMALL_NOTE}>
         ChatGPT Plus (Codex Plus): no third-party measurement was found (read {file.entries[0].read_date}). Its estimate stays on the five-hour message table, marked dagger.

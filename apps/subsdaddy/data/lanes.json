@@ -53,14 +53,14 @@
             "used_pct": 100,
             "resets_at": "2026-10-28T15:50:44Z",
             "status": "usable",
-            "elapsed_hours": 134.7158227777778,
+            "elapsed_hours": 149.83586666666667,
             "tokens": 2357622907,
             "cost_usd": 25.028727124900087,
             "unpriced_share": 0,
-            "coverage": 1,
+            "coverage": 0.9999110137403684,
             "allowance_usd_cycle": 107.26597339242893,
             "tokens_cycle": 10104098172.857143,
-            "measured_at": "2026-10-27T06:33:40.962Z",
+            "measured_at": "2026-10-27T21:40:53.120Z",
             "source": "codexbar quota reading",
             "confidence": "normal"
           },
@@ -70,19 +70,19 @@
             "used_pct": 50.000967357571426,
             "resets_at": "2026-11-21T15:49:16Z",
             "status": "usable",
-            "elapsed_hours": 110.74026722222223,
+            "elapsed_hours": 125.86031111111112,
             "tokens": 1676929887,
             "cost_usd": 16.017200882449988,
             "unpriced_share": 0,
             "coverage": 1,
             "allowance_usd_cycle": 32.03378200246875,
             "tokens_cycle": 3353794887.622449,
-            "measured_at": "2026-10-27T06:33:40.962Z",
+            "measured_at": "2026-10-27T21:40:53.120Z",
             "source": "codexbar quota reading",
             "confidence": "normal"
           }
         ],
-        "measured_at": "2026-10-27T06:33:49.657Z",
+        "measured_at": "2026-10-27T21:41:01.097Z",
         "source": "quota windows (codexbar) x usage_logs priced at list; allowance.json"
       },
       "usd_per_b": 2.981696953772011,
@@ -94,7 +94,7 @@
         "p90_ttft_ms": 8441,
         "p50_output_tps": 201.41116100064144,
         "n": 11743,
-        "measured_at": "2026-10-27T06:33:49.657Z",
+        "measured_at": "2026-10-27T21:41:01.097Z",
         "source": "usage_logs(7d) rows=11743"
       },
       "presets": [
@@ -115,7 +115,7 @@
         "no_fit:too_few_priced_rows",
         "low_priced_share"
       ],
-      "measured_at": "2026-10-27T06:33:49.657Z",
+      "measured_at": "2026-10-27T21:41:01.097Z",
       "source": "usage_logs(7d) + quota windows + published price"
     },
     {
@@ -125,32 +125,32 @@
       "price_badge": "plan_spec",
       "capacity": {
         "method": "quota_windows",
-        "window": "monthly",
+        "window": "weekly",
         "cycle_days": 30,
         "cycle_billed": true,
         "allowance_basis": "derived",
         "allowance_published_usd": null,
         "allowance_vendor_usd": null,
         "allowance_vendor_reason": "no vendor-reported pool",
-        "allowance_derived_usd": 86.06813773077707,
+        "allowance_derived_usd": 318.26214465709927,
         "fee_per_cycle_usd": 10,
         "fee_basis": "monthly fee",
         "assumed_share": 0,
-        "tokens_per_cycle": 1974143151.1152225,
-        "allowance_usd_per_cycle": 86.06813773077707,
-        "coverage": 0.9649860369676416,
+        "tokens_per_cycle": 11046116169.4103,
+        "allowance_usd_per_cycle": 318.26214465709927,
+        "coverage": 1,
         "unpriced_share": 0,
         "low_coverage": false,
         "top_models": [
           {
             "model": "deepseek-v4.1-flash",
             "label": "DeepSeek V4.1 Flash",
-            "share": 0.8354087842322585
+            "share": 0.795411887676893
           },
           {
             "model": "mimo-v2.6-flash",
             "label": "MiMo v2.6 Flash",
-            "share": 0.16459121576774144
+            "share": 0.20458811232310703
           }
         ],
         "seeded": false,
@@ -163,69 +163,69 @@
           {
             "window": "5h",
             "window_minutes": 300,
-            "used_pct": 0.010470083333333335,
-            "resets_at": "2026-10-27T11:15:10Z",
+            "used_pct": 0.11135158333333334,
+            "resets_at": "2026-10-28T02:15:10Z",
             "status": "low_signal",
-            "elapsed_hours": 0.30860055555555554,
-            "tokens": 2257634,
-            "cost_usd": 0.0221279754,
+            "elapsed_hours": 0.42864444444444444,
+            "tokens": 4744072,
+            "cost_usd": 0.15298623234999997,
             "unpriced_share": 0,
             "coverage": 1,
-            "allowance_usd_cycle": 30433.649438638655,
-            "tokens_cycle": 3105030644455.233,
-            "measured_at": "2026-10-27T06:33:40.962Z",
+            "allowance_usd_cycle": 19784.19776255239,
+            "tokens_cycle": 613503955264.8181,
+            "measured_at": "2026-10-27T21:40:53.120Z",
             "source": "codexbar quota reading",
             "confidence": "low"
           },
           {
             "window": "weekly",
             "window_minutes": 10080,
-            "used_pct": 35.79170773333333,
+            "used_pct": 45.654801533333334,
             "resets_at": "2026-11-01T23:59:59Z",
             "status": "usable",
-            "elapsed_hours": 30.561656111111112,
-            "tokens": 887742750,
-            "cost_usd": 25.37214911620006,
+            "elapsed_hours": 45.6817,
+            "tokens": 1176719230,
+            "cost_usd": 33.90378844975008,
             "unpriced_share": 0,
             "coverage": 1,
-            "allowance_usd_cycle": 303.80719114249644,
-            "tokens_cycle": 10629869393.381853,
-            "measured_at": "2026-10-27T06:33:40.962Z",
+            "allowance_usd_cycle": 318.26214465709927,
+            "tokens_cycle": 11046116169.4103,
+            "measured_at": "2026-10-27T21:40:53.120Z",
             "source": "codexbar quota reading",
             "confidence": "normal"
           },
           {
             "window": "monthly",
             "window_minutes": 43200,
-            "used_pct": 67.89585386666667,
+            "used_pct": 72.82740076666666,
             "resets_at": "2026-11-19T00:27:51Z",
-            "status": "usable",
-            "elapsed_hours": 174.09721166666668,
-            "tokens": 1340361349,
-            "cost_usd": 58.436697019449795,
+            "status": "partial",
+            "elapsed_hours": 189.21725555555557,
+            "tokens": 1176719230,
+            "cost_usd": 33.90378844975008,
             "unpriced_share": 0,
-            "coverage": 0.9649860369676416,
-            "allowance_usd_cycle": 86.06813773077707,
-            "tokens_cycle": 1974143151.1152225,
-            "measured_at": "2026-10-27T06:33:40.962Z",
+            "coverage": 0.7918016403601433,
+            "allowance_usd_cycle": null,
+            "tokens_cycle": null,
+            "measured_at": "2026-10-27T21:40:53.120Z",
             "source": "codexbar quota reading",
             "confidence": "normal"
           }
         ],
-        "measured_at": "2026-10-27T06:33:49.657Z",
+        "measured_at": "2026-10-27T21:41:01.097Z",
         "source": "quota windows (codexbar) x usage_logs priced at list; allowance.json"
       },
-      "usd_per_b": 5.065488789073301,
+      "usd_per_b": 0.9052955669335364,
       "usd_per_b_basis": "measured",
       "usd_per_b_derived_from": null,
       "usd_per_b_source": "usage logs priced at list, quota windows, published price",
       "measured": {
-        "p50_ttft_ms": 2839,
-        "p90_ttft_ms": 8992,
-        "p50_output_tps": 160.0606454407624,
-        "n": 5651,
-        "measured_at": "2026-10-27T06:33:49.657Z",
-        "source": "usage_logs(7d) rows=5651"
+        "p50_ttft_ms": 3005,
+        "p90_ttft_ms": 8335,
+        "p50_output_tps": 160.22981168209384,
+        "n": 5556,
+        "measured_at": "2026-10-27T21:41:01.097Z",
+        "source": "usage_logs(7d) rows=5556"
       },
       "presets": [
         {
@@ -244,7 +244,7 @@
       "flags": [
         "low_fit"
       ],
-      "measured_at": "2026-10-27T06:33:49.657Z",
+      "measured_at": "2026-10-27T21:41:01.097Z",
       "source": "usage_logs(7d) + quota windows + published price"
     },
     {
@@ -261,7 +261,7 @@
         "allowance_published_usd": null,
         "allowance_vendor_usd": null,
         "allowance_vendor_reason": "no vendor-reported pool",
-        "allowance_derived_usd": 108.55616799999999,
+        "allowance_derived_usd": 68.12828150000001,
         "fee_per_cycle_usd": 12.887671232876713,
         "fee_basis": "annual fee prorated to the cycle (365 days)",
         "assumed_share": 0,
@@ -274,32 +274,26 @@
           {
             "model": "glm-5.3-flash",
             "label": "GLM-5.3-Flash",
-            "share": 0.9998554633193513
+            "share": 0.9998795377705817
           },
           {
             "model": "glm-5.3",
             "label": "GLM-5.3 (no list price)",
-            "share": 0.00014453668064873566
+            "share": 0.00012046222941828567
           }
         ],
         "seeded": false,
         "reason": null,
         "confidence": "low",
-        "confidence_reason": "used_pct 1 is an integer percent: error about 1/used_pct",
+        "confidence_reason": "used_pct 2 is an integer percent: error about 1/used_pct",
         "stale": {
           "read_at": "2026-10-27T05:57:04.657Z",
           "published_on": "2026-10-27",
           "current_windows": [
             {
-              "window": "5h",
-              "used_pct": 1,
-              "measured_at": "2026-10-27T06:33:40.962Z",
-              "source": "codexbar quota reading"
-            },
-            {
               "window": "weekly",
-              "used_pct": 1,
-              "measured_at": "2026-10-27T06:33:40.962Z",
+              "used_pct": 2,
+              "measured_at": "2026-10-27T21:40:53.120Z",
               "source": "codexbar quota reading"
             }
           ],
@@ -310,41 +304,24 @@
         "badge": null,
         "windows": [
           {
-            "window": "5h",
-            "window_minutes": 300,
-            "used_pct": 1,
-            "resets_at": "2026-10-27T10:18:29Z",
-            "status": "low_signal",
-            "elapsed_hours": 1.2533227777777778,
-            "tokens": 920339,
-            "cost_usd": 0.061230469999999995,
-            "unpriced_share": 0,
-            "coverage": 1,
-            "allowance_usd_cycle": 205.7343792,
-            "tokens_cycle": 3092339040,
-            "measured_at": "2026-10-27T06:33:40.962Z",
-            "source": "codexbar quota reading",
-            "confidence": "low"
-          },
-          {
             "window": "weekly",
             "window_minutes": 10080,
-            "used_pct": 1,
+            "used_pct": 2,
             "resets_at": "2026-11-02T04:43:38Z",
             "status": "low_signal",
-            "elapsed_hours": 25.83415611111111,
-            "tokens": 20935862,
-            "cost_usd": 1.0855616799999999,
+            "elapsed_hours": 40.9542,
+            "tokens": 25119907,
+            "cost_usd": 1.3625656300000002,
             "unpriced_share": 0,
             "coverage": 1,
-            "allowance_usd_cycle": 108.55616799999999,
-            "tokens_cycle": 2093586200,
-            "measured_at": "2026-10-27T06:33:40.962Z",
+            "allowance_usd_cycle": 68.12828150000001,
+            "tokens_cycle": 1255995350,
+            "measured_at": "2026-10-27T21:40:53.120Z",
             "source": "codexbar quota reading",
             "confidence": "low"
           }
         ],
-        "measured_at": "2026-10-27T06:33:49.657Z",
+        "measured_at": "2026-10-27T21:41:01.097Z",
         "source": "quota windows (codexbar) x usage_logs priced at list; allowance.json"
       },
       "usd_per_b": 6.244694192061764,
@@ -352,12 +329,12 @@
       "usd_per_b_derived_from": null,
       "usd_per_b_source": "usage logs priced at list, quota windows, published price",
       "measured": {
-        "p50_ttft_ms": 7141,
-        "p90_ttft_ms": 13500,
-        "p50_output_tps": 75.5297860331469,
-        "n": 810,
-        "measured_at": "2026-10-27T06:33:49.657Z",
-        "source": "usage_logs(7d) rows=810"
+        "p50_ttft_ms": 6862,
+        "p90_ttft_ms": 13181,
+        "p50_output_tps": 67.65586713857881,
+        "n": 893,
+        "measured_at": "2026-10-27T21:41:01.097Z",
+        "source": "usage_logs(7d) rows=893"
       },
       "presets": [
         {
@@ -374,7 +351,7 @@
         }
       ],
       "flags": [],
-      "measured_at": "2026-10-27T06:33:49.657Z",
+      "measured_at": "2026-10-27T21:41:01.097Z",
       "source": "usage_logs(7d) + quota windows + published price"
     },
     {
@@ -430,19 +407,19 @@
             "used_pct": 55.06530853025255,
             "resets_at": "2026-11-24T16:00:00Z",
             "status": "usable",
-            "elapsed_hours": 38.56137833333333,
+            "elapsed_hours": 53.681422222222224,
             "tokens": 193169199,
             "cost_usd": 11.155151767500008,
             "unpriced_share": 0,
             "coverage": 1,
             "allowance_usd_cycle": 20.25803916338984,
             "tokens_cycle": 350800175.56584466,
-            "measured_at": "2026-10-27T06:33:40.962Z",
+            "measured_at": "2026-10-27T21:40:53.120Z",
             "source": "codexbar quota reading",
             "confidence": "normal"
           }
         ],
-        "measured_at": "2026-10-27T06:33:49.657Z",
+        "measured_at": "2026-10-27T21:41:01.097Z",
         "source": "quota windows (codexbar) x usage_logs priced at list; allowance.json"
       },
       "usd_per_b": 28.506257113098325,
@@ -454,7 +431,7 @@
         "p90_ttft_ms": 9364,
         "p50_output_tps": 141.7395306028532,
         "n": 2285,
-        "measured_at": "2026-10-27T06:33:49.657Z",
+        "measured_at": "2026-10-27T21:41:01.097Z",
         "source": "usage_logs(7d) rows=2285"
       },
       "presets": [
@@ -474,10 +451,10 @@
       "flags": [
         "low_fit"
       ],
-      "measured_at": "2026-10-27T06:33:49.657Z",
+      "measured_at": "2026-10-27T21:41:01.097Z",
       "source": "usage_logs(7d) + quota windows + published price"
     }
   ],
-  "measured_at": "2026-10-27T06:33:49.657Z",
+  "measured_at": "2026-10-27T21:41:01.097Z",
   "source": "build-dataset"
 }

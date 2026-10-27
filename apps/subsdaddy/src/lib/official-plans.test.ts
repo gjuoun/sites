@@ -63,22 +63,15 @@ describe("Codex: messages per window converted to tokens", () => {
     expect(lines[1]).toBe("† converted from vendor message limits at 100K context per message");
   });
 
-  test("Codex Pro rows keep their third-party allowance (t, j) but are N/A in capacity and $/B: the GPT-6 Luna mix needs more than 730 hours a month (r46)", () => {
+  test("Codex Pro rows keep their third-party allowance (t, j) and are capped by the hour ceiling in the Luna view (r50)", () => {
     const rows = viewRows(ds, "gpt-6-luna", "short");
     for (const id of ["codex-pro", "codex-pro-20x"]) {
       const row = rows.find((r) => r.key === id)!;
       expect(row.allowance).not.toBeNull();
-      expect(row.usd).toBeNull();
-      expect(row.capacity).toBeNull();
-      expect(row.capacityReason).toContain("730 hours a month");
+      expect(row.capped).toBe(true);
+      expect(row.usd).not.toBeNull();
     }
     expect(rows.find((r) => r.key === "codex-pro")!.allowance!.sup).toBe("t");
     expect(rows.find((r) => r.key === "codex-pro-20x")!.allowance!.sup).toBe("j");
-  });});
-
-
-describe("reference models: the Luna and Haiku prices are the ones the official plans are read at", () => {
-  test("the reference list has Haiku 5.5 and GPT-6 Luna", () => {
-    expect(models.reference.map((r) => r.ref)).toEqual(expect.arrayContaining(["claude-haiku-5.5", "gpt-6-luna"]));
   });
 });

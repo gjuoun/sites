@@ -1,7 +1,7 @@
 {
   "window_days": 7,
-  "coverage_start": "2026-10-20T06:33:36Z",
-  "coverage_end": "2026-10-27T06:33:34Z",
+  "coverage_start": "2026-10-21T15:51:32Z",
+  "coverage_end": "2026-10-27T21:40:45Z",
   "lanes": [
     {
       "lane": "commandcode-goat",
@@ -30,7 +30,7 @@
           "p50_ttft_ms": 3779,
           "p90_ttft_ms": 8574,
           "p50_output_tps": 210.92278719397362,
-          "measured_at": "2026-10-27T06:33:35.394Z",
+          "measured_at": "2026-10-27T21:40:48.935Z",
           "source": "sub2api usage_logs (read-only SELECT via podman exec psql)"
         },
         {
@@ -46,7 +46,7 @@
           "p50_ttft_ms": 1217,
           "p90_ttft_ms": 2066,
           "p50_output_tps": 175.472302273455,
-          "measured_at": "2026-10-27T06:33:35.394Z",
+          "measured_at": "2026-10-27T21:40:48.935Z",
           "source": "sub2api usage_logs (read-only SELECT via podman exec psql)"
         },
         {
@@ -62,7 +62,7 @@
           "p50_ttft_ms": 6802,
           "p90_ttft_ms": 8506,
           "p50_output_tps": 35.98704003702847,
-          "measured_at": "2026-10-27T06:33:35.394Z",
+          "measured_at": "2026-10-27T21:40:48.935Z",
           "source": "sub2api usage_logs (read-only SELECT via podman exec psql)"
         },
         {
@@ -78,76 +78,76 @@
           "p50_ttft_ms": 1482,
           "p90_ttft_ms": 4805,
           "p50_output_tps": 71.60591355377497,
-          "measured_at": "2026-10-27T06:33:35.394Z",
+          "measured_at": "2026-10-27T21:40:48.935Z",
           "source": "sub2api usage_logs (read-only SELECT via podman exec psql)"
         }
       ],
-      "measured_at": "2026-10-27T06:33:35.394Z",
+      "measured_at": "2026-10-27T21:40:48.935Z",
       "source": "sub2api usage_logs (read-only SELECT via podman exec psql)"
     },
     {
       "lane": "opencode-go",
-      "rows": 5651,
+      "rows": 5556,
       "tokens": {
-        "input": 289907392,
+        "input": 153558651,
         "cache_creation": 0,
-        "cache_read": 1039098944,
-        "output": 11355013
+        "cache_read": 1008454464,
+        "output": 14706115
       },
-      "cache_share": 0.7818615426074237,
-      "p50_ttft_ms": 2839,
-      "p90_ttft_ms": 8992,
-      "p50_output_tps": 160.0606454407624,
+      "cache_share": 0.86785118944204,
+      "p50_ttft_ms": 3005,
+      "p90_ttft_ms": 8335,
+      "p50_output_tps": 160.22981168209384,
       "models": [
         {
           "upstream_model": "deepseek-v4.1-flash",
-          "rows": 4143,
+          "rows": 3744,
           "tokens": {
-            "input": 238532845,
+            "input": 88810631,
             "cache_creation": 0,
-            "cache_read": 878528000,
-            "output": 2688800
+            "cache_read": 844685184,
+            "output": 2480649
           },
-          "cost_usd": 58.359737430000074,
-          "p50_ttft_ms": 2927,
-          "p90_ttft_ms": 9495,
-          "p50_output_tps": 168.0299931833674,
-          "measured_at": "2026-10-27T06:33:35.394Z",
+          "cost_usd": 21.649126943999985,
+          "p50_ttft_ms": 3143,
+          "p90_ttft_ms": 8665,
+          "p50_output_tps": 168.10877626699627,
+          "measured_at": "2026-10-27T21:40:48.935Z",
           "source": "sub2api usage_logs (read-only SELECT via podman exec psql)"
         },
         {
           "upstream_model": "mimo-v2.6-flash",
-          "rows": 1508,
+          "rows": 1812,
           "tokens": {
-            "input": 51374547,
+            "input": 64748020,
             "cache_creation": 0,
-            "cache_read": 160570944,
-            "output": 8666213
+            "cache_read": 163769280,
+            "output": 12225466
           },
           "cost_usd": 0,
           "p50_ttft_ms": 2374,
           "p90_ttft_ms": 4953,
           "p50_output_tps": 78.04878048780488,
-          "measured_at": "2026-10-27T06:33:35.394Z",
+          "measured_at": "2026-10-27T21:40:48.935Z",
           "source": "sub2api usage_logs (read-only SELECT via podman exec psql)"
         }
       ],
-      "measured_at": "2026-10-27T06:33:35.394Z",
+      "measured_at": "2026-10-27T21:40:48.935Z",
       "source": "sub2api usage_logs (read-only SELECT via podman exec psql)"
     },
     {
       "lane": "zai-glm-max",
-      "rows": 810,
+      "rows": 893,
       "tokens": {
-        "input": 5907358,
+        "input": 6620659,
         "cache_creation": 0,
-        "cache_read": 56308800,
-        "output": 6205795
+        "cache_read": 59639360,
+        "output": 6345979
       },
-      "cache_share": 0.9050510640660261,
-      "p50_ttft_ms": 7141,
-      "p90_ttft_ms": 13500,
-      "p50_output_tps": 75.5297860331469,
+      "cache_share": 0.9000806353526702,
+      "p50_ttft_ms": 6862,
+      "p90_ttft_ms": 13181,
+      "p50_output_tps": 67.65586713857881,
       "models": [
         {
           "upstream_model": "glm-5.3",
@@ -162,27 +162,27 @@
           "p50_ttft_ms": 2995,
           "p90_ttft_ms": 4376,
           "p50_output_tps": 103.41261633919339,
-          "measured_at": "2026-10-27T06:33:35.394Z",
+          "measured_at": "2026-10-27T21:40:48.935Z",
           "source": "sub2api usage_logs (read-only SELECT via podman exec psql)"
         },
         {
           "upstream_model": "glm-5.3-flash",
-          "rows": 799,
+          "rows": 882,
           "tokens": {
-            "input": 5907042,
+            "input": 6620343,
             "cache_creation": 0,
-            "cache_read": 56308800,
-            "output": 6203085
+            "cache_read": 59639360,
+            "output": 6343269
           },
-          "cost_usd": 5.676862800000004,
-          "p50_ttft_ms": 7162,
-          "p90_ttft_ms": 13500,
-          "p50_output_tps": 74.17172990943482,
-          "measured_at": "2026-10-27T06:33:35.394Z",
+          "cost_usd": 5.953866750000005,
+          "p50_ttft_ms": 6899,
+          "p90_ttft_ms": 13181,
+          "p50_output_tps": 66.84917382918395,
+          "measured_at": "2026-10-27T21:40:48.935Z",
           "source": "sub2api usage_logs (read-only SELECT via podman exec psql)"
         }
       ],
-      "measured_at": "2026-10-27T06:33:35.394Z",
+      "measured_at": "2026-10-27T21:40:48.935Z",
       "source": "sub2api usage_logs (read-only SELECT via podman exec psql)"
     },
     {
@@ -212,7 +212,7 @@
           "p50_ttft_ms": 5892,
           "p90_ttft_ms": 15081,
           "p50_output_tps": 154.55442288720815,
-          "measured_at": "2026-10-27T06:33:35.394Z",
+          "measured_at": "2026-10-27T21:40:48.935Z",
           "source": "sub2api usage_logs (read-only SELECT via podman exec psql)"
         },
         {
@@ -228,7 +228,7 @@
           "p50_ttft_ms": 3084,
           "p90_ttft_ms": 6045,
           "p50_output_tps": 146.8235294117647,
-          "measured_at": "2026-10-27T06:33:35.394Z",
+          "measured_at": "2026-10-27T21:40:48.935Z",
           "source": "sub2api usage_logs (read-only SELECT via podman exec psql)"
         },
         {
@@ -244,7 +244,7 @@
           "p50_ttft_ms": 5819,
           "p90_ttft_ms": 11595,
           "p50_output_tps": 71.59931068986603,
-          "measured_at": "2026-10-27T06:33:35.394Z",
+          "measured_at": "2026-10-27T21:40:48.935Z",
           "source": "sub2api usage_logs (read-only SELECT via podman exec psql)"
         },
         {
@@ -260,14 +260,14 @@
           "p50_ttft_ms": 7236,
           "p90_ttft_ms": 18050,
           "p50_output_tps": 39.768215614602674,
-          "measured_at": "2026-10-27T06:33:35.394Z",
+          "measured_at": "2026-10-27T21:40:48.935Z",
           "source": "sub2api usage_logs (read-only SELECT via podman exec psql)"
         }
       ],
-      "measured_at": "2026-10-27T06:33:35.394Z",
+      "measured_at": "2026-10-27T21:40:48.935Z",
       "source": "sub2api usage_logs (read-only SELECT via podman exec psql)"
     }
   ],
-  "measured_at": "2026-10-27T06:33:35.394Z",
+  "measured_at": "2026-10-27T21:40:48.935Z",
   "source": "sub2api usage_logs (read-only SELECT via podman exec psql)"
 }

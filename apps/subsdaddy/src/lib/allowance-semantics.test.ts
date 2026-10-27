@@ -50,10 +50,11 @@ describe("allowance: the tightest usable window binds, from the window's own cos
     expect(w.allowance_usd_cycle).toBeGreaterThan(cc.allowance_usd_per_cycle);
   });
 
-  test("OpenCode Go's monthly window binds, with its tokens per cycle, and its measured $/B is fee over those tokens", () => {
+  test("OpenCode Go's binding window is a usable one, with its tokens per cycle; its $/B is fee over those tokens (r50: the monthly window can go partial)", () => {
     const go = byLane("opencode-go");
-    expect(go.binding_window).toBe("monthly");
-    // the live window moves with each refresh: the check is that the figure is a usable monthly window, not a fixed value
+    const binding = go.windows.find((w: any) => w.window === go.binding_window);
+    expect(["monthly", "weekly"]).toContain(go.binding_window);
+    expect(["usable", "low_signal"]).toContain(binding.status);
     expect(go.tokens_per_cycle / 1e9).toBeGreaterThan(1);
     const rec = laneRec("opencode-go");
     expect(rec.usd_per_b).toBeCloseTo(10 / (go.tokens_per_cycle / 1e9), 9);

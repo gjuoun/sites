@@ -160,7 +160,7 @@ type ViewRow = {
   key: string; label: string; fee: number; capacity: string | null; capacityReason: string; capDetail?: string[] | null; capNote?: string | null; capBadges?: BadgeKind[];
   allowance: AllowanceCell | null; allowanceReason: string;
   /** Tokens per 30 days the row's capacity implies; null when there is no capacity. Checked against the physical bound in viewRows. */
-  tokens30d: number | null; capTitle?: string | null;
+  tokens30d: number | null; capTitle?: string | null; capped?: boolean;
   usd: number | null; usdTitle: string; marker: "" | "*" | "†" | "‡";
   tps: number | null; tpsTitle: string; ttft: number | null; ttftTitle: string;
 };
@@ -303,32 +303,47 @@ export function shapeUsd(input: { fee: number; allowance: number; price: RefPric
   return { usd: input.fee / tokensB, tokens_b: tokensB, blend, band: p.band };
 }
 
+/** Billions of tokens for a tooltip: two decimals below 100B, whole billions above. */
+export function fmtBillions(b: number): string {
+  return b >= 100 ? Math.round(b).toLocaleString("en-US") + "B" : b.toFixed(2) + "B";
+}
+
 /**
- * A third-party allowance, priced in the list blend of the class it was measured on (Sonnet for Claude, Luna for Codex).
- * The chip model does not change it: a cheaper model would stretch the same dollars over more tokens, which is not how
- * the measured window behaves. The blend is fixed at the measured mix, so $/B does not move with Shape or context.
+ * A third-party measured allowance (r50), priced at the selected model. The dollars buy tokens at that model's blend
+ * (the shape's mix, the context's prompt band). The tokens are capped by the physical ceiling: no more agent hours in a
+ * month than there are, at the measured burn rate. A capped row's $/B is its fee over the ceiling, so it depends on
+ * the hours only. The measurement-class counterpart (Sonnet for Claude, Luna for Codex) stays in the tooltip.
  */
-function mixRow(r: CatalogRow, a: CatalogRow["allowance"][number], ds: DS, or: ReturnType<typeof orWeighted>): ViewRow {
-  const cls = a.mix_class ?? "";
-  const label = cls.charAt(0).toUpperCase() + cls.slice(1);
+export function thirdPartyRow(r: CatalogRow, a: CatalogRow["allowance"][number], ds: DS, ref: RefId, ctx: ContextId, shape: ShapeDef, or: ReturnType<typeof orWeighted>): ViewRow {
+  const refRow = ds.models.reference.find((x) => x.ref === ref);
+  if (!refRow) throw new Error("no reference price for " + ref);
+  const price = priceAt({ in_per_m: refRow.in_per_m, out_per_m: refRow.out_per_m, cache_per_m: refRow.cache_per_m, cache_write_per_m: refRow.cache_write_per_m ?? null, overrides: refRow.overrides ?? [] } as RefPrice, CONTEXTS[ctx]);
+  const blend = blendedUsdPerB(price.price, mixOf(shape));
   const fee = r.price_month_usd ?? 0;
-  const perB = (a.mix_blend_usd_per_million ?? 0.001) * 1000;
-  const capB = a.usd / perB;
-  void ds;
+  const dollarTokens = (a.usd / blend) * 1e9;
+  const ceilTokens = ds.context.throughput.tokens_per_active_hour.p50 * HOURS_PER_MONTH;
+  const capped = dollarTokens > ceilTokens;
+  const tokens30d = Math.min(dollarTokens, ceilTokens);
+  const capB = tokens30d / 1e9;
+  const parts = ["dollar-implied: " + fmtBillions(dollarTokens / 1e9), "hour-implied: " + fmtBillions(ceilTokens / 1e9)];
+  if (a.mix_blend_usd_per_million) {
+    parts.push("measured-mix counterpart (" + (a.mix_class ?? "") + "): " + fmtBillions(a.usd / (a.mix_blend_usd_per_million * 1000)));
+  }
   return {
     key: r.plan_id,
     label: r.label,
     fee,
-    tokens30d: capB * 1e9,
+    tokens30d,
     capacity: capB.toFixed(2) + "B/mo",
-    capNote: "@" + cls + " mix",
-    capTitle: "measured under a " + label + "-class mix; a cheaper model does not stretch the same window proportionally",
+    capNote: capped ? "capped by hours" : null,
+    capTitle: parts.join(" · "),
+    capped,
     capacityReason: "",
     capDetail: null,
     allowance: { usd: a.usd, cycle: 30, sup: supOf(a.kind ?? "", false) ?? "t", title: thirdPartyTitle(r) ?? a.basis },
     allowanceReason: "",
     usd: fee / capB,
-    usdTitle: "fee ÷ allowance at the " + label + " list blend, measured mix: fixed under every Shape and context",
+    usdTitle: "fee ÷ capacity at " + REF_NAMES[ref] + " list price (" + price.band + "), " + shape.label + ", " + contextLabel(ctx) + " context" + (capped ? "; capped by the hour ceiling" : ""),
     marker: "",
     tps: or.tps,
     tpsTitle: or.title || (or.reason ?? "no OpenRouter data"),
@@ -365,7 +380,7 @@ function modelRows(ds: DS, ref: RefId, ctx: ContextId, shape: ShapeDef): ViewRow
     }
     const mixA = r.allowance.find((a) => a.mix_class && a.mix_blend_usd_per_million);
     if (mixA) {
-      out.push(mixRow(r, mixA, ds, or));
+      out.push(thirdPartyRow(r, mixA, ds, ref, ctx, shape, or));
       continue;
     }
     // the value's own allowance, fee and price, re-blended under the chosen shape; no allowance means N/A with its reason
@@ -437,7 +452,12 @@ const naShort = (reason: string): Cell => ({ ...na(reason), reason: "" });
 
 export const BRING_YOUR_OWN = "Bring your own shape: a local collector is planned; the site will price every plan against your own cache share.";
 export const MEASURED_FOOTNOTE = "Measured $/B is per plan and reflects that plans own cache share; use Shape to compare on equal terms.";
-export const MIX_FOOTNOTE = "Rows marked @ are measured under one model class, so their $/B does not change with Shape or context.";
+/** The short model name the cap footnote uses: the brief's wording for Haiku, and the model's own name elsewhere (r50). */
+export const CAP_LABEL: Partial<Record<RefId, string>> = { "claude-haiku-5.5": "Haiku", "gpt-6-luna": "GPT-6 Luna" };
+export function capFootnote(ref: RefId): string {
+  return "at pure " + (CAP_LABEL[ref] ?? REF_NAMES[ref]) + " the weekly/hour window binds before the dollar allowance, so these rows reflect the hour ceiling, not the dollar ceiling";
+}
+export const CAP_FOOTNOTE = capFootnote("claude-haiku-5.5");
 export const PHYSICS_FOOTNOTE = "N/A where an allowance would need more agent hours a month than there are, at the measured burn rate.";
 export const SHAPE_FOOTNOTE = "Shape sets the token mix used to price every plan; Measured uses each plans own traffic.";
 
@@ -482,7 +502,7 @@ export function summaryTable(ds: DS, view: ViewId, ctx: ContextId = "short", sha
     if (data.some((r) => r.marker === "†")) lines.push(CONVERTED_FOOTNOTE(ctx));
     if (data.some((r) => r.marker === "‡")) lines.push(ARCHIVED_FOOTNOTE(ctx));
   }
-  if (data.some((r) => r.capTitle)) lines.push(MIX_FOOTNOTE);
+  if (view !== MEASURED && data.some((r) => r.capped)) lines.push(capFootnote(view));
   if (data.some((r) => r.capacity === null && r.capacityReason.includes(PHYSICS_MARK))) lines.push(PHYSICS_FOOTNOTE);
   lines.push(allowanceLegend(ds));
   lines.push(BRING_YOUR_OWN);
