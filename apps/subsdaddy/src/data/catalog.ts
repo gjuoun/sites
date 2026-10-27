@@ -32,6 +32,8 @@ export const allowanceEntrySchema = z.strictObject({
   ref: z.enum([...REF_LITERALS, "*"]),
   usd: z.number().positive(),
   basis: z.string().min(1),
+  /** vendor_published: a published pool; vendor_hours: Anthropic hour figure × measured throughput (r43). Absent means a pool from the build. */
+  kind: z.enum(["vendor_published", "vendor_hours"]).optional(),
 });
 
 const estimateValueSchema = z.strictObject({

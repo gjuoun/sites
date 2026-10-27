@@ -19,9 +19,10 @@ describe("classification: convertible (a dollar allowance) vs needs_anchor (none
     expect(c.convertible + c.needs_anchor + c.excluded_status).toBe(catalog.rows.length);
   });
 
-  test("the convertible plans are the ones with a dollar allowance: 10 at r29", () => {
-    const conv = catalog.rows.filter((r) => r.status === "catalog" && r.allowance.length > 0).map((r) => r.plan_id).sort();
-    expect(conv).toEqual(["commandcode-goat-published", "github-copilot-pro", "github-copilot-pro-plus", "opencode-go-go", "opencode-go-plus", "qwen-cloud-token-owner-10", "trae-pro", "trae-pro-plus", "trae-ultra", "zed-pro"]);
+  test("the convertible plans are those with a dollar allowance: the ten pools, plus the three Claude plans on hours (r43)", () => {
+    const conv = catalog.rows.filter((r) => r.status === "catalog" && r.allowance.length > 0).map((r) => r.plan_id);
+    expect(conv).toEqual(expect.arrayContaining(["claude-code-pro", "claude-code-max-5x", "claude-code-max-20x"]));
+    expect(conv.length).toBe(13);
     expect(rank.counts.convertible).toBe(conv.length);
   });
 

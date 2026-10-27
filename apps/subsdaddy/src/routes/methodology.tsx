@@ -11,6 +11,11 @@ import { hourWeighted } from "@/lib/official-prices";
 import { na, value } from "@/lib/cells";
 import { usd } from "@/lib/sections";
 import { cacheShare } from "@/lib/summary";
+import { cycleUsd, CLAUDE_CYCLE_DAYS } from "@/lib/claude-hours";
+import { pooledMix, type TokenTotals } from "@/data/estimate";
+import { claudePlansFileSchema } from "@/data/claude-plans";
+import claudePlansRaw from "../../data/claude-plans.json";
+import usageRaw from "../../data/usage.json";
 
 export const Route = createFileRoute("/methodology")({
   component: MethodologyPage,
@@ -72,6 +77,7 @@ function MethodologyPage() {
       <ShapeSection />
       <AllowanceColumnSection />
       <AllowanceSection />
+      <ClaudeHoursSection />
       <ClaudeSection />
       <ContextSection />
       <OfficialPlansSection />
@@ -292,6 +298,73 @@ function ClaudeSection() {
         A month of one's own Claude Code logs (ccusage-style, the same window method as the lanes above) would replace these conversions with a measured figure; that is the only change that should be made.
       </p>
       <UnifiedTable testId="claude-prompts" columns={cols} rows={rows} />
+    </section>
+  );
+}
+
+/** The Claude plans from Anthropic's hour figures: the three steps, each with its source, the bounds, and the caveats. */
+function ClaudeHoursSection() {
+  const ds = dataset as unknown as DS;
+  const file = claudePlansFileSchema.parse(claudePlansRaw);
+  const tp = ds.context.throughput;
+  const perHour = tp.tokens_per_active_hour.p50;
+  const usage = usageRaw as { lanes: Array<{ tokens: TokenTotals }> };
+  const pooled = pooledMix(usage.lanes.map((l) => ({ tokens: l.tokens })));
+  const mix = { output_share: pooled.output_share, cache_share: pooled.agent_cache_share, cache_write_share: pooled.cache_write_share ?? 0 };
+  const price = { in_per_m: file.price.in_per_m, out_per_m: file.price.out_per_m, cache_per_m: file.price.cache_read_per_m, cache_write_per_m: file.price.cache_write_per_m };
+  const usdPerB = cycleUsd(1, 1e9, price, mix).usdPerB;
+  const fmtB = (t: number) => (t / 1e9).toFixed(2) + "B";
+  const rows = file.plans.map((p) => {
+    const lo = cycleUsd(p.hours_per_week_low, perHour, price, mix);
+    const hi = cycleUsd(p.hours_per_week_high, perHour, price, mix);
+    const catRow = ds.catalog.rows.find((r) => r.plan_id === p.plan_id);
+    return {
+      key: p.plan_id,
+      cells: {
+        plan: value(p.plan),
+        fee: value(usd(p.fee_usd_per_month) + "/mo"),
+        hours: value(p.hours_per_week_low + "–" + p.hours_per_week_high + " h/wk"),
+        tokens: value(fmtB(lo.tokensPerWeek) + "/wk"),
+        low: catRow && catRow.allowance[0] ? value("$" + catRow.allowance[0].usd.toFixed(2) + "/" + CLAUDE_CYCLE_DAYS + "d") : na("no allowance"),
+        high: value("$" + hi.usdPerCycle.toFixed(2) + "/" + CLAUDE_CYCLE_DAYS + "d"),
+      },
+    };
+  });
+  const cols = [
+    { key: "plan", label: "Plan", width: "18%" },
+    { key: "fee", label: "Fee/mo", width: "12%", numeric: true },
+    { key: "hours", label: "Hours/wk (Anthropic)", width: "18%", numeric: true },
+    { key: "tokens", label: "Tokens/wk, lower", width: "18%", numeric: true },
+    { key: "low", label: "Allowance, lower bound", width: "17%", numeric: true },
+    { key: "high", label: "Allowance, upper bound", width: "17%", numeric: true },
+  ];
+  const sources = file.plans.map((p) => p.plan + ": " + p.source.quote + " Capture " + (p.source.capture_timestamp ?? "") + "; read " + p.source.read_date + ".");
+  return (
+    <section className="space-y-3" aria-labelledby="m-claude-hours">
+      <h2 id="m-claude-hours" className={SECTION_TITLE}>Claude plans from Anthropic's hour figures</h2>
+      <p>
+        Step 1, hours: Anthropic's help text gives a weekly range of hours of Sonnet 4 (and Opus 4 where stated). The lower bound is used; the upper bound is shown beside it. Source: {file.plans[0].source.url}, archived capture {file.plans[0].source.capture_timestamp ?? ""}, read {file.plans[0].source.read_date}.
+      </p>
+      <p>
+        Step 2, throughput: the tokens one active hour of agent work uses, measured on our pi sessions over 30 days (all four token classes; sessions with at least 9 active minutes; gaps capped at 5 minutes).
+        Median {(perHour / 1e6).toFixed(1)}M tokens per active hour over {tp.sample_sessions} sessions (p25 {(tp.tokens_per_active_hour.p25 / 1e6).toFixed(1)}M, p75 {(tp.tokens_per_active_hour.p75 / 1e6).toFixed(1)}M). It is stored in data/context.json and read from there.
+      </p>
+      <p>
+        Step 3, dollars: tokens per week × the blended list price of {file.price.model} at the measured mix ({"$" + usdPerB.toFixed(2)} per billion tokens), × {CLAUDE_CYCLE_DAYS}/7 for a {CLAUDE_CYCLE_DAYS}-day cycle.
+        Prices: {file.price.source.url}, read {file.price.source.read_date}: {"$" + file.price.in_per_m} input, {"$" + file.price.out_per_m} output, {"$" + file.price.cache_read_per_m} cache read, {"$" + file.price.cache_write_per_m} cache write per million tokens.
+      </p>
+      <UnifiedTable testId="claude-hours" columns={cols} rows={rows} />
+      <p className={SMALL_NOTE}>
+        Fees from the same archived capture: {file.fee_source.quote}. Capture {file.fee_source.capture_timestamp ?? ""}, read {file.fee_source.read_date}.
+      </p>
+      {sources.map((t) => (
+        <p key={t} className={SMALL_NOTE}>{t}</p>
+      ))}
+      <p className={SMALL_NOTE}>
+        Caveats. The hours are Sonnet 4 and Opus 4 figures from 2025, not Sonnet 5.5. The throughput is measured on all models in pi sessions, not on Claude Code. The measured mix moves
+        neither the hours nor the throughput, so these allowances do not move with Shape. Haiku and Luna are priced by the same dollar pool at their own list prices; Anthropic publishes no hour figure for them,
+        so their capacity is an extension of the dollar convention, not a stated limit.
+      </p>
     </section>
   );
 }

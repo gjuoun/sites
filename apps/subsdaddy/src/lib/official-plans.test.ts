@@ -1,4 +1,6 @@
 import { describe, expect, test } from "bun:test";
+import { cycleUsd } from "./claude-hours";
+import { pooledMix, type TokenTotals } from "../data/estimate";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { dataset } from "./dataset";
@@ -6,6 +8,8 @@ import { catalogFileSchema } from "../data/catalog";
 import { summaryTable, viewRows } from "./summary";
 import { modelsFileSchema } from "../data/schema";
 import type { DS } from "./sections";
+
+const APP_ROOT = join(import.meta.dir, "..", "..");
 
 const DATA = join(import.meta.dir, "..", "..", "data");
 const read = (f: string) => JSON.parse(readFileSync(join(DATA, f), "utf8"));
@@ -69,26 +73,58 @@ describe("Codex: messages per window converted to tokens", () => {
   });
 });
 
-describe("Claude: N/A, and no number anywhere in its N/A reasons", () => {
-  const claude = ["claude-code-pro", "claude-code-max-5x", "claude-code-max-20x"];
+describe("Claude: allowance from Anthropic's hour figure × measured throughput (r43)", () => {
+  const ids = ["claude-code-pro", "claude-code-max-5x", "claude-code-max-20x"];
+  const plansFile = JSON.parse(readFileSync(join(APP_ROOT, "data", "claude-plans.json"), "utf8"));
+  const ctx = JSON.parse(readFileSync(join(APP_ROOT, "data", "context.json"), "utf8"));
+  const usage = JSON.parse(readFileSync(join(APP_ROOT, "data", "usage.json"), "utf8"));
 
-  test("each Claude plan has no estimate and no capacity", () => {
-    for (const id of claude) {
+  test("each Claude plan carries a vendor_hours allowance, with no N/A reason", () => {
+    for (const id of ids) {
       const r = catalog.rows.find((x) => x.plan_id === id)!;
-      expect(r.estimate?.status).toBe("unavailable");
-      expect(r.estimate?.values ?? []).toHaveLength(0);
+      expect(r.allowance.length).toBe(1);
+      expect(r.allowance[0].kind).toBe("vendor_hours");
+      expect(r.allowance_reason ?? null).toBeNull();
     }
   });
 
-
-  test("no digit appears in any Claude N/A reason or title", () => {
-    for (const id of claude) {
-      const r = catalog.rows.find((x) => x.plan_id === id)!;
-      expect(r.allowance_reason ?? "").not.toMatch(/\d/);
-      expect(r.estimate?.reason ?? "").not.toMatch(/\d/);
+  test("the allowance is lower-bound hours × the context.json throughput × the Sonnet 5.5 blend at the measured mix × 30/7", () => {
+    const mixRaw = pooledMix(usage.lanes.map((l: { tokens: TokenTotals }) => ({ tokens: l.tokens })));
+    const mix = { output_share: mixRaw.output_share, cache_share: mixRaw.agent_cache_share, cache_write_share: mixRaw.cache_write_share ?? 0 };
+    const pr = plansFile.price;
+    const price = { in_per_m: pr.in_per_m, out_per_m: pr.out_per_m, cache_per_m: pr.cache_read_per_m, cache_write_per_m: pr.cache_write_per_m };
+    for (const p of plansFile.plans) {
+      const expected = cycleUsd(p.hours_per_week_low, ctx.throughput.tokens_per_active_hour.p50, price, mix).usdPerCycle;
+      const stored = catalog.rows.find((x) => x.plan_id === p.plan_id)!.allowance[0].usd;
+      expect(Math.abs(stored - expected)).toBeLessThan(0.01);
     }
   });
 
+  test("the hours are the archived quotes, and the lower bound is the one used", () => {
+    const by = Object.fromEntries(plansFile.plans.map((p: { plan_id: string }) => [p.plan_id, p]));
+    expect([by["claude-code-pro"].hours_per_week_low, by["claude-code-pro"].hours_per_week_high]).toEqual([40, 80]);
+    expect([by["claude-code-max-5x"].hours_per_week_low, by["claude-code-max-5x"].hours_per_week_high]).toEqual([140, 280]);
+    expect([by["claude-code-max-20x"].hours_per_week_low, by["claude-code-max-20x"].hours_per_week_high]).toEqual([240, 480]);
+    for (const p of plansFile.plans) {
+      expect(p.source.capture).toMatch(/^https:\/\/web\.archive\.org\/web\/20260103125258\//);
+      expect(p.source.quote).toContain(String(p.hours_per_week_low) + "-" + String(p.hours_per_week_high) + " hours");
+    }
+  });
+
+  test("the Sonnet 5.5 price is the pricing page's row: $2 in, $10 out, $0.10 cache read, $2.50 cache write", () => {
+    expect(plansFile.price.model).toBe("Claude Sonnet 5.5");
+    expect([plansFile.price.in_per_m, plansFile.price.out_per_m, plansFile.price.cache_read_per_m, plansFile.price.cache_write_per_m]).toEqual([2, 10, 0.1, 2.5]);
+    expect(plansFile.price.source.quote).toContain("Read $0.10 / MTok");
+  });
+
+  test("the throughput is read from context.json, and the file holds no session id, path or prompt", () => {
+    const tp = ctx.throughput;
+    expect(tp.tokens_per_active_hour.p50).toBeGreaterThan(0);
+    expect(tp.window_days).toBe(30);
+    expect(tp.min_active_minutes).toBe(9);
+    const text = JSON.stringify(tp);
+    expect(text).not.toMatch(/\.jsonl|\/Users\/|[0-9a-f]{8}-[0-9a-f]{4}/);
+  });
 });
 
 describe("reference models: the Luna and Haiku prices are the ones the official plans are read at", () => {
