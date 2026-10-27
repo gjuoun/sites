@@ -1,8 +1,9 @@
 // The Button glow variant, driven in headless Chrome with real pointer and focus input, in each colour mode. Per state
-// (rest, hover, focus) it reads the computed box-shadow and the pixels of the glow's own edge band, taken from a
-// screenshot and compared with the painted primary fill and with the bg role's value. The stock default button beside it
-// is the control. One real click moves the example's count. The pixel maths is pure (measureBand) and is tested on a
-// synthetic image as well as on the live page.
+// (rest, hover, focus) it reads the computed box-shadow and the pixels of the outside band: the four rows just outside the
+// button's edge, where the paleBlue halo is. Every band pixel must be tinted toward paleBlue, neither the canvas nor the
+// primary fill. The fill is sampled at its top and bottom ends to show it is a gradient. The stock default button beside it
+// is the control: it has no halo. One real click moves the example's count. The pixel maths is pure (measureBand) and is
+// tested on a synthetic image as well as on the live page.
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -13,51 +14,50 @@ export const PLAIN_SEL = '[data-demo="button"] [data-slot="button"][data-variant
 
 /** Screenshot margin around the button: the focus ring sits 3px outside the border box. */
 const MARGIN = 6;
-/** The edge band in px from the outer edge: the 1px border (transparent, so the canvas shows) and the 3px inset ring. */
+/** The outside band in px: the four rows just outside the border box, where the halo and the focus ring are. */
 const BAND = 4;
+/** The halo colour as painted: the palette's paleBlue (#b3e5fc). */
+const PALE: Rgb = [179, 229, 252];
 /** Transitions and animations off while sampling, so a colour caught mid-fade is never measured. */
 const QUIET = "*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}";
 
 export type Rgb = [number, number, number];
 export type State = "rest" | "hover" | "focus";
 
-/** One state's measurement of the glow button. `differ` counts edge pixels that are not the painted fill; `bg` counts those equal to the bg role. */
+/** One state's measurement of the glow button. `outer` counts the outside band: every pixel in it should be tinted toward paleBlue. */
 export interface Band {
 	state: State;
-	/** The painted fill, sampled inside the button (hover paints it at 80%, so this is what is on screen). */
+	/** The painted fill, sampled inside the button at mid-height, 6px in from the left edge. */
 	fill: Rgb | null;
-	/** The bg role's value: a probe element with `bg-background`, the class the glow ring uses. */
+	/** The gradient's two ends, sampled inside the button at mid-width, 3px in from the top edge and from the bottom edge. */
+	top: Rgb | null;
+	bottom: Rgb | null;
+	/** The bg role's value: a probe element with `bg-background`, the canvas colour. */
 	bg: Rgb | null;
-	/** The surface behind the button (the card it sits on), sampled 5px outside the outer edge. */
+	/** The surface 5px left of the outer edge: the catalogue cell the button sits in. */
 	surface: Rgb | null;
-	/** The 3px inset ring: px 1 to 4 inside the outer edge. `differ` counts ring pixels that are not the painted fill. */
-	ring: { total: number; differ: number; bg: number };
-	/** The border row: px 0 to 1 inside the outer edge. The 1px border is transparent in the stock, so the surface behind shows through. */
-	border: { total: number; differ: number; surface: number; other: number };
-	/** Border-row pixels that are neither the fill nor the bg role, with depth and colour (the first 12). */
-	odd: { depth: number; c: Rgb }[];
-	/** The outside band: px 1 to 4 outside the border box; `differ` counts pixels that are not the surface behind (an outer ring). */
-	outer: { total: number; differ: number };
+	/** The border box's top and left in document pixels: the hover lift moves the top. */
+	box: { T: number; L: number };
+	/** The outside band, the rows 1 to 4px outside the border box. Each pixel is the canvas, the fill or a gradient end, the focus ring, tinted toward paleBlue, or other. */
+	outer: { total: number; canvas: number; fill: number; ring: number; tinted: number; strong: number; other: number };
 	focusVisible: boolean;
 	shadow: string;
 }
-
 /** Geometry read from the page, in document pixels. */
 export interface Geo { L: number; T: number; R: number; B: number; radius: number; fill: string; bg: string; focusVisible: boolean; shadow: string }
 
 export interface ModeReading {
 	canvas: string;
-	/** The glow button at rest: its computed box-shadow (`halo`) and the inset ring's colour. */
+	/** The glow button at rest: its computed box-shadow (`halo`), and whether that shadow carries the paleBlue halo. */
 	halo: string;
-	haloRgb: Rgb | null;
+	paleInHalo: boolean;
 	hoverShadow: string;
 	focusShadow: string;
-	/** The stock default button at rest: no ring, its own box-shadow. */
+	/** The stock default button at rest: no halo, its own box-shadow. */
 	defaultShadow: string;
 	band: { rest: Band; hover: Band; focus: Band };
 	plain: Band;
 }
-
 export interface GlowRun {
 	initialMode: string | undefined;
 	light: ModeReading;
@@ -74,46 +74,46 @@ export function rgbOf(colour: string): Rgb | null {
 	return m ? [Number(m[1]), Number(m[2]), Number(m[3])] : null;
 }
 
-/** The colour of the inset 3px ring in a computed box-shadow (Tailwind inset-ring-3 is `inset 0 0 0 3px`). */
-export function insetRingRgb(shadow: string): Rgb | null {
-	const m = /(rgba?\((\d+), (\d+), (\d+))(?:, [\d.]+)?\) 0px 0px 0px 3px inset/.exec(shadow);
-	return m ? [Number(m[2]), Number(m[3]), Number(m[4])] : null;
-}
-
+/** Whether a computed box-shadow carries the paleBlue halo (Chrome prints the colour as rgb(179, 229, 252)). */
+export const paleIn = (shadow: string) => shadow.includes("rgb(179, 229, 252)");
 /** Whether the computed box-shadow has an outer 3px ring (the stock focus-visible ring is one). */
 export const hasOuterRing = (shadow: string) => /0px 0px 0px 3px(?! inset)/.test(shadow);
 
 /**
- * Measures the glow's edge band from decoded RGBA pixels of a screenshot taken at `clip` (document pixels). Pure: no browser,
- * so the counting is testable on a synthetic image. A pixel counts for the edge band when its centre is inside the button and
- * less than BAND px from the outer edge; the corner squares (the radius plus 1px) are skipped, where the arc is anti-aliased.
+ * Measures the outside band from decoded RGBA pixels of a screenshot taken at `clip` (document pixels). Pure: no browser, so
+ * the counting is testable on a synthetic image. A pixel is in the band when its centre is 0 to 4px outside the border box;
+ * the corner squares (the radius plus 1px) are skipped, where the arc is anti-aliased. A band pixel is one of: the focus ring
+ * (3px, blue: blue minus red over 90, where the paleBlue halo never exceeds 73), the canvas, the fill or a gradient end, tinted
+ * toward paleBlue (nearer paleBlue than the canvas is, and bluer than it), or other. Of the tinted, `strong` is those at least a
+ * quarter of the way to paleBlue with a clear blue margin: the halo, as opposed to a faintly bluer border line.
  */
-export function measureBand(
-	state: State,
-	img: { w: number; h: number; d: number[] },
-	clip: { x: number; y: number },
-	geo: Geo,
-): Band {
+export function measureBand(state: State, img: { w: number; h: number; d: number[] }, clip: { x: number; y: number }, geo: Geo): Band {
 	const px = (ix: number, iy: number): Rgb => {
 		const i = (iy * img.w + ix) * 4;
 		return [img.d[i]!, img.d[i + 1]!, img.d[i + 2]!];
 	};
 	const at = (x: number, y: number) => px(Math.floor(x - clip.x), Math.floor(y - clip.y));
 	const same = (a: Rgb, b: Rgb) => a[0] === b[0] && a[1] === b[1] && a[2] === b[2];
-	// The painted fill: inside the button at mid-height, 6px in from the left edge (the label starts at 10px of padding).
-	const fill = at(geo.L + 6, (geo.T + geo.B) / 2);
-	const surface = at(geo.L - 5, (geo.T + geo.B) / 2);
+	const dist = (a: Rgb, b: Rgb) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+	const blueness = (c: Rgb) => c[2] - c[0];
+	const midX = (geo.L + geo.R) / 2;
+	const midY = (geo.T + geo.B) / 2;
+	const fill = at(geo.L + 6, midY);
+	const top = at(midX, geo.T + 3);
+	const bottom = at(midX, geo.B - 3);
+	const surface = at(geo.L - 5, midY);
 	const bg = rgbOf(geo.bg);
 	if (!bg) throw new Error("bg role probe did not resolve to a colour: " + geo.bg);
+	const ends = [fill, top, bottom];
 	const out: Band = {
 		state,
 		fill,
+		top,
+		bottom,
 		bg,
 		surface,
-		ring: { total: 0, differ: 0, bg: 0 },
-		border: { total: 0, differ: 0, surface: 0, other: 0 },
-		odd: [],
-		outer: { total: 0, differ: 0 },
+		box: { T: geo.T, L: geo.L },
+		outer: { total: 0, canvas: 0, fill: 0, ring: 0, tinted: 0, strong: 0, other: 0 },
 		focusVisible: geo.focusVisible,
 		shadow: geo.shadow,
 	};
@@ -124,31 +124,21 @@ export function measureBand(
 			const cy = clip.y + iy + 0.5;
 			if ((cx - geo.L < corner || geo.R - cx < corner) && (cy - geo.T < corner || geo.B - cy < corner)) continue;
 			const depth = Math.min(cx - geo.L, geo.R - cx, cy - geo.T, geo.B - cy);
+			if (depth >= 0 || depth <= -BAND) continue;
 			const c = px(ix, iy);
-			const isBg = same(c, bg);
-			const isSurface = same(c, surface);
-			if (depth > 0) {
-				if (depth < 1) {
-					out.border.total++;
-					if (!same(c, fill)) out.border.differ++;
-					if (isSurface) out.border.surface++;
-					if (!same(c, fill) && !isSurface) {
-						out.border.other++;
-						if (out.odd.length < 12) out.odd.push({ depth, c });
-					}
-				} else if (depth < BAND) {
-					out.ring.total++;
-					if (!same(c, fill)) out.ring.differ++;
-					if (isBg) out.ring.bg++;
-				}
-			} else if (depth > -BAND) {
-				out.outer.total++;
-				if (!isSurface) out.outer.differ++;
+			out.outer.total++;
+			if (depth > -3 && blueness(c) > 90) out.outer.ring++;
+			else if (same(c, bg)) out.outer.canvas++;
+			else if (ends.some((e) => e && same(c, e))) out.outer.fill++;
+			else if (dist(c, PALE) < dist(bg, PALE) && blueness(c) > blueness(bg)) {
+				out.outer.tinted++;
+				// strong: at least a quarter of the way to paleBlue, with a clear blue margin (a 1px panel border is weakly bluer)
+				if (dist(c, PALE) <= 0.75 * dist(bg, PALE) && blueness(c) >= blueness(bg) + 8) out.outer.strong++;
 			}
+			else out.outer.other++;
 		}
 	return out;
 }
-
 /** Runs the glow sequence on the built page at distDir + path, at the given width. */
 export async function runGlow(distDir: string, path: string, width: number): Promise<GlowRun> {
 	const chrome = findChrome();
@@ -251,7 +241,7 @@ export async function runGlow(distDir: string, path: string, width: number): Pro
 			return {
 				canvas,
 				halo: rest.shadow,
-				haloRgb: insetRingRgb(rest.shadow),
+				paleInHalo: paleIn(rest.shadow),
 				hoverShadow: hover.shadow,
 				focusShadow: focus.shadow,
 				defaultShadow: plain.shadow,
