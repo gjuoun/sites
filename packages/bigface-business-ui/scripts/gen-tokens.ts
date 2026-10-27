@@ -12,7 +12,7 @@
 // motion value: those are Tailwind's and shadcn's own.
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { DERIVED, DERIVED_KEYS, REQUIRED, THEMES, type Theme } from "../src/themes/roles.ts";
+import { REQUIRED, THEMES, type Theme } from "../src/themes/roles.ts";
 import { contrastRatio } from "../../bigface-tokens/src/contrast-math.ts";
 
 export interface PaletteLike {
@@ -105,13 +105,6 @@ export function renderThemeFile(theme: Theme, dark: PaletteLike, light: PaletteL
 		const d = hexOf(dark, paletteName);
 		return "  --theme-" + role + ": " + (l === d ? l : "light-dark(" + l + ", " + d + ")") + ";";
 	});
-	// derived roles: the same mix in each mode, so a derived role is light-dark() when the palettes differ, else bare
-	const derived = DERIVED_KEYS.map((key) => {
-		const { from, pct, into } = DERIVED[key];
-		const l = mixHex(hexOf(light, from), pct, hexOf(light, into));
-		const d = mixHex(hexOf(dark, from), pct, hexOf(dark, into));
-		return "  --theme-" + key + ": " + (l === d ? l : "light-dark(" + l + ", " + d + ")") + ";";
-	});
 	const extra = Object.keys(theme.roles).filter((k) => !(REQUIRED as readonly string[]).includes(k));
 	if (extra.length) throw new Error(theme.id + ": unknown roles " + extra.join(", "));
 	return [
@@ -121,7 +114,6 @@ export function renderThemeFile(theme: Theme, dark: PaletteLike, light: PaletteL
 		"",
 		sel + " {",
 		...decls,
-		...derived,
 		"} ",
 		"",
 	].join("\n");

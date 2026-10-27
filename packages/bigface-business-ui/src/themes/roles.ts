@@ -20,16 +20,6 @@ export const ACCENTS = ["blue", "lightBlue", "paleBlue", "cyan", "green", "burnt
 /** Every role a theme must set. There is no optional tier: the contract is the whole list. */
 export const REQUIRED = [...NEUTRALS, ...ACCENTS] as const;
 
-/**
- * Derived roles: computed from the palette by the OKLab mix in scripts/gen-tokens.ts, never typed by hand. A derived
- * role is NOT a REQUIRED role (the contract stays 12). glow-halo is the ring of the glow button variant: 40% of the
- * blue accent in the canvas, per mode. Its only use is a decorative ring, so it carries no text.
- */
-export const DERIVED = {
-	"glow-halo": { from: "blue", pct: 40, into: "bg" },
-} as const;
-export const DERIVED_KEYS = Object.keys(DERIVED) as (keyof typeof DERIVED)[];
-
 /** A theme maps each role to a palette colour name. */
 export type ThemeRoles = Record<string, string>;
 

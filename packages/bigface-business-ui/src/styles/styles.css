@@ -91,7 +91,6 @@
   --color-input-track: light-dark(var(--theme-border), color-mix(in oklab, var(--theme-border) 80%, transparent));
   --color-danger-veil: light-dark(color-mix(in oklab, var(--theme-burntOrange) 10%, transparent), color-mix(in oklab, var(--theme-burntOrange) 20%, transparent));
   --color-danger-veil-hover: light-dark(color-mix(in oklab, var(--theme-burntOrange) 20%, transparent), color-mix(in oklab, var(--theme-burntOrange) 30%, transparent));
-  --color-glow-halo: var(--theme-glow-halo);
   --color-danger-halo: light-dark(color-mix(in oklab, var(--theme-burntOrange) 20%, transparent), color-mix(in oklab, var(--theme-burntOrange) 40%, transparent));
   --color-danger-edge: light-dark(var(--theme-burntOrange), color-mix(in oklab, var(--theme-burntOrange) 50%, transparent));
   --color-danger-line: light-dark(color-mix(in oklab, var(--theme-burntOrange) 30%, transparent), color-mix(in oklab, var(--theme-burntOrange) 40%, transparent));
