@@ -35,4 +35,11 @@ describe("no legacy mode syntax in the package", () => {
 		expect(css).not.toContain("@custom-variant dark");
 		expect(css).not.toMatch(/--color-(black|white)\b/);
 	});
+
+	test("color-scheme is declared by exactly three rules: root, light, dark", () => {
+		const css = readFileSync(join(SRC, "styles/styles.css"), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+		const rules = [...css.matchAll(/([^{}]+)\{\s*color-scheme:\s*(\w+)\s*;?\s*\}/g)].map((m) => m[1]!.trim() + "=" + m[2]);
+		expect(css.match(/color-scheme\s*:/g)?.length).toBe(3);
+		expect(rules.sort()).toEqual([':root=light', '[data-mode="dark"]=dark', '[data-mode="light"]=light']);
+	});
 });
