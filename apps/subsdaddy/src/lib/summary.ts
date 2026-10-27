@@ -107,12 +107,17 @@ export function capDetailOf(l: DsLane): string[] {
     return head + " · " + cost + allow;
   });
   if (c.tokens_per_cycle !== null) lines.push("binding: " + c.window + " window · cycle " + c.cycle_days + " days" + (c.cycle_billed ? "" : " · fee " + (c.fee_basis ?? "not read")));
+  const published = c.allowance_published_usd ?? null;
   const vendor = c.allowance_vendor_usd ?? null;
   const derived = c.allowance_derived_usd ?? null;
-  if (vendor !== null && derived !== null) {
+  const unpricedNote = c.unpriced_share === null || c.unpriced_share === undefined || c.unpriced_share === 0 ? "" : ", includes " + Math.round(c.unpriced_share * 100) + "% unpriced";
+  if (published !== null) {
+    lines.push("published allowance: $" + published.toFixed(2) + " per cycle (used by the model views)");
+    if (vendor !== null) lines.push("dashboard pool: $" + vendor.toFixed(2) + " (matches the monthly window): recorded as a difference from the published figure");
+    if (derived !== null) lines.push("derived: $" + derived.toFixed(2) + " (from the quota windows" + unpricedNote + ")");
+  } else if (vendor !== null && derived !== null) {
     lines.push("vendor-reported pool: $" + vendor.toFixed(2) + " per cycle (used by the model views)");
-    const unpriced = c.unpriced_share === null || c.unpriced_share === undefined ? "" : ", includes " + Math.round(c.unpriced_share * 100) + "% unpriced";
-    lines.push("derived: $" + derived.toFixed(2) + " (lower estimate" + unpriced + ")");
+    lines.push("derived: $" + derived.toFixed(2) + " (lower estimate" + unpricedNote + ")");
   } else if (derived !== null) {
     lines.push("allowance: derived $" + derived.toFixed(2) + " per cycle" + (c.allowance_vendor_reason ? " (" + c.allowance_vendor_reason + ")" : ""));
   }

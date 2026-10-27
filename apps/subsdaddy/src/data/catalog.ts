@@ -100,6 +100,9 @@ export const catalogRowSchema = z
     // the reference models this plan offers, from its official model list; a model not listed gets no row
     offered_models: z.array(z.enum(REF_LITERALS)).default([]),
     offered_basis: z.string().min(1).nullable().default(null),
+    // the allowance the vendor publishes for this plan, in usage dollars per cycle; null when it publishes none
+    published_allowance_usd: z.number().positive().nullable().optional(),
+    published_allowance_basis: z.string().min(1).nullable().optional(),
     // the measured lane whose $/B is this plan's own measurement, when there is one
     measured_lane: z.enum(LANES).nullable().default(null),
     // a plan published as messages per five-hour window (Codex): converted to tokens in messages.ts, never a dollar allowance

@@ -192,7 +192,7 @@ export const modelsFileSchema = z.object({
   ),
   // list prices for usage-only model ids (not in the reference list), and aliases that map raw ids onto them
   usage_prices: z
-    .array(z.object({ openrouter: z.string().min(1), in_per_m: z.number().nonnegative(), out_per_m: z.number().nonnegative(), cache_per_m: z.number().nonnegative(), cache_write_per_m: z.number().nonnegative().nullable(), source: z.string().min(1), basis: z.string().min(1) }))
+    .array(z.object({ openrouter: z.string().min(1), in_per_m: z.number().nonnegative(), out_per_m: z.number().nonnegative(), cache_per_m: z.number().nonnegative(), cache_write_per_m: z.number().nonnegative().nullable(), source: z.string().min(1), basis: z.string().min(1), price_basis: z.string().min(1).optional() }))
     .default([]),
   model_aliases: z.record(z.string().min(1), z.string().min(1)).default({}),
   unpriced_notes: z.record(z.string().min(1), z.string().min(1)).default({}),
@@ -290,7 +290,8 @@ export const laneRecordSchema = z.object({
     window: z.enum(["5h", "weekly", "monthly"]).nullable(),
     cycle_days: z.number().positive().nullable(),
     cycle_billed: z.boolean(),
-    allowance_basis: z.enum(["vendor_reported", "derived"]).nullable().optional(),
+    allowance_basis: z.enum(["vendor_published", "vendor_reported", "derived"]).nullable().optional(),
+    allowance_published_usd: z.number().positive().nullable().optional(),
     allowance_vendor_usd: z.number().positive().nullable().optional(),
     allowance_vendor_reason: z.string().nullable().optional(),
     allowance_derived_usd: z.number().positive().nullable().optional(),

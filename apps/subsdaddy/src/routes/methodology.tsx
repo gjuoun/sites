@@ -235,8 +235,10 @@ function AllowanceSection() {
       </p>
       <UnifiedTable testId="allowance" columns={cols} rows={rows} />
       <p>Z.ai's two readings are both 1% used: low signal. It is ranked at low confidence. Its weekly window binds, and its fee for that cycle is the annual price ($672) prorated to 7 days over 365; no monthly window is read for it.</p>
-      <p>A vendor-reported pool, when codexbar states one (CommandCode's plan line reads $35.00 of $70.00), is the allowance when its used share matches the monthly window. The derived figure is kept beside it, and the lower estimate says so. OpenCode Go states no pool (its provider cost has no limit), so its allowance is derived. Model views use the allowance chosen; the Measured $/B does not depend on it.</p>
-      <p>Unpriced tokens are named by model id. CommandCode's remaining unpriced usage is deepseek-v4.1-flash-fast, which has no OpenRouter listing; no price is assumed for it.</p>
+      <p>CommandCode publishes $80 of usage; our dashboard read on 2026-10-27 showed a $70 pool at 50% used. Both are recorded; the published figure is used.</p>
+      <p>Where a plan publishes an allowance, that figure is the allowance (basis vendor_published). Where codexbar states a pool whose used share matches the monthly window, that pool is the allowance (vendor_reported). Otherwise the allowance is derived from the quota windows, and the derived figure is kept beside any other. OpenCode Go publishes no per-cycle figure and states no pool, so its allowance is derived. Model views use the allowance chosen; the Measured $/B does not depend on it.</p>
+      <p>deepseek-v4.1-flash-fast has no public listing; it is priced at the same rate as deepseek-v4.1-flash (assumed_alias_rate).</p>
+      <p>glm-5.3 has no public list price on OpenRouter; it is priced at the GLM-5.3-Flash rate (assumed_alias_rate).</p>
     </section>
   );
 }

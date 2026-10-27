@@ -109,11 +109,11 @@ function estimateRow(row: CatalogRow) {
   const low = Math.min(...agent);
   const high = Math.max(...agent);
   const basis =
-    "fee $" + fee + (measuredUsd !== null ? " per cycle ÷ " + (measured!.allowance_basis === "vendor_reported" ? "vendor-reported pool" : "derived allowance") : "/mo ÷ published usage-dollar allowance") + " (" + ratios.join(", ") + ") × blended list cost per billion tokens of each reference model; " +
+    "fee $" + fee + (measuredUsd !== null ? " per cycle ÷ " + (measured!.allowance_basis === "vendor_published" ? "published allowance" : measured!.allowance_basis === "vendor_reported" ? "vendor-reported pool" : "derived allowance") : "/mo ÷ published usage-dollar allowance") + " (" + ratios.join(", ") + ") × blended list cost per billion tokens of each reference model; " +
     (row.measured_lane ? "this plan's own measured" : "pooled measured") + " mix: output share " + (rowMix.output_share * 100).toFixed(2) + "%, agent cache share " + (rowMix.agent_cache_share * 100).toFixed(2) + "%, cache write share " + ((rowMix.cache_write_share ?? 0) * 100).toFixed(2) + "% (interactive 0%, cache_heavy 94%)" +
     "; standard contexts: 100K (table) and 350K, with p75 " + kTok(P75) + " as sensitivity (session-end median " + kTok(context.quantiles.p50) + ", p90 " + kTok(context.quantiles.p90) + ", " + context.sample_sessions.toLocaleString("en-US") + " sessions)" +
     (anomalies.size > 0 ? "; " + [...anomalies].join("; ") : "") +
-    (measuredUsd !== null ? "; allowance " + (measured!.allowance_basis === "vendor_reported" ? "is the vendor-reported pool" : "is derived from the quota windows") + " (" + measured!.binding_window + " window, " + measured!.cycle_days + "-day cycle): $" + measuredUsd.toFixed(2) + " per cycle, replacing the published allowance" : "") +
+    (measuredUsd !== null ? "; allowance " + (measured!.allowance_basis === "vendor_published" ? "is the published allowance" : measured!.allowance_basis === "vendor_reported" ? "is the vendor-reported pool" : "is derived from the quota windows") + " (" + measured!.binding_window + " window, " + measured!.cycle_days + "-day cycle): $" + measuredUsd.toFixed(2) + " per cycle, replacing the published allowance" : "") +
     (tierNotes.size > 0 ? "; prices: " + [...tierNotes].join("; ") : "") + ".";
   return { status: "estimated" as const, reason: null, basis, values, range_agent: [low, high] as [number, number] };
 }

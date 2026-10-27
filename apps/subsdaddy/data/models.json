@@ -21,7 +21,7 @@
       "openrouter": "deepseek/deepseek-v4.1-flash-1017"
     }
   ],
-  "measured_at": "2026-10-27T01:28:24.574Z",
+  "measured_at": "2026-10-27T01:34:52.069Z",
   "source": "openrouter.ai/api/v1/models, fetched 2026-10-26 (list price, USD per 1M tokens); lane model mapping as before",
   "reference": [
     {
@@ -41,13 +41,13 @@
       },
       "price_status": "official",
       "price_anomaly": null,
-      "last_verified_at": "2026-10-27T01:28:24.574Z",
+      "last_verified_at": "2026-10-27T01:34:52.069Z",
       "cache_write_per_m": null,
       "overrides": [],
       "source": "https://api-docs.deepseek.com/quick_start/pricing/, 2026-10-27; mean of peak and off-peak",
       "official": {
         "source": "https://api-docs.deepseek.com/quick_start/pricing/",
-        "fetched_at": "2026-10-27T01:28:24.574Z",
+        "fetched_at": "2026-10-27T01:34:52.069Z",
         "model_label": "deepseek-flash, served by DeepSeek-V4.1-Flash-1017, 1M context",
         "peak": {
           "in_per_m": 0.3,
@@ -83,7 +83,7 @@
       "overrides": [],
       "price_status": "verified",
       "price_anomaly": null,
-      "last_verified_at": "2026-10-27T01:28:24.574Z",
+      "last_verified_at": "2026-10-27T01:34:52.069Z",
       "source": "openrouter.ai/api/v1/models, 2026-10-27",
       "price_note": null
     },
@@ -115,7 +115,7 @@
       },
       "price_status": "verified",
       "price_anomaly": null,
-      "last_verified_at": "2026-10-27T01:28:24.574Z",
+      "last_verified_at": "2026-10-27T01:34:52.069Z",
       "source": "openrouter.ai/api/v1/models, 2026-10-27",
       "price_note": null
     },
@@ -147,7 +147,7 @@
       },
       "price_status": "verified",
       "price_anomaly": null,
-      "last_verified_at": "2026-10-27T01:28:24.574Z",
+      "last_verified_at": "2026-10-27T01:34:52.069Z",
       "source": "openrouter.ai/api/v1/models, 2026-10-27",
       "price_note": null
     },
@@ -170,7 +170,7 @@
       "overrides": [],
       "price_status": "verified",
       "price_anomaly": null,
-      "last_verified_at": "2026-10-27T01:28:24.574Z",
+      "last_verified_at": "2026-10-27T01:34:52.069Z",
       "source": "openrouter.ai/api/v1/models, 2026-10-27",
       "price_note": null
     }
@@ -309,7 +309,8 @@
       "cache_per_m": 0.0028,
       "cache_write_per_m": null,
       "source": "openrouter.ai/api/v1/models, read 2026-10-27 (list price, USD per 1M tokens)",
-      "basis": "list price"
+      "basis": "list price",
+      "price_basis": "list price"
     },
     {
       "openrouter": "deepseek/deepseek-v4.1-flash-1017",
@@ -318,16 +319,37 @@
       "cache_per_m": 0.0045,
       "cache_write_per_m": null,
       "source": "same model as deepseek-v4.1-flash; peak/off-peak arithmetic mean from the official pricing page (owner ruling 2026-10-26). The OpenRouter listing read 2026-10-27 shows 0.30 / 1.20 / 0.006 at peak and is not used",
-      "basis": "official peak/off-peak arithmetic mean"
+      "basis": "official peak/off-peak arithmetic mean",
+      "price_basis": "official peak/off-peak arithmetic mean"
+    },
+    {
+      "openrouter": "deepseek/deepseek-v4.1-flash-fast",
+      "in_per_m": 0.225,
+      "out_per_m": 0.9,
+      "cache_per_m": 0.0045,
+      "cache_write_per_m": null,
+      "source": "no public listing for this id (OpenRouter, read 2026-10-27); priced at the same rate as deepseek-v4.1-flash (peak/off-peak arithmetic mean, owner ruling 2026-10-26)",
+      "basis": "assumed alias rate: same as deepseek-v4.1-flash",
+      "price_basis": "assumed_alias_rate"
+    },
+    {
+      "openrouter": "z-ai/glm-5.3",
+      "in_per_m": 0.15,
+      "out_per_m": 0.5,
+      "cache_per_m": 0.03,
+      "cache_write_per_m": null,
+      "source": "no public list price for glm-5.3 on OpenRouter; priced at the GLM-5.3-Flash rate (listed separately in methodology)",
+      "basis": "assumed alias rate: same as GLM-5.3-Flash",
+      "price_basis": "assumed_alias_rate"
     }
   ],
   "model_aliases": {
     "deepseek-flash": "deepseek/deepseek-v4.1-flash-1017",
     "jun-deepseek-flash": "deepseek/deepseek-v4.1-flash-1017",
     "deepseek-v4.1-flash-1017": "deepseek/deepseek-v4.1-flash-1017",
-    "mimo-v2.6-flash": "xiaomi/mimo-v2.6-flash"
+    "mimo-v2.6-flash": "xiaomi/mimo-v2.6-flash",
+    "deepseek/deepseek-v4.1-flash-fast": "deepseek/deepseek-v4.1-flash-fast",
+    "glm-5.3": "z-ai/glm-5.3"
   },
-  "unpriced_notes": {
-    "deepseek/deepseek-v4.1-flash-fast": "no listing for this id on OpenRouter (read 2026-10-27); no list price is assumed, so its tokens stay unpriced and are named"
-  }
+  "unpriced_notes": {}
 }

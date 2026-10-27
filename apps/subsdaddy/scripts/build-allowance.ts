@@ -75,6 +75,7 @@ const lanes = LANES.map((lane) => {
   const fee: number | null = plan?.price_month_usd ?? null;
   const catRow = catalog.rows.find((r: any) => r.measured_lane === lane);
   const annual: number | null = catRow?.price_annual_usd ?? null;
+  const published: number | null = catRow?.published_allowance_usd ?? null;
   const u = usage.lanes.find((x: any) => x.lane === lane);
   const mix = pooledMix([{ tokens: u.tokens }]);
   const base = {
@@ -87,7 +88,7 @@ const lanes = LANES.map((lane) => {
   const cycle = cycleOf(readings);
   const empty = (reason: string, extra: Record<string, unknown> = {}) => ({
     ...base, fee_usd: fee, fee_per_cycle_usd: null, fee_basis: null, cycle_minutes: cycle?.minutes ?? null, cycle_days: cycle ? cycle.minutes / 1440 : null, cycle_billed: cycle?.billed ?? false,
-    allowance_usd_per_cycle: null, allowance_basis: null, allowance_vendor_usd: null, allowance_vendor_reason: null, allowance_derived_usd: null,
+    allowance_usd_per_cycle: null, allowance_basis: null, allowance_published_usd: null, allowance_vendor_usd: null, allowance_vendor_reason: null, allowance_derived_usd: null,
     tokens_per_cycle: null, binding_window: null, binding_coverage: null, binding_unpriced_share: null, low_coverage: false, confidence: null,
     list_usd_per_b_effective: null, usd_per_b_measured: null, reason, top_models: [], windows: [], models: [], ...extra,
   });
@@ -118,8 +119,9 @@ const lanes = LANES.map((lane) => {
   const top = [...byModel.entries()].sort((a, c) => c[1] - a[1]).slice(0, 3).map(([model, t]) => ({ model, label: labelOf(model), share: total > 0 ? t / total : 0 }));
 
   const derived = b.allowance_usd_cycle as number;
-  const chosen = vendor.usd ?? derived;
-  const allowanceBasis = vendor.usd !== null ? "vendor_reported" : "derived";
+  // the published figure is the allowance; else a matching dashboard pool; else the derived figure. All are recorded.
+  const chosen = published ?? vendor.usd ?? derived;
+  const allowanceBasis = published !== null ? "vendor_published" : vendor.usd !== null ? "vendor_reported" : "derived";
   const tokensCycle = b.tokens_cycle as number;
   const measuredPerB = feePerCycle !== null ? feePerCycle / (tokensCycle / 1e9) : null;
   const modelRows = models.reference.map((r: any) => {
@@ -140,6 +142,7 @@ const lanes = LANES.map((lane) => {
     cycle_billed: cycle.billed,
     allowance_usd_per_cycle: chosen,
     allowance_basis: allowanceBasis,
+    allowance_published_usd: published,
     allowance_vendor_usd: vendor.usd,
     allowance_vendor_reason: vendor.reason,
     allowance_derived_usd: derived,
