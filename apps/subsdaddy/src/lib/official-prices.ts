@@ -3,7 +3,7 @@
  *
  * The DeepSeek table gives two bands per token class: off-peak and peak. Its footnote says off-peak rates are
  * half of peak. The parser checks that before it accepts a table, so a misread column cannot pass.
- * The flat price used for estimates is the arithmetic mean of the two bands (owner ruling, 2026-10-26).
+ * The flat price used for estimates is the hour-weighted average of the two bands: peak covers 35 of 168 hours a week (r42 ruling, 2026-10-27).
  */
 
 export type PriceTriple = { in_per_m: number; out_per_m: number; cache_per_m: number };
@@ -11,7 +11,7 @@ export type OfficialTiers = { peak: PriceTriple; off_peak: PriceTriple; peak_hou
 
 export const DEEPSEEK_PRICING_URL = "https://api-docs.deepseek.com/quick_start/pricing/";
 
-/** Peak is 01:00-04:00 and 06:00-10:00 UTC, Monday to Friday: 3 + 4 = 7 hours on 5 of 7 days. */
+/** Peak is 01:00-04:00 and 06:00-10:00 UTC, Monday to Friday: 3 + 4 = 7 hours on 5 of 7 days. Public holidays are not excluded (the page excludes them; the weight does not). */
 export const PEAK_HOURS_PER_WEEK = 7 * 5;
 export const HOURS_PER_WEEK = 168;
 
@@ -37,6 +37,8 @@ export function parseDeepSeekFlash(text: string): OfficialTiers | null {
   const out = pair(text, /1M OUTPUT TOKENS\s+OFF-PEAK \$([\d.]+)\s+\$[\d.]+\s+PEAK \$([\d.]+)/);
   const hours = /Peak hours are ([^.]+)\./.exec(text);
   if (!hit || !miss || !out || !hours) return null;
+  // the weight below assumes this schedule; any other schedule is refused, not silently weighted
+  if (!/01:00 - 04:00 and 06:00 - 10:00 UTC, Monday through Friday/.test(hours[1])) return null;
   const tiers: OfficialTiers = {
     peak: { in_per_m: miss.peak, out_per_m: out.peak, cache_per_m: hit.peak },
     off_peak: { in_per_m: miss.off, out_per_m: out.off, cache_per_m: hit.off },
@@ -45,21 +47,11 @@ export function parseDeepSeekFlash(text: string): OfficialTiers | null {
   return tiersAreSane(tiers) ? tiers : null;
 }
 
-/** The flat price used for estimates: the arithmetic mean of peak and off-peak (the owner's ruling). */
-export function arithmeticMean(t: OfficialTiers): PriceTriple {
-  // rounded to 12 significant digits so that a mean of two stored prices is not stored with float noise
-  const mean = (a: number, b: number) => Number(((a + b) / 2).toPrecision(12));
-  return {
-    in_per_m: mean(t.peak.in_per_m, t.off_peak.in_per_m),
-    out_per_m: mean(t.peak.out_per_m, t.off_peak.out_per_m),
-    cache_per_m: mean(t.peak.cache_per_m, t.off_peak.cache_per_m),
-  };
-}
-
-/** The same two bands weighted by the hours each one covers. A sensitivity check only; not used for estimates. */
+/** The flat price used for estimates: the two bands weighted by the hours each one covers (35/168 peak). */
 export function hourWeighted(t: OfficialTiers): PriceTriple {
   const w = PEAK_HOURS_PER_WEEK / HOURS_PER_WEEK;
-  const f = (p: number, o: number) => p * w + o * (1 - w);
+  // rounded to 12 significant digits so that a weighted price is not stored with float noise
+  const f = (p: number, o: number) => Number((p * w + o * (1 - w)).toPrecision(12));
   return {
     in_per_m: f(t.peak.in_per_m, t.off_peak.in_per_m),
     out_per_m: f(t.peak.out_per_m, t.off_peak.out_per_m),

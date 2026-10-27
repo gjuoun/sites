@@ -21,15 +21,15 @@
       "openrouter": "deepseek/deepseek-v4.1-flash-1017"
     }
   ],
-  "measured_at": "2026-10-27T02:14:58.010Z",
+  "measured_at": "2026-10-27T02:55:00.935Z",
   "source": "openrouter.ai/api/v1/models, fetched 2026-10-26 (list price, USD per 1M tokens); lane model mapping as before",
   "reference": [
     {
       "ref": "deepseek-v4.1-flash",
       "openrouter": "deepseek/deepseek-v4.1-flash",
-      "in_per_m": 0.225,
-      "out_per_m": 0.9,
-      "cache_per_m": 0.0045,
+      "in_per_m": 0.18125,
+      "out_per_m": 0.725,
+      "cache_per_m": 0.003625,
       "name": "DeepSeek V4.1 Flash",
       "official_status": "read 2026-10-27 from https://api-docs.deepseek.com/quick_start/pricing/",
       "source_priority": "official > openrouter",
@@ -41,13 +41,13 @@
       },
       "price_status": "official",
       "price_anomaly": null,
-      "last_verified_at": "2026-10-27T02:14:58.010Z",
+      "last_verified_at": "2026-10-27T02:55:00.935Z",
       "cache_write_per_m": null,
       "overrides": [],
-      "source": "https://api-docs.deepseek.com/quick_start/pricing/, 2026-10-27; mean of peak and off-peak",
+      "source": "https://api-docs.deepseek.com/quick_start/pricing/, 2026-10-27; hour-weighted peak/off-peak (35/168)",
       "official": {
         "source": "https://api-docs.deepseek.com/quick_start/pricing/",
-        "fetched_at": "2026-10-27T02:14:58.010Z",
+        "fetched_at": "2026-10-27T02:55:00.935Z",
         "model_label": "deepseek-flash, served by DeepSeek-V4.1-Flash-1017, 1M context",
         "peak": {
           "in_per_m": 0.3,
@@ -60,9 +60,9 @@
           "cache_per_m": 0.003
         },
         "peak_hours_utc": "01:00 - 04:00 and 06:00 - 10:00 UTC, Monday through Friday, excluding Chinese public holidays",
-        "combination": "arithmetic mean of peak and off-peak (owner ruling 2026-10-26)"
+        "combination": "hour-weighted: peak 35 of 168 hours a week (01:00-04:00 and 06:00-10:00 UTC, Monday to Friday), off-peak 133 of 168 (r42 ruling 2026-10-27)"
       },
-      "price_note": "Official documentation is authoritative for first-party models; the aggregator listing disagreed and was rejected (listing 0.14 / 0.42 / 0.0042 per M; official 0.225 / 0.9 / 0.0045 per M)"
+      "price_note": "Official documentation is authoritative for first-party models; the aggregator listing disagreed and was rejected (listing 0.14 / 0.42 / 0.0042 per M; official 0.18125 / 0.725 / 0.003625 per M)"
     },
     {
       "ref": "gemini-3.8-flash",
@@ -83,7 +83,7 @@
       "overrides": [],
       "price_status": "verified",
       "price_anomaly": null,
-      "last_verified_at": "2026-10-27T02:14:58.010Z",
+      "last_verified_at": "2026-10-27T02:55:00.935Z",
       "source": "openrouter.ai/api/v1/models, 2026-10-27",
       "price_note": null
     },
@@ -115,7 +115,7 @@
       },
       "price_status": "verified",
       "price_anomaly": null,
-      "last_verified_at": "2026-10-27T02:14:58.010Z",
+      "last_verified_at": "2026-10-27T02:55:00.935Z",
       "source": "openrouter.ai/api/v1/models, 2026-10-27",
       "price_note": null
     },
@@ -147,7 +147,7 @@
       },
       "price_status": "verified",
       "price_anomaly": null,
-      "last_verified_at": "2026-10-27T02:14:58.010Z",
+      "last_verified_at": "2026-10-27T02:55:00.935Z",
       "source": "openrouter.ai/api/v1/models, 2026-10-27",
       "price_note": null
     },
@@ -170,7 +170,7 @@
       "overrides": [],
       "price_status": "verified",
       "price_anomaly": null,
-      "last_verified_at": "2026-10-27T02:14:58.010Z",
+      "last_verified_at": "2026-10-27T02:55:00.935Z",
       "source": "openrouter.ai/api/v1/models, 2026-10-27",
       "price_note": null
     }
@@ -314,21 +314,21 @@
     },
     {
       "openrouter": "deepseek/deepseek-v4.1-flash-1017",
-      "in_per_m": 0.225,
-      "out_per_m": 0.9,
-      "cache_per_m": 0.0045,
+      "in_per_m": 0.18125,
+      "out_per_m": 0.725,
+      "cache_per_m": 0.003625,
       "cache_write_per_m": null,
-      "source": "same model as deepseek-v4.1-flash; peak/off-peak arithmetic mean from the official pricing page (owner ruling 2026-10-26). The OpenRouter listing read 2026-10-27 shows 0.30 / 1.20 / 0.006 at peak and is not used",
-      "basis": "official peak/off-peak arithmetic mean",
-      "price_basis": "official peak/off-peak arithmetic mean"
+      "source": "same model as deepseek-v4.1-flash; hour-weighted peak/off-peak from the official pricing page (35 of 168 hours at peak; r42 ruling 2026-10-27). The OpenRouter listing read 2026-10-27 shows 0.30 / 1.20 / 0.006 at peak and is not used",
+      "basis": "official peak/off-peak hour-weighted (35/168)",
+      "price_basis": "official peak/off-peak hour-weighted (35/168)"
     },
     {
       "openrouter": "deepseek/deepseek-v4.1-flash-fast",
-      "in_per_m": 0.225,
-      "out_per_m": 0.9,
-      "cache_per_m": 0.0045,
+      "in_per_m": 0.18125,
+      "out_per_m": 0.725,
+      "cache_per_m": 0.003625,
       "cache_write_per_m": null,
-      "source": "no public listing for this id (OpenRouter, read 2026-10-27); priced at the same rate as deepseek-v4.1-flash (peak/off-peak arithmetic mean, owner ruling 2026-10-26)",
+      "source": "no public listing for this id (OpenRouter, read 2026-10-27); priced at the same rate as deepseek-v4.1-flash (peak/off-peak hour-weighted, 35/168)",
       "basis": "assumed alias rate: same as deepseek-v4.1-flash",
       "price_basis": "assumed_alias_rate"
     },

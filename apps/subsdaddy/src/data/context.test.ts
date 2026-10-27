@@ -50,12 +50,12 @@ describe("the context switch on the front page", () => {
     expect(contextLabel("long")).toBe("350K");
   });
 
-  test("Haiku keeps the same $/B at 100K and 350K (5x band at both); Luna moves at 350K", () => {
+  test("Haiku is cheaper per B at 100K than at 350K (its low tier applies at 100K); Luna moves up at 350K", () => {
     const h100 = viewRows(ds, "claude-haiku-5.5", "short").find((r) => r.key === "opencode-go-go")!.usd!;
     const h350 = viewRows(ds, "claude-haiku-5.5", "long").find((r) => r.key === "opencode-go-go")!.usd!;
     const l100 = viewRows(ds, "gpt-6-luna", "short").find((r) => r.key === "opencode-go-go")!.usd!;
     const l350 = viewRows(ds, "gpt-6-luna", "long").find((r) => r.key === "opencode-go-go")!.usd!;
-    expect(h100).toBeCloseTo(h350, 9);
+    expect(h100).toBeLessThan(h350);
     expect(l350).toBeGreaterThan(l100);
   });
 

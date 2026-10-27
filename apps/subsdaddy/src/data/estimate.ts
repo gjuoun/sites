@@ -77,12 +77,13 @@ export function priceAt(price: RefPrice, promptTokens?: number): { price: { in_p
   const overrides = [...(price.overrides ?? [])].sort((a, b) => a.min_prompt_tokens - b.min_prompt_tokens);
   if (overrides.length === 0) return { price: base, band: "base price (no prompt-length band)" };
   if (promptTokens === undefined) return { price: base, band: "band: base (prompt length not given)" };
-  const hit = overrides.filter((o) => promptTokens >= o.min_prompt_tokens).pop();
-  if (!hit) return { price: base, band: "band: <" + kTokens(overrides[0].min_prompt_tokens) + " base" };
+  // strictly above the threshold: a prompt of exactly min_prompt_tokens stays in the band below (<= 100K is the low tier)
+  const hit = overrides.filter((o) => promptTokens > o.min_prompt_tokens).pop();
+  if (!hit) return { price: base, band: "band: ≤" + kTokens(overrides[0].min_prompt_tokens) + " base" };
   const mult = Math.round((hit.in_per_m / base.in_per_m) * 100) / 100;
   return {
     price: { in_per_m: hit.in_per_m, out_per_m: hit.out_per_m, cache_per_m: hit.cache_per_m, cache_write_per_m: hit.cache_write_per_m ?? base.cache_write_per_m },
-    band: "band: ≥" + kTokens(hit.min_prompt_tokens) + " ×" + String(mult),
+    band: "band: >" + kTokens(hit.min_prompt_tokens) + " ×" + String(mult),
   };
 }
 

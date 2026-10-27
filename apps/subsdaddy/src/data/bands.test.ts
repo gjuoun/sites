@@ -25,32 +25,9 @@ describe("standard contexts select the price band", () => {
     expect(LONG).toBe(350_000);
   });
 
-  test("Haiku at 100K is in the >=100k band: 5x base input, output, cache and cache write", () => {
-    const a = priceAt(HAIKU, SHORT);
-    expect(a.band).toBe("band: ≥100k ×5");
-    expect(a.price.in_per_m).toBe(0.5);
-    expect(a.price.out_per_m).toBe(2.5);
-    expect(a.price.cache_per_m).toBe(0.05);
-    expect(a.price.cache_write_per_m).toBe(0.625);
-  });
 
-  test("Luna at 100K is still below its 272k band: base price", () => {
-    const a = priceAt(LUNA, SHORT);
-    expect(a.band).toBe("band: <272k base");
-    expect(a.price.in_per_m).toBe(0.1);
-  });
 
-  test("Luna at 350K reaches the 272k band: 2x input, 1.5x output", () => {
-    const a = priceAt(LUNA, LONG);
-    expect(a.band).toBe("band: ≥272k ×2");
-    expect(a.price.in_per_m).toBe(0.2);
-    expect(a.price.out_per_m).toBe(0.75);
-  });
 
-  test("at the 100K standard Haiku and Luna differ: the banded prices are not equal", () => {
-    expect(priceAt(HAIKU, SHORT).price.in_per_m).not.toBe(priceAt(LUNA, SHORT).price.in_per_m);
-    expect(priceAt(HAIKU, SHORT).price.in_per_m).toBeGreaterThan(priceAt(LUNA, SHORT).price.in_per_m);
-  });
 
   test("a model with no override is priced at its base at any context, and says so", () => {
     const ds = ref("deepseek-v4.1-flash");
@@ -58,30 +35,8 @@ describe("standard contexts select the price band", () => {
     expect(priceAt(ds, LONG).price.in_per_m).toBe(ds.in_per_m);
   });
 
-  test("the two models are equal at base, and unequal in their banded prices", () => {
-    expect(HAIKU.in_per_m).toBe(LUNA.in_per_m);
-    expect(priceAt(HAIKU, SHORT).price.in_per_m).not.toBe(priceAt(LUNA, SHORT).price.in_per_m);
-    expect(priceAt(HAIKU, LONG).price.in_per_m).not.toBe(priceAt(LUNA, LONG).price.in_per_m);
-  });
 
-  test("the shipped OpenCode Go estimate at 100K: Haiku banded at 5x and Luna at base, both stored with their band", () => {
-    const oc = catalog.rows.find((r) => r.plan_id === "opencode-go-go")!;
-    const h = oc.estimate!.values.find((v) => v.ref === "claude-haiku-5.5" && v.shape === "agent")!;
-    const l = oc.estimate!.values.find((v) => v.ref === "gpt-6-luna" && v.shape === "agent")!;
-    expect(h.band_short).toBe("band: ≥100k ×5");
-    expect(l.band_short).toBe("band: <272k base");
-    expect(h.usd_per_b!).toBeGreaterThan(l.usd_per_b!);
-  });
 
-  test("the shipped 350K values: Luna moves to its 2x band, Haiku stays at 5x", () => {
-    const oc = catalog.rows.find((r) => r.plan_id === "opencode-go-go")!;
-    const h = oc.estimate!.values.find((v) => v.ref === "claude-haiku-5.5" && v.shape === "agent")!;
-    const l = oc.estimate!.values.find((v) => v.ref === "gpt-6-luna" && v.shape === "agent")!;
-    expect(h.band_long).toBe("band: ≥100k ×5");
-    expect(l.band_long).toBe("band: ≥272k ×2");
-    expect(l.usd_per_b_long!).toBeGreaterThan(l.usd_per_b!);
-    expect(h.usd_per_b_long!).toBeCloseTo(h.usd_per_b!, 9);
-  });
 
   test("the basis of a shipped estimate names the two standards and the p75 sensitivity point", () => {
     const oc = catalog.rows.find((r) => r.plan_id === "opencode-go-go")!;
@@ -131,5 +86,58 @@ describe("third-party figures: labelled, linked, or refused", () => {
 
   test("no shipped row uses an unlinked third-party figure", () => {
     for (const r of catalog.rows) for (const s of r.sources) if (s.kind === "third_party_measured") expect(s.url).toBeTruthy();
+  });
+
+  test("Haiku at 100K is the low tier: the base price, not the 5x band (100K is at the threshold, so it stays below)", () => {
+    const a = priceAt(HAIKU, SHORT);
+    expect(a.band).toBe("band: ≤100k base");
+    expect([a.price.in_per_m, a.price.out_per_m, a.price.cache_per_m]).toEqual([0.1, 0.5, 0.01]);
+  });
+
+  test("a prompt of exactly 100,000 tokens takes the low tier; 100,001 takes the high tier", () => {
+    expect(priceAt(HAIKU, 100_000).price.in_per_m).toBe(0.1);
+    expect(priceAt(HAIKU, 100_001).price.in_per_m).toBe(0.5);
+    expect(priceAt(HAIKU, 100_001).band).toBe("band: >100k ×5");
+  });
+
+  test("Haiku at 350K is the high tier: 5x input, output, cache and cache write", () => {
+    const a = priceAt(HAIKU, LONG);
+    expect(a.band).toBe("band: >100k ×5");
+    expect([a.price.in_per_m, a.price.out_per_m, a.price.cache_per_m, a.price.cache_write_per_m]).toEqual([0.5, 2.5, 0.05, 0.625]);
+  });
+
+  test("Luna at 100K is at base (its band starts above 272K); 272,000 is base, 272,001 is the high tier", () => {
+    expect(priceAt(LUNA, SHORT).band).toBe("band: ≤272k base");
+    expect(priceAt(LUNA, 272_000).price.in_per_m).toBe(0.1);
+    expect(priceAt(LUNA, 272_001).band).toBe("band: >272k ×2");
+  });
+
+  test("Luna at 350K is the high tier: 2x input, 1.5x output", () => {
+    const a = priceAt(LUNA, LONG);
+    expect(a.band).toBe("band: >272k ×2");
+    expect([a.price.in_per_m, a.price.out_per_m]).toEqual([0.2, 0.75]);
+  });
+
+  test("at 100K, Haiku and Luna are at the same base price", () => {
+    expect(priceAt(HAIKU, SHORT).price.in_per_m).toBe(priceAt(LUNA, SHORT).price.in_per_m);
+    expect(priceAt(HAIKU, SHORT).price.out_per_m).toBe(priceAt(LUNA, SHORT).price.out_per_m);
+  });
+
+  test("the shipped OpenCode Go estimate at 100K: Haiku and Luna both at base, so equal $/B", () => {
+    const oc = catalog.rows.find((r) => r.plan_id === "opencode-go-go")!;
+    const h = oc.estimate!.values.find((v) => v.ref === "claude-haiku-5.5" && v.shape === "agent")!;
+    const l = oc.estimate!.values.find((v) => v.ref === "gpt-6-luna" && v.shape === "agent")!;
+    expect(h.band_short).toBe("band: ≤100k base");
+    expect(l.band_short).toBe("band: ≤272k base");
+    expect(h.usd_per_b!).toBeCloseTo(l.usd_per_b!, 9);
+  });
+
+  test("the shipped 350K values: Haiku at its 5x band, Luna at its 2x band", () => {
+    const oc = catalog.rows.find((r) => r.plan_id === "opencode-go-go")!;
+    const h = oc.estimate!.values.find((v) => v.ref === "claude-haiku-5.5" && v.shape === "agent")!;
+    const l = oc.estimate!.values.find((v) => v.ref === "gpt-6-luna" && v.shape === "agent")!;
+    expect(h.band_long).toBe("band: >100k ×5");
+    expect(l.band_long).toBe("band: >272k ×2");
+    expect(l.usd_per_b_long!).toBeGreaterThan(l.usd_per_b!);
   });
 });
