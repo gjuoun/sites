@@ -7,7 +7,7 @@
  */
 import { spawnSync } from "node:child_process";
 import { LANES, type LaneId } from "../src/data/schema";
-import { type QuotaReading, creditsFromCodexbar, fromCodexbar, windowsFromCodexbar, zaiEnvFor, zaiFromCodexbar } from "../src/lib/quota";
+import { type QuotaReading, creditsFromCodexbar, fromCodexbar, vendorPoolFromCodexbar, windowsFromCodexbar, zaiEnvFor, zaiFromCodexbar } from "../src/lib/quota";
 
 export type Resolved = QuotaReading;
 
@@ -34,9 +34,9 @@ export async function probeOne(lane: LaneId): Promise<Resolved> {
   // QwenCloud is a credit pool: record the credits consumed and the pool size from the same reading
   if (lane === "qwen-cloud-token" && "used_pct" in base) {
     const c = creditsFromCodexbar(res.stdout);
-    return { ...base, credits_used: c?.credits_used ?? null, credits_total: c?.credits_total ?? null, windows };
+    return { ...base, credits_used: c?.credits_used ?? null, credits_total: c?.credits_total ?? null, windows, vendor_pool: vendorPoolFromCodexbar(res.stdout) };
   }
-  return "used_pct" in base ? { ...base, windows } : base;
+  return "used_pct" in base ? { ...base, windows, vendor_pool: vendorPoolFromCodexbar(res.stdout) } : base;
 }
 
 if (import.meta.main) {

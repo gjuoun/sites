@@ -96,7 +96,7 @@ export function orWeighted(ds: DS, ref: RefId): { tps: number | null; ttft: numb
 
 type DsLane = DS["lanes"]["lanes"][number];
 
-/** The capacity hover panel: the three windows, the allowance they give, the binding window and the model mix. */
+/** The capacity hover panel: the windows, the allowance (vendor-reported and derived), the binding window and the model mix. */
 export function capDetailOf(l: DsLane): string[] {
   const c = l.capacity as DsLane["capacity"];
   const lines: string[] = c.windows.map((w) => {
@@ -106,7 +106,18 @@ export function capDetailOf(l: DsLane): string[] {
     const allow = w.allowance_usd_cycle === null ? "" : " · allowance $" + w.allowance_usd_cycle.toFixed(2) + " per cycle";
     return head + " · " + cost + allow;
   });
-  if (c.tokens_per_cycle !== null) lines.push("binding: " + c.window + " window · cycle " + c.cycle_days + " days" + (c.cycle_billed ? "" : " (not billed: no monthly $/B)"));
+  if (c.tokens_per_cycle !== null) lines.push("binding: " + c.window + " window · cycle " + c.cycle_days + " days" + (c.cycle_billed ? "" : " · fee " + (c.fee_basis ?? "not read")));
+  const vendor = c.allowance_vendor_usd ?? null;
+  const derived = c.allowance_derived_usd ?? null;
+  if (vendor !== null && derived !== null) {
+    lines.push("vendor-reported pool: $" + vendor.toFixed(2) + " per cycle (used by the model views)");
+    const unpriced = c.unpriced_share === null || c.unpriced_share === undefined ? "" : ", includes " + Math.round(c.unpriced_share * 100) + "% unpriced";
+    lines.push("derived: $" + derived.toFixed(2) + " (lower estimate" + unpriced + ")");
+  } else if (derived !== null) {
+    lines.push("allowance: derived $" + derived.toFixed(2) + " per cycle" + (c.allowance_vendor_reason ? " (" + c.allowance_vendor_reason + ")" : ""));
+  }
+  const binding = c.windows.find((w) => w.window === c.window);
+  if (c.confidence === "low" && binding) lines.push("used " + Math.round(binding.used_pct) + "% — capacity estimate has a wide error bar");
   if (c.top_models.length > 0) lines.push("model mix (binding window): " + c.top_models.map((m) => m.label + " " + Math.round(m.share * 100) + "%").join(", "));
   if (c.low_coverage) lines.push("low coverage: more than 5% of the binding window's tokens have no list price");
   return lines;
@@ -115,7 +126,9 @@ export function capDetailOf(l: DsLane): string[] {
 export function capNoteOf(l: DsLane): string | null {
   const c = l.capacity as DsLane["capacity"];
   if (c.tokens_per_cycle === null) return null;
-  return c.cycle_billed ? c.window + " window binds" : c.window + " window; billing cycle not read";
+  const parts = [c.window + " window" + (c.cycle_billed ? " binds" : " (weekly cap)")];
+  if (c.confidence === "low") parts.push("low confidence");
+  return parts.join(" · ");
 }
 
 const withDetail = (cell: Cell, detail: string[] | null): Cell => (detail && detail.length > 0 ? { ...cell, detail } : cell);

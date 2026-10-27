@@ -85,6 +85,8 @@ export const quotaObservationSchema = z.object({
   windows: z
     .array(z.object({ window: z.enum(["5h", "weekly", "monthly"]), window_minutes: z.number().positive(), used_pct: z.number().min(0).max(100), resets_at: z.iso.datetime(), source: z.string().min(1).optional(), measured_at: z.iso.datetime().optional() }))
     .optional(),
+  // the vendor-reported usage pool, when codexbar states one (e.g. "GOAT · $35.00 of $70.00")
+  vendor_pool: z.object({ used_usd: z.number().nonnegative(), total_usd: z.number().positive(), source: z.string().min(1), measured_at: z.iso.datetime() }).nullable().optional(),
   ...provenance,
 });
 export type QuotaObservation = z.infer<typeof quotaObservationSchema>;
@@ -188,6 +190,12 @@ export const modelsFileSchema = z.object({
       openrouter: z.string().regex(/^[^/]+\/[^/]+$/),
     }),
   ),
+  // list prices for usage-only model ids (not in the reference list), and aliases that map raw ids onto them
+  usage_prices: z
+    .array(z.object({ openrouter: z.string().min(1), in_per_m: z.number().nonnegative(), out_per_m: z.number().nonnegative(), cache_per_m: z.number().nonnegative(), cache_write_per_m: z.number().nonnegative().nullable(), source: z.string().min(1), basis: z.string().min(1) }))
+    .default([]),
+  model_aliases: z.record(z.string().min(1), z.string().min(1)).default({}),
+  unpriced_notes: z.record(z.string().min(1), z.string().min(1)).default({}),
   // reference list prices used only for catalog estimates (never for the ranking)
   reference: z
     .array(
@@ -282,6 +290,12 @@ export const laneRecordSchema = z.object({
     window: z.enum(["5h", "weekly", "monthly"]).nullable(),
     cycle_days: z.number().positive().nullable(),
     cycle_billed: z.boolean(),
+    allowance_basis: z.enum(["vendor_reported", "derived"]).nullable().optional(),
+    allowance_vendor_usd: z.number().positive().nullable().optional(),
+    allowance_vendor_reason: z.string().nullable().optional(),
+    allowance_derived_usd: z.number().positive().nullable().optional(),
+    fee_per_cycle_usd: z.number().positive().nullable().optional(),
+    fee_basis: z.string().nullable().optional(),
     tokens_per_cycle: z.number().positive().nullable(),
     allowance_usd_per_cycle: z.number().positive().nullable(),
     coverage: z.number().min(0).max(1).nullable(),
@@ -299,7 +313,7 @@ export const laneRecordSchema = z.object({
         window_minutes: z.number().positive(),
         used_pct: z.number().min(0).max(100),
         resets_at: z.string().min(1),
-        status: z.enum(["usable", "partial", "low_signal", "no_priced_usage"]),
+        status: z.enum(["usable", "partial", "unused", "low_signal", "no_priced_usage"]),
         elapsed_hours: z.number().nonnegative(),
         tokens: z.number().nonnegative(),
         cost_usd: z.number().nonnegative(),
@@ -309,6 +323,7 @@ export const laneRecordSchema = z.object({
         tokens_cycle: z.number().positive().nullable(),
         measured_at: z.string().min(1),
         source: z.string().min(1),
+        confidence: z.enum(["low", "normal"]).optional(),
       }),
     ),
     ...provenance,

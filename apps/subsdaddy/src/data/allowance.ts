@@ -2,31 +2,34 @@ import { z } from "zod";
 import { blendedUsdPerB, cacheFor, pooledMix, priceAt, type RefPrice } from "./estimate";
 
 /**
- * The usage allowance of a subscription, in list dollars, read from its quota windows.
+ * The usage allowance of a subscription, in list dollars per billing cycle, read from its quota windows.
  *
- *  1. For each window the codexbar reading gives: the window runs from resets_at minus its own length
- *     (window_minutes) to the reading time. Every metered usage row inside that span is priced at its
- *     model's list price (banded by its own prompt length) and summed: cost_usd, and tokens.
- *  2. The window's full-cycle allowance = cost ÷ used_fraction × (cycle_minutes ÷ window_minutes).
- *     The cycle is the plan's own billing cycle: the monthly window's length from the reading, or, when
- *     the plan has no monthly window, the longest window's length. Nothing here is a fixed day count.
- *  3. The plan's allowance is the minimum over the usable windows: the tightest window binds.
- *     A saturated window (used ≥ 99%) is usable. used ≤ 2% is low_signal; coverage < 95% is partial;
- *     neither takes part in the minimum.
- *  4. A model's $/B on this plan = fee ÷ (allowance ÷ blended list price of that model at the plan's own
- *     traffic shape). Rows whose model has no list price are counted as unpriced tokens, never zeroed.
+ *  1. For each window the codexbar reading gives: the window runs from resets_at minus its own length to the
+ *     reading time. Every usage row inside that span is priced at its model's list price (banded by its own
+ *     prompt length) and summed: cost_usd and tokens. A model with no list price is counted as unpriced tokens.
+ *  2. The window's full-cycle allowance = cost ÷ used_fraction × (cycle ÷ window length).
+ *     The cycle is the monthly window's length from the reading; with no monthly window, the longest window's.
+ *  3. The derived allowance is the minimum over the usable windows. A window is usable unless it is partial
+ *     (log covers under 95% of its span), unused (0%), or has no priced usage. A window at 2% or less is
+ *     low_signal and still usable; it carries low confidence.
+ *  4. A vendor-reported pool, when codexbar states one and its used share matches the monthly window, is the
+ *     allowance (basis vendor_reported). The derived figure is kept beside it.
+ *  5. A model's $/B on the plan is fee ÷ (allowance ÷ blended list price of that model at the plan's traffic shape).
  */
 
 export const COVERAGE_MIN = 0.95;
 export const LOW_SIGNAL_USED = 0.02;
+export const LOW_CONFIDENCE_USED = 0.1;
 export const LOW_COVERAGE_UNPRICED = 0.05;
+export const VENDOR_MATCH_POINTS = 1;
 
 export type WindowName = "5h" | "weekly" | "monthly";
 export type WindowReading = { window: WindowName; window_minutes: number; used_pct: number; resets_at: string; measured_at: string };
 export type UsageRow = { ms: number; model: string; input: number; cache_creation: number; cache_read: number; output: number };
 export type PriceLookup = (model: string) => RefPrice | null;
+export type VendorPool = { used_usd: number; total_usd: number; source: string; measured_at: string };
 
-export type WindowStatus = "usable" | "partial" | "low_signal" | "no_priced_usage";
+export type WindowStatus = "usable" | "partial" | "unused" | "low_signal" | "no_priced_usage";
 export type WindowAnalysis = {
   window: WindowName;
   window_minutes: number;
@@ -42,6 +45,7 @@ export type WindowAnalysis = {
   unpriced_models: string[];
   coverage: number;
   status: WindowStatus;
+  confidence: "low" | "normal";
   allowance_usd_cycle: number | null;
   tokens_cycle: number | null;
 };
@@ -55,7 +59,6 @@ export function rowCostUsd(r: UsageRow, p: RefPrice): number {
   return (r.input * b.in_per_m + r.cache_creation * b.cache_write_per_m + r.cache_read * b.cache_per_m + r.output * b.out_per_m) / 1e6;
 }
 
-/** The window's span, its priced cost and tokens, and the cycle allowance it implies. */
 export function analyzeWindow(r: WindowReading, rows: UsageRow[], lookup: PriceLookup, coverageStartMs: number, cycleMinutes: number): WindowAnalysis {
   const end = Date.parse(r.measured_at);
   const start = Date.parse(r.resets_at) - r.window_minutes * 60_000;
@@ -81,9 +84,10 @@ export function analyzeWindow(r: WindowReading, rows: UsageRow[], lookup: PriceL
   const factor = cycleMinutes / r.window_minutes;
   let status: WindowStatus = "usable";
   if (coverage < COVERAGE_MIN) status = "partial";
-  else if (used <= LOW_SIGNAL_USED) status = "low_signal";
+  else if (used <= 0) status = "unused";
   else if (cost <= 0) status = "no_priced_usage";
-  const usable = status === "usable";
+  else if (used <= LOW_SIGNAL_USED) status = "low_signal";
+  const usable = status === "usable" || status === "low_signal";
   return {
     window: r.window,
     window_minutes: r.window_minutes,
@@ -99,12 +103,13 @@ export function analyzeWindow(r: WindowReading, rows: UsageRow[], lookup: PriceL
     unpriced_models: [...unpriced].sort(),
     coverage,
     status,
+    confidence: r.used_pct / 100 < LOW_CONFIDENCE_USED ? "low" : "normal",
     allowance_usd_cycle: usable ? (cost / used) * factor : null,
     tokens_cycle: usable ? (tokens / used) * factor : null,
   };
 }
 
-/** The tightest usable window sets the plan's allowance. Null when no window is usable. */
+/** The tightest usable window sets the derived allowance. Null when no window is usable. */
 export function bindingWindow(windows: WindowAnalysis[]): WindowAnalysis | null {
   const usable = windows.filter((w) => w.allowance_usd_cycle !== null);
   if (usable.length === 0) return null;
@@ -117,6 +122,21 @@ export function cycleOf(readings: WindowReading[]): { minutes: number; billed: b
   const monthly = readings.find((r) => r.window === "monthly");
   if (monthly) return { minutes: monthly.window_minutes, billed: true };
   return { minutes: Math.max(...readings.map((r) => r.window_minutes)), billed: false };
+}
+
+/**
+ * The vendor-reported pool as the allowance, when its used share matches the monthly window's used percent.
+ * A pool that does not match is not used; the reason says why.
+ */
+export function vendorAllowance(pool: VendorPool | null | undefined, monthly: WindowAnalysis | undefined): { usd: number | null; reason: string } {
+  if (!pool) return { usd: null, reason: "no vendor-reported pool" };
+  if (!(pool.total_usd > 0)) return { usd: null, reason: "vendor pool total is not positive" };
+  if (!monthly) return { usd: null, reason: "no monthly window to match the vendor pool to" };
+  const poolPct = (pool.used_usd / pool.total_usd) * 100;
+  if (Math.abs(poolPct - monthly.used_pct) > VENDOR_MATCH_POINTS) {
+    return { usd: null, reason: "vendor pool " + poolPct.toFixed(1) + "% used does not match the monthly window (" + monthly.used_pct.toFixed(1) + "%)" };
+  }
+  return { usd: pool.total_usd, reason: "vendor-reported pool, its used share matches the monthly window" };
 }
 
 /** $/B of a model on a plan: fee over the tokens the allowance buys at that model's blended list price. */
@@ -143,7 +163,8 @@ const windowSchema = z.object({
   unpriced_share: z.number().min(0).max(1),
   unpriced_models: z.array(z.string()),
   coverage: z.number().min(0).max(1),
-  status: z.enum(["usable", "partial", "low_signal", "no_priced_usage"]),
+  status: z.enum(["usable", "partial", "unused", "low_signal", "no_priced_usage"]),
+  confidence: z.enum(["low", "normal"]),
   allowance_usd_cycle: z.number().positive().nullable(),
   tokens_cycle: z.number().positive().nullable(),
   source: z.string().min(1),
@@ -161,15 +182,22 @@ export const allowanceFileSchema = z.object({
       measured_at: z.string().min(1),
       source: z.string().min(1),
       fee_usd: z.number().positive().nullable(),
+      fee_per_cycle_usd: z.number().positive().nullable(),
+      fee_basis: z.string().nullable(),
       cycle_minutes: z.number().positive().nullable(),
       cycle_days: z.number().positive().nullable(),
       cycle_billed: z.boolean(),
       allowance_usd_per_cycle: z.number().positive().nullable(),
+      allowance_basis: z.enum(["vendor_reported", "derived"]).nullable(),
+      allowance_vendor_usd: z.number().positive().nullable(),
+      allowance_vendor_reason: z.string().nullable(),
+      allowance_derived_usd: z.number().positive().nullable(),
       tokens_per_cycle: z.number().positive().nullable(),
       binding_window: z.enum(["5h", "weekly", "monthly"]).nullable(),
       binding_coverage: z.number().min(0).max(1).nullable(),
       binding_unpriced_share: z.number().min(0).max(1).nullable(),
       low_coverage: z.boolean(),
+      confidence: z.enum(["low", "normal"]).nullable(),
       list_usd_per_b_effective: z.number().positive().nullable(),
       usd_per_b_measured: z.number().positive().nullable(),
       reason: z.string().nullable(),

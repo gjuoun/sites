@@ -18,7 +18,7 @@ const resolved: Resolved[] = await Promise.all(LANES.map((l) => probeOne(l)));
 const observations: QuotaObservationOrGap[] = resolved.map((r) =>
   "unavailable" in r
     ? { lane: r.lane as QuotaObservationOrGap["lane"], unavailable: r.unavailable, measured_at: measuredAt, source: "codexbar usage" }
-    : { ...r, lane: r.lane as QuotaObservationOrGap["lane"], measured_at: measuredAt, windows: r.windows?.map((w) => ({ ...w, measured_at: measuredAt })) } as QuotaObservationOrGap,
+    : { ...r, lane: r.lane as QuotaObservationOrGap["lane"], measured_at: measuredAt, windows: r.windows?.map((w) => ({ ...w, measured_at: measuredAt })), vendor_pool: r.vendor_pool ? { ...r.vendor_pool, measured_at: measuredAt } : null } as QuotaObservationOrGap,
 );
 
 mkdirSync(join(dataDir, "raw", "quota"), { recursive: true });

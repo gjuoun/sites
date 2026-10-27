@@ -226,7 +226,7 @@ function AllowanceSection() {
         The cycle is the plan's monthly window length from the reading (43,200 minutes, 30 days), or, with no monthly window, the longest window's length. No week is multiplied by a fixed factor.
       </p>
       <p>
-        The tightest usable window sets the allowance. A window at 100% used is usable: a full window is a ceiling. A window at 2% or less is low signal and is left out. A window whose log covers less than 95% of its span is partial and is left out.
+        The tightest usable window sets the derived allowance. A window at 100% used is usable: a full window is a ceiling. A window at 2% or less is low signal: it still counts, at low confidence, and the capacity is shown with a wide error bar. A window with no usage, or whose log covers less than 95% of its span, is left out.
         Rows whose model has no list price are counted as unpriced tokens, never zero cost; a lane above 5% unpriced is flagged low coverage.
       </p>
       <p>
@@ -234,7 +234,9 @@ function AllowanceSection() {
         cycle-scaled allowance is larger, so the monthly window binds. The brief's shortcut (the weekly token count divided by the monthly percentage) mixes two windows, and is not used.
       </p>
       <UnifiedTable testId="allowance" columns={cols} rows={rows} />
-      <p>Z.ai's two readings are both 1% used, which is low signal, so it has no allowance and no $/B. Its billing cycle is not read from a monthly window either.</p>
+      <p>Z.ai's two readings are both 1% used: low signal. It is ranked at low confidence. Its weekly window binds, and its fee for that cycle is the annual price ($672) prorated to 7 days over 365; no monthly window is read for it.</p>
+      <p>A vendor-reported pool, when codexbar states one (CommandCode's plan line reads $35.00 of $70.00), is the allowance when its used share matches the monthly window. The derived figure is kept beside it, and the lower estimate says so. OpenCode Go states no pool (its provider cost has no limit), so its allowance is derived. Model views use the allowance chosen; the Measured $/B does not depend on it.</p>
+      <p>Unpriced tokens are named by model id. CommandCode's remaining unpriced usage is deepseek-v4.1-flash-fast, which has no OpenRouter listing; no price is assumed for it.</p>
     </section>
   );
 }

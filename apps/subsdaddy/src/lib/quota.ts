@@ -4,6 +4,7 @@
  */
 
 export type QuotaWindow = "5h" | "weekly" | "monthly";
+export type VendorPoolReading = { used_usd: number; total_usd: number; source: string };
 export type CodexbarWindowReading = { window: QuotaWindow; window_minutes: number; used_pct: number; resets_at: string; source: string };
 export type QuotaReading =
   | {
@@ -17,6 +18,7 @@ export type QuotaReading =
       credits_used?: number | null;
       credits_total?: number | null;
       windows?: CodexbarWindowReading[];
+      vendor_pool?: VendorPoolReading | null;
     }
   | { lane: string; unavailable: string };
 
@@ -113,4 +115,29 @@ export function windowsFromCodexbar(json: string): CodexbarWindowReading[] {
     out.push({ window: label, window_minutes: w.windowMinutes, used_pct: w.usedPercent, resets_at: w.resetsAt, source: "codexbar quota reading" });
   }
   return out;
+}
+
+/**
+ * The vendor-reported usage pool, when codexbar states one: a USD provider cost with a positive limit, or the
+ * plan line "… · $X of $Y". Only the numbers and their source are kept. Null when codexbar states none.
+ */
+export function vendorPoolFromCodexbar(json: string): VendorPoolReading | null {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(json);
+  } catch {
+    return null;
+  }
+  const entry = (Array.isArray(parsed) ? parsed[0] : parsed) as { usage?: Record<string, unknown> } | undefined;
+  const usage = entry?.usage ?? {};
+  const pc = usage.providerCost as { limit?: unknown; used?: unknown; currencyCode?: unknown } | undefined;
+  if (pc && typeof pc.limit === "number" && pc.limit > 0 && typeof pc.used === "number" && pc.currencyCode === "USD") {
+    return { used_usd: pc.used, total_usd: pc.limit, source: "codexbar providerCost" };
+  }
+  const line = usage.loginMethod;
+  if (typeof line === "string") {
+    const m = /\$([\d.,]+)\s+of\s+\$([\d.,]+)/i.exec(line);
+    if (m) return { used_usd: Number(m[1].replace(/,/g, "")), total_usd: Number(m[2].replace(/,/g, "")), source: "codexbar plan line" };
+  }
+  return null;
 }

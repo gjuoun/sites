@@ -119,7 +119,9 @@ if (new Set(all.map(styleOf)).size !== 1) fail("tables use more than one style s
 for (const [name, h] of Object.entries({ index: idx, methodology: meth, catalog: main(html.catalog) })) {
   for (const c of cells(h)) {
     const t = text(c);
-    if (t.indexOf("\u2014") >= 0) fail(name + " shows an em dash in a cell");
+    // the hover panel carries prose (the wide-error-bar sentence); the rule is about the visible value, so the panel is cut off first
+    const visible = text(c.slice(0, Math.max(0, c.indexOf("role=\"tooltip\"") < 0 ? c.length : c.indexOf("role=\"tooltip\""))));
+    if (visible.indexOf("\u2014") >= 0) fail(name + " shows an em dash in a cell");
     if (t.length === 0 && !/data-flags="yes"/.test(c)) fail(name + " has an empty cell");
     if (/\$0\.00(?!\d)/.test(t) && !/data-na="yes"/.test(c)) fail(name + " prints $0.00 in a value cell");
     if (/\bNaN\b/.test(t)) fail(name + " prints NaN");

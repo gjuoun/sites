@@ -47,13 +47,16 @@ describe("window cost and allowance", () => {
     expect(b.allowance_usd_cycle).toBeCloseTo(4, 9);
   });
 
-  test("a saturated window (used 100%) is usable; a window at 2% or less is low_signal and does not bind", () => {
+  test("a saturated window (used 100%) is usable; a window at 2% or less is low_signal: still usable, at low confidence", () => {
     const reset = new Date(Date.parse(MEASURED) + 3 * 24 * H).toISOString();
     const cov = Date.parse(MEASURED) - 60 * 24 * H;
     const sat = analyzeWindow({ window: "weekly", window_minutes: 10080, used_pct: 100, resets_at: reset, measured_at: MEASURED }, [at(1, "priced", 1_000_000)], lookup, cov, 43200);
     expect(sat.status).toBe("usable");
     const low = analyzeWindow({ window: "5h", window_minutes: 300, used_pct: 1, resets_at: new Date(Date.parse(MEASURED) + 1 * H).toISOString(), measured_at: MEASURED }, [at(1, "priced", 1_000)], lookup, cov, 43200);
     expect(low.status).toBe("low_signal");
+    expect(low.allowance_usd_cycle).not.toBeNull();
+    expect(low.confidence).toBe("low");
+    expect(sat.confidence).toBe("normal");
     expect(bindingWindow([low, sat])!.window).toBe("weekly");
   });
 

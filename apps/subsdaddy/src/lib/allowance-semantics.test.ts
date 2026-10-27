@@ -21,14 +21,16 @@ describe("allowance: the tightest usable window binds, from the window's own cos
     const cc = byLane("commandcode-goat");
     expect(cc.binding_window).toBe("monthly");
     const m = cc.windows.find((w: any) => w.window === "monthly");
-    expect(cc.allowance_usd_per_cycle).toBeCloseTo(m.cost_usd / (m.used_pct / 100), 6);
+    expect(cc.allowance_basis).toBe("vendor_reported");
+    expect(cc.allowance_usd_per_cycle).toBe(70);
+    expect(cc.allowance_derived_usd).toBeCloseTo(m.cost_usd / (m.used_pct / 100), 6);
   });
 
   test("the plan allowance is the minimum over its usable windows, for CommandCode and OpenCode Go", () => {
     for (const id of ["commandcode-goat", "opencode-go"]) {
       const l = byLane(id);
       const usable = l.windows.filter((w: any) => w.allowance_usd_cycle !== null).map((w: any) => w.allowance_usd_cycle);
-      expect(l.allowance_usd_per_cycle).toBeCloseTo(Math.min(...usable), 9);
+      expect(l.allowance_derived_usd).toBeCloseTo(Math.min(...usable), 9);
     }
   });
 
@@ -62,31 +64,54 @@ describe("allowance: the tightest usable window binds, from the window's own cos
   });
 });
 
-describe("unpriced models are counted, and flag low coverage", () => {
-  test("CommandCode and OpenCode Go carry unpriced tokens above 5% and are flagged low_coverage", () => {
-    for (const id of ["commandcode-goat", "opencode-go"]) {
-      const l = byLane(id);
-      expect(l.binding_unpriced_share).toBeGreaterThan(0.05);
-      expect(l.low_coverage).toBe(true);
-      expect(l.windows.some((w: any) => w.unpriced_models.length > 0)).toBe(true);
-    }
+describe("unpriced models are named, and only what has no listing stays unpriced", () => {
+  test("CommandCode's binding window flags low coverage; OpenCode Go's does not (its mimo and deepseek ids are priced)", () => {
+    expect(byLane("commandcode-goat").low_coverage).toBe(true);
+    expect(byLane("opencode-go").low_coverage).toBe(false);
+    expect(byLane("opencode-go").binding_unpriced_share).toBeLessThan(0.01);
   });
 
-  test("the unpriced models are named in the data, never zeroed into the cost", () => {
-    const cc = byLane("commandcode-goat");
-    const m = cc.windows.find((w: any) => w.window === "monthly");
-    expect(m.unpriced_models).toContain("xiaomi/mimo-v2.6-flash");
-    expect(m.unpriced_tokens).toBeGreaterThan(0);
+  test("the one id with no list price on any lane is deepseek-v4.1-flash-fast, named in the data and in models.json", () => {
+    const named = new Set<string>();
+    for (const l of allowance.lanes) for (const w of l.windows) for (const m of w.unpriced_models) named.add(m);
+    expect([...named].filter((m) => m !== "glm-5.3")).toEqual(["deepseek/deepseek-v4.1-flash-fast"]);
+    expect(read("models.json").unpriced_notes["deepseek/deepseek-v4.1-flash-fast"]).toContain("no listing");
+  });
+
+  test("mimo and the -1017 snapshot are priced through the price table and the aliases, not left unpriced", () => {
+    const m = read("models.json");
+    expect(m.model_aliases["mimo-v2.6-flash"]).toBe("xiaomi/mimo-v2.6-flash");
+    expect(m.model_aliases["deepseek-flash"]).toBe("deepseek/deepseek-v4.1-flash-1017");
+    const mimo = m.usage_prices.find((p: any) => p.openrouter === "xiaomi/mimo-v2.6-flash");
+    expect([mimo.in_per_m, mimo.out_per_m, mimo.cache_per_m]).toEqual([0.14, 0.28, 0.0028]);
+    const ds1017 = m.usage_prices.find((p: any) => p.openrouter === "deepseek/deepseek-v4.1-flash-1017");
+    expect([ds1017.in_per_m, ds1017.out_per_m, ds1017.cache_per_m]).toEqual([0.225, 0.9, 0.0045]);
   });
 });
 
-describe("Z.ai: no usable window, so no allowance and no $/B", () => {
-  test("both readings are low_signal (1% used), and the lane says why", () => {
+describe("Z.ai stays on the board: its weekly window binds at low confidence", () => {
+  test("both readings are low_signal (1% used), both are usable, and the weekly window binds", () => {
     const z = byLane("zai-glm-max");
     expect(z.windows.every((w: any) => w.status === "low_signal")).toBe(true);
-    expect(laneRec("zai-glm-max").capacity.method).toBe("unavailable");
-    expect(laneRec("zai-glm-max").capacity.reason).toContain("low_signal");
-    expect(laneRec("zai-glm-max").usd_per_b).toBeNull();
+    expect(z.binding_window).toBe("weekly");
+    expect(z.allowance_usd_per_cycle).toBeGreaterThan(0);
+  });
+
+  test("Z.ai is ranked with a $/B, its confidence is low, and the basis is the annual fee prorated to 7 days", () => {
+    const rec = laneRec("zai-glm-max");
+    expect(rec.usd_per_b).not.toBeNull();
+    expect(rec.usd_per_b_basis).toBe("measured");
+    expect(rec.capacity.confidence).toBe("low");
+    expect(rec.capacity.fee_basis).toContain("annual fee prorated");
+  });
+
+  test("the prorated fee is the $672 annual price times 7 days over 365", () => {
+    expect(byLane("zai-glm-max").fee_per_cycle_usd).toBeCloseTo(672 * 7 / 365, 6);
+  });
+
+  test("Z.ai's $/B is its fee per cycle over its weekly tokens per cycle", () => {
+    const z = byLane("zai-glm-max");
+    expect(laneRec("zai-glm-max").usd_per_b).toBeCloseTo(z.fee_per_cycle_usd / (z.tokens_per_cycle / 1e9), 6);
   });
 });
 
@@ -102,7 +127,7 @@ describe("model views: an allowance-based $/B on each plan's own traffic shape",
     const cc = catalog.rows.find((r: any) => r.plan_id === "commandcode-goat-published");
     const v = cc.estimate.values.find((x: any) => x.ref === "deepseek-v4.1-flash" && x.shape === "agent");
     expect(v.usd_per_b).toBeCloseTo((10 / byLane("commandcode-goat").allowance_usd_per_cycle) * v.blended_usd_per_b, 6);
-    expect(cc.estimate.basis).toContain("allowance measured from the quota windows");
+    expect(cc.estimate.basis).toContain("is the vendor-reported pool");
   });
 
   test("OpenCode Go Plus has no lane of its own, so it keeps its published allowance and says so", () => {
@@ -146,6 +171,7 @@ describe("capacity hover panel: three windows, the binding window, the model mix
     expect(lines.some((x) => x.startsWith("monthly · used 50.0%"))).toBe(true);
     expect(lines.some((x) => x.startsWith("weekly · used 100.0%"))).toBe(true);
     expect(lines.some((x) => x.startsWith("binding: monthly window"))).toBe(true);
+    expect(lines).toContain("vendor-reported pool: $70.00 per cycle (used by the model views)");
     expect(lines.join(" ")).not.toMatch(/deepseek\/|z-ai\/|xiaomi\//);
   });
 });
