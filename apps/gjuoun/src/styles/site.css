@@ -26,6 +26,20 @@ footer {
 	margin-inline: auto;
 	padding: 1rem;
 }
+/* Page bottom: no space under the last content, so the footer sits one fixed distance below it on every page. */
+main {
+	padding-bottom: 0;
+}
+main :last-child {
+	margin-bottom: 0;
+}
+footer {
+	margin-top: 3rem;
+	padding-top: 0;
+}
+footer p {
+	margin: 0;
+}
 h1,
 h2,
 h3 {
@@ -131,10 +145,11 @@ pre {
 	padding: 0.75rem 0;
 	border-top: 1px solid var(--theme-border);
 }
+/* One grid per row: a fixed ordinal track, then the label, title and summary share one text track. */
 .lesson-list li {
 	display: grid;
-	grid-template-columns: 2.25rem minmax(0, 1fr);
-	column-gap: 0.75rem;
+	grid-template-columns: 2.5ch minmax(0, 1fr);
+	column-gap: 0.5rem;
 }
 .ordinal {
 	font-family: "QuBlack Mono", ui-monospace, monospace;
@@ -149,6 +164,10 @@ pre {
 	margin: 0;
 	color: var(--theme-muted-ink);
 	font-size: 0.85rem;
+}
+/* Meta lines (home resume summary, resume contact) sit 1.5rem below the block above, 1rem above the next. */
+.meta-line {
+	margin: 1.5rem 0 1rem;
 }
 .lesson-nav {
 	display: flex;
@@ -172,7 +191,7 @@ pre {
 	font-size: 1.1rem;
 }
 .contact {
-	margin: 0.25rem 0 1rem;
+	margin: 1.5rem 0 1rem;
 }
 .entries {
 	list-style: none;
@@ -199,14 +218,14 @@ pre {
 	font-variant-numeric: tabular-nums;
 	color: var(--theme-muted-ink);
 }
-.starter-label {
-	margin: 0.35rem 0 0;
-}
 .starter-tag {
 	display: inline-block;
+	margin-left: 0.4rem;
 	padding: 0 0.4rem;
 	border: 1px solid var(--theme-border);
 	font-size: 0.75rem;
+	font-weight: 400;
+	vertical-align: middle;
 }
 .bullets {
 	margin: 0.2rem 0 0;
