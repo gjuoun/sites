@@ -4,6 +4,7 @@ import darkPalette from "@gjuoun/bigface-tokens/palette.json";
 import lightPalette from "@gjuoun/bigface-tokens/palette-light.json";
 import { Block } from "./_frame.tsx";
 import { ACCENTS } from "./_accents.tsx";
+import { ACCENT_NAMES, neutralsLightToDark } from "../../../data/neutrals.ts";
 
 // The colour section reads the generated business theme, so it cannot drift from what the components use. Each light
 // value sits in a light scope and each dark value in a dark scope, so every swatch is painted by the same --theme-*
@@ -66,6 +67,8 @@ const RULES = [
 	"The accent family is the palette's own in both modes (ruling 2026-10-24): a light page shows the vivid hues on paper.",
 	"Accents are not text-safe on paper: link, success, info and danger text, and the lime and yellow family, measure below AA. Read on their deepened plates they clear 4.5:1 (the accents table). Body ink and muted text keep AA.",
 	"The primary ink (links and rings) follows the accent, so it measures 2.27:1 on paper. Whether a readable light ink returns is parked for Jun.",
+	"The ink on the primary fill is each mode's own darkest readable value: light fg (5.29:1), dark canvas (6.08:1). Dark fg would measure 1.98:1 on the fill.",
+	"Surfaces (card, popover, secondary, subtle, frame, solid) read the panel tier: 5% of fg mixed into the canvas, in each mode.",
 	"Stock shadcn classes are not restyled: bg-black/10 and bg-white resolve through the palette ends.",
 ];
 
@@ -109,18 +112,32 @@ function PairCell({ mode, pair, colours }: { mode: "light" | "dark"; pair: Pair;
 	);
 }
 
+function PaletteRow({ name, hex }: { name: string; hex: Hex }) {
+	return (
+		<li className="flex items-center gap-2 text-xs">
+			<span aria-hidden className="size-5 shrink-0 rounded-sm border border-foreground/30" style={{ backgroundColor: hex }} />
+			<span className="font-mono">{name}</span>
+			<span className="ml-auto font-mono text-muted-foreground">{hex}</span>
+		</li>
+	);
+}
+
 function PaletteColumn({ mode }: { mode: "light" | "dark" }) {
 	const palette = mode === "light" ? lightPalette : darkPalette;
+	const hexOf = (name: string): Hex => (palette.colors as Record<string, { hex: Hex }>)[name]?.hex ?? "";
 	return (
 		<div data-slot="theme-scope" data-theme="business" data-mode={mode} className="flex flex-col gap-3 rounded-lg border bg-background p-4 text-foreground">
 			<h3 className="text-sm font-semibold">{mode === "light" ? "Light" : "Dark"} palette: {palette.name}</h3>
+			<h4 className="pt-1 text-xs font-semibold tracking-[0.08em] text-muted-foreground uppercase">Neutrals, lightest first</h4>
 			<ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-				{Object.entries(palette.colors).map(([name, c]) => (
-					<li key={name} className="flex items-center gap-2 text-xs">
-						<span aria-hidden className="size-5 shrink-0 rounded-sm border border-foreground/30" style={{ backgroundColor: c.hex }} />
-						<span className="font-mono">{name}</span>
-						<span className="ml-auto font-mono text-muted-foreground">{c.hex}</span>
-					</li>
+				{neutralsLightToDark(palette).map((name) => (
+					<PaletteRow key={name} name={name} hex={hexOf(name)} />
+				))}
+			</ul>
+			<h4 className="pt-1 text-xs font-semibold tracking-[0.08em] text-muted-foreground uppercase">Accents</h4>
+			<ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+				{ACCENT_NAMES.map((name) => (
+					<PaletteRow key={name} name={name} hex={hexOf(name)} />
 				))}
 			</ul>
 		</div>

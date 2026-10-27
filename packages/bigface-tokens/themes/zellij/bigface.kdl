@@ -3,7 +3,7 @@
 themes {
     bigface {
         text_unselected {
-            base "#d9d9d4"
+            base "#e8e9e1"
             background "#252925"
             emphasis_0 "#fc5d23"
             emphasis_1 "#00b0ff"
@@ -11,8 +11,8 @@ themes {
             emphasis_3 "#c6ff00"
         }
         text_selected {
-            base "#d9d9d4"
-            background "#3b3c32"
+            base "#e8e9e1"
+            background "#4b4e49"
             emphasis_0 "#fc5d23"
             emphasis_1 "#00b0ff"
             emphasis_2 "#00c853"
@@ -27,10 +27,10 @@ themes {
             emphasis_3 "#00c853"
         }
         ribbon_unselected {
-            base "#d9d9d4"
-            background "#494848"
+            base "#e8e9e1"
+            background "#3c403c"
             emphasis_0 "#fc5d23"
-            emphasis_1 "#d9d9d4"
+            emphasis_1 "#e8e9e1"
             emphasis_2 "#00b0ff"
             emphasis_3 "#c6ff00"
         }
@@ -43,15 +43,15 @@ themes {
             emphasis_3 "#c6ff00"
         }
         table_cell_selected {
-            base "#d9d9d4"
-            background "#3b3c32"
+            base "#e8e9e1"
+            background "#4b4e49"
             emphasis_0 "#fc5d23"
             emphasis_1 "#00b0ff"
             emphasis_2 "#00c853"
             emphasis_3 "#c6ff00"
         }
         table_cell_unselected {
-            base "#d9d9d4"
+            base "#e8e9e1"
             background "#252925"
             emphasis_0 "#fc5d23"
             emphasis_1 "#00b0ff"
@@ -59,15 +59,15 @@ themes {
             emphasis_3 "#c6ff00"
         }
         list_selected {
-            base "#d9d9d4"
-            background "#3b3c32"
+            base "#e8e9e1"
+            background "#4b4e49"
             emphasis_0 "#fc5d23"
             emphasis_1 "#00b0ff"
             emphasis_2 "#00c853"
             emphasis_3 "#c6ff00"
         }
         list_unselected {
-            base "#d9d9d4"
+            base "#e8e9e1"
             background "#252925"
             emphasis_0 "#fc5d23"
             emphasis_1 "#00b0ff"

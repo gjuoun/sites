@@ -105,10 +105,10 @@
   --color-bf-fg: var(--bf-fg);
   --color-bf-fg-dim: var(--bf-fg-dim);
   --color-bf-border: var(--bf-border);
-  --color-bf-border-muted: var(--bf-border-muted);
-  --color-bf-selection: var(--bf-selection);
-  --color-bf-cursor-line: var(--bf-cursor-line);
-  --color-bf-brace-match: var(--bf-brace-match);
+  --color-bf-border: var(--bf-border);
+  --color-bf-highlight: var(--bf-highlight);
+  --color-bf-highlight: var(--bf-highlight);
+  --color-bf-highlight: var(--bf-highlight);
   --color-bf-blue: var(--bf-blue);
   --color-bf-light-blue: var(--bf-light-blue);
   --color-bf-pale-blue: var(--bf-pale-blue);
@@ -120,7 +120,6 @@
   --color-bf-burnt-orange: var(--bf-burnt-orange);
   --color-bf-purple: var(--bf-purple);
   --color-bf-comment: var(--bf-comment);
-  --color-bf-caret: var(--bf-caret);
   --color-bf-fg-muted: var(--fg-muted);
   --color-bf-dim: var(--dim);
 

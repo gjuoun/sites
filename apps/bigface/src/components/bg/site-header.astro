@@ -15,12 +15,12 @@ const link =
 ---
 
 <a
-  class="absolute -left-[9999px] focus:top-4 focus:left-4 focus:z-100 focus:rounded-lg focus:bg-bf-cursor-line focus:px-4 focus:py-2"
+  class="absolute -left-[9999px] focus:top-4 focus:left-4 focus:z-100 focus:rounded-lg focus:bg-bf-highlight focus:px-4 focus:py-2"
   href="#main">Skip to content</a
 >
 <header
   id="site-header"
-  class="sticky top-0 z-40 border-b border-transparent transition-[border-color,background] duration-300 ease-bf [&.scrolled]:border-bf-border [&.scrolled]:bg-bf-border-muted/92 [&.scrolled]:backdrop-blur-[18px] [&.scrolled]:backdrop-saturate-150"
+  class="sticky top-0 z-40 border-b border-transparent transition-[border-color,background] duration-300 ease-bf [&.scrolled]:border-bf-border [&.scrolled]:bg-bf-border/92 [&.scrolled]:backdrop-blur-[18px] [&.scrolled]:backdrop-saturate-150"
 >
   <div class="bf-wrap flex items-center justify-between gap-4 py-[0.85rem]">
     <a
@@ -28,7 +28,7 @@ const link =
       href={`${base}/`}
     >
       <img
-        class="size-[34px] rounded-[9px] shadow-[0_0_0_1px_var(--bf-selection),0_6px_18px_color-mix(in_srgb,var(--bf-blue)_35%,transparent)] transition-transform duration-400 ease-bf group-hover:scale-[1.06] group-hover:-rotate-6"
+        class="size-[34px] rounded-[9px] shadow-[0_0_0_1px_var(--bf-highlight),0_6px_18px_color-mix(in_srgb,var(--bf-blue)_35%,transparent)] transition-transform duration-400 ease-bf group-hover:scale-[1.06] group-hover:-rotate-6"
         src={`${base}/img/bigface-avatar.svg`}
         alt=""
         width="34"

@@ -17,7 +17,7 @@ export function BGInstallTabs({ items }: { items: BGInstallTab[] }) {
     <Tabs defaultValue={items[0]?.id} className="gap-0">
       <TabsList
         aria-label="Install options"
-        className="flex w-full flex-wrap justify-start gap-[0.4rem] rounded-full border border-bf-border bg-bf-border-muted/55 p-[0.4rem] group-data-horizontal/tabs:h-auto"
+        className="flex w-full flex-wrap justify-start gap-[0.4rem] rounded-full border border-bf-border bg-bf-border/55 p-[0.4rem] group-data-horizontal/tabs:h-auto"
       >
         {items.map((t) => (
           <TabsTrigger
@@ -44,7 +44,7 @@ export function BGInstallTabs({ items }: { items: BGInstallTab[] }) {
               <span className="ml-2">{t.bar}</span>
             </div>
           )}
-          <pre className="m-0 bg-bf-border-muted/85">
+          <pre className="m-0 bg-bf-border/85">
             <code>{t.command}</code>
           </pre>
           <div className="flex items-center justify-between gap-4 px-[0.3rem] pt-[0.7rem] pb-[0.1rem] text-[0.8rem] max-[620px]:flex-col max-[620px]:items-start">

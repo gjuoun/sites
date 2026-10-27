@@ -56,44 +56,46 @@ export const REQUIRED = [
 
 /**
  * Two-tier primary, the business ruling: the FILL is bigface's native blue (#00b0ff in both modes) with the
- * dark ink on top (6.08:1 as ink-on-fill). TEXT and rings follow the accent blue in both modes (ruling 2026-10-24: 2.27:1 on paper, parked for Jun).
+ * ink on top: the light ink in light mode (5.29:1 on the fill, the one ink of the light scope, ruling 2026-10-26), and the dark canvas in dark mode. TEXT and rings follow the accent blue in both modes (ruling 2026-10-24: 2.27:1 on paper, parked for Jun).
  * black and white are the palette's own darkest and lightest: the stock scrim (bg-black/10) and the stock
- * slider thumb (bg-white) resolve through them, so no stock class has to change. White is paper, never #fff.
+ * slider thumb (bg-white) resolve through them, so no stock class has to change. White is the canvas, never #fff.
  */
 export const COLOURS: ThemeRoles = {
 	canvas: { color: "bg" },
 	ink: { color: "fg" },
-	heading: { color: "caret" },
+	heading: { color: "fg" },
 	primary: { color: "blue", palette: "dark" },
 	"primary-fill": { color: "blue", palette: "dark" },
 	"primary-ink": { color: "blue" },
-	"on-primary": { color: "bg", palette: "dark" },
+	// The fill ink is the mode's own darkest readable value (ruling 2026-10-26, B1). Light: the light fg, #2f332f, 5.29:1 on
+	// the #00b0ff fill. Dark: the dark canvas, 6.08:1. Dark's fg (#e8e9e1) measures 1.98:1 on the fill, so it cannot be the ink.
+	"on-primary": { light: { color: "fg" }, dark: { color: "bg", palette: "dark" } },
 	"primary-edge": { mix: ["blue", 78, "bg"] },
-	frame: { color: "cursorLine" },
+	frame: { color: "panel" },
 	"on-frame": { color: "fg" },
-	"gray-100": { color: "borderMuted" },
+	"gray-100": { color: "panel" },
 	"gray-200": { color: "border" },
 	"gray-300": { color: "border" },
-	"gray-400": { color: "selection" },
+	"gray-400": { color: "highlight" },
 	"gray-500": { color: "fgDim" },
-	"gray-600": { color: "comment" },
+	"gray-600": { color: "fgDim" },
 	"gray-700": { color: "fg" },
 	success: { color: "green" },
 	danger: { color: "burntOrange" },
 	info: { color: "cyan" },
 	highlight: { color: "purple" },
-	surface: { color: "cursorLine" },
-	subtle: { color: "borderMuted" },
-	secondary: { color: "borderMuted" },
+	surface: { color: "panel" },
+	subtle: { color: "panel" },
+	secondary: { color: "panel" },
 	"on-secondary": { color: "fg" },
 	// Native muted grey: 2.79:1 on the dark canvas, the palette's own long-standing choice.
 	"muted-ink": { color: "fgDim" },
 	border: { color: "border" },
 	input: { color: "border" },
 	focus: { color: "blue" },
-	"frame-accent": { mix: ["blue", 16, "cursorLine"] },
+	"frame-accent": { mix: ["blue", 16, "highlight"] },
 	"on-frame-accent": { color: "blue" },
-	"frame-border": { mix: ["fg", 12, "cursorLine"] },
+	"frame-border": { mix: ["fg", 12, "highlight"] },
 	"primary-tint": { mix: ["blue", 12, "bg"] },
 	"success-tint": { mix: ["green", 14, "bg"] },
 	"danger-tint": { mix: ["burntOrange", 14, "bg"] },
@@ -104,8 +106,8 @@ export const COLOURS: ThemeRoles = {
 	"chart-3": { color: "yellow" },
 	"chart-4": { color: "burntOrange" },
 	"chart-5": { color: "purple" },
-	overlay: { mix: ["bg", 75, "caret"] },
-	solid: { color: "cursorLine" },
+	overlay: { color: "bg" },
+	solid: { color: "panel" },
 	"on-solid": { color: "fg" },
 	// The accent family as text colours, and a deepened plate for each: a vivid accent is read on its own plate, not on
 	// the paper (ruling 2026-10-24: the colour itself is unchanged; the plate is the deepened tint it is read on).

@@ -5,10 +5,7 @@ export const bgTextClass: Record<string, string> = {
   fg: "text-bf-fg",
   fgDim: "text-bf-fg-dim",
   border: "text-bf-border",
-  borderMuted: "text-bf-border-muted",
-  selection: "text-bf-selection",
-  cursorLine: "text-bf-cursor-line",
-  braceMatch: "text-bf-brace-match",
+  highlight: "text-bf-highlight",
   blue: "text-bf-blue",
   lightBlue: "text-bf-light-blue",
   paleBlue: "text-bf-pale-blue",
@@ -19,6 +16,4 @@ export const bgTextClass: Record<string, string> = {
   brightYellow: "text-bf-bright-yellow",
   burntOrange: "text-bf-burnt-orange",
   purple: "text-bf-purple",
-  comment: "text-bf-comment",
-  caret: "text-bf-caret",
 };

@@ -25,8 +25,8 @@ for (const width of [1440, 390]) {
 			const r = await runModeToggle(dist, "/ui/business/", width);
 			expect(r.initial.mode, "starts light").toBe("light");
 			expect(r.dark.mode).toBe("dark");
-			expect(r.dark.canvas, "the dark canvas is the dark paper").toBe("rgb(37, 41, 37)");
-			expect(r.light.canvas, "the light canvas is the paper").toBe("rgb(248, 248, 240)");
+			expect(r.dark.canvas, "the dark canvas is the dark neutral bg").toBe("rgb(37, 41, 37)");
+			expect(r.light.canvas, "the light canvas is the scheme caret").toBe("rgb(248, 248, 240)");
 			expect(r.afterReloadWithDark.mode, "dark survives a reload").toBe("dark");
 			expect(r.afterReloadWithDark.canvas).toBe(r.dark.canvas);
 		},

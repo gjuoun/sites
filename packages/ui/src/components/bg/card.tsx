@@ -10,7 +10,7 @@ export const bgCardVariants = cva("", {
     tone: {
       none: "",
       plate:
-        "relative block gap-0 overflow-visible rounded-[24px] bg-transparent bg-linear-160/srgb from-bf-border-muted/85 to-bf-border-muted/90 py-0 text-[1rem] text-foreground ring-0 border border-bf-border shadow-[0_24px_60px_-30px_color-mix(in_srgb,var(--bf-border-muted)_90%,transparent)]",
+        "relative block gap-0 overflow-visible rounded-[24px] bg-transparent bg-linear-160/srgb from-bf-border/85 to-bf-border/90 py-0 text-[1rem] text-foreground ring-0 border border-bf-border shadow-[0_24px_60px_-30px_color-mix(in_srgb,var(--bf-border)_90%,transparent)]",
     },
     glow: {
       false: "",

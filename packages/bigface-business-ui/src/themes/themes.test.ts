@@ -102,7 +102,7 @@ describe("bigface-business-ui: colour only", () => {
 		expect(everything).not.toContain("255, 255, 255");
 	});
 
-	test("the primary: native blue fill with dark ink; the light blue is the native blue by ruling (2026-10-24)", () => {
+	test("the primary: native blue fill; light ink on it in light mode; the light blue is the native blue by ruling (2026-10-24)", () => {
 		const b = blocks();
 		const nativeBlue = dark.colors.blue?.hex.toLowerCase();
 		// Jun's ruling: the accent family borrows the dark palette exactly, so the light blue IS the native blue.
@@ -114,18 +114,41 @@ describe("bigface-business-ui: colour only", () => {
 		for (const mode of [b.light, b.dark]) {
 			expect(mode["--theme-primary"]).toBe(nativeBlue);
 			expect(mode["--theme-primary-fill"]).toBe(nativeBlue);
-			expect(mode["--theme-on-primary"]).toBe("#252925");
 		}
+		// Ruling 2026-10-26: the light ink on the blue fill is the light fg, the one ink of the light scope.
+		expect(b.light["--theme-on-primary"]).toBe(light.colors.fg.hex);
+		// Ruling 2026-10-26 (B1): dark keeps the dark canvas as the fill ink. Its fg cannot be the ink (checked below).
+		expect(b.dark["--theme-on-primary"]).toBe("#252925");
+		expect(contrastRatio(dark.colors.fg.hex, nativeBlue), "dark fg on the fill").toBeLessThan(4.5);
 		expect(b.light["--theme-primary-ink"]).toBe(nativeBlue);
 		expect(b.dark["--theme-primary-ink"]).toBe(nativeBlue);
 	});
 
-	test("black and white are the palette's own ends, per mode; white is paper, not #fff", () => {
+	test("the surface roles read the panel tier in both modes: frame, surface, solid, subtle, gray-100 and secondary", () => {
 		const b = blocks();
-		expect(b.light["--theme-black"]).toBe("#252925");
+		for (const mode of ["light", "dark"] as const) {
+			const palette = (mode === "light" ? light : dark) as Pal;
+			const panel = palette.colors.panel.hex.toLowerCase();
+			for (const role of ["frame", "surface", "solid", "subtle", "gray-100", "secondary"]) {
+				expect(b[mode]["--theme-" + role], mode + " " + role).toBe(panel);
+			}
+		}
+	});
+
+	test("heading is the ink, not the canvas, in both modes: it clears AA on the canvas (the paper retirement, 2026-10-26)", () => {
+		const b = blocks();
+		for (const mode of ["light", "dark"] as const) {
+			const read = (k: string) => evaluate(b[mode]["--theme-" + k] as string);
+			expect(contrastRatio(read("heading"), read("canvas")), mode + " heading on canvas").toBeGreaterThanOrEqual(4.5);
+		}
+	});
+
+	test("black and white are the palette's own ends, per mode; white is the canvas, not #fff", () => {
+		const b = blocks();
+		expect(b.light["--theme-black"]).toBe(light.colors.fg.hex); // the light ink is the derived fg (neutral collapse)
 		expect(b.light["--theme-white"]).toBe("#f8f8f0");
 		expect(b.dark["--theme-black"]).toBe("#252925");
-		expect(b.dark["--theme-white"]).toBe("#d9d9d4");
+		expect(b.dark["--theme-white"]).toBe(dark.colors.fg.hex); // the dark ink is the derived fg
 	});
 
 	test("every colour role resolves to the native palette value it names, or the exact mix of two", () => {

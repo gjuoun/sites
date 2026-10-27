@@ -50,8 +50,8 @@ for (const mode of ["light", "dark"] as const) {
 		"business colours trace to the synced palettes in " + mode,
 		async () => {
 			const audit = await measurePanelColours(dist, "/ui/business/", 1440, mode);
-			// The page body and every mode scope are audited, each in its own mode. The one dark-palette value a light
-			// page may carry is the native blue fill (the ruling: primary fills are #00b0ff with dark ink).
+			// The page body and every mode scope are audited, each in its own mode. A light page carries no dark-only
+			// value: the primary ink in light is the light fg (ruling 2026-10-26), with no exception.
 			expect(audit.panels.length, "body and scopes audited").toBeGreaterThan(1);
 			// The audit must see the page: a vacuous audit (no colour keys read) passes everything.
 			const all = audit.panels.flatMap((p) => p.offenders);

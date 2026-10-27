@@ -5,18 +5,17 @@ import BGPaletteGroup from "../components/bg/palette-group.astro";
 import BGSwatch from "../components/bg/swatch.astro";
 import BGSyntaxPreview from "../components/bg/syntax-preview.astro";
 import { hex, palette } from "../data/palette.ts";
+import { lightPalette, neutralsLightToDark } from "../data/neutrals.ts";
 import { REPO } from "../data/targets.ts";
 import Base from "../layouts/Base.astro";
 
-// Groups show only what the 2018 scheme actually defines; the blends get their own block below so
-// nobody mistakes them for original colours.
+// Each mode shows its six neutrals, lightest first, and the ten accents as their own group (Jun, 2026-10-26).
+// The neutrals are derived from the background; the accents are the scheme's own.
+const modes = [
+  { id: "neutrals-light", title: "Neutrals: light", palette: lightPalette },
+  { id: "neutrals-dark", title: "Neutrals: dark", palette },
+];
 const groups: [string, string, string[]][] = [
-  [
-    "surfaces",
-    "Surfaces",
-    ["bg", "cursorLine", "braceMatch", "selection", "border", "borderMuted"],
-  ],
-  ["text", "Text", ["fg", "comment", "fgDim", "caret"]],
   [
     "accents",
     "Accents",
@@ -51,12 +50,10 @@ const swatches = "grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-[0.7r
       One palette.<br /><span class="bf-grad">Nothing else.</span>
     </h1>
     <p class="bf-lead">
-      Every theme in the repo is generated from <code>palette/bigface.json</code>, and every colour
+      Every theme in the repo is generated from <code>palette/bigface.json</code>, and every seed
       in it is <strong>byte-for-byte from the 2018 JetBrains scheme</strong> — each labelled with the
       exact <code>OPTION#FIELD</code> it came from and checked against the original XML by a test.
-      Nothing is blended or invented: when a tool needs a surface the scheme never defined, it gets
-      one of the scheme's own surfaces (the caret-row background, the matched-brace block, a border
-      grey) instead of a new colour.
+      The accents are the scheme's own bytes. The neutrals are derived from the background by one formula, so a tool that needs a surface gets a neutral from that formula, never an invented colour.
     </p>
     <div class="mt-[1.4rem] mb-0 flex flex-wrap gap-2">
       <span class={count}><strong class="font-code text-foreground">{Object.keys(palette.colors).length}</strong> colours</span>
@@ -71,14 +68,23 @@ const swatches = "grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-[0.7r
   </div>
 
   <nav
-    class="sticky top-[3.9rem] z-20 mt-[2.2rem] flex flex-wrap gap-[0.35rem] rounded-full border border-bf-border bg-bf-border-muted/82 p-[0.55rem] text-[0.8rem] backdrop-blur-[14px] max-[700px]:static max-[700px]:rounded-[16px]"
+    class="sticky top-[3.9rem] z-20 mt-[2.2rem] flex flex-wrap gap-[0.35rem] rounded-full border border-bf-border bg-bf-border/82 p-[0.55rem] text-[0.8rem] backdrop-blur-[14px] max-[700px]:static max-[700px]:rounded-[16px]"
     aria-label="Palette sections"
   >
+    {modes.map((m) => <a class={subLink} href={`#${m.id}`}>{m.title}</a>)}
     {groups.map(([id, title]) => <a class={subLink} href={`#${id}`}>{title}</a>)}
     <a class={subLink} href="#ansi">Terminal</a>
     <a class={subLink} href="#syntax">Syntax</a>
     <a class={subLink} href="#contrast">Contrast</a>
   </nav>
+
+  {modes.map((m) => (
+    <BGPaletteGroup id={m.id} title={m.title} count={6}>
+      <div class={swatches}>
+        {neutralsLightToDark(m.palette).map((n) => <BGSwatch name={n} color={m.palette.colors[n]!} />)}
+      </div>
+    </BGPaletteGroup>
+  ))}
 
   {groups.map(([id, title, names]) => (
     <BGPaletteGroup id={id} title={title} count={names.length}>
@@ -118,8 +124,8 @@ const swatches = "grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-[0.7r
 
   <BGPaletteGroup id="contrast" title="Contrast">
     <p class="text-bf-fg-muted">
-      Informational only. The colours are kept as designed, so a few roles (<code>fgDim</code>,
-      <code>comment</code>) sit below the WCAG 4.5:1 body-text guideline by intent.
+      Informational only. The colours are kept as designed, so a few roles (<code>fgDim</code>)
+      sit below the WCAG 4.5:1 body-text guideline by intent.
     </p>
     <BGContrastTable />
   </BGPaletteGroup>
