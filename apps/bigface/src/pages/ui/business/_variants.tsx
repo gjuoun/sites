@@ -49,7 +49,7 @@ import { Trace, TraceIcon, TraceLine, TraceTitle } from "@gjuoun/bigface-busines
 // axis for have no entry, and the card says so.
 
 const SIDES = ["top", "right", "bottom", "left"] as const;
-const BUTTON_VARIANTS = ["default", "outline", "secondary", "ghost", "destructive", "link"] as const;
+const BUTTON_VARIANTS = ["default", "outline", "secondary", "ghost", "destructive", "link", "glow"] as const;
 const BUTTON_SIZES = ["default", "xs", "sm", "lg"] as const;
 const ICON_SIZES = ["icon", "icon-xs", "icon-sm", "icon-lg"] as const;
 
@@ -523,7 +523,7 @@ export const VARIANTS: Record<string, React.ReactNode> = {
 		<div className="flex flex-col divide-y">
 			{(["horizontal", "vertical"] as const).map((o) => (
 				<Row key={o} label={"orientation=" + o}>
-					<ResizablePanelGroup orientation={o} className={(o === "vertical" ? "h-48 w-48" : "h-24 w-full max-w-md") + " rounded-lg border"}>
+					<ResizablePanelGroup orientation={o} style={o === "vertical" ? { height: "12rem", width: "12rem" } : { height: "6rem" }} className={(o === "vertical" ? "" : "w-full max-w-md ") + "rounded-lg border"}>
 						<ResizablePanel defaultSize={50} className="flex items-center justify-center p-2 text-sm">A</ResizablePanel>
 						<ResizableHandle withHandle />
 						<ResizablePanel defaultSize={50} className="flex items-center justify-center p-2 text-sm">B</ResizablePanel>
