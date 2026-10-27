@@ -63,14 +63,24 @@ describe("components/ui lock", () => {
 		extra.set("zz-extra.tsx", "export {};\n");
 		expect(checkLock(extra, m).some((f) => f.includes("zz-extra.tsx"))).toBe(true);
 	});
-	test("the glow variant exists as a Button variant and resolves to an inset ring in the bg role", () => {
+	test("the glow variant is a paleBlue halo: gradient primary fill, on-primary ink, outer paleBlue glow, hover lift", () => {
 		const glow = buttonVariants({ variant: "glow" }).split(/\s+/);
-		expect(glow).toContain("inset-ring-3");
-		expect(glow).toContain("inset-ring-background");
-		// an outer ring in the canvas colour is invisible on a canvas page: the glow must not use one
-		expect(glow).not.toContain("ring-3");
-		expect(glow).not.toContain("ring-background");
-		expect(buttonVariants({ variant: "default" })).not.toContain("ring-background");
+		// the halo is the theme's existing paleBlue, read through --theme-paleBlue; the fill is a gradient to a darker primary
+		expect(glow).toContain("shadow-[0_0_20px_-2px_var(--theme-paleBlue)]");
+		expect(glow).toContain("hover:shadow-[0_0_20px_-2px_var(--theme-paleBlue)]");
+		expect(glow).toContain("bg-linear-135/srgb");
+		expect(glow).toContain("from-primary");
+		expect(glow).toContain("text-primary-foreground");
+		expect(glow).toContain("hover:-translate-y-0.5");
+		// no inset ring and no ring in the canvas colour: the glow is an outside halo
+		expect(glow.some((c) => /inset-ring|ring-background/.test(c))).toBe(false);
+		// no new custom property: every var() the variant reads is one the theme already declares
+		const used = [...buttonVariants({ variant: "glow" }).matchAll(/var\((--[\w-]+)\)/g)].map((m) => m[1]);
+		const declared = readFileSync(join(import.meta.dir, "../themes/business.css"), "utf8");
+		for (const name of new Set(used)) expect(declared, name).toContain(name + ":");
+		expect(new Set(used)).toEqual(new Set(["--theme-blue", "--theme-fg", "--theme-bg", "--theme-paleBlue"]));
+		// the stock default keeps no glow
+		expect(buttonVariants({ variant: "default" })).not.toContain("paleBlue");
 	});
 
 	test("button.tsx diverges from registry bytes only by its declared colour lines and the marked glow lines", () => {

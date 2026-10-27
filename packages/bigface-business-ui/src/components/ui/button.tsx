@@ -19,7 +19,7 @@ const buttonVariants = cva(
           "bg-danger-veil text-destructive hover:bg-danger-veil-hover focus-visible:border-destructive/40 focus-visible:ring-danger-halo",
         link: "text-primary underline-offset-4 hover:underline",
         // bg2:variant variant.glow begin
-        glow: "bg-primary text-primary-foreground hover:bg-primary/80 inset-ring-3 inset-ring-background",
+        glow: "bg-primary bg-linear-135/srgb from-primary to-[color-mix(in_oklab,var(--theme-blue)_70%,light-dark(var(--theme-fg),var(--theme-bg)))] text-primary-foreground shadow-[0_0_20px_-2px_var(--theme-paleBlue)] hover:from-primary hover:to-primary hover:-translate-y-0.5 hover:shadow-[0_0_20px_-2px_var(--theme-paleBlue)]",
         // bg2:variant end
       },
       size: {
