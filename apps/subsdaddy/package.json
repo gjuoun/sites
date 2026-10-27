@@ -23,7 +23,7 @@
     "refresh": "bun run scripts/refresh.ts",
     "collect:catalog": "bun run scripts/collect-catalog.ts",
     "check:catalog": "bun run scripts/check-catalog.ts",
-    "build:claude-hours": "bun run scripts/build-claude-hours.ts",
+    "build:third-party": "bun run scripts/build-third-party.ts",
     "estimate:catalog": "bun run scripts/estimate-catalog.ts",
     "derive:credit-value": "bun run scripts/derive-credit-value.ts",
     "build:allowance": "bun run scripts/build-allowance.ts"

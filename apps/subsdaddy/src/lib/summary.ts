@@ -85,7 +85,7 @@ export function isDerivedLane(ds: DS, lane: string | null): boolean {
   return ds.lanes.lanes.find((l) => l.lane === lane)?.usd_per_b_basis === "derived";
 }
 
-export type Sup = "p" | "r" | "d" | "c";
+export type Sup = "p" | "r" | "d" | "c" | "t" | "j";
 export type AllowanceCell = { usd: number; cycle: number; sup: Sup; title: string };
 
 /** A credit-denominated allowance (QwenCloud credits, Copilot base credits) is c, whatever its basis says. */
@@ -98,6 +98,8 @@ export function supOf(basis: string | null | undefined, credit: boolean): Sup | 
   if (basis === "vendor_published" || basis === "vendor_published_per_model") return "p";
   if (basis === "vendor_reported") return "r";
   if (basis === "derived") return credit ? "c" : "d";
+  if (basis === "third_party_measured") return "t";
+  if (basis === "third_party_projected") return "j";
   return null;
 }
 export const creditRowOfLane = (ds: DS, lane: string): CatalogRow | undefined => ds.catalog.rows.find((r) => r.measured_lane === lane) as CatalogRow | undefined;
@@ -139,6 +141,13 @@ export function cacheMixOf(ds: DS, lane: string): { share: number; short: string
   };
 }
 export const withSup = (c: Cell, sup: Sup): Cell => ({ ...c, sup });
+
+/** A third-party allowance's tooltip: its basis (publisher, window, sample, weekly value) with the source's domain and publication date. */
+export function thirdPartyTitle(r: CatalogRow): string | null {
+  const a = r.allowance.find((x) => x.ref === "*");
+  if (!a || !a.kind || !a.source) return null;
+  return a.basis + " · source " + new URL(a.source.url).hostname + ", published " + a.source.published;
+}
 const pct = (s: number) => Math.round(s * 100) + "%";
 
 type ViewRow = {
@@ -299,7 +308,7 @@ function modelRows(ds: DS, ref: RefId, ctx: ContextId, shape: ShapeDef): ViewRow
     let allowance: AllowanceCell | null = null;
     if (v && v.allowance_usd && v.allowance_basis) {
       const sup = supOf(v.allowance_basis, isCreditRow(r));
-      if (sup) allowance = { usd: v.allowance_usd, cycle: v.allowance_cycle_days ?? 30, sup, title: laneRow ? allowanceTitleOf(laneRow.capacity as DsLane["capacity"]) : "published $" + v.allowance_usd.toFixed(2) };
+      if (sup) allowance = { usd: v.allowance_usd, cycle: v.allowance_cycle_days ?? 30, sup, title: laneRow ? allowanceTitleOf(laneRow.capacity as DsLane["capacity"]) : thirdPartyTitle(r) ?? "published $" + v.allowance_usd.toFixed(2) };
     }
     out.push({
       key: r.plan_id,
@@ -364,6 +373,8 @@ export function allowanceLegend(ds: DS): string {
     "r vendor reading (" + (pool ? pool.label + " pool $" + (pool.capacity.allowance_vendor_usd ?? 0).toFixed(2) : "none") + ")",
     "d derived from quota windows (" + (der ? der.label + " $" + (der.capacity.allowance_usd_per_cycle ?? 0).toFixed(2) : "none") + ")",
     "c credit value (" + (cr && perCredit !== undefined ? cr.label + " $" + Number(perCredit.toPrecision(3)) + " per credit" : "none") + ")",
+    "t third-party measured weekly value × 30/7",
+    "j third-party projection, not a measurement",
   ].join(" · ");
 }
 

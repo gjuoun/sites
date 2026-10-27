@@ -19,14 +19,14 @@ describe("Allowance: the seventh column", () => {
     }
   });
 
-  test("every row that has a $/B has a non-empty Allowance, with a source marker from p, r, d or c", () => {
+  test("every row that has a $/B has a non-empty Allowance, with a source marker from p, r, d, c, t or j", () => {
     for (const c of viewChips(ds)) for (const ctx of CONTEXT_IDS) for (const s of SHAPES) {
       for (const r of summaryTable(ds, c.id, ctx, s).rows) {
         const u = r.cells.usd;
         if (u.na) continue;
         const a = r.cells.allowance;
         expect(a.na).toBe(false);
-        expect(["p", "r", "d", "c"]).toContain((a as { sup?: string }).sup ?? "");
+        expect(["p", "r", "d", "c", "t", "j"]).toContain((a as { sup?: string }).sup ?? "");
       }
     }
   });

@@ -32,6 +32,9 @@ export const allowanceEntrySchema = z.strictObject({
   ref: z.enum([...REF_LITERALS, "*"]),
   usd: z.number().positive(),
   basis: z.string().min(1),
+  /** third_party_measured (t) and third_party_projected (j) carry their source; absent kinds are the build's own bases. */
+  kind: z.enum(["third_party_measured", "third_party_projected"]).optional(),
+  source: z.strictObject({ publisher: z.string().min(1), url: z.url(), published: z.iso.date(), note: z.string().min(1) }).optional(),
 });
 
 const estimateValueSchema = z.strictObject({
