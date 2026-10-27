@@ -39,8 +39,20 @@ jobs:
       - id: affected
         env:
           FORCED: ${{ inputs.app }}
+          BEFORE: ${{ github.event.before }}
         run: |
           set -euo pipefail
+          # The affected diff is measured from the commit this push started at, not from HEAD^1:
+          # a push carrying several commits (a merge, for instance) would otherwise be judged on
+          # its last commit alone and every site would be skipped. A fresh branch sends all-zeros,
+          # and a force-push can name a commit we do not have, so both fall back to the first parent.
+          if [ -n "${BEFORE:-}" ] && [ "${BEFORE}" != "0000000000000000000000000000000000000000" ] \
+             && git cat-file -e "${BEFORE}^{commit}" 2>/dev/null; then
+            BASE="${BEFORE}"
+          else
+            BASE="HEAD^1"
+          fi
+          echo "diff base: $BASE"
           # app -> workspace package name, the bridge between turbo's graph and this file.
           # blackboard-site has no package.json (static folder), so it is handled by a path diff below.
           MAP="bigface=@sites/bigface bundant=@sites/bundant qublack=@sites/qublack jun-hermes=@sites/jun-hermes subsdaddy=@sites/subsdaddy"
@@ -48,7 +60,7 @@ jobs:
             CHANGED=$(python3 -c 'import json,sys; print(json.dumps([sys.argv[1]]))' "$FORCED")
             echo "forced by dispatch: $FORCED"
           else
-            AFFECTED=$(bunx turbo run build --filter='...[HEAD^1]' --dry-run=json 2>/dev/null \
+            AFFECTED=$(bunx turbo run build --filter="...[${BASE}]" --dry-run=json 2>/dev/null \
               | python3 -c 'import sys,json; print("\n".join(sorted({t["package"] for t in json.load(sys.stdin).get("tasks",[])})))')
             echo "affected packages:"; echo "$AFFECTED"
             APPS=""
@@ -56,7 +68,7 @@ jobs:
               app="${pair%%=*}"; pkg="${pair#*=}"
               if grep -qx "$pkg" <<<"$AFFECTED"; then APPS="$APPS $app"; fi
             done
-            [ -d apps/blackboard-site ] && git diff --name-only HEAD^1 HEAD -- apps/blackboard-site | grep -q . && APPS="$APPS blackboard-site"
+            [ -d apps/blackboard-site ] && git diff --name-only "$BASE" HEAD -- apps/blackboard-site | grep -q . && APPS="$APPS blackboard-site"
             CHANGED=$(python3 -c 'import json,sys; print(json.dumps(sys.argv[1].split()))' "$APPS")
           fi
           echo "apps=$CHANGED" >> "$GITHUB_OUTPUT"
