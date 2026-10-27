@@ -63,31 +63,29 @@ describe("components/ui lock", () => {
 		extra.set("zz-extra.tsx", "export {};\n");
 		expect(checkLock(extra, m).some((f) => f.includes("zz-extra.tsx"))).toBe(true);
 	});
-	test("the glow variant is the reference rim: plain primary fill at rest, a 1px hover rim over the fill edge, and a hover lift", () => {
-		const glow = buttonVariants({ variant: "glow" }).split(/\s+/);
-		// rest: the plain primary fill with on-primary ink, no gradient and no shadow
-		expect(glow).toContain("bg-primary");
-		expect(glow).toContain("text-primary-foreground");
-		expect(glow.some((c) => /^shadow-|bg-linear-135/.test(c))).toBe(false);
-		// the rim is a pseudo-element over the padding box, faded in on hover (it must be the border-box edge, not a halo)
-		for (const c of ["relative", "before:absolute", "before:inset-0", "before:p-px", "before:opacity-0", "hover:before:opacity-100"]) expect(glow, c).toContain(c);
-		// the reference card gradient: 140deg, blue at 55 percent, lime at 12 percent at 45 percent, transparent at 70 percent
-		for (const c of ["before:bg-linear-140/srgb", "before:from-[var(--theme-blue)]/55", "before:via-[var(--theme-lime)]/12", "before:via-45%", "before:to-transparent", "before:to-70%"]) expect(glow, c).toContain(c);
-		// the hairline: the content box is excluded from the padding box, so only the 1px ring paints
-		expect(glow).toContain("before:[mask-composite:exclude]");
-		expect(glow).toContain("before:[mask-clip:content-box,border-box]");
-		// hover lifts the button 2px and keeps the fill (no hover colour change)
+	test("the glow variant is the hero look: gradient primary fill, on-primary ink, a translucent blue drop shadow, a deeper one on hover, and a hover lift; no ring, no rim", () => {
+		const cls = buttonVariants({ variant: "glow" });
+		const glow = cls.split(/\s+/);
+		// fill: the reference gradient at 135 degrees, from primary to a darker primary edge (a color-mix of blue with the mode's on-primary ink)
+		for (const c of ["bg-linear-135/srgb", "from-primary", "to-[color-mix(in_oklab,var(--theme-blue)_70%,light-dark(var(--theme-fg),var(--theme-bg)))]", "text-primary-foreground"]) expect(glow, c).toContain(c);
+		// shadow at rest: blue at 20 percent in light and 30 percent in dark, 0 8px 26px, through light-dark() so no new custom property is needed
+		expect(cls).toContain("shadow-[0_8px_26px_-6px_light-dark(color-mix(in_oklab,var(--theme-blue)_20%,transparent),color-mix(in_oklab,var(--theme-blue)_30%,transparent))]");
+		// hover: the reference lift, the reference hover fill (flat primary), and a second, larger translucent blue shadow added to the first
 		expect(glow).toContain("hover:-translate-y-0.5");
-		expect(glow).toContain("hover:bg-primary");
+		expect(glow).toContain("hover:from-primary");
+		expect(glow).toContain("hover:to-primary");
+		expect(cls).toContain("hover:shadow-[0_8px_26px_-6px_light-dark(color-mix(in_oklab,var(--theme-blue)_20%,transparent),color-mix(in_oklab,var(--theme-blue)_30%,transparent)),0_16px_40px_-8px_light-dark(color-mix(in_oklab,var(--theme-blue)_20%,transparent),color-mix(in_oklab,var(--theme-blue)_30%,transparent))]");
+		// no ring and no rim: no ring, inset-ring or pseudo-element utility, and no before: or after: layer
+		expect(glow.some((c) => /^(hover:)?(ring|inset-ring|before:|after:)/.test(c))).toBe(false);
 		// no new custom property: every var() the variant reads is one the theme already declares
-		const used = [...buttonVariants({ variant: "glow" }).matchAll(/var\((--[\w-]+)\)/g)].map((m) => m[1]);
+		const used = [...cls.matchAll(/var\((--[\w-]+)\)/g)].map((m) => m[1]);
 		const declared = readFileSync(join(import.meta.dir, "../themes/business.css"), "utf8");
 		for (const name of new Set(used)) expect(declared, name).toContain(name + ":");
-		expect(new Set(used)).toEqual(new Set(["--theme-blue", "--theme-lime"]));
-		// the stock default keeps no rim
-		expect(buttonVariants({ variant: "default" })).not.toContain("before:absolute");
+		expect(new Set(used)).toEqual(new Set(["--theme-blue", "--theme-fg", "--theme-bg"]));
+		// the stock default keeps no shadow and no gradient
+		expect(buttonVariants({ variant: "default" })).not.toContain("shadow-[0_8px_26px");
+		expect(buttonVariants({ variant: "default" })).not.toContain("bg-linear-135");
 	});
-
 	test("button.tsx diverges from registry bytes only by its declared colour lines and the marked glow lines", () => {
 		const text = files.get("button.tsx") as string;
 		const blocks = extractBlocks(text).blocks;

@@ -19,7 +19,7 @@ const buttonVariants = cva(
           "bg-danger-veil text-destructive hover:bg-danger-veil-hover focus-visible:border-destructive/40 focus-visible:ring-danger-halo",
         link: "text-primary underline-offset-4 hover:underline",
         // bg2:variant variant.glow begin
-        glow: "relative bg-primary text-primary-foreground hover:bg-primary hover:-translate-y-0.5 before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:p-px before:content-[''] before:bg-linear-140/srgb before:from-[var(--theme-blue)]/55 before:via-[var(--theme-lime)]/12 before:via-45% before:to-transparent before:to-70% before:[mask-image:linear-gradient(#000_0_0),linear-gradient(#000_0_0)] before:[mask-clip:content-box,border-box] before:[mask-composite:exclude] before:opacity-0 before:transition-opacity hover:before:opacity-100",
+        glow: "bg-linear-135/srgb from-primary to-[color-mix(in_oklab,var(--theme-blue)_70%,light-dark(var(--theme-fg),var(--theme-bg)))] text-primary-foreground shadow-[0_8px_26px_-6px_light-dark(color-mix(in_oklab,var(--theme-blue)_20%,transparent),color-mix(in_oklab,var(--theme-blue)_30%,transparent))] hover:-translate-y-0.5 hover:from-primary hover:to-primary hover:shadow-[0_8px_26px_-6px_light-dark(color-mix(in_oklab,var(--theme-blue)_20%,transparent),color-mix(in_oklab,var(--theme-blue)_30%,transparent)),0_16px_40px_-8px_light-dark(color-mix(in_oklab,var(--theme-blue)_20%,transparent),color-mix(in_oklab,var(--theme-blue)_30%,transparent))]",
         // bg2:variant end
       },
       size: {
