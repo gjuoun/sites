@@ -403,6 +403,12 @@ function AllowanceColumnSection() {
         then the vendor's dashboard reading (vendor_reported), then a figure derived from quota windows (derived), or a credit value (credits). A plan with per-model limits has no pool, so a model it does not list has no allowance.
       </p>
       <p className={SMALL_NOTE}>
+        Per-model limits (OpenCode Go, r53). The page sets a monthly limit for each model, and a model's usage counts against its own limit. So a plan's Measured allowance depends on which models carry its tokens in the monthly window:
+        a main model with at least 70% of the tokens sets the allowance to that model's published limit (Go: DeepSeek V4.1 Flash, $80); with no main model, the limits are weighted by token share.
+        Tokens per cycle are that allowance over the measured blend of the window, so $/B is fee over those tokens. The quota-window figure is shown beside it for comparison and does not set $/B. Go Plus has no account of its own,
+        so its measured $/B is not a row; on the same usage its DeepSeek limit is $160, which gives twice Go's $/B.
+      </p>
+      <p className={SMALL_NOTE}>
         The Measured view's Allowance does not depend on Shape or context. In a model view, the allowance is the same value under every shape: Shape changes only the price per token.
       </p>
       <p className={SMALL_NOTE}>

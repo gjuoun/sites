@@ -14,7 +14,8 @@ import { cacheShare } from "../src/data/derive";
 import { parseUsageRows, percentile, outputTps, usageSql, type UsageRow } from "../src/lib/usage";
 
 const APP = resolve(import.meta.dir, "..");
-const days = Number(process.argv[process.argv.indexOf("--days") + 1]) || 7;
+// 31 days: the longest quota window is monthly, so the export must reach back past the start of every window (r52)
+const days = Number(process.argv[process.argv.indexOf("--days") + 1]) || 31;
 const measuredAt = new Date().toISOString();
 const SOURCE = "sub2api usage_logs (read-only SELECT via podman exec psql)";
 
@@ -90,6 +91,7 @@ const times = rows.map((r) => r.created_at_utc).sort();
 const usage: UsageFile = usageFileSchema.parse({
   window_days: days,
   coverage_start: times[0] + "",
+  export_start: new Date(Date.parse(measuredAt) - days * 86_400_000).toISOString(),
   coverage_end: times[times.length - 1] + "",
   lanes: LANES.map((l) => laneSummary(l, byLane.get(l)!)),
   measured_at: measuredAt,
@@ -102,7 +104,7 @@ const day = measuredAt.slice(0, 10);
 // raw rows: lane ids only, no account ids
 writeFileSync(
   join(dataDir, "raw", "usage", `${day}.json`),
-  JSON.stringify({ measured_at: measuredAt, source: SOURCE, rows: rows.map(({ lane, ...r }) => ({ lane, ...r })) }),
+  JSON.stringify({ measured_at: measuredAt, source: SOURCE, export_start: new Date(Date.parse(measuredAt) - days * 86_400_000).toISOString(), rows: rows.map(({ lane, ...r }) => ({ lane, ...r })) }),
 );
 writeFileSync(join(dataDir, "usage.json"), JSON.stringify(usage, null, 2) + "\n");
 

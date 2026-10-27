@@ -36,7 +36,7 @@ describe("Allowance: the seventh column", () => {
     for (const l of ds.lanes.lanes) {
       const b = l.capacity.allowance_basis;
       const credit = ds.catalog.rows.find((r: any) => r.measured_lane === l.lane)?.credits_to_usd;
-      want.set(l.lane, b === "vendor_published" ? "p" : b === "derived" ? (credit ? "c" : "d") : b === "vendor_reported" ? "r" : "?");
+      want.set(l.lane, b === "vendor_published" || b === "vendor_published_per_model" || b === "vendor_published_weighted" ? "p" : b === "derived" ? (credit ? "c" : "d") : b === "vendor_reported" ? "r" : "?");
     }
     for (const r of summaryTable(ds, MEASURED).rows) {
       // a lane with no stored stable reading is N/A (r48): it has no marker to check

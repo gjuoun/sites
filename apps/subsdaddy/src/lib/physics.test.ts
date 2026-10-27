@@ -28,7 +28,8 @@ describe("physical bound: no shown capacity needs more than 730 agent hours a mo
         if (r.cells.capacity.na) continue;
         const t = tokens30d(r.cells.capacity.text);
         if (t === null) continue;
-        expect(t <= bound * 1.0001).toBe(true);
+        // a capped cell shows the ceiling rounded to two decimals of billions: allow half of that last displayed digit (r52)
+        expect(t <= bound + 0.005e9).toBe(true);
       }
     }
   });

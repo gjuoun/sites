@@ -13,6 +13,7 @@ import { na, value, type BadgeKind, type Cell } from "./cells";
 import { REF_IDS, REF_NAMES, pooledMix, type RefId } from "../data/estimate";
 import { contextLabel, type ContextId } from "../data/context";
 import { staleSentence } from "../data/published";
+import { UPSTREAM_TO_PAGE_MODEL } from "../data/per-model-limit";
 
 /** The held-lane sentence: the date of its last stable reading and its current windows; a seed adds its own clause (r49). */
 export function heldLine(s: { read_at: string; current_windows: Array<{ window: string; used_pct: number; measured_at: string; source: string }>; seed?: boolean | null }): string {
@@ -101,7 +102,7 @@ export function isCreditRow(r: CatalogRow | undefined): boolean {
 /** The source marker: p published, r vendor reading, d derived from quota windows, c credit value. */
 export function supOf(basis: string | null | undefined, credit: boolean): Sup | null {
   if (basis === "credits") return "c";
-  if (basis === "vendor_published" || basis === "vendor_published_per_model") return "p";
+  if (basis === "vendor_published" || basis === "vendor_published_per_model" || basis === "vendor_published_weighted") return "p";
   if (basis === "vendor_reported") return "r";
   if (basis === "derived") return credit ? "c" : "d";
   if (basis === "third_party_measured") return "t";
@@ -193,7 +194,9 @@ export function smallTokens(t: number): string {
 export function capDetailOf(l: DsLane): string[] {
   const c = l.capacity as DsLane["capacity"];
   const lines: string[] = c.windows.map((w) => {
-    const head = w.window + " · used " + w.used_pct.toFixed(1) + "% · " + w.status;
+    // a window whose log covers less than 95% of its span is excluded from binding, and says so (r51)
+    const label = w.status === "partial" ? "partial coverage " + Math.round(w.coverage * 100) + "% of span (excluded from binding)" : w.status;
+    const head = w.window + " · used " + w.used_pct.toFixed(1) + "% · " + label;
     if (w.tokens <= 0) return head;
     const cost = smallUsd(w.cost_usd) + " at list · " + smallTokens(w.tokens) + " in window · " + Math.round(w.unpriced_share * 100) + "% unpriced";
     const allow = w.allowance_usd_cycle === null ? "" : " · allowance $" + w.allowance_usd_cycle.toFixed(2) + " per cycle";
@@ -204,7 +207,13 @@ export function capDetailOf(l: DsLane): string[] {
   const vendor = c.allowance_vendor_usd ?? null;
   const derived = c.allowance_derived_usd ?? null;
   const unpricedNote = c.unpriced_share === null || c.unpriced_share === undefined || c.unpriced_share === 0 ? "" : ", includes " + Math.round(c.unpriced_share * 100) + "% unpriced";
-  if (published !== null) {
+  if (c.per_model) {
+    // r53: the official per-model limits set the allowance; the derived figure is a comparison only, never $/B
+    const shares = c.per_model.parts.map((p: { model: string; share: number; limit_usd: number | null }) => (UPSTREAM_TO_PAGE_MODEL[p.model] ?? p.model) + " " + Math.round(p.share * 100) + "% of tokens" + (p.limit_usd === null ? " (no published limit)" : " (limit $" + p.limit_usd.toFixed(0) + ")"));
+    lines.push((c.per_model.rule === "single_model" ? "per-model limit: main model " + (UPSTREAM_TO_PAGE_MODEL[c.per_model.main_model ?? ""] ?? c.per_model.main_model) : "per-model limits weighted by token share") + " → allowance $" + c.per_model.usd.toFixed(2) + " per cycle");
+    lines.push("models: " + shares.join(", "));
+    lines.push("comparison only, not used for $/B: derived from quota windows $" + (c.per_model.derived_usd ?? 0).toFixed(2) + " per cycle");
+  } else if (published !== null) {
     lines.push("published allowance: $" + published.toFixed(2) + " per cycle (used by the model views)");
     if (vendor !== null) lines.push("dashboard pool: $" + vendor.toFixed(2) + " (matches the monthly window): recorded as a difference from the published figure");
     if (derived !== null) lines.push("derived: $" + derived.toFixed(2) + " (from the quota windows" + unpricedNote + ")");
