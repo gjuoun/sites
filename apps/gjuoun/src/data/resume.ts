@@ -47,17 +47,6 @@ export const resume: Resume = {
 	},
 	roles: [
 		{
-			title: "Lead Software Developer",
-			organization: "Mistplay",
-			location: "On-site · Montreal, QC, Canada",
-			start: "Feb 2024",
-			end: "Aug 2024",
-			bullets: [
-				"Delivered a mobile loyalty platform on IOS.",
-				"Lead and build an internal facing admin panel.",
-			],
-		},
-		{
 			title: "Senior Developer II",
 			organization: "Mistplay",
 			location: "On-site · Montreal, QC, Canada",
@@ -67,6 +56,17 @@ export const resume: Resume = {
 				"Developed a backend-driven notification system that serves over 1 million active users in real time.",
 				"Collaborate with the data team to integrate AI features into the backend, driving significant revenue impact for the company.",
 				"Created an innovative approach to analyze Google Play reviews using large language models (LLMs), enhancing user sentiment analysis.",
+			],
+		},
+		{
+			title: "Lead Software Developer",
+			organization: "Mistplay",
+			location: "On-site · Montreal, QC, Canada",
+			start: "Feb 2024",
+			end: "Aug 2024",
+			bullets: [
+				"Delivered a mobile loyalty platform on IOS.",
+				"Lead and build an internal facing admin panel.",
 			],
 		},
 		{

@@ -132,18 +132,18 @@ const META_GAP_MIN = 24;
 // The tailwind md breakpoint: two card columns at and above it, one below.
 const GRID_MD = 768;
 const PORTFOLIO_COUNT = 4;
-// The resume's facts, in the order they read. Mistplay keeps both of its roles.
+// The resume's facts, in reverse-chronological order. Mistplay keeps both of its roles, newest first.
 const EXPECT_ENTRIES = [
-	"Lead Software Developer, Mistplay",
 	"Senior Developer II, Mistplay",
+	"Lead Software Developer, Mistplay",
 	"Senior Developer, Curbie Cars",
 	"Full-stack Developer, Affinio",
 	"Software Engineer, IBM",
 	"Dalhousie University",
 ];
 const EXPECT_DATES = [
-	"Feb 2024 – Aug 2024",
 	"Aug 2024 – Present",
+	"Feb 2024 – Aug 2024",
 	"May 2021 – Feb 2022",
 	"Jul 2020 – May 2021",
 	"Jun 2019 – Oct 2019",

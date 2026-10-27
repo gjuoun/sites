@@ -70,7 +70,7 @@ export function ProjectGrid({ projects }: { projects: GridProject[] }) {
 									)}
 								</div>
 							) : (
-								<p className="m-0 text-sm text-muted-foreground">
+								<p className="m-0 flex min-h-9 items-center text-sm text-muted-foreground">
 									Private project. No public link.
 								</p>
 							)}
