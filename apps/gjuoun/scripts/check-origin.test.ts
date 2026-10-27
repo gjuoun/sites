@@ -8,17 +8,35 @@ const home = (canonical: string, body = "") =>
 describe("originViolations", () => {
 	test("a clean output has no violations", () => {
 		const files = new Map([
-			["index.html", home("https://jun-blog.qqntt.com/", '<a href="https://github.com/gjuoun">GitHub</a>')],
-			["sitemap.xml", "<urlset><url><loc>https://jun-blog.qqntt.com/</loc></url></urlset>"],
+			[
+				"index.html",
+				home(
+					"https://jun-blog.qqntt.com/",
+					'<a href="https://github.com/gjuoun">GitHub</a>',
+				),
+			],
+			[
+				"sitemap.xml",
+				"<urlset><url><loc>https://jun-blog.qqntt.com/</loc></url></urlset>",
+			],
 			["robots.txt", "Sitemap: https://jun-blog.qqntt.com/sitemap.xml\n"],
-			["rss.xml", "<rss><channel><link>https://jun-blog.qqntt.com/</link></channel></rss>"],
+			[
+				"rss.xml",
+				"<rss><channel><link>https://jun-blog.qqntt.com/</link></channel></rss>",
+			],
 		]);
 		expect(originViolations(files, origin)).toEqual([]);
 	});
 
 	test("a second site host in a canonical or a contact link is reported", () => {
 		const files = new Map([
-			["index.html", home("https://jun-blog.qqntt.com/", '<a href="https://jun.qqntt.com/">jun</a>')],
+			[
+				"index.html",
+				home(
+					"https://jun-blog.qqntt.com/",
+					'<a href="https://jun.qqntt.com/">jun</a>',
+				),
+			],
 		]);
 		expect(originViolations(files, origin)).toEqual([
 			"index.html names host jun.qqntt.com, not the origin or a declared external host",
@@ -33,8 +51,12 @@ describe("originViolations", () => {
 	});
 
 	test("the misspelled host gqntt is reported", () => {
-		const files = new Map([["index.html", home("https://jun-blog.qqntt.com/", "jun.gqntt.com")]]);
-		expect(originViolations(files, origin)).toContain('index.html contains "gqntt"');
+		const files = new Map([
+			["index.html", home("https://jun-blog.qqntt.com/", "jun.gqntt.com")],
+		]);
+		expect(originViolations(files, origin)).toContain(
+			'index.html contains "gqntt"',
+		);
 	});
 
 	test("an output with no self url fails", () => {

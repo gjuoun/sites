@@ -1,9 +1,9 @@
 import { defineConfig } from "astro/config";
 
 // One deployment: Cloudflare Pages, served from the root of the site origin.
-// Origin is jun-blog.qqntt.com until Question 4 cutover (see README).
+// The single source of the origin: flips to https://jun.qqntt.com at cutover (see README).
 export default defineConfig({
-  site: "https://jun.qqntt.com",
+  site: "https://jun-blog.qqntt.com",
   trailingSlash: "always",
   build: { format: "directory" },
 });

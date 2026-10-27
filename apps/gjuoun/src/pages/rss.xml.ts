@@ -1,6 +1,7 @@
 import rss from "@astrojs/rss";
 import type { APIContext } from "astro";
 import { livePosts } from "../lib/collections";
+import { siteOrigin } from "../lib/seo";
 
 export async function GET(context: APIContext) {
 	const posts = (await livePosts()).sort(
@@ -9,7 +10,7 @@ export async function GET(context: APIContext) {
 	return rss({
 		title: "Jun Guo — posts",
 		description: "Numbered posts by Jun Guo.",
-		site: context.site ?? "https://jun.qqntt.com",
+		site: siteOrigin(context.site),
 		items: posts.map((p) => ({
 			title: p.data.title,
 			pubDate: p.data.date,

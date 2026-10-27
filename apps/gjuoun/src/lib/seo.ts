@@ -32,6 +32,12 @@ export function pageTitle(title: string | undefined): string {
 	return title === undefined ? HOME_TITLE : `${title} — ${SITE_NAME}`;
 }
 
+/** The configured site origin (astro.config.mjs `site`). Missing config is an error, never a guessed host. */
+export function siteOrigin(site: URL | undefined): URL {
+	if (site === undefined) throw new Error("astro.config.mjs must set site");
+	return site;
+}
+
 /** Absolute url for the page, with a trailing slash on routes (trailingSlash is "always"). */
 export function canonicalFor(site: URL, path: string): string {
 	const url = new URL(path, site);

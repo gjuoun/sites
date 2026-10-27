@@ -8,7 +8,7 @@ import {
 } from "@gjuoun/bigface-business-ui/lib/themes";
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
-import { buildMeta, type PageType } from "../lib/seo";
+import { buildMeta, type PageType, siteOrigin } from "../lib/seo";
 
 interface Props {
 	title?: string;
@@ -24,7 +24,7 @@ const {
 	starter = false,
 	indexable = true,
 } = Astro.props;
-const site = Astro.site ?? new URL("https://jun.qqntt.com");
+const site = siteOrigin(Astro.site);
 const meta = buildMeta({
 	site,
 	path: Astro.url.pathname,

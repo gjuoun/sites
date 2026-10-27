@@ -17,6 +17,7 @@ bun run test       # bun test src scripts
 bun run check:snippets   # every ts block in the posts typechecks against effect 4.0.4
 bun run check:links      # internal links and fragments resolve in dist/
 bun run check:budget     # HTML, CSS, and inline plus _astro js sizes, zero third-party requests
+bun run check:origin     # one origin (astro.config.mjs) in every self-referencing url; no other host but the declared external ones; no "gqntt"
 ```
 
 ## Add a post
@@ -45,4 +46,4 @@ remove its brackets.
 
 - Only `var(--theme-*)` values in `src/styles/site.css`; no hand-picked colours (`src/lib/theme.test.ts` checks this).
 - The only client JS is the theme toggle, inline in `ThemeToggle.astro`.
-- The site URL in `astro.config.mjs` is the origin used for canonical links and the sitemap.
+- The site URL in `astro.config.mjs` is the only origin. Canonical links, sitemap, RSS, robots and the resume contact line read it. It is `https://jun-blog.qqntt.com` until the cutover, which flips it to `https://jun.qqntt.com`.

@@ -26,16 +26,23 @@ const SELF_FIELDS: RegExp[] = [
 
 /** Hostnames of every absolute http(s) url in a text file. */
 export function hostsIn(text: string): string[] {
-	return [...text.matchAll(ABSOLUTE_URL)].map((m) => (m[1] ?? "").toLowerCase());
+	return [...text.matchAll(ABSOLUTE_URL)].map((m) =>
+		(m[1] ?? "").toLowerCase(),
+	);
 }
 
 /** The self-referencing urls a file publishes: canonical, og:url, sitemap locs, rss links, robots Sitemap. */
 export function selfUrlsIn(text: string): string[] {
-	return SELF_FIELDS.flatMap((re) => [...text.matchAll(re)].map((m) => m[1] ?? ""));
+	return SELF_FIELDS.flatMap((re) =>
+		[...text.matchAll(re)].map((m) => m[1] ?? ""),
+	);
 }
 
 /** Every violation in the built text files, one line each. An empty list means the origin gate passes. */
-export function originViolations(files: Map<string, string>, origin: URL): string[] {
+export function originViolations(
+	files: Map<string, string>,
+	origin: URL,
+): string[] {
 	const host = origin.host.toLowerCase();
 	const allowed = new Set([host, ...EXTERNAL_HOSTS]);
 	const out: string[] = [];
@@ -48,9 +55,13 @@ export function originViolations(files: Map<string, string>, origin: URL): strin
 				out.push(`${rel} self url ${u} is not on ${host}`);
 		}
 		for (const h of new Set(hostsIn(text)))
-			if (!allowed.has(h)) out.push(`${rel} names host ${h}, not the origin or a declared external host`);
+			if (!allowed.has(h))
+				out.push(
+					`${rel} names host ${h}, not the origin or a declared external host`,
+				);
 	}
-	if (selfUrls === 0) out.push("no self-referencing url found in the built output");
+	if (selfUrls === 0)
+		out.push("no self-referencing url found in the built output");
 	return out;
 }
 
@@ -64,7 +75,8 @@ if (import.meta.main) {
 
 	const files = new Map<string, string>();
 	for await (const rel of new Bun.Glob("**/*").scan({ cwd: dist })) {
-		if (TEXT_FILE.test(rel)) files.set(rel, await Bun.file(join(dist, rel)).text());
+		if (TEXT_FILE.test(rel))
+			files.set(rel, await Bun.file(join(dist, rel)).text());
 	}
 	const problems = originViolations(files, origin);
 	if (problems.length > 0) {
@@ -73,6 +85,9 @@ if (import.meta.main) {
 		process.exit(1);
 	}
 	const hosts = new Set<string>();
-	for (const text of files.values()) for (const h of hostsIn(text)) hosts.add(h);
-	console.log(`origin ok origin=${origin.host} files=${files.size} hosts=${[...hosts].sort().join(",")}`);
+	for (const text of files.values())
+		for (const h of hostsIn(text)) hosts.add(h);
+	console.log(
+		`origin ok origin=${origin.host} files=${files.size} hosts=${[...hosts].sort().join(",")}`,
+	);
 }

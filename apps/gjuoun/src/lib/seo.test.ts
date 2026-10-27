@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { buildMeta, MAX_DESCRIPTION, pageTitle } from "./seo";
 
-const site = new URL("https://jun.qqntt.com");
+const site = new URL("https://example.test");
 
 describe("pageTitle", () => {
 	test("home reads the full portfolio line", () => {
@@ -26,8 +26,8 @@ describe("buildMeta", () => {
 			description: "d",
 			type: "article",
 		});
-		expect(home.canonical).toBe("https://jun.qqntt.com/");
-		expect(post.canonical).toBe("https://jun.qqntt.com/posts/effect-gen/");
+		expect(home.canonical).toBe("https://example.test/");
+		expect(post.canonical).toBe("https://example.test/posts/effect-gen/");
 	});
 
 	test("descriptions are at most 160 characters", () => {
@@ -64,7 +64,7 @@ describe("buildMeta", () => {
 			type: "website",
 			title: "Projects — Jun Guo",
 			description: "All projects.",
-			url: "https://jun.qqntt.com/projects/",
+			url: "https://example.test/projects/",
 			site_name: "Jun Guo",
 		});
 		expect("image" in meta.og).toBe(false);

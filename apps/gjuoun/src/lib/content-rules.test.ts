@@ -23,7 +23,7 @@ const project = (over: Record<string, unknown> = {}) => ({
 	name: "QuBlack",
 	summary: "s",
 	status: "public",
-	url: "https://qublack.qqntt.com",
+	url: "https://example.test/qublack",
 	stack: [],
 	order: 1,
 	...over,
