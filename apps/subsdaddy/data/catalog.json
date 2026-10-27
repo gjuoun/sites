@@ -1,0 +1,2695 @@
+{
+  "rows": [
+    {
+      "plan_id": "claude-code-max-20x",
+      "product": "Claude Code",
+      "tier": "Max 20x",
+      "label": "Claude Code - Max 20x",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 200,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "window_percent",
+      "allowance_detail": "5h and weekly usage windows; no published token count",
+      "credits_to_usd": null,
+      "cli_compat": "Claude Code (first-party)",
+      "heat_samples": 142,
+      "exclusion_reason": null,
+      "price_note": null,
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：window percentages (5h and weekly); no dollar amount published",
+      "offered_models": [
+        "claude-haiku-5.5"
+      ],
+      "offered_basis": "claude.com/pricing lists Opus, Sonnet and Haiku; support.claude.com (models, usage and limits in Claude Code) lists Haiku as a model for quick work in Claude Code. Plan-level access is by the plan's Claude Code access.",
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "需一次基准实测才能折算：window percentages (5h and weekly); no dollar amount published",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://claude.com/pricing",
+          "note": "Max 20x $200/month on pricing page"
+        },
+        {
+          "kind": "official_post",
+          "url": "https://x.com/i/status/2093742321473065266",
+          "note": "ClaudeDevs: weekly limit in Claude Code +25% from 2026-09-14"
+        }
+      ]
+    },
+    {
+      "plan_id": "claude-code-max-5x",
+      "product": "Claude Code",
+      "tier": "Max 5x",
+      "label": "Claude Code - Max 5x",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 100,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "window_percent",
+      "allowance_detail": "5h and weekly usage windows; 5x of Pro per page wording",
+      "credits_to_usd": null,
+      "cli_compat": "Claude Code (first-party)",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": null,
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：window percentages (5h and weekly); no dollar amount published",
+      "offered_models": [
+        "claude-haiku-5.5"
+      ],
+      "offered_basis": "claude.com/pricing lists Opus, Sonnet and Haiku; support.claude.com (models, usage and limits in Claude Code) lists Haiku as a model for quick work in Claude Code. Plan-level access is by the plan's Claude Code access.",
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "需一次基准实测才能折算：window percentages (5h and weekly); no dollar amount published",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://claude.com/pricing",
+          "note": "Max 5x $100/month on pricing page"
+        }
+      ]
+    },
+    {
+      "plan_id": "claude-code-pro",
+      "product": "Claude Code",
+      "tier": "Pro",
+      "label": "Claude Code - Pro",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 20,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "window_percent",
+      "allowance_detail": "5h and weekly usage windows; Pro is the base tier",
+      "credits_to_usd": null,
+      "cli_compat": "Claude Code (first-party)",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": null,
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：window percentages (5h and weekly); no dollar amount published",
+      "offered_models": [
+        "claude-haiku-5.5"
+      ],
+      "offered_basis": "claude.com/pricing lists Opus, Sonnet and Haiku; support.claude.com (models, usage and limits in Claude Code) lists Haiku as a model for quick work in Claude Code. Plan-level access is by the plan's Claude Code access.",
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "需一次基准实测才能折算：window percentages (5h and weekly); no dollar amount published",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://claude.com/pricing",
+          "note": "Pro $20 on pricing page"
+        }
+      ]
+    },
+    {
+      "plan_id": "codex-plus",
+      "product": "OpenAI Codex",
+      "tier": "Plus",
+      "label": "OpenAI Codex - Plus",
+      "status": "catalog",
+      "provider": "codex",
+      "price_month_usd": 20,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "window_percent",
+      "allowance_detail": "5h and weekly window percentages (codexbar); no token or dollar quota published",
+      "credits_to_usd": null,
+      "cli_compat": "Codex CLI (first-party); not re-verified this round",
+      "heat_samples": 91,
+      "exclusion_reason": null,
+      "price_note": "Plus $20/month (developers.openai.com/codex/pricing, read 2026-10-26)",
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：页面未公布 token 或美元额度，只有窗口用量",
+      "offered_models": [
+        "gpt-6-luna"
+      ],
+      "offered_basis": "developers.openai.com/codex/pricing lists GPT-6 Luna for Free, Go and Plus; Pro is listed as everything in Plus.",
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "需一次基准实测才能折算：页面未公布 token 或美元额度，只有窗口用量",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "window_readings": [
+        {
+          "window": "5h",
+          "used_pct": 0,
+          "resets_at": "2026-10-27T04:52:49Z",
+          "measured_at": "2026-10-26T23:52:47.208Z",
+          "source": "codexbar usage --provider codex"
+        },
+        {
+          "window": "weekly",
+          "used_pct": 0,
+          "resets_at": "2026-11-02T23:52:49Z",
+          "measured_at": "2026-10-26T23:52:47.208Z",
+          "source": "codexbar usage --provider codex"
+        }
+      ],
+      "reading_error": null,
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://developers.openai.com/codex/pricing",
+          "note": "Plus $20/month (read 2026-10-26)"
+        }
+      ]
+    },
+    {
+      "plan_id": "cursor-ultra",
+      "product": "Cursor",
+      "tier": "Ultra",
+      "label": "Cursor - Ultra",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 200,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "usd_usage",
+      "allowance_detail": "shared AI usage pool (Cursor and Grok); larger pools on higher tiers, per pricing page",
+      "credits_to_usd": null,
+      "cli_compat": "IDE; CLI not verified",
+      "heat_samples": 58,
+      "exclusion_reason": null,
+      "price_note": null,
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：shared usage pool; no dollar amount on the page read",
+      "offered_models": [],
+      "offered_basis": null,
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "需一次基准实测才能折算：shared usage pool; no dollar amount on the page read",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://cursor.com/pricing",
+          "note": "Ultra $200 shown on pricing page"
+        }
+      ]
+    },
+    {
+      "plan_id": "cursor-pro-plus",
+      "product": "Cursor",
+      "tier": "Pro+",
+      "label": "Cursor - Pro+",
+      "status": "excluded",
+      "provider": null,
+      "price_month_usd": null,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "usd_usage",
+      "allowance_detail": "usage pool; amount not read",
+      "credits_to_usd": null,
+      "cli_compat": "IDE; CLI not verified",
+      "heat_samples": null,
+      "exclusion_reason": "not listed on cursor.com/pricing on 2026-10-26 (Plus $8, Premium $30, Super $100 and Ultra $200 are listed)",
+      "price_note": "One X user says the tier was 60 USD/month; the pricing page read did not map a Pro+ price",
+      "allowance": [],
+      "allowance_reason": "shared usage pool; no dollar amount on the page read",
+      "offered_models": [],
+      "offered_basis": null,
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "no USD fee to divide",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "x_post",
+          "url": "https://x.com/i/status/2114384333129543757",
+          "note": "one user reports moving from a 60 USD tier to Ultra (2026-10-25)"
+        },
+        {
+          "kind": "unverified",
+          "url": null,
+          "note": "unverified: Pro+ price not mapped on the pricing page read"
+        }
+      ]
+    },
+    {
+      "plan_id": "github-copilot-pro",
+      "product": "GitHub Copilot",
+      "tier": "Pro",
+      "label": "GitHub Copilot - Pro",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 10,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "premium_requests",
+      "allowance_detail": "monthly premium-request allowance; amount not read this round",
+      "credits_to_usd": null,
+      "cli_compat": "VS Code and Copilot CLI; not verified this round",
+      "heat_samples": 17,
+      "exclusion_reason": null,
+      "price_note": null,
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：premium-request allowance; no dollar amount published",
+      "offered_models": [],
+      "offered_basis": null,
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "需一次基准实测才能折算：premium-request allowance; no dollar amount published",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://github.com/features/copilot/plans",
+          "note": "Pro $10 per month on plans page"
+        }
+      ]
+    },
+    {
+      "plan_id": "github-copilot-pro-plus",
+      "product": "GitHub Copilot",
+      "tier": "Pro+",
+      "label": "GitHub Copilot - Pro+",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 39,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "premium_requests",
+      "allowance_detail": "larger premium-request allowance; amount not read this round",
+      "credits_to_usd": null,
+      "cli_compat": "VS Code and Copilot CLI; not verified this round",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": null,
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：premium-request allowance; no dollar amount published",
+      "offered_models": [],
+      "offered_basis": null,
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "需一次基准实测才能折算：premium-request allowance; no dollar amount published",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://github.com/features/copilot/plans",
+          "note": "Pro+ $39 per month on plans page"
+        }
+      ]
+    },
+    {
+      "plan_id": "factory-droid-pro",
+      "product": "Factory Droid",
+      "tier": "Pro",
+      "label": "Factory Droid - Pro",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 20,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "tier_multiple",
+      "allowance_detail": "base tier (1x)",
+      "credits_to_usd": null,
+      "cli_compat": "Droid agent; external CLI not verified",
+      "heat_samples": 29,
+      "exclusion_reason": null,
+      "price_note": null,
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：tier multiple of Pro; no dollar amount published",
+      "offered_models": [],
+      "offered_basis": null,
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "需一次基准实测才能折算：tier multiple of Pro; no dollar amount published",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://factory.ai/pricing",
+          "note": "Pro $20 on pricing page"
+        }
+      ]
+    },
+    {
+      "plan_id": "factory-droid-plus",
+      "product": "Factory Droid",
+      "tier": "Plus",
+      "label": "Factory Droid - Plus",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 100,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "tier_multiple",
+      "allowance_detail": "about 5x Pro usage, per pricing page",
+      "credits_to_usd": null,
+      "cli_compat": "Droid agent; external CLI not verified",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": null,
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：tier multiple of Pro; no dollar amount published",
+      "offered_models": [],
+      "offered_basis": null,
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "需一次基准实测才能折算：tier multiple of Pro; no dollar amount published",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://factory.ai/pricing",
+          "note": "$100 tier, Everything in Pro plus about 5x usage"
+        }
+      ]
+    },
+    {
+      "plan_id": "factory-droid-max",
+      "product": "Factory Droid",
+      "tier": "Max",
+      "label": "Factory Droid - Max",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 200,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "tier_multiple",
+      "allowance_detail": "about 10x Pro usage, per pricing page",
+      "credits_to_usd": null,
+      "cli_compat": "Droid agent; external CLI not verified",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": null,
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：tier multiple of Pro; no dollar amount published",
+      "offered_models": [],
+      "offered_basis": null,
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "需一次基准实测才能折算：tier multiple of Pro; no dollar amount published",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://factory.ai/pricing",
+          "note": "Max $200, about 10x Pro usage"
+        }
+      ]
+    },
+    {
+      "plan_id": "trae-pro",
+      "product": "Trae",
+      "tier": "Pro",
+      "label": "Trae - Pro",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 20,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "usd_usage",
+      "allowance_detail": "20 USD usage per month, per pricing page",
+      "credits_to_usd": null,
+      "cli_compat": "IDE; CLI not verified",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": null,
+      "allowance": [
+        {
+          "ref": "*",
+          "usd": 20,
+          "basis": "official pricing page: 20 USD usage per month"
+        }
+      ],
+      "allowance_reason": null,
+      "offered_models": [],
+      "offered_basis": "Trae pricing page names older models only (Gemini 2.5, DeepSeek V3); none of the five reference models is listed.",
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "its checked model list names no reference model, so no estimate is made for one",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://www.trae.ai/pricing",
+          "note": "Pro $20 per month, 20 USD usage"
+        }
+      ]
+    },
+    {
+      "plan_id": "trae-pro-plus",
+      "product": "Trae",
+      "tier": "Pro+",
+      "label": "Trae - Pro+",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 60,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "usd_usage",
+      "allowance_detail": "60 USD usage per month, 3x Pro per pricing page",
+      "credits_to_usd": null,
+      "cli_compat": "IDE; CLI not verified",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": null,
+      "allowance": [
+        {
+          "ref": "*",
+          "usd": 60,
+          "basis": "official pricing page: 60 USD usage per month"
+        }
+      ],
+      "allowance_reason": null,
+      "offered_models": [],
+      "offered_basis": "Trae pricing page names older models only (Gemini 2.5, DeepSeek V3); none of the five reference models is listed.",
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "its checked model list names no reference model, so no estimate is made for one",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://www.trae.ai/pricing",
+          "note": "Pro+ $60, 60 USD usage, 3x Pro"
+        }
+      ]
+    },
+    {
+      "plan_id": "trae-ultra",
+      "product": "Trae",
+      "tier": "Ultra",
+      "label": "Trae - Ultra",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 200,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "usd_usage",
+      "allowance_detail": "200 USD usage per month, per pricing page",
+      "credits_to_usd": null,
+      "cli_compat": "IDE; CLI not verified",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": null,
+      "allowance": [
+        {
+          "ref": "*",
+          "usd": 200,
+          "basis": "official pricing page: 200 USD usage per month"
+        }
+      ],
+      "allowance_reason": null,
+      "offered_models": [],
+      "offered_basis": "Trae pricing page names older models only (Gemini 2.5, DeepSeek V3); none of the five reference models is listed.",
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "its checked model list names no reference model, so no estimate is made for one",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://www.trae.ai/pricing",
+          "note": "Ultra $200, 200 USD usage"
+        }
+      ]
+    },
+    {
+      "plan_id": "nanogpt-open-source",
+      "product": "NanoGPT",
+      "tier": "Open-source subscription",
+      "label": "NanoGPT - Open-source subscription",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 8,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "unverified",
+      "allowance_detail": "200+ open-source models per launch post; usage limits not read",
+      "credits_to_usd": null,
+      "cli_compat": "API compatibility not verified",
+      "heat_samples": 20,
+      "exclusion_reason": null,
+      "price_note": "Price from the 2025-09-01 launch post; the subscription page returned 404 on 2026-10-26",
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：usage limits not read",
+      "offered_models": [],
+      "offered_basis": null,
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "需一次基准实测才能折算：usage limits not read",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_post",
+          "url": "https://x.com/i/status/1962398659602985454",
+          "note": "launch post: just 8 USD a month"
+        },
+        {
+          "kind": "unverified",
+          "url": null,
+          "note": "unverified: nano-gpt.com subscription page returned 404; limits not read"
+        }
+      ]
+    },
+    {
+      "plan_id": "kimi-k3-1-pro",
+      "product": "Kimi",
+      "tier": "K3.1 Pro subscription",
+      "label": "Kimi - K3.1 Pro subscription",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": null,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "window_percent",
+      "allowance_detail": "5h window plus monthly quota; official one-time reset of 25% on 2026-10-25",
+      "credits_to_usd": null,
+      "cli_compat": "not verified",
+      "heat_samples": 108,
+      "exclusion_reason": null,
+      "price_note": "Kimi pricing pages are JS-rendered and were not readable; no price taken from posts",
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：window percentages and monthly quota; no dollar amount published",
+      "offered_models": [],
+      "offered_basis": null,
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "no USD fee to divide",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_post",
+          "url": "https://x.com/i/status/2114450610724708492",
+          "note": "Kimi official: apology for K3.1 Pro subscription limits and reset"
+        },
+        {
+          "kind": "unverified",
+          "url": null,
+          "note": "unverified: kimi.com pricing page not readable (JS-rendered) on 2026-10-26"
+        }
+      ]
+    },
+    {
+      "plan_id": "minimax-coding-plan",
+      "product": "MiniMax",
+      "tier": "Coding Plan",
+      "label": "MiniMax - Coding Plan",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": null,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "unverified",
+      "allowance_detail": "not read",
+      "credits_to_usd": null,
+      "cli_compat": "not verified",
+      "heat_samples": 45,
+      "exclusion_reason": null,
+      "price_note": "Docs pricing URL returned 404 and the platform page was not read; mention counts are mostly model posts",
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：not read (pricing page unavailable)",
+      "offered_models": [],
+      "offered_basis": null,
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "no USD fee to divide",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "unverified",
+          "url": null,
+          "note": "unverified: minimax pricing docs returned 404 on 2026-10-26; no subscription page read"
+        }
+      ]
+    },
+    {
+      "plan_id": "volc-ark-coding-lite",
+      "product": "Volcengine Ark",
+      "tier": "Coding Plan Lite",
+      "label": "Volcengine Ark - Coding Plan Lite",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": null,
+      "price_native": "CNY 9.9 first month (limited-time, official); regular CNY 40 per month (reported on X)",
+      "currency": "CNY",
+      "price_annual_usd": null,
+      "allowance_model": "tier_multiple",
+      "allowance_detail": "Lite and Pro tiers; Pro gives 5x Lite usage (official activity page)",
+      "credits_to_usd": null,
+      "cli_compat": "official page: tools not restricted; specific tools not checked",
+      "heat_samples": 29,
+      "exclusion_reason": null,
+      "price_note": null,
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：tier multiple; price in CNY, no dollar amount published",
+      "offered_models": [],
+      "offered_basis": null,
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "no USD fee to divide",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://www.volcengine.com/activity/codingplan",
+          "note": "limited-time 9.9 CNY start; Pro 5x Lite"
+        },
+        {
+          "kind": "x_post",
+          "url": "https://x.com/i/status/2012519336788009241",
+          "note": "regular Lite CNY 40 reported (2026-01-17)"
+        }
+      ]
+    },
+    {
+      "plan_id": "kilo-teams",
+      "product": "Kilo",
+      "tier": "Teams",
+      "label": "Kilo - Teams",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": null,
+      "price_native": "USD 15 per user per month (Teams)",
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "unverified",
+      "allowance_detail": "Teams per-user pricing; individual pass not read",
+      "credits_to_usd": null,
+      "cli_compat": "not verified",
+      "heat_samples": 8,
+      "exclusion_reason": null,
+      "price_note": null,
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：per-seat pricing; no usage dollars published",
+      "offered_models": [],
+      "offered_basis": null,
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "no USD fee to divide",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://kilo.ai/pricing",
+          "note": "Teams $15 per user per month"
+        }
+      ]
+    },
+    {
+      "plan_id": "synthetic-subscription",
+      "product": "Synthetic",
+      "tier": "Subscription",
+      "label": "Synthetic - Subscription",
+      "status": "excluded",
+      "provider": null,
+      "price_month_usd": null,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "unverified",
+      "allowance_detail": "not read",
+      "credits_to_usd": null,
+      "cli_compat": "not verified",
+      "heat_samples": 1,
+      "exclusion_reason": "superseded: Go $9, Standard $30 and Big $90 are now separate rows (synthetic.new/pricing, read 2026-10-26)",
+      "price_note": "Pricing page read without dollar amounts; one post mentions a 20 USD plan for another model (not confirmed as this product)",
+      "allowance": [],
+      "allowance_reason": "not read",
+      "offered_models": [],
+      "offered_basis": null,
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "no USD fee to divide",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "unverified",
+          "url": null,
+          "note": "unverified: synthetic.new pricing page has no readable dollar amounts (JS-rendered)"
+        },
+        {
+          "kind": "x_post",
+          "url": "https://x.com/i/status/2017627299844178268",
+          "note": "user mentions a 20 USD plan; product not confirmed"
+        }
+      ]
+    },
+    {
+      "plan_id": "deepseek-api",
+      "product": "DeepSeek",
+      "tier": "API pay-as-you-go",
+      "label": "DeepSeek - API pay-as-you-go",
+      "status": "excluded",
+      "provider": null,
+      "price_month_usd": null,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "unverified",
+      "allowance_detail": "per-token billing; no allowance",
+      "credits_to_usd": null,
+      "cli_compat": "API",
+      "heat_samples": 67,
+      "exclusion_reason": "pay-as-you-go API, not a flat-rate subscription (project rule)",
+      "price_note": null,
+      "allowance": [],
+      "allowance_reason": "pay-as-you-go; no subscription allowance",
+      "offered_models": [],
+      "offered_basis": null,
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "no USD fee to divide",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "unverified",
+          "url": null,
+          "note": "unverified: not fetched this round; excluded by rule regardless of price"
+        }
+      ]
+    },
+    {
+      "plan_id": "chutes-monthly",
+      "product": "Chutes",
+      "tier": "Monthly plan (no longer sold)",
+      "label": "Chutes - Monthly plan (no longer sold)",
+      "status": "excluded",
+      "provider": null,
+      "price_month_usd": null,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "unverified",
+      "allowance_detail": "monthly plans no longer sold; usage is top-up pay-as-you-go",
+      "credits_to_usd": null,
+      "cli_compat": "API",
+      "heat_samples": 4,
+      "exclusion_reason": "monthly plans no longer sold on chutes.ai; now pay-as-you-go",
+      "price_note": null,
+      "allowance": [],
+      "allowance_reason": "monthly plans no longer sold; no subscription allowance",
+      "offered_models": [],
+      "offered_basis": null,
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "no USD fee to divide",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T16:00:00Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://chutes.ai/pricing",
+          "note": "Monthly plans are no longer sold; billing is pay-as-you-go"
+        },
+        {
+          "kind": "unverified",
+          "url": null,
+          "note": "unverified: last monthly price not read"
+        }
+      ]
+    },
+    {
+      "plan_id": "commandcode-goat-published",
+      "product": "CommandCode",
+      "tier": "GOAT",
+      "label": "CommandCode - GOAT",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 10,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "credits",
+      "allowance_detail": "$80 of usage per month on 29+ models (published); monthly credit bucket",
+      "credits_to_usd": {
+        "usd_per_credit": 0.125,
+        "basis": "$10/mo ÷ $80 of usage included. Pricing page: \"($10) ... $80 of usage on 29+ models\"; X post by @CommandCodeAI 2026-10-23: \"$80 credits in $10 GOAT plan\". USD paid per credit, not a list price.",
+        "meaning": "paid_price"
+      },
+      "cli_compat": "CommandCode agent; CLI compatibility not re-verified this round",
+      "heat_samples": 27,
+      "exclusion_reason": null,
+      "price_note": "Published price basis for the ranked CommandCode GOAT plan above; the ranked row uses the measured mix.",
+      "allowance": [
+        {
+          "ref": "*",
+          "usd": 80,
+          "basis": "official pricing page: $80 of usage on 29+ models (plan $10/mo)"
+        }
+      ],
+      "allowance_reason": null,
+      "offered_models": [
+        "deepseek-v4.1-flash",
+        "glm-5.3-flash"
+      ],
+      "offered_basis": "CommandCode pricing page and its 2026-10-23 post list DeepSeek V4.1 Flash and GLM-5.3 Flash in the plan. Claude, GPT and Gemini are described there as premium models outside it, and GPT-5.6 Luna is a different model from GPT-6 Luna, so none of them is listed.",
+      "measured_lane": "commandcode-goat",
+      "estimate": {
+        "status": "estimated",
+        "reason": null,
+        "basis": "fee $10/mo ÷ published usage-dollar allowance (deepseek-v4.1-flash 0.125, glm-5.3-flash 0.125) × blended list cost per billion tokens of each reference model; this plan's own measured mix: output share 0.38%, agent cache share 97.24%, cache write share 0.00% (interactive 0%, cache_heavy 94%); standard contexts: 100K (table) and 350K, with p75 214K as sensitivity (session-end median 95K, p90 348K, 528 sessions); deepseek-v4.1-flash price_anomaly: listing shows completion < prompt (0.01 < 0.043156 per M); using last verified snapshot 2026-10-26.",
+        "values": [
+          {
+            "ref": "deepseek-v4.1-flash",
+            "shape": "interactive",
+            "usd_per_b": 2.959476585200994,
+            "reason": null,
+            "fee_over_allowance": 0.125,
+            "blended_usd_per_b": 23.67581268160795,
+            "measured_at": "2026-10-26T23:52:59.819Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
+            "usd_per_b_long": 2.959476585200994,
+            "usd_per_b_p75": 2.959476585200994,
+            "band_short": "base price (no prompt-length band)",
+            "band_long": "base price (no prompt-length band)",
+            "band_p75": "base price (no prompt-length band)"
+          },
+          {
+            "ref": "deepseek-v4.1-flash",
+            "shape": "agent",
+            "usd_per_b": 2.3540131273843277,
+            "reason": null,
+            "fee_over_allowance": 0.125,
+            "blended_usd_per_b": 18.83210501907462,
+            "measured_at": "2026-10-26T23:52:59.819Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
+            "usd_per_b_long": 2.3540131273843277,
+            "usd_per_b_p75": 2.3540131273843277,
+            "band_short": "base price (no prompt-length band)",
+            "band_long": "base price (no prompt-length band)",
+            "band_p75": "base price (no prompt-length band)"
+          },
+          {
+            "ref": "deepseek-v4.1-flash",
+            "shape": "cache_heavy",
+            "usd_per_b": 2.374180197395325,
+            "reason": null,
+            "fee_over_allowance": 0.125,
+            "blended_usd_per_b": 18.9934415791626,
+            "measured_at": "2026-10-26T23:52:59.819Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
+            "usd_per_b_long": 2.374180197395325,
+            "usd_per_b_p75": 2.374180197395325,
+            "band_short": "base price (no prompt-length band)",
+            "band_long": "base price (no prompt-length band)",
+            "band_p75": "base price (no prompt-length band)"
+          },
+          {
+            "ref": "glm-5.3-flash",
+            "shape": "interactive",
+            "usd_per_b": 18.914098780428926,
+            "reason": null,
+            "fee_over_allowance": 0.125,
+            "blended_usd_per_b": 151.3127902434314,
+            "measured_at": "2026-10-26T23:52:59.819Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
+            "usd_per_b_long": 18.914098780428926,
+            "usd_per_b_p75": 18.914098780428926,
+            "band_short": "base price (no prompt-length band)",
+            "band_long": "base price (no prompt-length band)",
+            "band_p75": "base price (no prompt-length band)"
+          },
+          {
+            "ref": "glm-5.3-flash",
+            "shape": "agent",
+            "usd_per_b": 4.382975792828941,
+            "reason": null,
+            "fee_over_allowance": 0.125,
+            "blended_usd_per_b": 35.06380634263153,
+            "measured_at": "2026-10-26T23:52:59.819Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
+            "usd_per_b_long": 4.382975792828941,
+            "usd_per_b_p75": 4.382975792828941,
+            "band_short": "base price (no prompt-length band)",
+            "band_long": "base price (no prompt-length band)",
+            "band_p75": "base price (no prompt-length band)"
+          },
+          {
+            "ref": "glm-5.3-flash",
+            "shape": "cache_heavy",
+            "usd_per_b": 4.866985473092877,
+            "reason": null,
+            "fee_over_allowance": 0.125,
+            "blended_usd_per_b": 38.93588378474302,
+            "measured_at": "2026-10-26T23:52:59.819Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
+            "usd_per_b_long": 4.866985473092877,
+            "usd_per_b_p75": 4.866985473092877,
+            "band_short": "base price (no prompt-length band)",
+            "band_long": "base price (no prompt-length band)",
+            "band_p75": "base price (no prompt-length band)"
+          }
+        ],
+        "range_agent": [
+          2.3540131273843277,
+          4.382975792828941
+        ],
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T16:38:14.752Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://commandcode.ai/pricing",
+          "note": "GOAT $10/mo, $80 of usage"
+        },
+        {
+          "kind": "official_post",
+          "url": "https://x.com/i/status/2113505248727773682",
+          "note": "$80 credits in $10 GOAT plan (2026-10-23)"
+        }
+      ]
+    },
+    {
+      "plan_id": "opencode-go-go",
+      "product": "OpenCode Go",
+      "tier": "",
+      "label": "OpenCode Go",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 10,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "usd_usage",
+      "allowance_detail": "Monthly dollar limit per model. Each model has 5h = 20%, weekly = 50%, monthly = 100% of its monthly limit (official docs). No single credit figure is published, so no conversion.",
+      "credits_to_usd": null,
+      "cli_compat": "Any agent (official page); CLI-specific checks not re-run this round",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": "Published price basis for the ranked OpenCode Go plan above.",
+      "allowance": [
+        {
+          "ref": "deepseek-v4.1-flash",
+          "usd": 80,
+          "basis": "official docs: Go monthly limit for DeepSeek V4.1 Flash (Off-Peak) is $80; mapped by model name"
+        },
+        {
+          "ref": "claude-haiku-5.5",
+          "usd": 15,
+          "basis": "official docs: Go monthly limit for Claude Haiku 5.5 (≤100K tokens) is $15"
+        },
+        {
+          "ref": "gpt-6-luna",
+          "usd": 15,
+          "basis": "official docs: Go monthly limit for GPT 6 Luna (≤272K tokens) is $15"
+        },
+        {
+          "ref": "glm-5.3-flash",
+          "usd": 60,
+          "basis": "official docs: Go monthly limit for GLM-5.3-Flash is $60"
+        }
+      ],
+      "allowance_reason": null,
+      "offered_models": [
+        "deepseek-v4.1-flash",
+        "claude-haiku-5.5",
+        "gpt-6-luna",
+        "glm-5.3-flash"
+      ],
+      "offered_basis": "OpenCode official docs, Go model table: DeepSeek V4.1 Flash, Claude Haiku 5.5, GPT 6 Luna and GLM-5.3-Flash. Gemini 3.8 Flash is not in the table (the table has Gemini 4 Argon only).",
+      "measured_lane": "opencode-go",
+      "estimate": {
+        "status": "estimated",
+        "reason": null,
+        "basis": "fee $10/mo ÷ published usage-dollar allowance (deepseek-v4.1-flash 0.125, claude-haiku-5.5 0.667, gpt-6-luna 0.667, glm-5.3-flash 0.167) × blended list cost per billion tokens of each reference model; this plan's own measured mix: output share 0.58%, agent cache share 80.82%, cache write share 0.00% (interactive 0%, cache_heavy 94%); standard contexts: 100K (table) and 350K, with p75 214K as sensitivity (session-end median 95K, p90 348K, 528 sessions); deepseek-v4.1-flash price_anomaly: listing shows completion < prompt (0.01 < 0.043156 per M); using last verified snapshot 2026-10-26.",
+        "values": [
+          {
+            "ref": "deepseek-v4.1-flash",
+            "shape": "interactive",
+            "usd_per_b": 3.2062629932463578,
+            "reason": null,
+            "fee_over_allowance": 0.125,
+            "blended_usd_per_b": 25.650103945970862,
+            "measured_at": "2026-10-26T23:52:59.819Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
+            "usd_per_b_long": 3.2062629932463578,
+            "usd_per_b_p75": 3.2062629932463578,
+            "band_short": "base price (no prompt-length band)",
+            "band_long": "base price (no prompt-length band)",
+            "band_p75": "base price (no prompt-length band)"
+          },
+          {
+            "ref": "deepseek-v4.1-flash",
+            "shape": "agent",
+            "usd_per_b": 2.704020365730615,
+            "reason": null,
+            "fee_over_allowance": 0.125,
+            "blended_usd_per_b": 21.63216292584492,
+            "measured_at": "2026-10-26T23:52:59.819Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
+            "usd_per_b_long": 2.704020365730615,
+            "usd_per_b_p75": 2.704020365730615,
+            "band_short": "base price (no prompt-length band)",
+            "band_long": "base price (no prompt-length band)",
+            "band_p75": "base price (no prompt-length band)"
+          },
+          {
+            "ref": "deepseek-v4.1-flash",
+            "shape": "cache_heavy",
+            "usd_per_b": 2.6221501729078454,
+            "reason": null,
+            "fee_over_allowance": 0.125,
+            "blended_usd_per_b": 20.977201383262763,
+            "measured_at": "2026-10-26T23:52:59.819Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
+            "usd_per_b_long": 2.6221501729078454,
+            "usd_per_b_p75": 2.6221501729078454,
+            "band_short": "base price (no prompt-length band)",
+            "band_long": "base price (no prompt-length band)",
+            "band_p75": "base price (no prompt-length band)"
+          },
+          {
+            "ref": "claude-haiku-5.5",
+            "shape": "interactive",
+            "usd_per_b": 341.0205495863549,
+            "reason": null,
+            "fee_over_allowance": 0.6666666666666666,
+            "blended_usd_per_b": 511.53082437953236,
+            "measured_at": "2026-10-26T23:52:59.819Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
+            "usd_per_b_long": 341.0205495863549,
+            "usd_per_b_p75": 341.0205495863549,
+            "band_short": "band: ≥100k ×5",
+            "band_long": "band: ≥100k ×5",
+            "band_p75": "band: ≥100k ×5"
+          },
+          {
+            "ref": "claude-haiku-5.5",
+            "shape": "agent",
+            "usd_per_b": 99.94408837879787,
+            "reason": null,
+            "fee_over_allowance": 0.6666666666666666,
+            "blended_usd_per_b": 149.91613256819682,
+            "measured_at": "2026-10-26T23:52:59.819Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
+            "usd_per_b_long": 99.94408837879787,
+            "usd_per_b_p75": 99.94408837879787,
+            "band_short": "band: ≥100k ×5",
+            "band_long": "band: ≥100k ×5",
+            "band_p75": "band: ≥100k ×5"
+          },
+          {
+            "ref": "claude-haiku-5.5",
+            "shape": "cache_heavy",
+            "usd_per_b": 60.646395823869,
+            "reason": null,
+            "fee_over_allowance": 0.6666666666666666,
+            "blended_usd_per_b": 90.9695937358035,
+            "measured_at": "2026-10-26T23:52:59.819Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
+            "usd_per_b_long": 60.646395823869,
+            "usd_per_b_p75": 60.646395823869,
+            "band_short": "band: ≥100k ×5",
+            "band_long": "band: ≥100k ×5",
+            "band_p75": "band: ≥100k ×5"
+          },
+          {
+            "ref": "gpt-6-luna",
+            "shape": "interactive",
+            "usd_per_b": 68.20410991727098,
+            "reason": null,
+            "fee_over_allowance": 0.6666666666666666,
+            "blended_usd_per_b": 102.30616487590648,
+            "measured_at": "2026-10-26T23:52:59.819Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
+            "usd_per_b_long": 135.44731780291426,
+            "usd_per_b_p75": 68.20410991727098,
+            "band_short": "band: <272k base",
+            "band_long": "band: ≥272k ×2",
+            "band_p75": "band: <272k base"
+          },
+          {
+            "ref": "gpt-6-luna",
+            "shape": "agent",
+            "usd_per_b": 19.98881767575958,
+            "reason": null,
+            "fee_over_allowance": 0.6666666666666666,
+            "blended_usd_per_b": 29.983226513639373,
+            "measured_at": "2026-10-26T23:52:59.819Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
+            "usd_per_b_long": 39.01673331989147,
+            "usd_per_b_p75": 19.98881767575958,
+            "band_short": "band: <272k base",
+            "band_long": "band: ≥272k ×2",
+            "band_p75": "band: <272k base"
+          },
+          {
+            "ref": "gpt-6-luna",
+            "shape": "cache_heavy",
+            "usd_per_b": 12.1292791647738,
+            "reason": null,
+            "fee_over_allowance": 0.6666666666666666,
+            "blended_usd_per_b": 18.1939187471607,
+            "measured_at": "2026-10-26T23:52:59.819Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
+            "usd_per_b_long": 23.297656297919904,
+            "usd_per_b_p75": 12.1292791647738,
+            "band_short": "band: <272k base",
+            "band_long": "band: ≥272k ×2",
+            "band_p75": "band: <272k base"
+          },
+          {
+            "ref": "glm-5.3-flash",
+            "shape": "interactive",
+            "usd_per_b": 25.33631571106969,
+            "reason": null,
+            "fee_over_allowance": 0.16666666666666666,
+            "blended_usd_per_b": 152.01789426641815,
+            "measured_at": "2026-10-26T23:52:59.819Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
+            "usd_per_b_long": 25.33631571106969,
+            "usd_per_b_p75": 25.33631571106969,
+            "band_short": "base price (no prompt-length band)",
+            "band_long": "base price (no prompt-length band)",
+            "band_p75": "base price (no prompt-length band)"
+          },
+          {
+            "ref": "glm-5.3-flash",
+            "shape": "agent",
+            "usd_per_b": 9.264551630565892,
+            "reason": null,
+            "fee_over_allowance": 0.16666666666666666,
+            "blended_usd_per_b": 55.587309783395355,
+            "measured_at": "2026-10-26T23:52:59.819Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
+            "usd_per_b_long": 9.264551630565892,
+            "usd_per_b_p75": 9.264551630565892,
+            "band_short": "base price (no prompt-length band)",
+            "band_long": "base price (no prompt-length band)",
+            "band_p75": "base price (no prompt-length band)"
+          },
+          {
+            "ref": "glm-5.3-flash",
+            "shape": "cache_heavy",
+            "usd_per_b": 6.644705460237299,
+            "reason": null,
+            "fee_over_allowance": 0.16666666666666666,
+            "blended_usd_per_b": 39.8682327614238,
+            "measured_at": "2026-10-26T23:52:59.819Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
+            "usd_per_b_long": 6.644705460237299,
+            "usd_per_b_p75": 6.644705460237299,
+            "band_short": "base price (no prompt-length band)",
+            "band_long": "base price (no prompt-length band)",
+            "band_p75": "base price (no prompt-length band)"
+          }
+        ],
+        "range_agent": [
+          2.704020365730615,
+          99.94408837879787
+        ],
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T16:38:14.752Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://opencode.ai/docs/go/",
+          "note": "Go $10/month; per-model monthly dollar limits"
+        }
+      ]
+    },
+    {
+      "plan_id": "opencode-go-plus",
+      "product": "OpenCode Go Plus",
+      "tier": "",
+      "label": "OpenCode Go Plus",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 40,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "usd_usage",
+      "allowance_detail": "Higher monthly dollar limits per model than Go (official docs). Per-model amounts are on the official limits table.",
+      "credits_to_usd": null,
+      "cli_compat": "Any agent (official page)",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": null,
+      "allowance": [
+        {
+          "ref": "deepseek-v4.1-flash",
+          "usd": 160,
+          "basis": "official docs: Go Plus monthly limit for DeepSeek V4.1 Flash (Off-Peak) is $160; mapped by model name"
+        },
+        {
+          "ref": "claude-haiku-5.5",
+          "usd": 60,
+          "basis": "official docs: Go Plus monthly limit for Claude Haiku 5.5 (≤100K tokens) is $60"
+        },
+        {
+          "ref": "gpt-6-luna",
+          "usd": 60,
+          "basis": "official docs: Go Plus monthly limit for GPT 6 Luna (≤272K tokens) is $60"
+        },
+        {
+          "ref": "glm-5.3-flash",
+          "usd": 180,
+          "basis": "official docs: Go Plus monthly limit for GLM-5.3-Flash is $180"
+        }
+      ],
+      "allowance_reason": null,
+      "offered_models": [
+        "deepseek-v4.1-flash",
+        "claude-haiku-5.5",
+        "gpt-6-luna",
+        "glm-5.3-flash"
+      ],
+      "offered_basis": "OpenCode official docs, Go Plus model table: the same four models as Go. Gemini 3.8 Flash is not in the table.",
+      "measured_lane": null,
+      "estimate": {
+        "status": "estimated",
+        "reason": null,
+        "basis": "fee $40/mo ÷ published usage-dollar allowance (deepseek-v4.1-flash 0.25, claude-haiku-5.5 0.667, gpt-6-luna 0.667, glm-5.3-flash 0.222) × blended list cost per billion tokens of each reference model; pooled measured mix: output share 0.63%, agent cache share 90.81%, cache write share 0.00% (interactive 0%, cache_heavy 94%); standard contexts: 100K (table) and 350K, with p75 214K as sensitivity (session-end median 95K, p90 348K, 528 sessions); deepseek-v4.1-flash price_anomaly: listing shows completion < prompt (0.01 < 0.043156 per M); using last verified snapshot 2026-10-26.",
+        "values": [
+          {
+            "ref": "deepseek-v4.1-flash",
+            "shape": "interactive",
+            "usd_per_b": 6.54468504596009,
+            "reason": null,
+            "fee_over_allowance": 0.25,
+            "blended_usd_per_b": 26.17874018384036,
+            "measured_at": "2026-10-26T23:52:59.819Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
+            "usd_per_b_long": 6.54468504596009,
+            "usd_per_b_p75": 6.54468504596009,
+            "band_short": "base price (no prompt-length band)",
+            "band_long": "base price (no prompt-length band)",
+            "band_p75": "base price (no prompt-length band)"
+          },
+          {
+            "ref": "deepseek-v4.1-flash",
+            "shape": "agent",
+            "usd_per_b": 5.416667440606048,
+            "reason": null,
+            "fee_over_allowance": 0.25,
+            "blended_usd_per_b": 21.666669762424192,
+            "measured_at": "2026-10-26T23:52:59.819Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
+            "usd_per_b_long": 5.416667440606048,
+            "usd_per_b_p75": 5.416667440606048,
+            "band_short": "base price (no prompt-length band)",
+            "band_long": "base price (no prompt-length band)",
+            "band_p75": "base price (no prompt-length band)"
+          },
+          {
+            "ref": "deepseek-v4.1-flash",
+            "shape": "cache_heavy",
+            "usd_per_b": 5.377093229343777,
+            "reason": null,
+            "fee_over_allowance": 0.25,
+            "blended_usd_per_b": 21.50837291737511,
+            "measured_at": "2026-10-26T23:52:59.819Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
+            "usd_per_b_long": 5.377093229343777,
+            "usd_per_b_p75": 5.377093229343777,
+            "band_short": "base price (no prompt-length band)",
+            "band_long": "base price (no prompt-length band)",
+            "band_p75": "base price (no prompt-length band)"
+          },
+          {
+            "ref": "claude-haiku-5.5",
+            "shape": "interactive",
+            "usd_per_b": 341.7397825630481,
+            "reason": null,
+            "fee_over_allowance": 0.6666666666666666,
+            "blended_usd_per_b": 512.6096738445722,
+            "measured_at": "2026-10-26T23:52:59.819Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
+            "usd_per_b_long": 341.7397825630481,
+            "usd_per_b_p75": 341.7397825630481,
+            "band_short": "band: ≥100k ×5",
+            "band_long": "band: ≥100k ×5",
+            "band_p75": "band: ≥100k ×5"
+          },
+          {
+            "ref": "claude-haiku-5.5",
+            "shape": "agent",
+            "usd_per_b": 71.01555727807789,
+            "reason": null,
+            "fee_over_allowance": 0.6666666666666666,
+            "blended_usd_per_b": 106.52333591711685,
+            "measured_at": "2026-10-26T23:52:59.819Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
+            "usd_per_b_long": 71.01555727807789,
+            "usd_per_b_p75": 71.01555727807789,
+            "band_short": "band: ≥100k ×5",
+            "band_long": "band: ≥100k ×5",
+            "band_p75": "band: ≥100k ×5"
+          },
+          {
+            "ref": "claude-haiku-5.5",
+            "shape": "cache_heavy",
+            "usd_per_b": 61.51774657513281,
+            "reason": null,
+            "fee_over_allowance": 0.6666666666666666,
+            "blended_usd_per_b": 92.27661986269922,
+            "measured_at": "2026-10-26T23:52:59.819Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
+            "usd_per_b_long": 61.51774657513281,
+            "usd_per_b_p75": 61.51774657513281,
+            "band_short": "band: ≥100k ×5",
+            "band_long": "band: ≥100k ×5",
+            "band_p75": "band: ≥100k ×5"
+          },
+          {
+            "ref": "gpt-6-luna",
+            "shape": "interactive",
+            "usd_per_b": 68.34795651260963,
+            "reason": null,
+            "fee_over_allowance": 0.6666666666666666,
+            "blended_usd_per_b": 102.52193476891445,
+            "measured_at": "2026-10-26T23:52:59.819Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
+            "usd_per_b_long": 135.64510687150488,
+            "usd_per_b_p75": 68.34795651260963,
+            "band_short": "band: <272k base",
+            "band_long": "band: ≥272k ×2",
+            "band_p75": "band: <272k base"
+          },
+          {
+            "ref": "gpt-6-luna",
+            "shape": "agent",
+            "usd_per_b": 14.203111455615579,
+            "reason": null,
+            "fee_over_allowance": 0.6666666666666666,
+            "blended_usd_per_b": 21.30466718342337,
+            "measured_at": "2026-10-26T23:52:59.819Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
+            "usd_per_b_long": 27.355416757516807,
+            "usd_per_b_p75": 14.203111455615579,
+            "band_short": "band: <272k base",
+            "band_long": "band: ≥272k ×2",
+            "band_p75": "band: <272k base"
+          },
+          {
+            "ref": "gpt-6-luna",
+            "shape": "cache_heavy",
+            "usd_per_b": 12.303549315026562,
+            "reason": null,
+            "fee_over_allowance": 0.6666666666666666,
+            "blended_usd_per_b": 18.455323972539844,
+            "measured_at": "2026-10-26T23:52:59.819Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
+            "usd_per_b_long": 23.556292476338772,
+            "usd_per_b_p75": 12.303549315026562,
+            "band_short": "band: <272k base",
+            "band_long": "band: ≥272k ×2",
+            "band_p75": "band: <272k base"
+          },
+          {
+            "ref": "glm-5.3-flash",
+            "shape": "interactive",
+            "usd_per_b": 33.823709538400024,
+            "reason": null,
+            "fee_over_allowance": 0.2222222222222222,
+            "blended_usd_per_b": 152.20669292280013,
+            "measured_at": "2026-10-26T23:52:59.819Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
+            "usd_per_b_long": 33.823709538400024,
+            "usd_per_b_p75": 33.823709538400024,
+            "band_short": "base price (no prompt-length band)",
+            "band_long": "base price (no prompt-length band)",
+            "band_p75": "base price (no prompt-length band)"
+          },
+          {
+            "ref": "glm-5.3-flash",
+            "shape": "agent",
+            "usd_per_b": 9.759333957513787,
+            "reason": null,
+            "fee_over_allowance": 0.2222222222222222,
+            "blended_usd_per_b": 43.91700280881204,
+            "measured_at": "2026-10-26T23:52:59.819Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
+            "usd_per_b_long": 9.759333957513787,
+            "usd_per_b_p75": 9.759333957513787,
+            "band_short": "base price (no prompt-length band)",
+            "band_long": "base price (no prompt-length band)",
+            "band_p75": "base price (no prompt-length band)"
+          },
+          {
+            "ref": "glm-5.3-flash",
+            "shape": "cache_heavy",
+            "usd_per_b": 8.915084117252,
+            "reason": null,
+            "fee_over_allowance": 0.2222222222222222,
+            "blended_usd_per_b": 40.117878527634005,
+            "measured_at": "2026-10-26T23:52:59.819Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
+            "usd_per_b_long": 8.915084117252,
+            "usd_per_b_p75": 8.915084117252,
+            "band_short": "base price (no prompt-length band)",
+            "band_long": "base price (no prompt-length band)",
+            "band_p75": "base price (no prompt-length band)"
+          }
+        ],
+        "range_agent": [
+          5.416667440606048,
+          71.01555727807789
+        ],
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T16:38:14.752Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://opencode.ai/docs/go/",
+          "note": "Go Plus $40/month"
+        }
+      ]
+    },
+    {
+      "plan_id": "qwen-cloud-token-owner-10",
+      "product": "QwenCloud",
+      "tier": "Token Plan Individual",
+      "label": "QwenCloud - Token Plan Individual",
+      "status": "catalog",
+      "provider": "qwen-cloud",
+      "price_month_usd": 10,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "credits",
+      "allowance_detail": "25,500 credits in the monthly window (console reading); window resets monthly",
+      "credits_to_usd": {
+        "usd_per_credit": 0.0007944331163004354,
+        "basis": "window 2026-10-25T16:00Z to 2026-10-26T23:52Z: 193,169,199 tokens over 1020 rows (deepseek-v4.1-flash-1017 100,666,378 tokens ($4.18); deepseek-v4.1-flash 46,689,191 tokens ($2.64); qwen3.8-max 11,767,035 tokens ($3.58); qwen3.8-flash 34,046,595 tokens ($0.759)), priced at official QwenCloud prices, hour-weighted average of peak (14h) and off-peak (10h) = $11.2 of usage; ÷ 14,041.65 credits used (codexbar reading) = $0.000794 usage value per credit; 13800 tokens per credit. Tiers: deepseek-v4.1-flash-1017: peak $0.3 / $1.2 / $0.03 × 14h, off-peak $0.15 / $0.6 / $0.015 × 10h → avg $0.2375 / $0.95 / $0.02375 per M (in / out / cache); priced_as: deepseek-v4.1-flash; deepseek-v4.1-flash: peak $0.3 / $1.2 / $0.03 × 14h, off-peak $0.15 / $0.6 / $0.015 × 10h → avg $0.2375 / $0.95 / $0.02375 per M (in / out / cache); qwen3.8-flash: peak $0.15 / $0.47 / $0.016 × 14h, off-peak $0.09 / $0.282 / $0.0096 × 10h → avg $0.125 / $0.3917 / $0.01333 per M (in / out / cache); band_inherited_from: deepseek-v4.1-flash; qwen3.8-max: peak $2 / $6 / $0.25 × 14h, off-peak $1.2 / $3.6 / $0.15 × 10h → avg $1.667 / $5 / $0.2083 per M (in / out / cache); band_inherited_from: deepseek-v4.1-flash.",
+        "meaning": "usage_value"
+      },
+      "cli_compat": "Agent tools via Token Plan; CLI not verified",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": "Owner-confirmed plan at $10/mo. Official pricing starts at $6/month for Token Plan Individual (a lower tier, not this plan).",
+      "allowance": [
+        {
+          "ref": "*",
+          "usd": 20.258044465661104,
+          "basis": "credit pool 25,500 credits × measured usage value $0.000794 per credit (see credits_to_usd basis)"
+        }
+      ],
+      "allowance_reason": null,
+      "offered_models": [
+        "deepseek-v4.1-flash"
+      ],
+      "offered_basis": "QwenCloud post 2026-07-20 names the DeepSeek family in the Token Plan. GLM-5.3-Flash, Haiku and GPT-6 Luna are not named for this plan, so not listed.",
+      "measured_lane": "qwen-cloud-token",
+      "estimate": {
+        "status": "estimated",
+        "reason": null,
+        "basis": "fee $10/mo ÷ published usage-dollar allowance (deepseek-v4.1-flash 0.494) × blended list cost per billion tokens of each reference model; this plan's own measured mix: output share 0.92%, agent cache share 92.85%, cache write share 0.00% (interactive 0%, cache_heavy 94%); standard contexts: 100K (table) and 350K, with p75 214K as sensitivity (session-end median 95K, p90 348K, 528 sessions); deepseek-v4.1-flash price_anomaly: listing shows completion < prompt (0.01 < 0.043156 per M); using last verified snapshot 2026-10-26; prices: deepseek-v4.1-flash-1017: peak $0.3 / $1.2 / $0.03 × 14h, off-peak $0.15 / $0.6 / $0.015 × 10h → avg $0.2375 / $0.95 / $0.02375 per M (in / out / cache); priced_as: deepseek-v4.1-flash.",
+        "values": [
+          {
+            "ref": "deepseek-v4.1-flash",
+            "shape": "interactive",
+            "usd_per_b": 120.47838684535874,
+            "reason": null,
+            "fee_over_allowance": 0.4936310618209347,
+            "blended_usd_per_b": 244.0656517864397,
+            "measured_at": "2026-10-26T23:52:59.819Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
+            "usd_per_b_long": 120.47838684535874,
+            "usd_per_b_p75": 120.47838684535874,
+            "band_short": "base price (no prompt-length band)",
+            "band_long": "base price (no prompt-length band)",
+            "band_p75": "base price (no prompt-length band)"
+          },
+          {
+            "ref": "deepseek-v4.1-flash",
+            "shape": "agent",
+            "usd_per_b": 23.40922160533389,
+            "reason": null,
+            "fee_over_allowance": 0.4936310618209347,
+            "blended_usd_per_b": 47.42250521873685,
+            "measured_at": "2026-10-26T23:52:59.819Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
+            "usd_per_b_long": 23.40922160533389,
+            "usd_per_b_p75": 23.40922160533389,
+            "band_short": "base price (no prompt-length band)",
+            "band_long": "base price (no prompt-length band)",
+            "band_p75": "base price (no prompt-length band)"
+          },
+          {
+            "ref": "deepseek-v4.1-flash",
+            "shape": "cache_heavy",
+            "usd_per_b": 22.20953047392148,
+            "reason": null,
+            "fee_over_allowance": 0.4936310618209347,
+            "blended_usd_per_b": 44.99216559021566,
+            "measured_at": "2026-10-26T23:52:59.819Z",
+            "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)",
+            "usd_per_b_long": 22.20953047392148,
+            "usd_per_b_p75": 22.20953047392148,
+            "band_short": "base price (no prompt-length band)",
+            "band_long": "base price (no prompt-length band)",
+            "band_p75": "base price (no prompt-length band)"
+          }
+        ],
+        "range_agent": [
+          23.40922160533389,
+          23.40922160533389
+        ],
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T23:52:59.780Z",
+      "sources": [
+        {
+          "kind": "owner_confirmed",
+          "url": null,
+          "note": "owner-confirmed plan fee $10/mo (2026-10-26)"
+        },
+        {
+          "kind": "console_reading",
+          "url": null,
+          "note": "codexbar qwen-cloud reading 2026-10-26: 14,041.65 / 25,500 credits used, monthly window, resets 2026-11-24"
+        }
+      ]
+    },
+    {
+      "plan_id": "zai-coding-max-new",
+      "product": "Z.ai Coding Plan",
+      "tier": "Max",
+      "label": "Z.ai Coding Plan - Max",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 128,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": 1536,
+      "allowance_model": "window_tokens",
+      "allowance_detail": "Estimated weekly token allowance for GLM-5.3: 676–1,352M per week at 95% cache hit (official table); lower at lower cache hit rates",
+      "credits_to_usd": null,
+      "cli_compat": "Claude Code, Kilo Code, Cline, OpenCode, OpenClaw (official devpack overview)",
+      "heat_samples": 103,
+      "exclusion_reason": null,
+      "price_note": "Annual $1,536 ÷ 12. The official migration page shows $1,536/yr as the current discounted annual price; its 50%-off example applies only to eligible legacy migrants.",
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：weekly token allowance; no dollar amount published",
+      "offered_models": [],
+      "offered_basis": "Token allowance plan; not a by-model row.",
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "需一次基准实测才能折算：weekly token allowance; no dollar amount published",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T17:00:00Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://docs.z.ai/devpack/transition",
+          "note": "Annual Plan, Max: current discounted price $1,536"
+        },
+        {
+          "kind": "official_page",
+          "url": "https://docs.z.ai/devpack/overview",
+          "note": "Plans from $18/month; weekly token allowance table"
+        }
+      ]
+    },
+    {
+      "plan_id": "zai-coding-max-legacy-v2",
+      "product": "Z.ai Coding Plan",
+      "tier": "Max (Legacy v2)",
+      "label": "Z.ai Coding Plan - Max (Legacy v2)",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 56,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": 672,
+      "allowance_model": "window_tokens",
+      "allowance_detail": "Legacy structure: weekly token allowance, no published dollar usage value",
+      "credits_to_usd": null,
+      "cli_compat": "Claude Code, Kilo Code, Cline, OpenCode, OpenClaw (official devpack overview)",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": "Owner-confirmed price ($672/yr). The official migration page says auto-renew for eligible legacy plans was turned off from 2026-04-30; this row records the price the owner pays.",
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：weekly token allowance; no dollar amount published",
+      "offered_models": [],
+      "offered_basis": "Token allowance plan; not a by-model row.",
+      "measured_lane": "zai-glm-max",
+      "estimate": {
+        "status": "unavailable",
+        "reason": "需一次基准实测才能折算：weekly token allowance; no dollar amount published",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T17:00:00Z",
+      "sources": [
+        {
+          "kind": "owner_confirmed",
+          "url": null,
+          "note": "owner-confirmed plan fee $56/mo ($672/yr)"
+        },
+        {
+          "kind": "official_page",
+          "url": "https://docs.z.ai/devpack/transition",
+          "note": "legacy migration notice (auto-renew change)"
+        }
+      ]
+    },
+    {
+      "plan_id": "codex-go",
+      "product": "OpenAI Codex",
+      "tier": "Go",
+      "label": "OpenAI Codex - Go",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 8,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "window_percent",
+      "allowance_detail": "Codex in the CLI, IDE and web; usage windows",
+      "credits_to_usd": null,
+      "cli_compat": "Agent tools; CLI not verified",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": "Go plan, read 2026-10-26",
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：页面未公布 token 或美元额度，只有窗口用量",
+      "offered_models": [
+        "gpt-6-luna"
+      ],
+      "offered_basis": "developers.openai.com/codex/pricing lists GPT-6 Luna for Free, Go and Plus; Pro is listed as everything in Plus.",
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "需一次基准实测才能折算：页面未公布 token 或美元额度，只有窗口用量",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T21:14:16Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://developers.openai.com/codex/pricing",
+          "note": "Go $8/month (read 2026-10-26)"
+        }
+      ]
+    },
+    {
+      "plan_id": "codex-pro",
+      "product": "OpenAI Codex",
+      "tier": "Pro",
+      "label": "OpenAI Codex - Pro",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 100,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "window_percent",
+      "allowance_detail": "Codex; plans at $100, $200 or $500 per month",
+      "credits_to_usd": null,
+      "cli_compat": "Agent tools; CLI not verified",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": "entry price \"from $100\"; higher plans not separately read",
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：页面未公布 token 或美元额度，只有窗口用量",
+      "offered_models": [
+        "gpt-6-luna"
+      ],
+      "offered_basis": "developers.openai.com/codex/pricing lists GPT-6 Luna for Free, Go and Plus; Pro is listed as everything in Plus.",
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "需一次基准实测才能折算：页面未公布 token 或美元额度，只有窗口用量",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T21:14:16Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://developers.openai.com/codex/pricing",
+          "note": "From $100/month; $200 and $500 plans also listed (read 2026-10-26)"
+        }
+      ]
+    },
+    {
+      "plan_id": "cursor-plus",
+      "product": "Cursor",
+      "tier": "Plus",
+      "label": "Cursor - Plus",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 8,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "usd_usage",
+      "allowance_detail": "Shared AI usage pool; amount not stated",
+      "credits_to_usd": null,
+      "cli_compat": "Agent tools; CLI not verified",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": "introductory plan",
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：页面写 Shared AI usage pool，但未给出美元额度",
+      "offered_models": [],
+      "offered_basis": null,
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "需一次基准实测才能折算：页面写 Shared AI usage pool，但未给出美元额度",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T21:14:16Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://cursor.com/pricing",
+          "note": "Plus $8/month (read 2026-10-26)"
+        }
+      ]
+    },
+    {
+      "plan_id": "cursor-premium",
+      "product": "Cursor",
+      "tier": "Premium",
+      "label": "Cursor - Premium",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 30,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "usd_usage",
+      "allowance_detail": "Page: 4x more usage than Plus; no dollar amount stated",
+      "credits_to_usd": null,
+      "cli_compat": "Agent tools; CLI not verified",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": null,
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：页面只给相对倍率（4x Plus），未给出美元额度",
+      "offered_models": [],
+      "offered_basis": null,
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "需一次基准实测才能折算：页面只给相对倍率（4x Plus），未给出美元额度",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T21:14:16Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://cursor.com/pricing",
+          "note": "Premium $30/month (read 2026-10-26)"
+        }
+      ]
+    },
+    {
+      "plan_id": "cursor-super",
+      "product": "Cursor",
+      "tier": "Super",
+      "label": "Cursor - Super",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 100,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "usd_usage",
+      "allowance_detail": "Page: 15x more usage than Plus; no dollar amount stated",
+      "credits_to_usd": null,
+      "cli_compat": "Agent tools; CLI not verified",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": null,
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：页面只给相对倍率（15x Plus），未给出美元额度",
+      "offered_models": [],
+      "offered_basis": null,
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "需一次基准实测才能折算：页面只给相对倍率（15x Plus），未给出美元额度",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T21:14:16Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://cursor.com/pricing",
+          "note": "Super $100/month (read 2026-10-26)"
+        }
+      ]
+    },
+    {
+      "plan_id": "kilo-starter",
+      "product": "Kilo",
+      "tier": "Starter",
+      "label": "Kilo - Starter",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 19,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "credits",
+      "allowance_detail": "Monthly AI credit subscription; up to 50% bonus credits",
+      "credits_to_usd": null,
+      "cli_compat": "Agent tools; CLI not verified",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": "annual $588/year listed",
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：页面未写一个 credit 的美元用量价值",
+      "offered_models": [],
+      "offered_basis": null,
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "需一次基准实测才能折算：页面未写一个 credit 的美元用量价值",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T21:14:16Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://kilo.ai/pricing",
+          "note": "Starter $19/month (read 2026-10-26)"
+        },
+        {
+          "kind": "unverified",
+          "url": null,
+          "note": "unverified: usage value of one credit not measured on this tier (页面未写一个 credit 的美元用量价值)"
+        }
+      ]
+    },
+    {
+      "plan_id": "synthetic-go",
+      "product": "Synthetic",
+      "tier": "Go",
+      "label": "Synthetic - Go",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 9,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "unverified",
+      "allowance_detail": "Weekly credit quota; per-model tokens on a plan-selected chart",
+      "credits_to_usd": null,
+      "cli_compat": "Agent tools; CLI not verified",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": null,
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：页面的 tokens/mo 与 API $/mo 图表按方案切换，静态页面没有标明每个方案对应的数值",
+      "offered_models": [],
+      "offered_basis": null,
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "需一次基准实测才能折算：页面的 tokens/mo 与 API $/mo 图表按方案切换，静态页面没有标明每个方案对应的数值",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T21:14:16Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://synthetic.new/pricing",
+          "note": "Go $9/month (read 2026-10-26)"
+        }
+      ]
+    },
+    {
+      "plan_id": "synthetic-standard",
+      "product": "Synthetic",
+      "tier": "Standard",
+      "label": "Synthetic - Standard",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 30,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "unverified",
+      "allowance_detail": "Weekly credit quota; per-model tokens on a plan-selected chart",
+      "credits_to_usd": null,
+      "cli_compat": "Agent tools; CLI not verified",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": null,
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：页面的 tokens/mo 与 API $/mo 图表按方案切换，静态页面没有标明每个方案对应的数值",
+      "offered_models": [],
+      "offered_basis": null,
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "需一次基准实测才能折算：页面的 tokens/mo 与 API $/mo 图表按方案切换，静态页面没有标明每个方案对应的数值",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T21:14:16Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://synthetic.new/pricing",
+          "note": "Standard $30/month (read 2026-10-26)"
+        }
+      ]
+    },
+    {
+      "plan_id": "synthetic-big",
+      "product": "Synthetic",
+      "tier": "Big",
+      "label": "Synthetic - Big",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 90,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "unverified",
+      "allowance_detail": "Weekly credit quota; per-model tokens on a plan-selected chart",
+      "credits_to_usd": null,
+      "cli_compat": "Agent tools; CLI not verified",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": null,
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：页面的 tokens/mo 与 API $/mo 图表按方案切换，静态页面没有标明每个方案对应的数值",
+      "offered_models": [],
+      "offered_basis": null,
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "需一次基准实测才能折算：页面的 tokens/mo 与 API $/mo 图表按方案切换，静态页面没有标明每个方案对应的数值",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T21:14:16Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://synthetic.new/pricing",
+          "note": "Big $90/month (read 2026-10-26)"
+        }
+      ]
+    },
+    {
+      "plan_id": "zed-pro",
+      "product": "Zed",
+      "tier": "Pro",
+      "label": "Zed - Pro",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 10,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "usd_usage",
+      "allowance_detail": "$5 of tokens included per month; usage-based billing beyond $5",
+      "credits_to_usd": null,
+      "cli_compat": "Agent tools; CLI not verified",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": "Free trial listed",
+      "allowance": [
+        {
+          "ref": "*",
+          "usd": 5,
+          "basis": "Zed Pro: $5 of tokens included per month (zed.dev/pricing, read 2026-10-26)"
+        }
+      ],
+      "allowance_reason": null,
+      "offered_models": [],
+      "offered_basis": "the page names DeepSeek only as a bring-your-own provider; no hosted model list for Zed Pro on the page",
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "its checked model list names no reference model, so no estimate is made for one",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T21:14:16Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://zed.dev/pricing",
+          "note": "Pro $10/month, $5 of tokens included (read 2026-10-26)"
+        }
+      ]
+    },
+    {
+      "plan_id": "windsurf-pro",
+      "product": "Windsurf",
+      "tier": "Pro",
+      "label": "Windsurf - Pro",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 20,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "unverified",
+      "allowance_detail": "Increased quotas; quota in the page is not stated in dollars",
+      "credits_to_usd": null,
+      "cli_compat": "Agent tools; CLI not verified",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": null,
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：页面写 increased quotas，未给出美元额度",
+      "offered_models": [],
+      "offered_basis": null,
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "需一次基准实测才能折算：页面写 increased quotas，未给出美元额度",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T21:14:16Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://windsurf.com/pricing",
+          "note": "Pro $20/month (read 2026-10-26)"
+        }
+      ]
+    },
+    {
+      "plan_id": "windsurf-max",
+      "product": "Windsurf",
+      "tier": "Max",
+      "label": "Windsurf - Max",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 200,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "unverified",
+      "allowance_detail": "Significantly higher quotas; not stated in dollars",
+      "credits_to_usd": null,
+      "cli_compat": "Agent tools; CLI not verified",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": null,
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：页面写 significantly higher quotas，未给出美元额度",
+      "offered_models": [],
+      "offered_basis": null,
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "需一次基准实测才能折算：页面写 significantly higher quotas，未给出美元额度",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T21:14:16Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://windsurf.com/pricing",
+          "note": "Max $200/month (read 2026-10-26)"
+        }
+      ]
+    },
+    {
+      "plan_id": "amp-individual",
+      "product": "Amp",
+      "tier": "Individual",
+      "label": "Amp - Individual",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 20,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "unverified",
+      "allowance_detail": "Individual plan; usage limit not stated on the page",
+      "credits_to_usd": null,
+      "cli_compat": "Agent tools; CLI not verified",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": null,
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：页面未给出 Individual 档的额度",
+      "offered_models": [],
+      "offered_basis": null,
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "需一次基准实测才能折算：页面未给出 Individual 档的额度",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T21:14:16Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://ampcode.com/pricing",
+          "note": "Individual $20/month (read 2026-10-26)"
+        }
+      ]
+    },
+    {
+      "plan_id": "cline-pass",
+      "product": "Cline",
+      "tier": "Pass",
+      "label": "Cline - Pass",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": null,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "unverified",
+      "allowance_detail": "Not read: the pricing page renders client-side",
+      "credits_to_usd": null,
+      "cli_compat": "Agent tools; CLI not verified",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": null,
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：价格与额度未能从静态页面读取",
+      "offered_models": [],
+      "offered_basis": null,
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "no USD fee to divide",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T21:14:16Z",
+      "sources": [
+        {
+          "kind": "unverified",
+          "url": null,
+          "note": "unverified: Cline Pass price not in the static page (read 2026-10-26)"
+        }
+      ]
+    },
+    {
+      "plan_id": "zai-coding-lite",
+      "product": "Z.ai Coding Plan",
+      "tier": "Lite",
+      "label": "Z.ai Coding Plan - Lite",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": null,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "window_tokens",
+      "allowance_detail": "Not read: the subscribe page renders prices client-side",
+      "credits_to_usd": null,
+      "cli_compat": "Agent tools; CLI not verified",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": null,
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：价格与窗口上限未能从静态页面读取",
+      "offered_models": [],
+      "offered_basis": null,
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "no USD fee to divide",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T21:14:16Z",
+      "sources": [
+        {
+          "kind": "unverified",
+          "url": null,
+          "note": "unverified: Z.ai Lite price not in the static page (read 2026-10-26); the page description says plans start at 18/month, currency and tier not read"
+        }
+      ]
+    },
+    {
+      "plan_id": "zai-coding-pro",
+      "product": "Z.ai Coding Plan",
+      "tier": "Pro",
+      "label": "Z.ai Coding Plan - Pro",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": null,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "window_tokens",
+      "allowance_detail": "Not read: the subscribe page renders prices client-side",
+      "credits_to_usd": null,
+      "cli_compat": "Agent tools; CLI not verified",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": null,
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：价格与窗口上限未能从静态页面读取",
+      "offered_models": [],
+      "offered_basis": null,
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "no USD fee to divide",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T21:14:16Z",
+      "sources": [
+        {
+          "kind": "unverified",
+          "url": null,
+          "note": "unverified: Z.ai Pro price not in the static page (read 2026-10-26)"
+        }
+      ]
+    },
+    {
+      "plan_id": "qwen-cloud-token-lite",
+      "product": "QwenCloud",
+      "tier": "Token Plan Lite",
+      "label": "QwenCloud - Token Plan Lite",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 6,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "credits",
+      "allowance_detail": "11,500 credits per month",
+      "credits_to_usd": null,
+      "cli_compat": "Agent tools; CLI not verified",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": "Monthly credits; prices recorded from the public page on 2026-10-25 (limited-time price); the static page read on 2026-10-26 shows credit multipliers, not prices",
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：本档未测得每 credit 的用量价值（Essential 档测得 $0.000794，不外推到其它档）",
+      "offered_models": [],
+      "offered_basis": null,
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "需一次基准实测才能折算：本档未测得每 credit 的用量价值（Essential 档测得 $0.000794，不外推到其它档）",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T21:14:16Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://www.qwencloud.com/pricing/token-plan",
+          "note": "Lite $6/month, 11.5K credits (recorded 2026-10-25)"
+        },
+        {
+          "kind": "unverified",
+          "url": null,
+          "note": "unverified: usage value of one credit not measured on this tier (本档未测得每 credit 的用量价值（Essential 档测得 $0.000794，不外推到其它档）)"
+        }
+      ]
+    },
+    {
+      "plan_id": "qwen-cloud-token-standard",
+      "product": "QwenCloud",
+      "tier": "Token Plan Standard",
+      "label": "QwenCloud - Token Plan Standard",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 18,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "credits",
+      "allowance_detail": "45,000 credits per month",
+      "credits_to_usd": null,
+      "cli_compat": "Agent tools; CLI not verified",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": "Monthly credits; prices recorded from the public page on 2026-10-25 (limited-time price); the static page read on 2026-10-26 shows credit multipliers, not prices",
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：本档未测得每 credit 的用量价值（Essential 档测得 $0.000794，不外推到其它档）",
+      "offered_models": [],
+      "offered_basis": null,
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "需一次基准实测才能折算：本档未测得每 credit 的用量价值（Essential 档测得 $0.000794，不外推到其它档）",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T21:14:16Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://www.qwencloud.com/pricing/token-plan",
+          "note": "Standard $18/month, 45K credits (recorded 2026-10-25)"
+        },
+        {
+          "kind": "unverified",
+          "url": null,
+          "note": "unverified: usage value of one credit not measured on this tier (本档未测得每 credit 的用量价值（Essential 档测得 $0.000794，不外推到其它档）)"
+        }
+      ]
+    },
+    {
+      "plan_id": "qwen-cloud-token-pro",
+      "product": "QwenCloud",
+      "tier": "Token Plan Pro",
+      "label": "QwenCloud - Token Plan Pro",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": 68,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "credits",
+      "allowance_detail": "180,000 credits per month",
+      "credits_to_usd": null,
+      "cli_compat": "Agent tools; CLI not verified",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": "Monthly credits; prices recorded from the public page on 2026-10-25 (limited-time price); the static page read on 2026-10-26 shows credit multipliers, not prices",
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：本档未测得每 credit 的用量价值（Essential 档测得 $0.000794，不外推到其它档）",
+      "offered_models": [],
+      "offered_basis": null,
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "需一次基准实测才能折算：本档未测得每 credit 的用量价值（Essential 档测得 $0.000794，不外推到其它档）",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T21:14:16Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://www.qwencloud.com/pricing/token-plan",
+          "note": "Pro $68/month, 180K credits (recorded 2026-10-25)"
+        },
+        {
+          "kind": "unverified",
+          "url": null,
+          "note": "unverified: usage value of one credit not measured on this tier (本档未测得每 credit 的用量价值（Essential 档测得 $0.000794，不外推到其它档）)"
+        }
+      ]
+    },
+    {
+      "plan_id": "volc-ark-coding-pro",
+      "product": "Volcengine Ark",
+      "tier": "Coding Plan Pro",
+      "label": "Volcengine Ark - Coding Plan Pro",
+      "status": "catalog",
+      "provider": null,
+      "price_month_usd": null,
+      "price_native": null,
+      "currency": "USD",
+      "price_annual_usd": null,
+      "allowance_model": "tier_multiple",
+      "allowance_detail": "Not read: the page shows the Lite price as 限时 9.9 元起 and the Pro price as pending",
+      "credits_to_usd": null,
+      "cli_compat": "Agent tools; CLI not verified",
+      "heat_samples": null,
+      "exclusion_reason": null,
+      "price_note": null,
+      "allowance": [],
+      "allowance_reason": "需一次基准实测才能折算：价格与额度未能从页面读取",
+      "offered_models": [],
+      "offered_basis": null,
+      "measured_lane": null,
+      "estimate": {
+        "status": "unavailable",
+        "reason": "no USD fee to divide",
+        "basis": null,
+        "values": [],
+        "range_agent": null,
+        "measured_at": "2026-10-26T23:52:59.819Z",
+        "source": "usage.json measured mix (pooled) × OpenRouter list prices and prompt-length bands (models.json); session-end contexts (context.json)"
+      },
+      "measured_at": "2026-10-26T21:14:16Z",
+      "sources": [
+        {
+          "kind": "official_page",
+          "url": "https://www.volcengine.com/activity/codingplan",
+          "note": "Coding Plan page; Lite shown as 限时 9.9 元起 (CNY); Pro price not shown"
+        },
+        {
+          "kind": "unverified",
+          "url": null,
+          "note": "unverified: Pro price not read (read 2026-10-26)"
+        }
+      ]
+    }
+  ],
+  "measured_at": "2026-10-26T23:52:47.208Z",
+  "source": "public pricing pages, public posts and owner confirmations, read 2026-10-26"
+}
