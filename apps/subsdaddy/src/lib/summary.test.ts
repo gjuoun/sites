@@ -61,10 +61,10 @@ describe("model view: only the plans that offer the model", () => {
     expect(keys).not.toContain("qwen-cloud-token-owner-10");
   });
 
-  test("GPT-6 Luna lists the OpenCode plans with a value and Codex Plus as a converted value; the Codex Pro and Go rows as N/A", () => {
+  test("GPT-6 Luna lists the OpenCode plans, the Copilot plans, Codex Plus and the two Codex Pro plans with values; Codex Go is N/A (r45)", () => {
     const rows = viewRows(ds, "gpt-6-luna");
     expect(rows.map((r) => r.key).sort()).toEqual(["codex-go", "codex-plus", "codex-pro", "codex-pro-20x", "github-copilot-pro", "github-copilot-pro-plus", "opencode-go-go", "opencode-go-plus"]);
-    expect(rows.filter((r) => r.usd === null).map((r) => r.key).sort()).toEqual(["codex-go", "codex-pro", "codex-pro-20x"]);
+    expect(rows.filter((r) => r.usd === null).map((r) => r.key).sort()).toEqual(["codex-go"]);
   });
 
 

@@ -19,9 +19,9 @@ describe("classification: convertible (a dollar allowance) vs needs_anchor (none
     expect(c.convertible + c.needs_anchor + c.excluded_status).toBe(catalog.rows.length);
   });
 
-  test("the convertible plans are the pools with a dollar allowance; the three Claude plans are not among them (r44)", () => {
+  test("the convertible plans are those with a dollar allowance, third-party ones included (r45)", () => {
     const conv = catalog.rows.filter((r) => r.status === "catalog" && r.allowance.length > 0).map((r) => r.plan_id);
-    expect(conv.some((id) => id.startsWith("claude-code"))).toBe(false);
+    expect(conv).toEqual(expect.arrayContaining(["claude-code-pro", "claude-code-max-5x", "claude-code-max-20x", "codex-pro", "codex-pro-20x"]));
     expect(rank.counts.convertible).toBe(conv.length);
   });
 

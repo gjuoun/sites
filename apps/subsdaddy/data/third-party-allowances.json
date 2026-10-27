@@ -1,0 +1,120 @@
+{
+  "policy": "Third-party weekly API-equivalent values for subscription plans. Each value is a published third-party measurement, or a labelled projection. Figures are weekly dollars at the vendor's own API list price, converted to a 30-day cycle by 30/7. The headline value is used when a source gives one measured value with an account spread; the lower bound is used when a source gives an estimate range. The spread and the upper bound go in the tooltip and methodology.",
+  "cycle_days": 30,
+  "entries": [
+    {
+      "plan_id": "claude-code-pro",
+      "plan": "Claude Pro",
+      "fee_usd_per_month": 20,
+      "weekly_usd": 157,
+      "value_kind": "measured",
+      "value_rule": "headline",
+      "range_usd": [
+        142,
+        170
+      ],
+      "range_note": "middle half of 103 accounts",
+      "publisher": "wokey.ai",
+      "url": "https://wokey.ai/claude-usage-limits",
+      "published": "2026-10-26",
+      "measured_window": "2026-10-19 to 2026-10-26",
+      "sample": "103 real subscription accounts",
+      "read_date": "2026-10-27",
+      "quote": "Claude Pro $20/mo $157 ($142–$170), ≈ $681/mo",
+      "cross_check": null
+    },
+    {
+      "plan_id": "claude-code-max-5x",
+      "plan": "Claude Max 5x",
+      "fee_usd_per_month": 100,
+      "weekly_usd": 940,
+      "value_kind": "measured",
+      "value_rule": "lower_bound",
+      "range_usd": [
+        940,
+        1170
+      ],
+      "range_note": "week-by-week range of one account",
+      "publisher": "promptster.ai",
+      "url": "https://www.promptster.ai/blog/what-a-100-dollar-ai-coding-plan-is-worth",
+      "published": "2026-10-06",
+      "measured_window": "about three weeks, Sep 14 – Oct 6, 2026",
+      "sample": "1 account (one engineer); wokey has no Max 5x figure yet (Collecting, 2 accounts)",
+      "read_date": "2026-10-27",
+      "quote": "Claude delivered about $940–1,170 a week",
+      "cross_check": null
+    },
+    {
+      "plan_id": "claude-code-max-20x",
+      "plan": "Claude Max 20x",
+      "fee_usd_per_month": 200,
+      "weekly_usd": 1602,
+      "value_kind": "measured",
+      "value_rule": "headline",
+      "range_usd": [
+        1147,
+        1745
+      ],
+      "range_note": "middle half of 21 accounts",
+      "publisher": "wokey.ai",
+      "url": "https://wokey.ai/claude-usage-limits",
+      "published": "2026-10-26",
+      "measured_window": "2026-10-19 to 2026-10-26",
+      "sample": "21 real subscription accounts",
+      "read_date": "2026-10-27",
+      "quote": "Claude Max 20x $200/mo $1,602 ($1,147–$1,745), ≈ $6,944/mo",
+      "cross_check": {
+        "publisher": "finopsllm.com",
+        "url": "https://finopsllm.com/research/claude-max-vs-chatgpt-pro-codex-200",
+        "published": "2026-10-10",
+        "value_usd": 1860,
+        "note": "Measured cap, scaled to 125%; 60 days of logs. Not an independent measurement of the same quantity; shown for reference."
+      }
+    },
+    {
+      "plan_id": "codex-pro",
+      "plan": "OpenAI Codex Pro 5x",
+      "fee_usd_per_month": 100,
+      "weekly_usd": 270,
+      "value_kind": "measured",
+      "value_rule": "lower_bound",
+      "range_usd": [
+        270,
+        340
+      ],
+      "range_note": "week-by-week range of one account, GPT-6 Astra then a later model",
+      "publisher": "promptster.ai",
+      "url": "https://www.promptster.ai/blog/what-a-100-dollar-ai-coding-plan-is-worth",
+      "published": "2026-10-06",
+      "measured_window": "about three weeks, Sep 14 – Oct 6, 2026",
+      "sample": "1 account (one engineer)",
+      "read_date": "2026-10-27",
+      "quote": "Codex about $270–340 a week",
+      "cross_check": null
+    },
+    {
+      "plan_id": "codex-pro-20x",
+      "plan": "OpenAI Codex Pro 20x",
+      "fee_usd_per_month": 200,
+      "weekly_usd": 1340,
+      "value_kind": "projected",
+      "value_rule": "projection",
+      "range_usd": null,
+      "range_note": null,
+      "publisher": "finopsllm.com",
+      "url": "https://finopsllm.com/research/claude-max-vs-chatgpt-pro-codex-200",
+      "published": "2026-10-10",
+      "measured_window": null,
+      "sample": "none: a projection from ChatGPT Plus × OpenAI's 20x multiplier",
+      "read_date": "2026-10-27",
+      "quote": "ChatGPT Pro 20x $200 $1,340 Plus × 20, projected",
+      "cross_check": null
+    }
+  ],
+  "not_found": [
+    {
+      "plan_id": "codex-plus",
+      "note": "No third-party measurement of ChatGPT Plus / Codex Plus was found (read 2026-10-27). Its estimate stays on the five-hour message table (dagger)."
+    }
+  ]
+}

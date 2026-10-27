@@ -11,12 +11,12 @@ import { hourWeighted } from "@/lib/official-prices";
 import { na, value } from "@/lib/cells";
 import { usd } from "@/lib/sections";
 import { cacheShare } from "@/lib/summary";
-import { CLAUDE_CYCLE_DAYS, fmtK, intensityLevels, sensitivityGrid } from "@/lib/claude-hours";
-import type { RefPrice } from "@/data/estimate";
-import { pooledMix, type TokenTotals } from "@/data/estimate";
-import { claudePlansFileSchema } from "@/data/claude-plans";
-import claudePlansRaw from "../../data/claude-plans.json";
-import usageRaw from "../../data/usage.json";
+
+
+
+
+import thirdPartyRaw from "../../data/third-party-allowances.json";
+import { thirdPartyFileSchema } from "@/data/third-party";
 
 export const Route = createFileRoute("/methodology")({
   component: MethodologyPage,
@@ -78,7 +78,7 @@ function MethodologyPage() {
       <ShapeSection />
       <AllowanceColumnSection />
       <AllowanceSection />
-      <ClaudeHoursSection />
+      <ThirdPartySection />
       <ClaudeSection />
       <ContextSection />
       <OfficialPlansSection />
@@ -255,116 +255,79 @@ function AllowanceSection() {
 
 /** Claude Code prompt counts: the archived former limit text, converted with the same convention as Codex. */
 function ClaudeSection() {
-  const plans: Array<[string, string, { low: number; high: number }]> = [
-    ["Claude Code - Pro", "claude-code-pro", { low: 10, high: 40 }],
-    ["Claude Code - Max 5x", "claude-code-max-5x", { low: 50, high: 200 }],
-    ["Claude Code - Max 20x", "claude-code-max-20x", { low: 200, high: 800 }],
-  ];
-  const B = (t: number) => (t / 1e9).toFixed(3) + "B";
-  const rows = plans.map(([label, id, lim]) => {
-    const fee = dataset.catalog.rows.find((r) => r.plan_id === id)!.price_month_usd ?? 0;
-    const lower = monthlyTokens(lim, CONTEXTS.short, WINDOWS_PER_DAY.realistic, "low");
-    const upper = monthlyTokens(lim, CONTEXTS.short, WINDOWS_PER_DAY.realistic, "high");
-    const ceil = monthlyTokens(lim, CONTEXTS.short, WINDOWS_PER_DAY.ceiling, "low");
-    return {
-      key: id,
-      cells: {
-        plan: value(label),
-        range: value(lim.low + "-" + lim.high + " per 5h"),
-        lower: value(B(lower)),
-        upper: value(B(upper)),
-        ceiling: value(B(ceil)),
-        usd: value(usd(fee / (lower / 1e9)) + "‡"),
-      },
-    };
-  });
-  const cols = [
-    { key: "plan", label: "Plan", width: "24%" },
-    { key: "range", label: "Prompts (archived)", width: "18%" },
-    { key: "lower", label: "Lower, realistic", width: "16%", numeric: true },
-    { key: "upper", label: "Upper, realistic", width: "16%", numeric: true },
-    { key: "ceiling", label: "Lower, ceiling", width: "14%", numeric: true },
-    { key: "usd", label: "$/B lower", width: "12%", numeric: true },
-  ];
+  const b = (lim: { low: number; high: number }) => (monthlyTokens(lim, CONTEXTS.short, WINDOWS_PER_DAY.realistic, "low") / 1e9).toFixed(2) + "B";
   return (
     <section className="space-y-3" aria-labelledby="m-claude">
-      <h2 id="m-claude" className={SECTION_TITLE}>Claude Code prompt counts (archived)</h2>
+      <h2 id="m-claude" className={SECTION_TITLE}>Claude Code prompt counts (archived, lower bound)</h2>
       <p>
-        The table shows N/A for all three plans. Anthropic's current help page states percentage limits only, and no sourced dollar allowance was found (checked 2026-10-27), so no dollar figure is shown.
-        The prompt counts below are the former Anthropic text, quoted in anthropics/claude-code issue 6611 (created 2025-08-26): Pro 10-40, Max 5x 50-200 and Max 20x 200-800 prompts per five hours.
-        They are converted with the Codex convention (1 prompt = 100,000 standard context + 462 output tokens), and they are a lower bound: one Claude Code prompt runs a tool loop of several model requests, each reading the context again, so a prompt is not one standard-context request.
-        Lower bound, 3 windows a day; the ceiling is 24 hours of continuous use (4.8 windows a day). These are the old limits, not today's.
+        Anthropic's former help text, quoted in anthropics/claude-code issue 6611 (created 2025-08-26), gave prompts per five hours: Pro 10-40, Max 5x 50-200, Max 20x 200-800.
+        At the Codex convention (1 prompt = 100,000 standard context + 462 output tokens, 3 windows a day, 30 days) they give {b({ low: 10, high: 40 })}, {b({ low: 50, high: 200 })} and {b({ low: 200, high: 800 })} tokens a month.
+        This is a lower bound, and it is not a dollar allowance: one prompt is not one standard-context request. The table above uses the third-party figures instead.
       </p>
-      <p>
-        A month of one's own Claude Code logs (ccusage-style, the same window method as the lanes above) would replace these conversions with a measured figure; that is the only change that should be made.
-      </p>
-      <UnifiedTable testId="claude-prompts" columns={cols} rows={rows} />
     </section>
   );
 }
 
-/** Claude plans: why hours do not become a dollar allowance, and the sensitivity table that shows it (r44). */
-function ClaudeHoursSection() {
+/** Claude and Codex Pro: third-party measured weekly values, converted to 30 days, with each source's own figures and the caveats (r45). */
+function ThirdPartySection() {
   const ds = dataset as unknown as DS;
-  const file = claudePlansFileSchema.parse(claudePlansRaw);
-  const tp = ds.context.throughput;
-  const heavy = tp.tokens_per_active_hour.p50;
-  const usage = usageRaw as { lanes: Array<{ tokens: TokenTotals }> };
-  const pooled = pooledMix(usage.lanes.map((l) => ({ tokens: l.tokens })));
-  const mix = { output_share: pooled.output_share, cache_share: pooled.agent_cache_share, cache_write_share: pooled.cache_write_share ?? 0 };
-  const price = { in_per_m: file.price.in_per_m, out_per_m: file.price.out_per_m, cache_per_m: file.price.cache_read_per_m, cache_write_per_m: file.price.cache_write_per_m };
-  const haiku = ds.models.reference.find((r) => r.ref === "claude-haiku-5.5")!;
-  const grid = sensitivityGrid({
-    plans: file.plans.map((p) => ({ plan: p.plan, plan_id: p.plan_id, hours_low: p.hours_per_week_low, hours_high: p.hours_per_week_high })),
-    price, mix, haiku: haiku as unknown as RefPrice, heavy,
-  });
-  const levels = intensityLevels(heavy);
-  const lows = grid.filter((g) => g.bound === "lower").map((g) => g.cells[levels.length - 1].usd);
-  const span = fmtK(Math.min(...lows)) + "\u2013" + fmtK(Math.max(...lows));
-  const millions = (t: number) => (t / 1e6).toFixed(1) + "M";
-  const fmtB = (b: number) => Math.round(b).toLocaleString("en-US") + "B";
-  const cols = [
-    { key: "plan", label: "Plan", width: "22%" },
-    { key: "hours", label: "Hours/wk", width: "10%", numeric: true },
-    ...levels.map((lv) => ({ key: lv.id, label: lv.label, width: "22%", numeric: true })),
-  ];
-  const rows = grid.map((g) => {
-    const fee = file.plans.find((p) => p.plan_id === g.plan_id)!.fee_usd_per_month;
+  const file = thirdPartyFileSchema.parse(thirdPartyRaw);
+  const rows = file.entries.map((e) => {
+    const cat = ds.catalog.rows.find((r) => r.plan_id === e.plan_id);
+    const allow = cat?.allowance.find((a) => a.ref === "*");
     return {
-      key: g.plan_id + "-" + g.bound,
+      key: e.plan_id,
       cells: {
-        plan: value(g.plan + " (" + usd(fee) + "/mo), " + g.bound + " bound"),
-        hours: value(g.hours + " h"),
-        ...Object.fromEntries(g.cells.map((c) => [c.intensity.id, value("$" + Math.round(c.usd).toLocaleString("en-US") + " · " + fmtB(c.haikuB) + " Haiku", [], c.intensity.basis)])),
+        plan: value(e.plan),
+        fee: value(usd(e.fee_usd_per_month) + "/mo"),
+        weekly: value("$" + e.weekly_usd.toLocaleString("en-US") + "/wk" + (e.value_kind === "projected" ? " projected" : ""), [], e.value_rule === "headline" ? "headline value; account middle half $" + e.range_usd![0] + "–$" + e.range_usd![1] : e.value_rule === "lower_bound" ? "lower bound of $" + e.range_usd![0] + "–$" + e.range_usd![1] : "projection"),
+        month: allow ? value("$" + allow.usd.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "/30d") : na("no allowance"),
+        source: value(e.publisher + ", " + e.published, [], e.url),
+        window: value(e.measured_window ?? "projection", [], e.sample),
       },
     };
   });
-  const sources = file.plans.map((p) => p.plan + ": " + p.source.quote);
+  const cols = [
+    { key: "plan", label: "Plan", width: "16%" },
+    { key: "fee", label: "Fee/mo", width: "10%", numeric: true },
+    { key: "weekly", label: "Weekly value", width: "16%", numeric: true },
+    { key: "month", label: "30-day allowance", width: "14%", numeric: true },
+    { key: "source", label: "Source, published", width: "22%" },
+    { key: "window", label: "Window", width: "22%" },
+  ];
+  const cross = file.entries.find((e) => e.cross_check)?.cross_check;
   return (
-    <section className="space-y-3" aria-labelledby="m-claude-hours">
-      <h2 id="m-claude-hours" className={SECTION_TITLE}>Claude plans: hours, not dollars</h2>
+    <section className="space-y-3" aria-labelledby="m-third-party">
+      <h2 id="m-third-party" className={SECTION_TITLE}>Claude and Codex Pro: third-party measured allowances</h2>
       <p>
-        Claude Pro, Max 5x and Max 20x show N/A in the table. Anthropic publishes hours of usage, not a dollar allowance, and converting those hours at our measured burn rate would span {span} a month, too wide to publish as one number.
+        Anthropic publishes no dollar allowance for Claude and Codex Pro. Each plan here takes a third party's weekly API-equivalent value, the dollars of API usage a week of the plan's limit bought, and multiplies it by 30/7 for a 30-day cycle.
+        Measured values are marked t. A projection, which no account has measured, is marked j.
       </p>
-      <ul className={SMALL_NOTE + " list-disc pl-5"}>
-        <li>The hours are Sonnet 4 and Opus 4 figures from 2025 (archived capture, read {file.plans[0].source.read_date}). They assume interactive coding.</li>
-        <li>Our measured agent burn rate is {millions(heavy)} tokens per active hour ({tp.sample_sessions} pi sessions, 30 days), far heavier than that assumed use.</li>
-        <li>The value of a Claude plan depends on usage intensity more than on the plan, as the table shows.</li>
-        <li>Sonnet 5.5 cache read is {"$" + file.price.cache_read_per_m} per million tokens on the pricing page; the blend uses it.</li>
-      </ul>
       <p>
-        Sensitivity, not a ranking. Each cell is the dollars a plan's hours would buy per {CLAUDE_CYCLE_DAYS}-day cycle at that burn rate (hours × tokens per active hour × the Sonnet 5.5 blend at the measured mix × 30/7),
-        and the Haiku 5.5 billions those dollars buy at the measured mix.
+        Headline values (wokey.ai) are the source's own measurement, with the middle half of its accounts shown as the spread. Range values (promptster.ai) take the lower end of the source's range.
+        Both are conservative against the source's upper figures, and the upper figures are in each source.
       </p>
-      <UnifiedTable testId="claude-sensitivity" columns={cols} rows={rows} />
+      <UnifiedTable testId="third-party" columns={cols} rows={rows} />
       <p className={SMALL_NOTE}>
-        Light (5M) and medium (15M) tokens per active hour are scenario values chosen for this table, not measurements. Heavy is the measured median of pi sessions with at least 9 active minutes over 30 days,
-        gaps capped at 5 minutes, all four token classes ({tp.sample_sessions} sessions; p25 {millions(tp.tokens_per_active_hour.p25)}, p75 {millions(tp.tokens_per_active_hour.p75)}; data/context.json).
+        Samples are small. Claude Pro is measured on 103 accounts and Max 20x on 21 (wokey.ai, 2026-10-19 to 10-26). Claude Max 5x and Codex Pro 5x are one engineer's account over about three weeks (promptster.ai, Sep 14 to Oct 6, 2026); wokey has no Max 5x figure yet.
       </p>
-      {sources.map((t) => (
-        <p key={t} className={SMALL_NOTE}>{t}. Capture {file.plans[0].source.capture_timestamp ?? ""} at {file.plans[0].source.capture ?? file.plans[0].source.url}, read {file.plans[0].source.read_date}.</p>
-      ))}
-      <p className={SMALL_NOTE}>Fees: {file.fee_source.quote}. Price: {file.price.source.url}, read {file.price.source.read_date}.</p>
+      {cross && (
+        <p className={SMALL_NOTE}>
+          Cross-check, not a second measurement: {cross.publisher}, published {cross.published}, gives Claude Max 20x as ${cross.value_usd.toLocaleString("en-US")} a week. {cross.note} Source: {cross.url}.
+        </p>
+      )}
+      <p className={SMALL_NOTE}>
+        Anthropic meters subscription usage in model-weighted units, so an all-Haiku workload stretches the same allowance across far more tokens than a Sonnet workload.
+      </p>
+      <p className={SMALL_NOTE}>
+        The model views price the same dollars at the selected model's list price. Dollars here are the vendor's list price for the models each account actually used, so a Haiku or Luna view is the dollar pool priced at a cheap model.
+      </p>
+      <p className={SMALL_NOTE}>
+        ChatGPT Plus (Codex Plus): no third-party measurement was found (read {file.entries[0].read_date}). Its estimate stays on the five-hour message table, marked dagger.
+      </p>
+      <p className={SMALL_NOTE}>
+        Archived Claude Code prompt counts (Pro 10–40, Max 5x 50–200, Max 20x 200–800 per five hours, issue 6611) convert to lower-bound tokens only: one prompt is not one standard-context request, so they under-count and are not used as an allowance.
+      </p>
     </section>
   );
 }
