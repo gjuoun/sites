@@ -99,6 +99,8 @@ describe("estimate formula, recomputed from the stored data", () => {
     const modelsAll = models.usage_models as Array<{ peak_offpeak: null | { provider: string; ref: string | null; peak_usd_per_m: Record<string, number>; offpeak_usd_per_m: Record<string, number> } }>;
     for (const row of catalog.rows) {
       if (row.estimate?.status !== "estimated") continue;
+      // a same-rate copy is checked against its peer, in same-rate-views.test.ts
+      if (row.estimate.derived_from) continue;
       const lane = row.measured_lane ? usage.lanes.find((l: { lane: string }) => l.lane === row.measured_lane) : null;
       const { o, c } = lane ? mixOf(lane.tokens) : mixOf(usage.lanes.reduce((a: { input: number; cache_creation: number; cache_read: number; output: number }, l: { tokens: typeof a }) => ({ input: a.input + l.tokens.input, cache_creation: a.cache_creation + l.tokens.cache_creation, cache_read: a.cache_read + l.tokens.cache_read, output: a.output + l.tokens.output }), { input: 0, cache_creation: 0, cache_read: 0, output: 0 }));
       for (const v of row.estimate.values) {

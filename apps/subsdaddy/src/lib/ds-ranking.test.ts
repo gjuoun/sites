@@ -10,7 +10,7 @@ const read = (f: string) => JSON.parse(readFileSync(join(DATA, f), "utf8"));
 const catalog = catalogFileSchema.parse(read("catalog.json"));
 const models = modelsFileSchema.parse(read("models.json"));
 const usage = usageFileSchema.parse(read("usage.json"));
-const rank = dsRanking(catalog.rows, models, usage.lanes);
+const rank = dsRanking(catalog.rows, models, usage.lanes, new Map(read("lanes.json").lanes.filter((l: { usd_per_b_basis: string; usd_per_b_derived_from: string | null }) => l.usd_per_b_basis === "derived" && l.usd_per_b_derived_from).map((l: { lane: string; usd_per_b_derived_from: string }) => [l.lane, l.usd_per_b_derived_from])));
 const byId = (id: string) => rank.ranked.find((r) => r.plan_id === id);
 
 describe("classification: convertible (a dollar allowance) vs needs_anchor (none)", () => {

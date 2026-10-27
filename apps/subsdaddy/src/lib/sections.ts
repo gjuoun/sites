@@ -294,7 +294,7 @@ export function catalogTable(ds: DS): Table {
 
 /** The DeepSeek value ranking: the convertible plans that list DeepSeek V4.1 Flash, sorted by the QwenCloud-basis est $/B. */
 export function dsRankingTable(ds: DS): Table & { subtitle: string; excludedLines: string[] } {
-  const k = dsRanking(ds.catalog.rows as CatalogRow[], ds.models as unknown as DsModels, ds.usage.lanes as unknown as DsLane[]);
+  const k = dsRanking(ds.catalog.rows as CatalogRow[], ds.models as unknown as DsModels, ds.usage.lanes as unknown as DsLane[], new Map(ds.lanes.lanes.filter((l) => l.usd_per_b_basis === "derived" && l.usd_per_b_derived_from).map((l) => [l.lane, l.usd_per_b_derived_from as string])));
   const price = (p: RefPrice) => "$" + fmtPrice(p.in_per_m) + " / $" + fmtPrice(p.out_per_m) + " / $" + fmtPrice(p.cache_per_m) + " per M";
   const rows = k.ranked.map((e) => ({
     key: e.plan_id,

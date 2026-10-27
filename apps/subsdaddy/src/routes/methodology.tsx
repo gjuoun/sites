@@ -64,6 +64,7 @@ function MethodologyPage() {
         <p>Cache writes have their own price (1.25× input for Haiku and Luna). The measured traffic writes no cache, so this term is zero today; it is priced, not folded into input, so a future write share is counted.</p>
         <p>A plan with an offered model but no published dollar allowance shows N/A and its reason in the title. A third-party figure is used only with its link and date, labelled third-party. None is used on this site yet.</p>
       </section>
+      <SameRateSection />
       <ContextSection />
       <OfficialPlansSection />
       <section className="space-y-2">
@@ -150,6 +151,23 @@ function OfficialPlansSection() {
       </p>
       <UnifiedTable testId="messages" columns={msg.columns} rows={msg.rows} />
       <p>Anthropic publishes percentage-based limits only; no measured token conversion is available. A month of own usage on any Max plan would replace this estimate.</p>
+    </section>
+  );
+}
+
+/** Same-rate derivation: why CommandCode shows OpenCode Go's $/B, and when that stops. */
+function SameRateSection() {
+  return (
+    <section className="space-y-2" aria-labelledby="m-same-rate">
+      <h2 id="m-same-rate" className={SECTION_TITLE}>Same-rate derivation (CommandCode)</h2>
+      <p>
+        CommandCode GOAT ($10 for $80 of credits on DeepSeek V4.1 Flash) and OpenCode Go ($10) have the same fee and the same usage-dollar allowance, so they get the same $/B and
+        capacity in every view. While CommandCode's weekly window is saturated, its lane takes OpenCode Go's value, marked *: in the Measured view and in each model view.
+        When its window resets and it has its own measurement, the lane turns measured and the rule stops applying, with no special case in the code.
+      </p>
+      <p>
+        Caveat: on GLM-5.3-Flash the allowances differ (CommandCode $80 of credits against OpenCode Go's $60), and the copy still applies, as ruled.
+      </p>
     </section>
   );
 }
