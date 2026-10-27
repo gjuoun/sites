@@ -1,11 +1,11 @@
 {
   "window_days": 45,
-  "measured_at": "2026-10-27T22:29:09.573Z",
+  "measured_at": "2026-10-27T22:34:55.913Z",
   "source": "local pi session logs (read-only, aggregated): session-end prompt = input + cache read + cache write of the last assistant call",
   "method": "quantiles by linear interpolation between order statistics (R-7); a session counts once, at its last call",
   "sample_sessions": 579,
   "quantiles": {
-    "p50": 108409,
+    "p50": 109274,
     "p75": 228405,
     "p90": 372632,
     "max": 963868
@@ -21,28 +21,35 @@
     },
     {
       "bucket": "50-100k",
-      "sessions": 125
+      "sessions": 124
     },
     {
       "bucket": "100-200k",
-      "sessions": 127
+      "sessions": 126
     },
     {
       "bucket": "200k+",
-      "sessions": 176
+      "sessions": 178
     }
   ],
   "throughput": {
     "window_days": 30,
-    "source": "local pi session logs (read-only, aggregated): all four token classes of every assistant call, per session",
-    "method": "active time = sum of gaps between a session's consecutive messages, each gap capped at 5 minutes; sessions with at least 9 active minutes count; tokens per active hour per session; quantiles by R-7",
-    "idle_cap_minutes": 5,
-    "min_active_minutes": 9,
-    "sample_sessions": 235,
-    "tokens_per_active_hour": {
-      "p25": 29752023,
-      "p50": 47805093,
-      "p75": 67597332
-    }
+    "source": "local pi session logs (read-only, aggregated): all four token classes of every assistant call, per session and clock hour (UTC)",
+    "method": "session-hour = one session with usage in one clock hour; aggregate = all tokens / session-hours; median, mean and p90 are over session-hours (R-7); concurrency = distinct sessions per clock hour that has usage",
+    "active_hours": 249,
+    "session_hours": 915,
+    "tokens": 11223737051,
+    "tokens_per_session_hour": {
+      "aggregate": 12266379,
+      "median": 3638732,
+      "mean": 12266379,
+      "p90": 34963343
+    },
+    "concurrency": {
+      "median": 3,
+      "p90": 8,
+      "max": 22
+    },
+    "sample_sessions": 604
   }
 }

@@ -269,28 +269,31 @@ function ClaudeSection() {
   );
 }
 
-/** How Threads is derived (r54): each input and where it comes from. Derived here, not a vendor figure. */
+/** How Threads is derived (r55): the measured inputs, the occupancy assumption, the concurrency sample, and what is not measured. */
 function ThreadsSection() {
   const ds = dataset as unknown as DS;
-  const heavy = ds.context.throughput.tokens_per_active_hour.p50;
   const tp = ds.context.throughput;
+  const perSessionHour = tp.tokens_per_session_hour.aggregate;
+  const activeShare = (tp.active_hours / (tp.window_days * 24)) * 100;
   return (
     <section className="space-y-3" aria-labelledby="m-threads">
       <h2 id="m-threads" className={SECTION_TITLE}>How Threads is derived</h2>
       <p>
-        Threads is the number of agent threads a row's capacity keeps running at full time. It is derived by this site. Anthropic and OpenAI publish no parallel-thread metric, so the column is an estimate, marked est.
+        Threads is the number of agent threads a row's capacity keeps running at full time. This site derives it and marks it est. Anthropic and OpenAI publish no parallel-thread metric.
       </p>
       <p>
-        Threads = (capacity per cycle ÷ cycle days × 7) ÷ (burn rate × 168 h). A row with no capacity shows N/A. A value under 0.1 shows as less than 0.1.
+        Threads = (capacity per cycle ÷ cycle days × 7) ÷ (tokens per session-hour × 168 h × 25%). A row with no capacity shows N/A. A value under 0.1 shows as less than 0.1.
       </p>
       <ul className={SMALL_NOTE + " list-disc pl-5"}>
-        <li>Burn rate, {(heavy / 1e6).toFixed(1)}M tokens per active hour: our own measurement from pi session logs (median of {tp.sample_sessions} sessions with at least 9 active minutes over {tp.window_days} days, gaps capped at 5 minutes). Self-measured, not a vendor figure. Source: data/context.json.</li>
-        <li>Allowance: the vendor's published figure, the vendor's per-model limit, or a third-party measurement. Each has its own link and date in the Allowance and third-party sections above.</li>
-        <li>List price: each vendor's own pricing page, as in the Pricing sections above.</li>
-        <li>168 hours: a full week of continuous agent use, the physical ceiling a thread is measured against.</li>
+        <li>Tokens per session-hour, {(perSessionHour / 1e6).toFixed(1)}M: our own measurement from pi session logs. A session-hour is one session with usage in one clock hour (UTC). Over {tp.window_days} days there were {tp.session_hours.toLocaleString("en-US")} session-hours and {(tp.tokens / 1e9).toFixed(1)}B tokens. Self-measured, not a vendor figure. Source: data/context.json.</li>
+        <li>Concurrency, from the same logs: sessions with usage in the same clock hour, median {tp.concurrency.median}, p90 {tp.concurrency.p90}, max {tp.concurrency.max}, across {tp.active_hours} active clock hours.</li>
+        <li>Occupancy, 25%: an assumption, not measured per thread. Our logs have usage in {activeShare.toFixed(0)}% of the clock hours of the window, so 25% is a conservative share of time for one thread.</li>
+        <li>Allowance: the vendor's published figure, the vendor's per-model limit, or a third-party measurement, each with its link and date in the sections above.</li>
+        <li>List price: each vendor's own pricing page.</li>
+        <li>168 hours: a full week of continuous use.</li>
       </ul>
       <p className={SMALL_NOTE}>
-        A capped row (the hour ceiling binds, see the Haiku and Codex rows) reads 1.0 by construction: 730 hours a month is about one thread at full time.
+        Read the number as the parallel work the dollars could cover, not as a limit the plan sets. A Claude row reads above one thread because its allowance buys far more tokens a week than one thread's occupancy.
       </p>
     </section>
   );
@@ -301,13 +304,6 @@ function ThirdPartySection() {
   const ds = dataset as unknown as DS;
   const file = thirdPartyFileSchema.parse(thirdPartyRaw);
   const tp = ds.context.throughput;
-  const heavy = tp.tokens_per_active_hour.p50;
-  const hoursOf = (id: string): number => {
-    const row = ds.catalog.rows.find((r) => r.plan_id === id);
-    const a = row?.allowance.find((x) => x.mix_class && x.mix_blend_usd_per_million);
-    if (!a || !a.mix_blend_usd_per_million) return 0;
-    return Math.round(((a.usd / (a.mix_blend_usd_per_million * 1000)) * 1e9) / heavy);
-  };
   const rows = file.entries.map((e) => {
     const cat = ds.catalog.rows.find((r) => r.plan_id === e.plan_id);
     const allow = cat?.allowance.find((a) => a.ref === "*");
@@ -360,9 +356,7 @@ function ThirdPartySection() {
         A Claude row in the Haiku view is therefore priced at pure Haiku. The Sonnet 5.5 and GPT-6 Luna blends at the measured mix appear in the tooltip only, as a counterpart for comparison.
       </p>
       <p className={SMALL_NOTE}>
-        The hour ceiling. A capacity cannot need more agent hours in a month than there are. The ceiling is 730 hours at the measured burn rate ({(heavy / 1e6).toFixed(1)}M tokens per active hour, from {tp.sample_sessions} pi sessions in data/context.json).
-        A row's capacity is the smaller of the dollar-implied tokens and the ceiling. A capped row carries the suffix capped by hours, and its $/B is its fee over the ceiling, so it depends on the hours only; the tooltip gives both values.
-        An uncapped row, such as Pro at Cold 100K, takes its $/B from its dollars. The burn rate is measured on mixed agent traffic, not on Haiku alone, so the ceiling is the one figure here that rests on that assumption.
+        No hour ceiling (r55). An earlier version capped Claude and Codex capacity at 730 agent hours a month, using 46M tokens per active hour. That figure was a fleet total divided by one session, not one thread's rate, so the ceiling is withdrawn. Capacity is the allowance over the model's price. Threads answers the physical question.
       </p>
       <p className={SMALL_NOTE}>
         ChatGPT Plus (Codex Plus): no third-party measurement was found (read {file.entries[0].read_date}). Its estimate stays on the five-hour message table, marked dagger.
