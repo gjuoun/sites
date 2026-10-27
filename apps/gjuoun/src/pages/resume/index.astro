@@ -2,10 +2,10 @@
 import Fact from "../../components/Fact.astro";
 import { resume } from "../../data/resume";
 import Base from "../../layouts/Base.astro";
+import { siteOrigin } from "../../lib/seo";
 
-const siteLabel = resume.contact.site
-	.replace(/^https?:\/\//, "")
-	.replace(/\/$/, "");
+// The contact line shows the configured origin: astro.config.mjs is the only place a host is named.
+const site = siteOrigin(Astro.site);
 ---
 
 <Base title="Resume" description={resume.summary} starter={false}>
@@ -14,7 +14,7 @@ const siteLabel = resume.contact.site
 	<p class="contact">
 		<Fact text={resume.contact.email} /> ·
 		<a href={resume.contact.github}>GitHub</a> ·
-		<a href={resume.contact.site}>{siteLabel}</a>
+		<a href={site.href}>{site.host}</a>
 	</p>
 	<p>{resume.summary}</p>
 
@@ -24,17 +24,15 @@ const siteLabel = resume.contact.site
 			resume.roles.map((role) => (
 				<li class="entry">
 					<div class="entry-main">
-						<h3><Fact text={role.title} />, {role.organization}</h3>
+						<h3>
+							<Fact text={role.title} />, {role.organization}
+							{role.bullets.length > 0 && <span class="starter-tag">starter</span>}
+						</h3>
 						{
 							role.bullets.length > 0 && (
-								<>
-									<p class="starter-label">
-										<span class="starter-tag">starter</span> what was built
-									</p>
-									<ul class="bullets">
-										{role.bullets.map((b) => <li><Fact text={b} /></li>)}
-									</ul>
-								</>
+								<ul class="bullets">
+									{role.bullets.map((b) => <li><Fact text={b} /></li>)}
+								</ul>
 							)
 						}
 					</div>

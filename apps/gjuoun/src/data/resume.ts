@@ -21,7 +21,7 @@ export interface Resume {
 	name: string;
 	headline: string;
 	summary: string;
-	contact: { email: string; github: string; site: string };
+	contact: { email: string; github: string };
 	roles: Role[];
 	education: Education[];
 	skills: string[];
@@ -36,7 +36,6 @@ export const resume: Resume = {
 	contact: {
 		email: "[email to add]",
 		github: "https://github.com/gjuoun",
-		site: "https://jun.qqntt.com/",
 	},
 	roles: [
 		{
@@ -45,9 +44,9 @@ export const resume: Resume = {
 			start: "Feb 2022",
 			end: "Present",
 			bullets: [
-				"Builds scalable web applications in TypeScript and JavaScript.",
-				"Integrates AI features into backend systems, working with data teams.",
-				"Applies large language models to improve work processes.",
+				"Built scalable web applications in TypeScript and JavaScript.",
+				"Integrated AI features into backend systems, working closely with data teams.",
+				"Applied large language models to enhance work processes.",
 			],
 		},
 		{
