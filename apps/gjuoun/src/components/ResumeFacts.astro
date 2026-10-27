@@ -1,12 +1,14 @@
 ---
 import { resume } from "../data/resume";
 
-// The same facts on the home page and on /resume/. level is the heading that titles each section:
-// 2 on the full page, 3 under the home page's Resume heading. Roles sit one level below.
+// The full facts live on /resume/. The home page shows only the teaser: headline, contact and summary,
+// with the link to the full page. level is the heading that titles each section: 2 on the full page,
+// 3 under the home page's Resume heading. Roles sit one level below.
 interface Props {
 	level: 2 | 3;
+	view?: "full" | "teaser";
 }
-const { level } = Astro.props;
+const { level, view = "full" } = Astro.props;
 const Section = level === 2 ? "h2" : "h3";
 const Role = level === 2 ? "h3" : "h4";
 const c = resume.contact;
@@ -21,7 +23,10 @@ const c = resume.contact;
 </p>
 <p>{resume.summary}</p>
 
-<Section>Experience</Section>
+{
+	view === "full" && (
+		<>
+			<Section>Experience</Section>
 <ol class="entries">
 	{
 		resume.roles.map((role) => (
@@ -56,3 +61,6 @@ const c = resume.contact;
 
 <Section>Skills</Section>
 <p>{resume.skills.join(" · ")}</p>
+		</>
+	)
+}

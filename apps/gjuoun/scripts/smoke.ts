@@ -74,6 +74,13 @@ const preview = argUrl
 			},
 		);
 
+interface ResumeFacts {
+	headline: string;
+	contact: string;
+	entries: string[];
+	skills: string;
+}
+
 type Facts = {
 	navLabels: string[];
 	activeLabels: string[];
@@ -97,7 +104,9 @@ type Facts = {
 	contactText: string;
 	bracketInMain: boolean;
 	skillsText: string;
-	resumeFacts: string;
+	resumeFacts: ResumeFacts;
+	summaryLength: number;
+	hasFullResumeLink: boolean;
 	canonical: string;
 	metaGaps: number[];
 };
@@ -208,15 +217,22 @@ const readFacts = (): Facts => {
 		contactText: txt(contact ?? null),
 		bracketInMain: /\[/.test(main?.textContent ?? ""),
 		skillsText: txt(skillsHeading?.nextElementSibling ?? null),
+		summaryLength: txt(
+			document.querySelector("main p.headline")?.nextElementSibling
+				?.nextElementSibling ?? null,
+		).length,
+		hasFullResumeLink: [...document.querySelectorAll("main a")].some(
+			(a) => (a.getAttribute("href") ?? "") === "/resume/",
+		),
 		// Everything the resume says, as text: the home page and /resume/ must carry the same facts.
-		resumeFacts: JSON.stringify({
+		resumeFacts: {
 			headline: txt(document.querySelector("main p.headline")),
 			contact: txt(contact ?? null),
 			entries: [...document.querySelectorAll("main li.entry")].map((li) =>
 				txt(li),
 			),
 			skills: txt(skillsHeading?.nextElementSibling ?? null),
-		}),
+		},
 		canonical:
 			document.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.href ??
 			"",
@@ -272,7 +288,20 @@ function contractFailures(route: string, f: Facts): string[] {
 		if (!lists.some((l) => l.length >= 3 && sequential(l)))
 			bad("home has no numbered lesson list with 3+ ordinals");
 	}
-	if (route === "/" || route === "/resume/") {
+	if (route === "/") {
+		// The home page is a teaser now: headline, contact and summary only. The full history lives on /resume/.
+		if (f.entryHeadings.length !== 0)
+			bad(`home shows resume entries: ${f.entryHeadings.join(" | ")}`);
+		if (f.headline !== "Senior Software Engineer")
+			bad(`home headline is ${f.headline}`);
+		if (!f.contactHrefs.includes("mailto:gjuoun@gmail.com"))
+			bad("home contact line lacks the email");
+		if (!f.contactText.includes("Montreal, Canada"))
+			bad("home contact line lacks Montreal, Canada");
+		if (f.summaryLength < 80) bad(`home summary too short: ${f.summaryLength}`);
+		if (!f.hasFullResumeLink) bad("home lacks the Full resume link");
+	}
+	if (route === "/resume/") {
 		// All four employers and all five positions, with their dates, in order.
 		if (f.entryHeadings.join("|") !== EXPECT_ENTRIES.join("|"))
 			bad(`resume entries ${f.entryHeadings.join(" | ")}`);
@@ -429,7 +458,7 @@ let toggleTrail = "";
 let focusTrail = "";
 let motionTrail = "";
 const lessonCounts: string[] = [];
-const resumeSnapshots = new Map<string, string>();
+const resumeSnapshots = new Map<string, ResumeFacts>();
 
 try {
 	failures.push(...(await phoneFailures()));
@@ -604,12 +633,20 @@ try {
 		);
 		await context.close();
 	}
-	// The home page and /resume/ carry the same facts.
-	const home = resumeSnapshots.get("/");
+	// Home carries only the teaser: same headline and contact as the full page, and no history of its own.
+	const home = resumeSnapshots.get("/") as ResumeFacts | undefined;
 	const resume = resumeSnapshots.get("/resume/");
 	expect(
-		home !== undefined && home === resume,
-		"home and /resume/ do not carry the same resume facts",
+		home !== undefined && resume !== undefined,
+		"resume facts missing on / or /resume/",
+	);
+	expect(
+		home!.headline === "Senior Software Engineer",
+		`home teaser headline is ${home!.headline}`,
+	);
+	expect(
+		home!.contact.length > 0 && home!.entries.length === 0,
+		`home teaser carries entries: ${JSON.stringify(home!.entries)}`,
 	);
 } finally {
 	await browser?.close();
