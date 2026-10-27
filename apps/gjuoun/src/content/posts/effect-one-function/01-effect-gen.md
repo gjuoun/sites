@@ -2,7 +2,7 @@
 
 title: "Sequence steps with Effect.gen"
 slug: "effect-gen"
-summary: "Write sequential Effect code with `yield*`."
+summary: "Write sequential Effect code with yield*."
 date: "2026-10-27"
 series: "effect-one-function"
 order: 1

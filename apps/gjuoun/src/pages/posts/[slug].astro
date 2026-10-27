@@ -4,17 +4,20 @@ import PostList from "../../components/PostList.astro";
 import Base from "../../layouts/Base.astro";
 import { livePosts } from "../../lib/collections";
 
+type Lesson = CollectionEntry<"posts">;
 type Props =
 	| {
 			kind: "series";
 			series: CollectionEntry<"series">;
-			items: CollectionEntry<"posts">[];
+			items: Lesson[];
 	  }
 	| {
 			kind: "post";
-			post: CollectionEntry<"posts">;
-			prev?: CollectionEntry<"posts">;
-			next?: CollectionEntry<"posts">;
+			post: Lesson;
+			seriesTitle?: string;
+			total: number;
+			prev?: Lesson;
+			next?: Lesson;
 	  };
 
 export async function getStaticPaths() {
@@ -36,6 +39,8 @@ export async function getStaticPaths() {
 			props: {
 				kind: "post" as const,
 				post: p,
+				seriesTitle: series.find((s) => s.data.slug === p.data.series)?.data.title,
+				total: siblings.length,
 				prev: index > 0 ? siblings[index - 1] : undefined,
 				next:
 					index >= 0 && index < siblings.length - 1
@@ -51,6 +56,8 @@ const props = Astro.props;
 const seriesBody =
 	props.kind === "series" ? await render(props.series) : undefined;
 const postBody = props.kind === "post" ? await render(props.post) : undefined;
+const pad = (n: number | undefined) => String(n ?? 0).padStart(2, "0");
+const lessonHref = (slug: string) => "/posts/" + slug + "/";
 ---
 
 {
@@ -63,29 +70,64 @@ const postBody = props.kind === "post" ? await render(props.post) : undefined;
 			<h1>{props.series.data.title}</h1>
 			<p>{props.series.data.summary}</p>
 			<seriesBody.Content />
+			<h2>Lessons</h2>
 			<PostList
 				numbered
 				items={props.items.map((p) => ({
-					href: `/posts/${p.data.slug}/`,
+					href: lessonHref(p.data.slug),
 					title: p.data.title,
 					summary: p.data.summary,
 					order: p.data.order,
 				}))}
 			/>
+			<nav class="lesson-nav" aria-label="Series navigation">
+				<a class="button button-outline" href="/posts/">← All posts</a>
+				{
+					props.items[0] && (
+						<a class="button" href={lessonHref(props.items[0].data.slug)}>
+							Start with lesson {pad(props.items[0].data.order)} →
+						</a>
+					)
+				}
+			</nav>
 		</Base>
 	)
 }
 {
 	props.kind === "post" && postBody && (
-		<Base title={props.post.data.title} description={props.post.data.summary} type="article" starter={props.post.data.starter}>
+		<Base
+			title={props.post.data.title}
+			description={props.post.data.summary}
+			type="article"
+			starter={props.post.data.starter}
+		>
 			<article>
+				{
+					props.seriesTitle && (
+						<p class="kicker">
+							Lesson {pad(props.post.data.order)} of {props.total} in {props.seriesTitle}
+						</p>
+					)
+				}
 				<h1>{props.post.data.title}</h1>
 				<p>{props.post.data.summary}</p>
 				<postBody.Content />
 			</article>
-			<nav aria-label="Series">
-				{props.prev && <a href={`/posts/${props.prev.data.slug}/`}>← {props.prev.data.title}</a>}
-				{props.next && <a href={`/posts/${props.next.data.slug}/`}>{props.next.data.title} →</a>}
+			<nav class="lesson-nav" aria-label="Lesson navigation">
+				{
+					props.prev && (
+						<a class="button button-outline" href={lessonHref(props.prev.data.slug)}>
+							← {pad(props.prev.data.order)} · {props.prev.data.title}
+						</a>
+					)
+				}
+				{
+					props.next && (
+						<a class="button" href={lessonHref(props.next.data.slug)}>
+							{pad(props.next.data.order)} · {props.next.data.title} →
+						</a>
+					)
+				}
 			</nav>
 		</Base>
 	)
