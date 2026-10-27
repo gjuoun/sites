@@ -21,10 +21,10 @@ export const ACCENT_NAMES = [
 
 export const lightPalette = lightPaletteJson as Palette;
 
-// The business theme's own vocabulary: the five neutrals and seven accents its roles carry. The palette holds
+// The business theme's own vocabulary: the six neutrals its roles carry. The palette holds
 // more (a sixth neutral and three accents — lightBlue, paleBlue and the dim yellow) that no component paints,
 // so the colour page documents the theme, not the raw palette.
-export const THEME_NEUTRALS = ["bg", "panel", "fg", "fgDim", "border"] as const;
+export const THEME_NEUTRALS = ["bg", "panel", "fg", "fgDim", "border", "highlight"] as const;
 
 /** A mode's six palette neutrals, lightest first. */
 export function neutralsLightToDark(p: { colors: Record<string, { hex: string }> }): string[] {
