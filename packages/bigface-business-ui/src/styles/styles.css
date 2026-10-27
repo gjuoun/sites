@@ -29,7 +29,8 @@
   --color-popover-foreground: var(--theme-fg);
   --color-primary: var(--theme-blue);
   /* the fill ink is each mode's own darkest readable value: light fg, dark canvas (ruling 2026-10-26) */
-  --color-primary-foreground: light-dark(var(--theme-fg), var(--theme-bg));
+  /* Ruling 2026-10-27 (Jun): the ink on the primary fill is the canvas colour in BOTH modes. */
+  --color-primary-foreground: var(--theme-bg);
   --color-secondary: var(--theme-panel);
   --color-secondary-foreground: var(--theme-fg);
   --color-muted: var(--theme-panel);
@@ -50,7 +51,7 @@
   --color-sidebar: var(--theme-panel);
   --color-sidebar-foreground: var(--theme-fg);
   --color-sidebar-primary: var(--theme-blue);
-  --color-sidebar-primary-foreground: light-dark(var(--theme-fg), var(--theme-bg));
+  --color-sidebar-primary-foreground: var(--theme-bg);
   --color-sidebar-accent: var(--theme-panel);
   --color-sidebar-accent-foreground: var(--theme-fg);
   --color-sidebar-border: var(--theme-border);
