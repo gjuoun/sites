@@ -59,97 +59,142 @@ const preview = argUrl
 		);
 
 type Facts = {
-  navLabels: string[];
-  activeLabels: string[];
-  activeBg: string;
-  h1: string;
-  headings: string[];
-  footerNotes: number;
-  starterInMain: number;
-  lessonLists: string[][];
-  lessonLinks: number;
-  lessonNavLinks: number;
-  buttonBgs: string[];
-  entryDisplays: string[];
-  entryDates: string[];
-  headline: string;
-  hrefs: string[];
-  starterTags: number;
-  placeholders: number;
+	navLabels: string[];
+	activeLabels: string[];
+	activeBg: string;
+	h1: string;
+	headings: string[];
+	footerNotes: number;
+	starterInMain: number;
+	lessonLists: string[][];
+	lessonLinks: number;
+	lessonNavLinks: number;
+	buttonBgs: string[];
+	entryDisplays: string[];
+	entryDates: string[];
+	headline: string;
+	hrefs: string[];
+	starterTags: number;
+	placeholders: number;
 };
-const NAV_LABELS = ['Home', 'Portfolio', 'Posts', 'Resume'];
-const SECTION_NAV: Record<string, string> = { '/': 'Home', '/projects/': 'Portfolio', '/resume/': 'Resume' };
-const FRAME_BG = 'rgb(237, 237, 229)'; // --theme-frame, light mode
-const PRIMARY_BG = 'rgb(0, 176, 255)'; // --theme-primary, light mode
-const DATE_RE = /^(?:[A-Z][a-z]{2}|\[Mon\]) \d{4} – (?:Present|(?:[A-Z][a-z]{2}|\[Mon\]) \d{4})$/;
-const pad2 = (n: number) => String(n).padStart(2, '0');
+const NAV_LABELS = ["Home", "Portfolio", "Posts", "Resume"];
+const SECTION_NAV: Record<string, string> = {
+	"/": "Home",
+	"/projects/": "Portfolio",
+	"/resume/": "Resume",
+};
+const FRAME_BG = "rgb(237, 237, 229)"; // --theme-frame, light mode
+const PRIMARY_BG = "rgb(0, 176, 255)"; // --theme-primary, light mode
+const DATE_RE =
+	/^(?:[A-Z][a-z]{2}|\[Mon\]) \d{4} – (?:Present|(?:[A-Z][a-z]{2}|\[Mon\]) \d{4})$/;
+const pad2 = (n: number) => String(n).padStart(2, "0");
 const sequential = (xs: string[]) => xs.every((x, i) => x === pad2(i + 1));
 
 // Read on first load, before any toggle: the DOM facts that contractFailures checks.
 const readFacts = (): Facts => {
-  const txt = (el: Element | null) => (el?.textContent ?? '').trim();
-  const navLinks = [...document.querySelectorAll<HTMLAnchorElement>('header nav a')];
-  const active = navLinks.filter((a) => a.hasAttribute('aria-current'));
-  return {
-    navLabels: navLinks.map((a) => txt(a)),
-    activeLabels: active.map((a) => txt(a)),
-    activeBg: active[0] ? getComputedStyle(active[0]).backgroundColor : '',
-    h1: txt(document.querySelector('main h1')),
-    headings: [...document.querySelectorAll('main h2')].map((h) => txt(h)),
-    footerNotes: document.querySelectorAll('footer .starter-note').length,
-    starterInMain: document.querySelectorAll('main .starter-note, main .starter').length,
-    lessonLists: [...document.querySelectorAll('main ol.lesson-list')].map((ol) => [...ol.children].map((li) => txt(li.querySelector('.ordinal')))),
-    lessonLinks: document.querySelectorAll('main ol.lesson-list li a').length,
-    lessonNavLinks: document.querySelectorAll('nav.lesson-nav a').length,
-    buttonBgs: [...document.querySelectorAll('main a.button')].map((a) => getComputedStyle(a).backgroundColor),
-    entryDisplays: [...document.querySelectorAll('li.entry')].map((li) => getComputedStyle(li).display),
-    entryDates: [...document.querySelectorAll('time.entry-date')].map((t) => txt(t)),
-    headline: txt(document.querySelector('p.headline')),
-    hrefs: [...document.querySelectorAll<HTMLAnchorElement>('main a')].map((a) => a.href),
-    starterTags: document.querySelectorAll('main .starter-tag').length,
-    placeholders: document.querySelectorAll('main .placeholder').length,
-  };
+	const txt = (el: Element | null) => (el?.textContent ?? "").trim();
+	const navLinks = [
+		...document.querySelectorAll<HTMLAnchorElement>("header nav a"),
+	];
+	const active = navLinks.filter((a) => a.hasAttribute("aria-current"));
+	return {
+		navLabels: navLinks.map((a) => txt(a)),
+		activeLabels: active.map((a) => txt(a)),
+		activeBg: active[0] ? getComputedStyle(active[0]).backgroundColor : "",
+		h1: txt(document.querySelector("main h1")),
+		headings: [...document.querySelectorAll("main h2")].map((h) => txt(h)),
+		footerNotes: document.querySelectorAll("footer .starter-note").length,
+		starterInMain: document.querySelectorAll(
+			"main .starter-note, main .starter",
+		).length,
+		lessonLists: [...document.querySelectorAll("main ol.lesson-list")].map(
+			(ol) => [...ol.children].map((li) => txt(li.querySelector(".ordinal"))),
+		),
+		lessonLinks: document.querySelectorAll("main ol.lesson-list li a").length,
+		lessonNavLinks: document.querySelectorAll("nav.lesson-nav a").length,
+		buttonBgs: [...document.querySelectorAll("main a.button")].map(
+			(a) => getComputedStyle(a).backgroundColor,
+		),
+		entryDisplays: [...document.querySelectorAll("li.entry")].map(
+			(li) => getComputedStyle(li).display,
+		),
+		entryDates: [...document.querySelectorAll("time.entry-date")].map((t) =>
+			txt(t),
+		),
+		headline: txt(document.querySelector("p.headline")),
+		hrefs: [...document.querySelectorAll<HTMLAnchorElement>("main a")].map(
+			(a) => a.href,
+		),
+		starterTags: document.querySelectorAll("main .starter-tag").length,
+		placeholders: document.querySelectorAll("main .placeholder").length,
+	};
 };
 
 // The content contract: one line per violated expectation, prefixed with the route.
 function contractFailures(route: string, f: Facts): string[] {
-  const out: string[] = [];
-  const bad = (msg: string) => out.push(route + ' ' + msg);
-  if (f.navLabels.join('|') !== NAV_LABELS.join('|')) bad('nav labels ' + f.navLabels.join('|'));
-  if (f.starterInMain !== 0) bad('starter copy inside main: ' + f.starterInMain);
-  const wantNav = route.startsWith('/posts/') ? 'Posts' : SECTION_NAV[route];
-  if (wantNav) {
-    if (f.activeLabels.join('|') !== wantNav) bad('active nav ' + (f.activeLabels.join('|') || 'none') + ', want ' + wantNav);
-    if (f.activeBg !== FRAME_BG) bad('active nav background ' + f.activeBg + ', want ' + FRAME_BG);
-  } else if (f.activeLabels.length !== 0) {
-    bad('active nav on a page with no section');
-  }
-  const wantNote = route === '/resume/' || route === '/404.html' ? 0 : 1;
-  if (f.footerNotes !== wantNote) bad('footer starter note ' + f.footerNotes + ', want ' + wantNote);
-  const lists = f.lessonLists;
-  if (route === '/') {
-    if (f.headings.join('|') !== 'Portfolio|Resume|Posts') bad('home sections ' + f.headings.join('|'));
-    if (!lists.some((l) => l.length >= 3 && sequential(l))) bad('home has no numbered lesson list with 3+ ordinals');
-  }
-  if (route === '/posts/' || route === '/posts/effect-one-function/') {
-    if (lists.length !== 1 || lists[0].length !== 6 || !sequential(lists[0])) bad('lesson list ' + JSON.stringify(lists) + ', want one list 01..06');
-    if (f.lessonLinks !== 6) bad('lesson links ' + f.lessonLinks + ', want 6');
-  }
-  if (route.startsWith('/posts/') && route !== '/posts/' && f.lessonNavLinks < 1) bad('lesson navigation missing');
-  if (route === '/projects/') {
-    if (f.h1 !== 'Portfolio') bad('projects h1 is ' + f.h1 + ', want Portfolio');
-    if (f.buttonBgs.filter((b) => b === PRIMARY_BG).length < 3) bad('visit buttons not on theme primary: ' + JSON.stringify(f.buttonBgs));
-  }
-  if (route === '/resume/') {
-    if (f.entryDisplays.length !== 5 || f.entryDisplays.some((d) => d !== 'grid')) bad('resume entries not grid: ' + JSON.stringify(f.entryDisplays));
-    if (f.entryDates.length !== 5 || !f.entryDates.every((d) => DATE_RE.test(d))) bad('resume dates: ' + JSON.stringify(f.entryDates));
-    if (f.headline.includes('Mistplay')) bad('headline repeats Mistplay: ' + f.headline);
-    if (!f.hrefs.includes('https://github.com/gjuoun')) bad('contact line lacks GitHub');
-    if (!f.hrefs.includes('https://jun.qqntt.com/')) bad('contact line lacks site URL');
-    if (f.starterTags < 2) bad('starter bullets not marked: ' + f.starterTags);
-    if (f.placeholders < 2) bad('missing facts not marked as placeholders: ' + f.placeholders);
-  }
-  return out;
+	const out: string[] = [];
+	const bad = (msg: string) => out.push(`${route} ${msg}`);
+	if (f.navLabels.join("|") !== NAV_LABELS.join("|"))
+		bad(`nav labels ${f.navLabels.join("|")}`);
+	if (f.starterInMain !== 0)
+		bad(`starter copy inside main: ${f.starterInMain}`);
+	const wantNav = route.startsWith("/posts/") ? "Posts" : SECTION_NAV[route];
+	if (wantNav) {
+		if (f.activeLabels.join("|") !== wantNav)
+			bad(`active nav ${f.activeLabels.join("|") || "none"}, want ${wantNav}`);
+		if (f.activeBg !== FRAME_BG)
+			bad(`active nav background ${f.activeBg}, want ${FRAME_BG}`);
+	} else if (f.activeLabels.length !== 0) {
+		bad("active nav on a page with no section");
+	}
+	const wantNote = route === "/resume/" || route === "/404.html" ? 0 : 1;
+	if (f.footerNotes !== wantNote)
+		bad(`footer starter note ${f.footerNotes}, want ${wantNote}`);
+	const lists = f.lessonLists;
+	if (route === "/") {
+		if (f.headings.join("|") !== "Portfolio|Resume|Posts")
+			bad(`home sections ${f.headings.join("|")}`);
+		if (!lists.some((l) => l.length >= 3 && sequential(l)))
+			bad("home has no numbered lesson list with 3+ ordinals");
+	}
+	if (route === "/posts/" || route === "/posts/effect-one-function/") {
+		if (lists.length !== 1 || lists[0].length !== 6 || !sequential(lists[0]))
+			bad(`lesson list ${JSON.stringify(lists)}, want one list 01..06`);
+		if (f.lessonLinks !== 6) bad(`lesson links ${f.lessonLinks}, want 6`);
+	}
+	if (
+		route.startsWith("/posts/") &&
+		route !== "/posts/" &&
+		f.lessonNavLinks < 1
+	)
+		bad("lesson navigation missing");
+	if (route === "/projects/") {
+		if (f.h1 !== "Portfolio") bad(`projects h1 is ${f.h1}, want Portfolio`);
+		if (f.buttonBgs.filter((b) => b === PRIMARY_BG).length < 3)
+			bad(`visit buttons not on theme primary: ${JSON.stringify(f.buttonBgs)}`);
+	}
+	if (route === "/resume/") {
+		if (
+			f.entryDisplays.length !== 5 ||
+			f.entryDisplays.some((d) => d !== "grid")
+		)
+			bad(`resume entries not grid: ${JSON.stringify(f.entryDisplays)}`);
+		if (
+			f.entryDates.length !== 5 ||
+			!f.entryDates.every((d) => DATE_RE.test(d))
+		)
+			bad(`resume dates: ${JSON.stringify(f.entryDates)}`);
+		if (f.headline.includes("Mistplay"))
+			bad(`headline repeats Mistplay: ${f.headline}`);
+		if (!f.hrefs.includes("https://github.com/gjuoun"))
+			bad("contact line lacks GitHub");
+		if (!f.hrefs.includes("https://jun.qqntt.com/"))
+			bad("contact line lacks site URL");
+		if (f.starterTags < 2) bad(`starter bullets not marked: ${f.starterTags}`);
+		if (f.placeholders < 2)
+			bad(`missing facts not marked as placeholders: ${f.placeholders}`);
+	}
+	return out;
 }
 
 const failures: string[] = [];
@@ -161,6 +206,7 @@ let browser: Browser | undefined;
 let consoleErrors = 0;
 let routeCount = 0;
 let toggleTrail = "";
+const lessonCounts: string[] = [];
 
 try {
 	await waitForServer(base);
@@ -216,7 +262,12 @@ try {
 			`${route} light body colour ${shape.body}`,
 		);
 
-		failures.push(...contractFailures(route, await page.evaluate(readFacts)));
+		const facts = await page.evaluate(readFacts);
+		failures.push(...contractFailures(route, facts));
+		if (route === "/" || route === "/posts/")
+			lessonCounts.push(
+				`${route}=${facts.lessonLists.map((l) => l.length).join("+")}`,
+			);
 		if (route === "/") {
 			await page.click("#theme-toggle");
 			const dark = await page.evaluate(
@@ -266,5 +317,5 @@ if (failures.length > 0) {
 	process.exit(1);
 }
 console.log(
-	`smoke ok routes=${routeCount} toggle=${toggleTrail} console_errors=${consoleErrors}`,
+	`smoke ok routes=${routeCount} toggle=${toggleTrail} console_errors=${consoleErrors} lessons ${lessonCounts.join(" ")}`,
 );
