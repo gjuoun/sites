@@ -160,6 +160,7 @@ function ModeSwitch() {
 
 export function Catalog() {
 	const [clicks, setClicks] = React.useState(0);
+	const [glowClicks, setGlowClicks] = React.useState(0);
 	const [progress, setProgress] = React.useState(30);
 	const [date, setDate] = React.useState<Date | undefined>(new Date(2026, 9, 24));
 	const [dir, setDir] = React.useState<"ltr" | "rtl">("ltr");
@@ -179,6 +180,7 @@ export function Catalog() {
 				<Section id="button" title="Button" source="components/ui/button">
 					<Demo name="button">
 						<Button data-trigger="click" onClick={() => setClicks((n) => n + 1)}>Clicked {clicks}×</Button>
+						<Button variant="glow" data-glow-example="" data-trigger="click" onClick={() => setGlowClicks((n) => n + 1)}>Glowed {glowClicks}×</Button>
 						<Button variant="secondary">Secondary</Button>
 						<Button variant="outline">Outline</Button>
 						<Button variant="ghost">Ghost</Button>
