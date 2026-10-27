@@ -98,7 +98,8 @@ export function place(k: number): number[] | null {
   const t = document.querySelector("[data-cmt='" + k + "']") as HTMLElement | null; if (!t) return null;
   t.scrollIntoView({ block: "center", inline: "nearest" });
   const r = t.getBoundingClientRect();
-  return [Math.round(r.left + r.width / 2), Math.round(r.top + r.height / 2), Math.round(r.width), Math.round(r.height)];
+  // Floor, not round: a 1px separator's centre must land inside its own 1px box.
+  return [Math.floor(r.left + r.width / 2), Math.floor(r.top + r.height / 2), Math.round(r.width), Math.round(r.height)];
 }
 
 /** Runs in the page: a separator's direction. A horizontal separator (between stacked panels) is dragged along y. */
@@ -166,8 +167,9 @@ if (import.meta.main) {
         for (const it of idx.items) {
           if (it.disabled) { matrix.push({ mode, section: id, frame: it.label, trigger: it.trigger, change: "disabled by design", verdict: "DISABLED" }); continue; }
           // A selected member of a group cannot change by being clicked: move off it first, via an unselected sibling.
-          const sibling = it.selected ? idx.items.find((s) => s.k !== it.k && it.group >= 0 && s.group === it.group && !s.selected && !s.disabled) : undefined;
-          if (it.selected && !sibling) { matrix.push({ mode, section: id, frame: it.label, trigger: it.trigger + " [" + it.kind + "]", change: "already selected; no unselected sibling to move from", verdict: "NOT-APPLICABLE" }); continue; }
+          const groupKind = it.kind === "tabs-trigger" || it.kind === "radio-group-item";
+          const sibling = it.selected && groupKind ? idx.items.find((s) => s.k !== it.k && it.group >= 0 && s.group === it.group && !s.selected && !s.disabled) : undefined;
+          if (it.selected && groupKind && !sibling) { matrix.push({ mode, section: id, frame: it.label, trigger: it.trigger + " [" + it.kind + "]", change: "already selected; no unselected sibling to move from", verdict: "NOT-APPLICABLE" }); continue; }
           if (sibling) { const sp = await page.evaluate<number[] | null>("(" + place.toString() + ")(" + sibling.k + ")"); if (sp) { await press(page, sp[0]!, sp[1]!, "left"); await new Promise((r) => setTimeout(r, 400)); } }
           const at = await page.evaluate<number[] | null>("(" + place.toString() + ")(" + it.k + ")");
           if (!at) { matrix.push({ mode, section: id, frame: it.label, trigger: it.trigger, change: "trigger not found", verdict: "FAIL" }); continue; }
