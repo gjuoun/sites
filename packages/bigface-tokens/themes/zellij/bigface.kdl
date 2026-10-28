@@ -114,9 +114,8 @@ themes {
             player_5 "#00c853"
             player_6 "#66d9ef"
             player_7 "#fc5d23"
-            player_8 "#e5e500"
+            player_8 "#ffeb3b"
             player_9 "#40c4ff"
-            player_10 "#ffeb3b"
         }
     }
 }

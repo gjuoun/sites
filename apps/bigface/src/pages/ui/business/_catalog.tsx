@@ -84,7 +84,7 @@ function Section({ id, title, source, children }: { id: string; title: string; s
 		<section id={id} className="flex scroll-mt-6 flex-col gap-5 rounded-xl border bg-card p-5 text-card-foreground">
 			<header className="flex flex-col gap-1">
 				<h3 className="text-lg font-semibold text-foreground">{title}</h3>
-				<code className="font-mono text-xs text-muted-foreground">{source}</code>
+				<code className="font-mono text-xs text-muted-foreground"><Path text={source} /></code>
 			</header>
 			<Group label="Variants">{VARIANTS[id] ?? <Note>No variant axis is declared in the source; the examples show its one form.</Note>}</Group>
 			<Group label="States">{STATES[id] ?? <Note>No stateful props. Hover and focus are live in the examples.</Note>}</Group>
@@ -95,6 +95,11 @@ function Section({ id, title, source, children }: { id: string; title: string; s
 			</details>
 		</section>
 	);
+}
+
+/** A source path may break only after its slashes (a legal break), never inside a segment. */
+function Path({ text }: { text: string }) {
+	return <>{text.split("/").map((seg, i, all) => <React.Fragment key={i}>{seg}{i < all.length - 1 ? <>/<wbr /></> : null}</React.Fragment>)}</>;
 }
 
 function Group({ label, children }: { label: string; children: React.ReactNode }) {
@@ -124,7 +129,7 @@ function Category({ id, title, count, children }: { id: string; title: string; c
 
 function Demo({ name, className, children }: { name: string; className?: string; children: React.ReactNode }) {
 	return (
-		<div data-demo={name} className={cn("flex min-h-24 flex-wrap items-center gap-3 rounded-md border p-4", className)}>
+		<div data-demo={name} className={cn("flex min-h-24 flex-wrap items-center gap-3 py-2", className)}>
 			{children}
 		</div>
 	);
@@ -155,6 +160,7 @@ function ModeSwitch() {
 
 export function Catalog() {
 	const [clicks, setClicks] = React.useState(0);
+	const [glowClicks, setGlowClicks] = React.useState(0);
 	const [progress, setProgress] = React.useState(30);
 	const [date, setDate] = React.useState<Date | undefined>(new Date(2026, 9, 24));
 	const [dir, setDir] = React.useState<"ltr" | "rtl">("ltr");
@@ -174,6 +180,7 @@ export function Catalog() {
 				<Section id="button" title="Button" source="components/ui/button">
 					<Demo name="button">
 						<Button data-trigger="click" onClick={() => setClicks((n) => n + 1)}>Clicked {clicks}×</Button>
+						<Button variant="glow" data-glow-example="" data-trigger="click" onClick={() => setGlowClicks((n) => n + 1)}>Glowed {glowClicks}×</Button>
 						<Button variant="secondary">Secondary</Button>
 						<Button variant="outline">Outline</Button>
 						<Button variant="ghost">Ghost</Button>
@@ -854,27 +861,32 @@ export function Catalog() {
 
 				<Category id="cat-chat" title="Chat and content" count={7}>
 				<Section id="attachment" title="Attachment" source="components/ui/attachment">
-					<Demo name="attachment" className="block">
-						<AttachmentGroup className="max-w-md">
-							<Attachment className="relative">
-								<AttachmentMedia>PDF</AttachmentMedia>
-								<AttachmentContent>
-									<AttachmentTitle>quarterly-report.pdf</AttachmentTitle>
-									<AttachmentDescription>2.4 MB</AttachmentDescription>
-								</AttachmentContent>
-								<AttachmentActions>
-									<AttachmentAction>Remove</AttachmentAction>
-								</AttachmentActions>
-								<AttachmentTrigger data-trigger="click" aria-label="Preview quarterly-report.pdf" onClick={() => setPreview(preview ? null : "quarterly-report.pdf")} />
-							</Attachment>
-						</AttachmentGroup>
-						<p className="text-sm text-muted-foreground">Preview: {preview ?? "closed"}</p>
+					<Demo name="attachment" className="block border-0 p-0">
+						<div className="flex max-w-md flex-col gap-3">
+							<AttachmentGroup>
+								<Attachment className="relative">
+									<AttachmentMedia>PDF</AttachmentMedia>
+									<AttachmentContent>
+										<AttachmentTitle>quarterly-report.pdf</AttachmentTitle>
+										<AttachmentDescription>2.4 MB</AttachmentDescription>
+									</AttachmentContent>
+									<AttachmentActions>
+										<AttachmentAction size="xs">Remove</AttachmentAction>
+									</AttachmentActions>
+									<AttachmentTrigger data-trigger="click" aria-label="Preview quarterly-report.pdf" onClick={() => setPreview(preview ? null : "quarterly-report.pdf")} />
+								</Attachment>
+							</AttachmentGroup>
+							<div className="flex items-center justify-between gap-3 border-t pt-3 font-mono text-xs text-muted-foreground">
+								<span>preview</span>
+								<span>{preview ?? "closed"}</span>
+							</div>
+						</div>
 					</Demo>
 				</Section>
 
 				<Section id="bubble" title="Bubble" source="components/ui/bubble">
-					<Demo name="bubble" className="block">
-						<BubbleGroup className="max-w-md">
+					<Demo name="bubble" className="block pb-8">
+						<BubbleGroup className="w-full">
 							<Bubble align="start"><BubbleContent>Shall we ship the business package?</BubbleContent></Bubble>
 							<Bubble align="end"><BubbleContent>Yes, once the gates are green.</BubbleContent><BubbleReactions>+1</BubbleReactions></Bubble>
 						</BubbleGroup>
@@ -899,13 +911,13 @@ export function Catalog() {
 				</Section>
 
 				<Section id="message" title="Message" source="components/ui/message">
-					<Demo name="message" className="block">
+					<Demo name="message" className="block border-0 p-0 max-w-md">
 						<MessageGroup className="max-w-md">
 							<Message>
 								<MessageAvatar>JG</MessageAvatar>
 								<MessageContent>
 									<MessageHeader>Jun</MessageHeader>
-									Ship the business package when the gates are green.
+									<Bubble variant="muted" align="start"><BubbleContent>Ship the business package when the gates are green.</BubbleContent></Bubble>
 									<MessageFooter>10:02</MessageFooter>
 								</MessageContent>
 							</Message>
@@ -914,7 +926,7 @@ export function Catalog() {
 				</Section>
 
 				<Section id="message-scroller" title="Message scroller" source="components/ui/message-scroller">
-					<Demo name="message-scroller">
+					<Demo name="message-scroller" className="block border-0 p-0 pb-4">
 						<MessageScrollerProvider>
 							<MessageScroller className="h-48 w-full max-w-md rounded-md border">
 								<MessageScrollerViewport data-trigger="wheel" className="h-full">
@@ -924,7 +936,7 @@ export function Catalog() {
 										))}
 									</MessageScrollerContent>
 								</MessageScrollerViewport>
-								<MessageScrollerButton>Jump to latest</MessageScrollerButton>
+								<MessageScrollerButton size="sm">Jump to latest</MessageScrollerButton>
 							</MessageScroller>
 						</MessageScrollerProvider>
 					</Demo>

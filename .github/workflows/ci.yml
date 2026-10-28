@@ -12,7 +12,11 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
+      # subsdaddy's Z.ai seed test reads a historical commit (`git show <sha>:<path>`), so the clone
+      # needs history, not a single commit. A shallow checkout fails that test on every branch.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest

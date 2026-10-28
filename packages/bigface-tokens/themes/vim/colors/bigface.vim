@@ -6,7 +6,7 @@ set background=dark
 if has('termguicolors') | set termguicolors | endif
 let g:colors_name = "bigface"
 
-let g:terminal_ansi_colors = ['#3c403c', '#fc5d23', '#00c853', '#e5e500', '#00b0ff', '#ae81ff', '#66d9ef', '#e8e9e1', '#8c8f89', '#fc5d23', '#c6ff00', '#ffeb3b', '#40c4ff', '#ae81ff', '#b3e5fc', '#e8e9e1']
+let g:terminal_ansi_colors = ['#3c403c', '#fc5d23', '#00c853', '#ffeb3b', '#00b0ff', '#ae81ff', '#66d9ef', '#e8e9e1', '#8c8f89', '#fc5d23', '#c6ff00', '#ffeb3b', '#40c4ff', '#ae81ff', '#b3e5fc', '#e8e9e1']
 
 hi Normal guifg=#e8e9e1 guibg=#252925 gui=NONE cterm=NONE
 hi NonText guifg=#3c403c guibg=NONE gui=NONE cterm=NONE
@@ -38,8 +38,8 @@ hi Title guifg=#c6ff00 guibg=NONE gui=bold cterm=bold
 
 hi Comment guifg=#8c8f89 guibg=NONE gui=italic cterm=italic
 hi Constant guifg=#ae81ff guibg=NONE gui=NONE cterm=NONE
-hi String guifg=#e5e500 guibg=NONE gui=NONE cterm=NONE
-hi Character guifg=#e5e500 guibg=NONE gui=NONE cterm=NONE
+hi String guifg=#ffeb3b guibg=NONE gui=NONE cterm=NONE
+hi Character guifg=#ffeb3b guibg=NONE gui=NONE cterm=NONE
 hi Number guifg=#fc5d23 guibg=NONE gui=NONE cterm=NONE
 hi Boolean guifg=#ae81ff guibg=NONE gui=NONE cterm=NONE
 hi Float guifg=#fc5d23 guibg=NONE gui=NONE cterm=NONE
