@@ -1,0 +1,12 @@
+---
+interface Props {
+	starter?: boolean;
+}
+const { starter = false } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<footer>
+	<p>© {year} Jun Guo · <a href="/rss.xml">RSS</a></p>
+	{starter && <p class="starter-note">Starter copy: written to be reviewed and replaced.</p>}
+</footer>

@@ -9,6 +9,7 @@ apps/
                 #                        unlisted /ui/ component workspace
   bundant/      # bundant.qqntt.com   — the bundant docs site (Astro + Starlight)
   qublack/      # qublack.qqntt.com   — the QuBlack font specimen (Astro)
+  gjuoun/       # jun-blog (Pages project)  — Jun's blog: posts, projects, resume (Astro)
   jun-hermes/   # jun-hermes.qqntt.com — the OAuth verification site (static)
   blackboard/   # the review app (Next, local-only) + its landing page
 packages/
@@ -40,3 +41,4 @@ kb proves the copies are current, and CI runs the same comparison against the pi
 
 Cloudflare Pages is the only deploy surface. One workflow per site under `.github/workflows/`,
 each building with `turbo run build --filter=@sites/<site>...` and deploying with wrangler.
+`gjuoun` deploys to the `jun-blog` Pages project, on a preview branch until the production cutover is approved.

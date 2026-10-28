@@ -1,0 +1,10 @@
+---
+import ResumeFacts from "../../components/ResumeFacts.astro";
+import { resume } from "../../data/resume";
+import Base from "../../layouts/Base.astro";
+---
+
+<Base title="Resume" description="Resume of Jun Guo, Senior Software Engineer, Montreal." starter={false}>
+	<h1>{resume.name}</h1>
+	<ResumeFacts level={2} />
+</Base>

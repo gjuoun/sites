@@ -1,0 +1,62 @@
+---
+import "../styles/tailwind.css";
+import "../styles/site.css";
+import {
+	DEFAULT_MODE,
+	themeInitScript,
+} from "@gjuoun/bigface-business-ui/lib/themes";
+import SiteFooter from "../components/SiteFooter.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import { buildMeta, type PageType, siteOrigin } from "../lib/seo";
+
+interface Props {
+	title?: string;
+	description: string;
+	type?: PageType;
+	starter?: boolean;
+	indexable?: boolean;
+}
+const {
+	title,
+	description,
+	type = "website",
+	starter = false,
+	indexable = true,
+} = Astro.props;
+const site = siteOrigin(Astro.site);
+const meta = buildMeta({
+	site,
+	path: Astro.url.pathname,
+	title,
+	description,
+	type,
+});
+---
+
+<!doctype html>
+<html lang="en" data-theme="business" data-mode={DEFAULT_MODE}>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="description" content={meta.description} />
+		<title>{meta.title}</title>
+		{indexable ? <link rel="canonical" href={meta.canonical} /> : <meta name="robots" content="noindex" />}
+		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+		<meta property="og:type" content={meta.og.type} />
+		<meta property="og:title" content={meta.og.title} />
+		<meta property="og:description" content={meta.og.description} />
+		<meta property="og:url" content={meta.og.url} />
+		<meta property="og:site_name" content={meta.og.site_name} />
+		<link rel="preload" href="/fonts/QuBlackSans-Latin-VF.woff2" as="font" type="font/woff2" crossorigin />
+		<!-- Before first paint: a stored mode (set by the toggle) is applied, so a reload keeps the reader's choice. -->
+		<script is:inline set:html={themeInitScript}></script>
+	</head>
+	<body>
+		<a class="skip-link" href="#main">Skip to content</a>
+		<SiteHeader />
+		<main id="main">
+			<slot />
+		</main>
+		<SiteFooter starter={starter} />
+	</body>
+</html>

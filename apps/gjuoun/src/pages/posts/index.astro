@@ -1,0 +1,45 @@
+---
+import { getCollection } from "astro:content";
+import PostList from "../../components/PostList.astro";
+import Base from "../../layouts/Base.astro";
+import { livePosts } from "../../lib/collections";
+
+const series = (await getCollection("series"))
+	.map((e) => e.data)
+	.sort((a, b) => a.order - b.order);
+const posts = await livePosts();
+const lessonsOf = (slug: string) =>
+	posts
+		.filter((p) => p.data.series === slug)
+		.sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
+const standalone = posts
+	.filter((p) => p.data.series === undefined)
+	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const toItem = (p: (typeof posts)[number]) => ({
+	href: `/posts/${p.data.slug}/`,
+	title: p.data.title,
+	summary: p.data.summary,
+	order: p.data.order,
+});
+---
+
+<Base title="Posts" description="Numbered series and standalone posts by Jun Guo." starter={posts.some((p) => p.data.starter)}>
+	<h1>Posts</h1>
+	{
+		series.map((s) => (
+			<section aria-labelledby={"series-" + s.slug}>
+				<h2 id={"series-" + s.slug}><a href={"/posts/" + s.slug + "/"}>{s.title}</a></h2>
+				<p>{s.summary}</p>
+				<PostList numbered items={lessonsOf(s.slug).map(toItem)} />
+			</section>
+		))
+	}
+	{
+		standalone.length > 0 && (
+			<section aria-labelledby="standalone-heading">
+				<h2 id="standalone-heading">Standalone posts</h2>
+				<PostList items={standalone.map(toItem)} />
+			</section>
+		)
+	}
+</Base>

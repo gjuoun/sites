@@ -13,7 +13,7 @@ on:
   workflow_dispatch:
     inputs:
       app:
-        description: "Deploy one app by name (bigface, bundant, qublack, jun-hermes, blackboard-site, subsdaddy). Empty = affected set."
+        description: "Deploy one app by name (bigface, bundant, qublack, jun-hermes, blackboard-site, subsdaddy, gjuoun). Empty = affected set."
         required: false
         default: ""
 
@@ -55,7 +55,7 @@ jobs:
           echo "diff base: $BASE"
           # app -> workspace package name, the bridge between turbo's graph and this file.
           # blackboard-site has no package.json (static folder), so it is handled by a path diff below.
-          MAP="bigface=@sites/bigface bundant=@sites/bundant qublack=@sites/qublack jun-hermes=@sites/jun-hermes subsdaddy=@sites/subsdaddy"
+          MAP="bigface=@sites/bigface bundant=@sites/bundant qublack=@sites/qublack jun-hermes=@sites/jun-hermes subsdaddy=@sites/subsdaddy gjuoun=@sites/gjuoun"
           if [ -n "${FORCED:-}" ]; then
             CHANGED=$(python3 -c 'import json,sys; print(json.dumps([sys.argv[1]]))' "$FORCED")
             echo "forced by dispatch: $FORCED"
@@ -133,6 +133,28 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy apps/subsdaddy/dist/client --project-name subsdaddy --branch main
+
+  # Pages project jun-blog. Preview branch first (Question 3 = A): every deploy lands as a preview
+  # deployment, so production stays untouched until Jun approves; then change --branch to main.
+  gjuoun:
+    needs: prep
+    if: contains(needs.prep.outputs.apps, '"gjuoun"')
+    runs-on: ubuntu-latest
+    concurrency: { group: deploy-gjuoun, cancel-in-progress: true }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: latest }
+      - uses: actions/setup-node@v4
+        with: { node-version: 24 }
+      - run: bun install --frozen-lockfile
+      - run: bunx turbo run build --filter=@sites/gjuoun...
+      - run: ./scripts/check-asset-prefixes.sh apps/gjuoun/dist
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy apps/gjuoun/dist --project-name jun-blog --branch preview
 
   qublack:
     needs: prep

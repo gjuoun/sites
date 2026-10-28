@@ -1,0 +1,66 @@
+---
+import { resume } from "../data/resume";
+
+// The full facts live on /resume/. The home page shows only the teaser: headline, contact and summary,
+// with the link to the full page. level is the heading that titles each section: 2 on the full page,
+// 3 under the home page's Resume heading. Roles sit one level below.
+interface Props {
+	level: 2 | 3;
+	view?: "full" | "teaser";
+}
+const { level, view = "full" } = Astro.props;
+const Section = level === 2 ? "h2" : "h3";
+const Role = level === 2 ? "h3" : "h4";
+const c = resume.contact;
+---
+
+<p class="headline">{resume.headline}</p>
+<p class="contact">
+	<a href={"mailto:" + c.email}>{c.email}</a> ·
+	<a href={c.github}>github.com/gjuoun</a> ·
+	<a href={c.linkedin}>linkedin.com/in/gjuoun</a> ·
+	{c.location}
+</p>
+<p>{resume.summary}</p>
+
+{
+	view === "full" && (
+		<>
+			<Section>Experience</Section>
+<ol class="entries">
+	{
+		resume.roles.map((role) => (
+			<li class="entry">
+				<div class="entry-main">
+					<Role>{role.title}, {role.organization}</Role>
+					<p class="kicker">{role.location}</p>
+					<ul class="bullets">
+						{role.bullets.map((b) => <li>{b}</li>)}
+					</ul>
+				</div>
+				<time class="entry-date">{role.start} – {role.end}</time>
+			</li>
+		))
+	}
+</ol>
+
+<Section>Education</Section>
+<ol class="entries">
+	{
+		resume.education.map((e) => (
+			<li class="entry">
+				<div class="entry-main">
+					<Role>{e.school}</Role>
+					<p>{e.degree}</p>
+				</div>
+				<time class="entry-date">{e.start} – {e.end}</time>
+			</li>
+		))
+	}
+</ol>
+
+<Section>Skills</Section>
+<p>{resume.skills.join(" · ")}</p>
+		</>
+	)
+}

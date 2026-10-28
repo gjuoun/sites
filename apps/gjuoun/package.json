@@ -1,0 +1,40 @@
+{
+  "name": "@sites/gjuoun",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview --port 4321",
+    "typecheck": "astro check",
+    "lint": "biome check src scripts",
+    "test": "bun test src scripts",
+    "smoke": "bun run scripts/smoke.ts",
+    "check:links": "bun run scripts/check-links.ts",
+    "check:budget": "bun run scripts/check-budget.ts",
+    "check:origin": "bun run scripts/check-origin.ts",
+    "check:snippets": "bun run scripts/check-snippets.ts"
+  },
+  "dependencies": {
+    "@astrojs/rss": "4.0.19",
+    "@gjuoun/bigface-business-ui": "workspace:*",
+    "@tailwindcss/vite": "4.3.3",
+    "astro": "7.4.2",
+    "class-variance-authority": "0.7.1",
+    "cn": "0.5.0",
+    "radix-ui": "1.8.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "tailwindcss": "4.3.3"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.12",
+    "@biomejs/biome": "2.6.2",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "effect": "4.0.4",
+    "puppeteer-core": "25.15.0",
+    "typescript": "5.9.3"
+  }
+}

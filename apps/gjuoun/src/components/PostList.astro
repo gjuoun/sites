@@ -1,0 +1,30 @@
+---
+interface Item {
+	href: string;
+	title: string;
+	summary: string;
+	order?: number;
+	kicker?: string;
+}
+interface Props {
+	items: Item[];
+	numbered?: boolean;
+}
+const { items, numbered = false } = Astro.props;
+const pad = (n: number) => String(n).padStart(2, "0");
+---
+
+<ol class={numbered ? "lesson-list" : "post-list"}>
+	{
+		items.map((item) => (
+			<li>
+				{numbered && item.order !== undefined && <span class="ordinal">{pad(item.order)}</span>}
+				<div>
+					{item.kicker && <p class="kicker">{item.kicker}</p>}
+					<a href={item.href}>{item.title}</a>
+					<p class="summary">{item.summary}</p>
+				</div>
+			</li>
+		))
+	}
+</ol>
