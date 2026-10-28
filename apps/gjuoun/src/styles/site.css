@@ -14,8 +14,8 @@
 
 body {
 	margin: 0;
-	background: var(--theme-canvas);
-	color: var(--theme-ink);
+	background: var(--color-canvas);
+	color: var(--color-ink);
 	font-family: "QuBlack Sans", system-ui, sans-serif;
 	line-height: 1.6;
 }
@@ -43,26 +43,26 @@ footer p {
 h1,
 h2,
 h3 {
-	color: var(--theme-heading);
+	color: var(--color-heading);
 }
 a {
-	color: var(--theme-ink);
+	color: var(--color-ink);
 	text-decoration: underline;
-	text-decoration-color: var(--theme-primary);
+	text-decoration-color: var(--color-primary);
 	text-decoration-thickness: 2px;
 	text-underline-offset: 0.2em;
 }
 a:focus-visible,
 button:focus-visible {
-	outline: 2px solid var(--theme-ink);
+	outline: 2px solid var(--color-ink);
 	outline-offset: 3px;
 }
 .skip-link {
 	position: absolute;
 	left: 1rem;
 	top: -3rem;
-	background: var(--theme-canvas);
-	color: var(--theme-ink);
+	background: var(--color-canvas);
+	color: var(--color-ink);
 	padding: 0.5rem 0.75rem;
 }
 .skip-link:focus {
@@ -73,8 +73,8 @@ pre {
 	font-family: "QuBlack Mono", ui-monospace, monospace;
 }
 pre {
-	background: var(--theme-surface);
-	border: 1px solid var(--theme-border);
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
 	padding: 0.75rem;
 	overflow-x: auto;
 }
@@ -100,14 +100,14 @@ pre {
 /* Inline code stays in the page's own palette so it does not read as a code block. */
 :not(pre) > code {
 	font-size: 0.9em;
-	background: var(--theme-frame);
-	border: 1px solid var(--theme-border);
+	background: var(--color-frame);
+	border: 1px solid var(--color-border);
 	border-radius: 4px;
 	padding: 0.05em 0.3em;
 }
 /* Starter copy is a discreet footer note, never part of the content flow. */
 .starter-note {
-	color: var(--theme-muted-ink);
+	color: var(--color-muted-ink);
 	font-size: 0.85rem;
 	margin: 0.25rem 0 0;
 }
@@ -133,23 +133,23 @@ pre {
 }
 .site-header nav a:hover {
 	text-decoration: underline;
-	text-decoration-color: var(--theme-primary);
+	text-decoration-color: var(--color-primary);
 	text-decoration-thickness: 2px;
 }
 .site-header nav a[aria-current] {
-	background: var(--theme-frame);
-	box-shadow: inset 0 -3px 0 var(--theme-ink);
+	background: var(--color-frame);
+	box-shadow: inset 0 -3px 0 var(--color-ink);
 }
 .theme-toggle {
 	font: inherit;
-	color: var(--theme-ink);
-	background: var(--theme-surface);
-	border: 1px solid var(--theme-border);
+	color: var(--color-ink);
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
 	padding: 0.25rem 0.6rem;
 	cursor: pointer;
 }
 .theme-toggle[aria-pressed="true"] {
-	background: var(--theme-frame);
+	background: var(--color-frame);
 }
 .theme-toggle {
 	display: inline-flex;
@@ -228,7 +228,7 @@ pre {
 .lesson-list li,
 .post-list li {
 	padding: 0.75rem 0;
-	border-top: 1px solid var(--theme-border);
+	border-top: 1px solid var(--color-border);
 }
 /* One grid per row: a fixed ordinal track, then the label, title and summary share one text track. */
 .lesson-list li {
@@ -239,7 +239,7 @@ pre {
 .ordinal {
 	font-family: "QuBlack Mono", ui-monospace, monospace;
 	font-variant-numeric: tabular-nums;
-	color: var(--theme-heading);
+	color: var(--color-heading);
 }
 .lesson-list .summary,
 .post-list .summary {
@@ -247,7 +247,7 @@ pre {
 }
 .kicker {
 	margin: 0;
-	color: var(--theme-muted-ink);
+	color: var(--color-muted-ink);
 	font-size: 0.85rem;
 }
 /* Meta lines (home resume summary, resume contact) sit 1.5rem below the block above, 1rem above the next. */
@@ -301,24 +301,24 @@ pre {
 	grid-template-columns: 1fr;
 	gap: 0.15rem;
 	padding-left: 0.9rem;
-	border-left: 2px solid var(--theme-border);
+	border-left: 2px solid var(--color-border);
 }
 .intro-index a {
 	font-weight: 600;
 }
 .intro-index span {
-	color: var(--theme-fg-dim);
+	color: var(--color-muted-ink);
 }
 .home-section + .home-section {
 	margin-top: 2.5rem;
 	padding-top: 1.5rem;
-	border-top: 2px solid var(--theme-border);
+	border-top: 2px solid var(--color-border);
 }
 
 /* Resume: dates sit in their own right-aligned column; one row per entry. */
 .headline {
 	margin: 0;
-	color: var(--theme-heading);
+	color: var(--color-heading);
 	font-size: 1.1rem;
 }
 .contact {
@@ -334,7 +334,7 @@ pre {
 	grid-template-columns: minmax(0, 1fr) auto;
 	column-gap: 1.5rem;
 	padding: 0.75rem 0;
-	border-top: 1px solid var(--theme-border);
+	border-top: 1px solid var(--color-border);
 }
 .entry h3,
 .entry h4 {
@@ -348,7 +348,7 @@ pre {
 	text-align: right;
 	white-space: nowrap;
 	font-variant-numeric: tabular-nums;
-	color: var(--theme-muted-ink);
+	color: var(--color-muted-ink);
 }
 /* Narrow screens: the date sits above its entry, so the title keeps the full width. */
 @media (max-width: 30rem) {
@@ -371,26 +371,26 @@ pre {
 	justify-content: center;
 	min-height: 2.25rem;
 	padding: 0.4rem 0.9rem;
-	border: 1px solid var(--theme-primary);
+	border: 1px solid var(--color-primary);
 	border-radius: var(--radius, 0.5rem);
-	background: var(--theme-primary);
-	color: var(--theme-on-primary);
+	background: var(--color-primary);
+	color: var(--color-primary-foreground);
 	font-weight: 600;
 	line-height: 1.2;
 	text-decoration: none;
 }
 .button:hover {
-	background: var(--theme-primary-edge);
-	border-color: var(--theme-primary-edge);
+	background: var(--color-primary-ink);
+	border-color: var(--color-primary-ink);
 }
 .button-outline {
-	background: var(--theme-surface);
-	border-color: var(--theme-frame-border);
-	color: var(--theme-ink);
+	background: var(--color-surface);
+	border-color: var(--color-border);
+	color: var(--color-ink);
 }
 .button-outline:hover {
-	background: var(--theme-frame);
-	border-color: var(--theme-ink);
+	background: var(--color-frame);
+	border-color: var(--color-ink);
 }
 /* Stock theme buttons keep their own variant colour (the layered utility) and no underline; the link rules above skip them. */
 a[data-slot="button"] {
@@ -403,7 +403,7 @@ main a:not(.button, [data-slot="button"]) {
 	text-decoration-thickness: 3px;
 }
 main a:not(.button, [data-slot="button"]):hover {
-	background: var(--theme-primary-tint);
+	background: var(--color-accent);
 }
 
 @media print {
