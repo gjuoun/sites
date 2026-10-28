@@ -79,17 +79,24 @@ export function enclosingEndpoint(s: string, statsStart: number, statsEnd: numbe
   return null;
 }
 
-/** Every stats block with its own endpoint's provider name and quantization. */
+/**
+ * Every stats block with its own endpoint's provider name and quantization.
+ * r57: an endpoint whose p50 or p90 throughput is null or not positive has no usable speed. It is skipped and counted
+ * in skipped_zero_tput. Zero tok/s is never written as a value. A row that still fails the endpoint schema is excluded
+ * and counted as stale; one bad row never throws out the whole model.
+ */
 export function extractEndpoints(
   html: string,
   model: string,
   measuredAt = "1970-01-01T00:00:00.000Z",
-): { endpoints: OrEndpoint[]; blocks: number; stale: number } {
+): { endpoints: OrEndpoint[]; blocks: number; stale: number; skipped_zero_tput: number; skipped: Array<{ provider: string; field: string }> } {
   const payload = flightPayload(html);
   const seen = new Set<string>();
   const endpoints: OrEndpoint[] = [];
   let blocks = 0;
   let stale = 0;
+  let skipped = 0;
+  const skippedList: Array<{ provider: string; field: string }> = [];
   for (const m of payload.matchAll(/"stats":\{/g)) {
     const start = (m.index ?? 0) + '"stats":'.length;
     const raw = objectAt(payload, start);
@@ -99,28 +106,41 @@ export function extractEndpoints(
     if (seen.has(st.endpoint_id)) continue; // the flight payload repeats records; one endpoint, one row
     seen.add(st.endpoint_id);
 
+    const { p50_throughput: tput, p90_throughput: tput90 } = st;
+    if (tput === null || tput <= 0 || tput90 === null || tput90 <= 0) {
+      skipped++; // no usable throughput on this endpoint: skipped and counted, never written as 0
+      const who = enclosingEndpoint(payload, m.index ?? 0, start + raw.length);
+      const field = tput === null || tput <= 0 ? "p50_throughput=" + tput : "p90_throughput=" + tput90;
+      skippedList.push({ provider: who && typeof who.provider_display_name === "string" ? who.provider_display_name : "unnamed endpoint", field });
+      continue;
+    }
     const ep = enclosingEndpoint(payload, m.index ?? 0, start + raw.length);
     const name = ep && typeof ep.provider_display_name === "string" ? ep.provider_display_name : null;
     const quant = ep && typeof ep.quantization === "string" ? ep.quantization : "unknown";
-    const { p50_latency: lat, p50_throughput: tput, request_count: reqs, window_minutes: win } = st;
-    if (name === null || lat === null || tput === null || reqs === null || win === null) {
+    const { p50_latency: lat, request_count: reqs, window_minutes: win } = st;
+    if (name === null || lat === null || reqs === null || win === null) {
       stale++; // a missing stat or name marks the row stale and excludes it; it is never written as 0
       continue;
     }
-    const parsed = orEndpointSchema.parse({
+    const candidate = {
       model,
       provider_display_name: name,
       quantization: quant,
       p50_latency_ms: lat,
       p50_throughput: tput,
-      p90_throughput: st.p90_throughput,
+      p90_throughput: tput90,
       request_count: reqs,
       window_minutes: win,
       confidence: reqs < 1000 ? "low_confidence" : "ok",
       measured_at: measuredAt,
       source: "openrouter.ai bare model page stats (unofficial)",
-    });
-    endpoints.push(parsed);
+    };
+    const parsed = orEndpointSchema.safeParse(candidate);
+    if (!parsed.success) {
+      stale++; // a row the schema refuses (for example a zero latency) is excluded and counted, not thrown
+      continue;
+    }
+    endpoints.push(parsed.data);
   }
-  return { endpoints, blocks, stale };
+  return { endpoints, blocks, stale, skipped_zero_tput: skipped, skipped: skippedList };
 }

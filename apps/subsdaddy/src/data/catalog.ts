@@ -1,3 +1,4 @@
+import { tokenAnchorSchema } from "./third-party";
 import { z } from "zod";
 import { LANES } from "./schema";
 import { REF_IDS, REF_NAMES } from "./estimate";
@@ -32,6 +33,17 @@ export const allowanceEntrySchema = z.strictObject({
   ref: z.enum([...REF_LITERALS, "*"]),
   usd: z.number().positive(),
   basis: z.string().min(1),
+  /** third_party_measured (t) and third_party_projected (j) carry their source; absent kinds are the build's own bases. */
+  kind: z.enum(["third_party_measured", "third_party_projected"]).optional(),
+  /** The measurement class whose list blend prices this allowance (r46): capacity = allowance / blend, shape-invariant. */
+  mix_class: z.enum(["sonnet", "luna"]).optional(),
+  mix_blend_usd_per_million: z.number().positive().optional(),
+  /** r56: the X reports behind a median row: their range, count, and month. */
+  community: z.strictObject({ min: z.number().positive(), max: z.number().positive(), count: z.number().int().positive(), period: z.string().min(1) }).optional(),
+  /** r59: the source's measured token volume, or the reason there is none (Codex). */
+  anchor: tokenAnchorSchema.nullable().optional(),
+  anchor_absent_reason: z.string().min(1).nullable().optional(),
+  source: z.strictObject({ publisher: z.string().min(1), url: z.url(), published: z.iso.date(), note: z.string().min(1) }).optional(),
 });
 
 const estimateValueSchema = z.strictObject({

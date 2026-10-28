@@ -37,13 +37,13 @@ const cells = (h: string) => [...h.matchAll(/<td[^>]*>[\s\S]*?<\/td>/g)].map((m)
 const tableById = (h: string, id: string) => (h.match(new RegExp('<table[^>]*data-testid="' + id + '"[\\s\\S]*?<\\/table>')) ?? [""])[0];
 const rowsIn = (t: string) => (t.match(/data-row="/g) ?? []).length;
 
-// 1. the front page: one table, seven columns, in order
+// 1. the front page: one table, eight columns, in order (r54: Threads est)
 const idx = main(html.index);
 const summary = tableById(html.index, "summary");
 if (!summary) fail("front page has no summary table");
 if (tables(html.index).length !== 1) fail("front page has " + tables(html.index).length + " tables, expected 1");
 const heads = [...summary.matchAll(/<th[^>]*>([\s\S]*?)<\/th>/g)].map((m) => text(m[1]));
-const expectedHeads = ["Plan", "Fee/mo", "Allowance", "Capacity", "$/B", "tok/s", "TTFT p50"];
+const expectedHeads = ["Plan", "Fee/mo", "Allowance", "Capacity", "$/B", "Threads est", "tok/s", "TTFT p50"];
 if (JSON.stringify(heads) !== JSON.stringify(expectedHeads)) fail("front page columns are " + JSON.stringify(heads) + ", expected " + JSON.stringify(expectedHeads));
 
 // 2. the switch: Measured first and selected, the other chips present, no Gemini chip
@@ -70,7 +70,7 @@ for (const c of cells(summary)) {
 // 4. the front page has no detail: no badges, no OR column, no sections, no footnote table, one footnote link
 // the only badge the front page may carry is low confidence, on a Capacity cell (its third line)
 const badgeValues = [...idx.matchAll(/data-badge="([^"]*)"/g)].map((m) => m[1]);
-if (badgeValues.some((v) => v !== "low confidence")) fail("front page carries a badge other than low confidence: " + badgeValues.join(", "));
+if (badgeValues.some((v) => !["low confidence", "stale reading"].includes(v))) fail("front page carries a badge other than low confidence: " + badgeValues.join(", "));
 if (/OR p50|Badges|vs measured|>Basis</.test(idx)) fail("a detail column name is on the front page");
 if (/\b[ABC] · /.test(idx)) fail("a section letter is on the front page");
 if (!/href="\/methodology"/.test(idx)) fail("front page has no link to /methodology");

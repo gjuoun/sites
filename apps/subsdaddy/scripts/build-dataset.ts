@@ -91,6 +91,7 @@ const lanes: LaneRecord[] = LANES.map((lane) => {
       low_coverage: a.low_coverage,
       top_models: a.top_models,
       allowance_basis: a.allowance_basis,
+      per_model: a.per_model ?? null,
       allowance_published_usd: a.allowance_published_usd,
       allowance_vendor_usd: a.allowance_vendor_usd,
       allowance_vendor_reason: a.allowance_vendor_reason,
@@ -102,6 +103,7 @@ const lanes: LaneRecord[] = LANES.map((lane) => {
       reason: a.reason,
       confidence: confidence?.confidence ?? null,
       confidence_reason: confidence?.reason ?? null,
+      stale: a.stale ?? null,
       badge: SINGLE_ACCOUNT_READING.has(lane) && a.binding_window ? "single_account_reading" : null,
       windows: a.windows,
       measured_at: now,
@@ -119,6 +121,20 @@ const lanes: LaneRecord[] = LANES.map((lane) => {
   } as LaneRecord;
 });
 
+// the outlier guard (r47): a lane whose $/B is more than ten times the median of the other lanes is not published
+for (const l of lanes) {
+  if (l.usd_per_b === null) continue;
+  const others = lanes.filter((x) => x !== l && x.usd_per_b !== null).map((x) => x.usd_per_b as number).sort((a, b) => a - b);
+  if (others.length === 0) continue;
+  const mid = others.length % 2 === 1 ? others[(others.length - 1) / 2] : (others[others.length / 2 - 1] + others[others.length / 2]) / 2;
+  if (l.usd_per_b > 10 * mid) {
+    const shown = l.usd_per_b.toFixed(2);
+    l.usd_per_b_reason = "not published: $" + shown + " per B is more than ten times the median of the other lanes ($" + mid.toFixed(2) + "); the reading behind it is too thin to rank";
+    l.usd_per_b = null;
+    l.usd_per_b_basis = null;
+    l.usd_per_b_source = null;
+  }
+}
 writeFileSync(join(dataDir, "lanes.json"), JSON.stringify(lanesFileSchema.parse({ lanes, measured_at: now, source: "build-dataset" }), null, 2) + "\n");
 for (const l of lanes) {
   const cap = l.capacity.tokens_per_cycle === null ? "unavailable:" + l.capacity.reason : (l.capacity.tokens_per_cycle / 1e9).toFixed(3) + "B/" + l.capacity.cycle_days + "d" + (l.capacity.cycle_billed ? "" : " (not billed)");

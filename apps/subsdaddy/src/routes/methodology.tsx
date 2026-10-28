@@ -11,12 +11,12 @@ import { hourWeighted } from "@/lib/official-prices";
 import { na, value } from "@/lib/cells";
 import { usd } from "@/lib/sections";
 import { cacheShare } from "@/lib/summary";
-import { CLAUDE_CYCLE_DAYS, fmtK, intensityLevels, sensitivityGrid } from "@/lib/claude-hours";
-import type { RefPrice } from "@/data/estimate";
-import { pooledMix, type TokenTotals } from "@/data/estimate";
-import { claudePlansFileSchema } from "@/data/claude-plans";
-import claudePlansRaw from "../../data/claude-plans.json";
-import usageRaw from "../../data/usage.json";
+
+
+
+
+import thirdPartyRaw from "../../data/third-party-allowances.json";
+import { thirdPartyFileSchema } from "@/data/third-party";
 
 export const Route = createFileRoute("/methodology")({
   component: MethodologyPage,
@@ -78,7 +78,9 @@ function MethodologyPage() {
       <ShapeSection />
       <AllowanceColumnSection />
       <AllowanceSection />
-      <ClaudeHoursSection />
+      <ThirdPartySection />
+      <CommunitySection />
+      <ThreadsSection />
       <ClaudeSection />
       <ContextSection />
       <OfficialPlansSection />
@@ -175,8 +177,9 @@ function CacheShapeSection() {
   const ds = dataset as unknown as DS;
   const cc = ds.catalog.rows.find((r) => r.plan_id === "commandcode-goat-published")!;
   const go = ds.catalog.rows.find((r) => r.plan_id === "opencode-go-go")!;
-  const ccV = cc.estimate!.values.find((v) => v.ref === "deepseek-v4.1-flash" && v.shape === "agent")!;
-  const goV = go.estimate!.values.find((v) => v.ref === "deepseek-v4.1-flash" && v.shape === "agent")!;
+  // a lane with no value in this build (for example an expired session) is not shown, rather than failing the page (r59)
+  const ccV = cc.estimate?.values.find((v) => v.ref === "deepseek-v4.1-flash" && v.shape === "agent") ?? null;
+  const goV = go.estimate?.values.find((v) => v.ref === "deepseek-v4.1-flash" && v.shape === "agent") ?? null;
   const dsRef = ds.models.reference.find((r) => r.ref === "deepseek-v4.1-flash")!;
   const ccShare = Math.round(cacheShare(ds, "commandcode-goat").share * 100);
   const goShare = Math.round(cacheShare(ds, "opencode-go").share * 100);
@@ -190,8 +193,9 @@ function CacheShapeSection() {
         {" "}{"$"}{dsRef.cache_per_m} per M against {"$"}{dsRef.in_per_m} for an uncached input, about {ratio}×, so the same allowance buys more tokens when more of them are cache reads.
       </p>
       <p>
-        At the list-price blend that gives {"$"}{ccV.blended_usd_per_b.toFixed(2)} per billion tokens for CommandCode's shape and {"$"}{goV.blended_usd_per_b.toFixed(2)} for OpenCode Go's.
-        So on DeepSeek V4.1 Flash, CommandCode shows {"$"}{ccV.usd_per_b!.toFixed(2)} and OpenCode Go {"$"}{goV.usd_per_b!.toFixed(2)}. That gap is real, not a bug.
+        {ccV && goV && ccV.usd_per_b !== null && goV.usd_per_b !== null
+          ? "At the list-price blend that gives $" + ccV.blended_usd_per_b.toFixed(2) + " per billion tokens for CommandCode's shape and $" + goV.blended_usd_per_b.toFixed(2) + " for OpenCode Go's. So on DeepSeek V4.1 Flash, CommandCode shows $" + ccV.usd_per_b.toFixed(2) + " and OpenCode Go $" + goV.usd_per_b.toFixed(2) + ". That gap is real, not a bug."
+          : "CommandCode's figure is not shown in this build: its quota session has expired and needs a fresh sign-in, so it has no reading to compare."}
       </p>
       <p>
         Measured view: each lane's $/B is its fee over the tokens its binding quota window delivers per cycle. A lane's capacity tooltip lists its three windows and its model mix.
@@ -255,116 +259,148 @@ function AllowanceSection() {
 
 /** Claude Code prompt counts: the archived former limit text, converted with the same convention as Codex. */
 function ClaudeSection() {
-  const plans: Array<[string, string, { low: number; high: number }]> = [
-    ["Claude Code - Pro", "claude-code-pro", { low: 10, high: 40 }],
-    ["Claude Code - Max 5x", "claude-code-max-5x", { low: 50, high: 200 }],
-    ["Claude Code - Max 20x", "claude-code-max-20x", { low: 200, high: 800 }],
-  ];
-  const B = (t: number) => (t / 1e9).toFixed(3) + "B";
-  const rows = plans.map(([label, id, lim]) => {
-    const fee = dataset.catalog.rows.find((r) => r.plan_id === id)!.price_month_usd ?? 0;
-    const lower = monthlyTokens(lim, CONTEXTS.short, WINDOWS_PER_DAY.realistic, "low");
-    const upper = monthlyTokens(lim, CONTEXTS.short, WINDOWS_PER_DAY.realistic, "high");
-    const ceil = monthlyTokens(lim, CONTEXTS.short, WINDOWS_PER_DAY.ceiling, "low");
-    return {
-      key: id,
-      cells: {
-        plan: value(label),
-        range: value(lim.low + "-" + lim.high + " per 5h"),
-        lower: value(B(lower)),
-        upper: value(B(upper)),
-        ceiling: value(B(ceil)),
-        usd: value(usd(fee / (lower / 1e9)) + "‡"),
-      },
-    };
-  });
-  const cols = [
-    { key: "plan", label: "Plan", width: "24%" },
-    { key: "range", label: "Prompts (archived)", width: "18%" },
-    { key: "lower", label: "Lower, realistic", width: "16%", numeric: true },
-    { key: "upper", label: "Upper, realistic", width: "16%", numeric: true },
-    { key: "ceiling", label: "Lower, ceiling", width: "14%", numeric: true },
-    { key: "usd", label: "$/B lower", width: "12%", numeric: true },
-  ];
+  const b = (lim: { low: number; high: number }) => (monthlyTokens(lim, CONTEXTS.short, WINDOWS_PER_DAY.realistic, "low") / 1e9).toFixed(2) + "B";
   return (
     <section className="space-y-3" aria-labelledby="m-claude">
-      <h2 id="m-claude" className={SECTION_TITLE}>Claude Code prompt counts (archived)</h2>
+      <h2 id="m-claude" className={SECTION_TITLE}>Claude Code prompt counts (archived, lower bound)</h2>
       <p>
-        The table shows N/A for all three plans. Anthropic's current help page states percentage limits only, and no sourced dollar allowance was found (checked 2026-10-27), so no dollar figure is shown.
-        The prompt counts below are the former Anthropic text, quoted in anthropics/claude-code issue 6611 (created 2025-08-26): Pro 10-40, Max 5x 50-200 and Max 20x 200-800 prompts per five hours.
-        They are converted with the Codex convention (1 prompt = 100,000 standard context + 462 output tokens), and they are a lower bound: one Claude Code prompt runs a tool loop of several model requests, each reading the context again, so a prompt is not one standard-context request.
-        Lower bound, 3 windows a day; the ceiling is 24 hours of continuous use (4.8 windows a day). These are the old limits, not today's.
+        Anthropic's former help text, quoted in anthropics/claude-code issue 6611 (created 2025-08-26), gave prompts per five hours: Pro 10-40, Max 5x 50-200, Max 20x 200-800.
+        At the Codex convention (1 prompt = 100,000 standard context + 462 output tokens, 3 windows a day, 30 days) they give {b({ low: 10, high: 40 })}, {b({ low: 50, high: 200 })} and {b({ low: 200, high: 800 })} tokens a month.
+        This is a lower bound, and it is not a dollar allowance: one prompt is not one standard-context request. The table above uses the third-party figures instead.
       </p>
-      <p>
-        A month of one's own Claude Code logs (ccusage-style, the same window method as the lanes above) would replace these conversions with a measured figure; that is the only change that should be made.
-      </p>
-      <UnifiedTable testId="claude-prompts" columns={cols} rows={rows} />
     </section>
   );
 }
 
-/** Claude plans: why hours do not become a dollar allowance, and the sensitivity table that shows it (r44). */
-function ClaudeHoursSection() {
+/** How Threads is derived (r55): the measured inputs, the occupancy assumption, the concurrency sample, and what is not measured. */
+function ThreadsSection() {
   const ds = dataset as unknown as DS;
-  const file = claudePlansFileSchema.parse(claudePlansRaw);
   const tp = ds.context.throughput;
-  const heavy = tp.tokens_per_active_hour.p50;
-  const usage = usageRaw as { lanes: Array<{ tokens: TokenTotals }> };
-  const pooled = pooledMix(usage.lanes.map((l) => ({ tokens: l.tokens })));
-  const mix = { output_share: pooled.output_share, cache_share: pooled.agent_cache_share, cache_write_share: pooled.cache_write_share ?? 0 };
-  const price = { in_per_m: file.price.in_per_m, out_per_m: file.price.out_per_m, cache_per_m: file.price.cache_read_per_m, cache_write_per_m: file.price.cache_write_per_m };
-  const haiku = ds.models.reference.find((r) => r.ref === "claude-haiku-5.5")!;
-  const grid = sensitivityGrid({
-    plans: file.plans.map((p) => ({ plan: p.plan, plan_id: p.plan_id, hours_low: p.hours_per_week_low, hours_high: p.hours_per_week_high })),
-    price, mix, haiku: haiku as unknown as RefPrice, heavy,
-  });
-  const levels = intensityLevels(heavy);
-  const lows = grid.filter((g) => g.bound === "lower").map((g) => g.cells[levels.length - 1].usd);
-  const span = fmtK(Math.min(...lows)) + "\u2013" + fmtK(Math.max(...lows));
-  const millions = (t: number) => (t / 1e6).toFixed(1) + "M";
-  const fmtB = (b: number) => Math.round(b).toLocaleString("en-US") + "B";
-  const cols = [
-    { key: "plan", label: "Plan", width: "22%" },
-    { key: "hours", label: "Hours/wk", width: "10%", numeric: true },
-    ...levels.map((lv) => ({ key: lv.id, label: lv.label, width: "22%", numeric: true })),
-  ];
-  const rows = grid.map((g) => {
-    const fee = file.plans.find((p) => p.plan_id === g.plan_id)!.fee_usd_per_month;
+  const perSessionHour = tp.tokens_per_session_hour.aggregate;
+  const activeShare = (tp.active_hours / (tp.window_days * 24)) * 100;
+  return (
+    <section className="space-y-3" aria-labelledby="m-threads">
+      <h2 id="m-threads" className={SECTION_TITLE}>How Threads is derived</h2>
+      <p>
+        Threads is the number of agent threads a row's capacity keeps running at full time. This site derives it and marks it est. Anthropic and OpenAI publish no parallel-thread metric.
+      </p>
+      <p>
+        Threads = (capacity per cycle ÷ cycle days × 7) ÷ (tokens per session-hour × 168 h × 25%). A row with no capacity shows N/A. A value under 0.1 shows as less than 0.1.
+      </p>
+      <ul className={SMALL_NOTE + " list-disc pl-5"}>
+        <li>Tokens per session-hour, {(perSessionHour / 1e6).toFixed(1)}M: our own measurement from pi session logs. A session-hour is one session with usage in one clock hour (UTC). Over {tp.window_days} days there were {tp.session_hours.toLocaleString("en-US")} session-hours and {(tp.tokens / 1e9).toFixed(1)}B tokens. Self-measured, not a vendor figure. Source: data/context.json.</li>
+        <li>Concurrency, from the same logs: sessions with usage in the same clock hour, median {tp.concurrency.median}, p90 {tp.concurrency.p90}, max {tp.concurrency.max}, across {tp.active_hours} active clock hours.</li>
+        <li>Occupancy, 25%: an assumption, not measured per thread. Our logs have usage in {activeShare.toFixed(0)}% of the clock hours of the window, so 25% is a conservative share of time for one thread.</li>
+        <li>Allowance: the vendor's published figure, the vendor's per-model limit, or a third-party measurement, each with its link and date in the sections above.</li>
+        <li>List price: each vendor's own pricing page.</li>
+        <li>168 hours: a full week of continuous use.</li>
+      </ul>
+      <p className={SMALL_NOTE}>
+        Read the number as the parallel work the dollars could cover, not as a limit the plan sets. Claude threads follow the measured tokens. Max 5x is above Max 20x because its one measurement is at the weekly limit, while wokey's 20x figure is average traffic: a measurement effect, not plan economics.
+      </p>
+    </section>
+  );
+}
+
+/** Community corroboration (r56): the X posts behind the median rows, each with its author, date, quote, and link. */
+function CommunitySection() {
+  const file = thirdPartyFileSchema.parse(thirdPartyRaw);
+  const withPosts = file.entries.filter((e) => e.community_observations.length > 0);
+  return (
+    <section className="space-y-3" aria-labelledby="m-community">
+      <h2 id="m-community" className={SECTION_TITLE}>Community corroboration</h2>
+      <p>
+        A median row takes the median of its publisher's value and the X posts that report the same plan's weekly value. The median is the headline. The highest report is never used.
+      </p>
+      {withPosts.map((e) => (
+        <p key={e.plan_id} className={SMALL_NOTE}>
+          {e.plan + ": median of " + (e.community_observations.length + 1) + " values, $" + e.primary_weekly_usd + " from " + e.publisher + ", with " + e.community_observations.map((o) => "$" + o.weekly_usd.toLocaleString("en-US")).join(" and ") + " from X. The headline is $" + e.weekly_usd.toLocaleString("en-US") + " a week."}
+        </p>
+      ))}
+      {withPosts.flatMap((e) => e.community_observations.map((o) => (
+        <p key={o.tweet_id + o.weekly_usd} className={SMALL_NOTE}>
+          {"@" + o.author + " · " + o.date + " · " + e.plan + " · $" + o.weekly_usd.toLocaleString("en-US") + " a week · "}
+          <a className="underline" href={o.url}>{"tweet " + o.tweet_id}</a>
+          {": \u201C" + o.quote + "\u201D. " + o.note + "."}
+        </p>
+      )))}
+      <p className={SMALL_NOTE}>
+        {(() => {
+          const all = withPosts.flatMap((e) => e.community_observations.map((o) => o.weekly_usd));
+          const ratio = all.length > 1 ? (Math.max(...all) / Math.min(...all)).toFixed(1) : "1.0";
+          return "Why the reports differ. The Max 5x reports are about " + ratio + " times apart. The likely causes are model mix and cache pricing; we did not check each report against its own traffic. The site therefore takes the median and shows the spread.";
+        })()}
+      </p>
+    </section>
+  );
+}
+
+/** Claude and Codex Pro: third-party measured weekly values, converted to 30 days, with each source's own figures and the caveats (r45). */
+function ThirdPartySection() {
+  const ds = dataset as unknown as DS;
+  const file = thirdPartyFileSchema.parse(thirdPartyRaw);
+  const tp = ds.context.throughput;
+  const rows = file.entries.map((e) => {
+    const cat = ds.catalog.rows.find((r) => r.plan_id === e.plan_id);
+    const allow = cat?.allowance.find((a) => a.ref === "*");
     return {
-      key: g.plan_id + "-" + g.bound,
+      key: e.plan_id,
       cells: {
-        plan: value(g.plan + " (" + usd(fee) + "/mo), " + g.bound + " bound"),
-        hours: value(g.hours + " h"),
-        ...Object.fromEntries(g.cells.map((c) => [c.intensity.id, value("$" + Math.round(c.usd).toLocaleString("en-US") + " · " + fmtB(c.haikuB) + " Haiku", [], c.intensity.basis)])),
+        plan: value(e.plan),
+        fee: value(usd(e.fee_usd_per_month) + "/mo"),
+        weekly: value("$" + e.weekly_usd.toLocaleString("en-US") + "/wk" + (e.value_kind === "projected" ? " projected" : ""), [], e.value_rule === "headline" ? "headline value; account middle half $" + e.range_usd![0] + "–$" + e.range_usd![1] : e.value_rule === "lower_bound" ? "lower bound of $" + e.range_usd![0] + "–$" + e.range_usd![1] : "projection"),
+        month: allow ? value("$" + allow.usd.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "/30d") : na("no allowance"),
+        source: value(e.publisher + ", " + e.published, [], e.url),
+        window: value(e.measured_window ?? "projection", [], e.sample),
       },
     };
   });
-  const sources = file.plans.map((p) => p.plan + ": " + p.source.quote);
+  const cols = [
+    { key: "plan", label: "Plan", width: "16%" },
+    { key: "fee", label: "Fee/mo", width: "10%", numeric: true },
+    { key: "weekly", label: "Weekly value", width: "16%", numeric: true },
+    { key: "month", label: "30-day allowance", width: "14%", numeric: true },
+    { key: "source", label: "Source, published", width: "22%" },
+    { key: "window", label: "Window", width: "22%" },
+  ];
+  const cross = file.entries.find((e) => e.cross_check)?.cross_check;
   return (
-    <section className="space-y-3" aria-labelledby="m-claude-hours">
-      <h2 id="m-claude-hours" className={SECTION_TITLE}>Claude plans: hours, not dollars</h2>
+    <section className="space-y-3" aria-labelledby="m-third-party">
+      <h2 id="m-third-party" className={SECTION_TITLE}>Claude and Codex Pro: third-party measured allowances</h2>
       <p>
-        Claude Pro, Max 5x and Max 20x show N/A in the table. Anthropic publishes hours of usage, not a dollar allowance, and converting those hours at our measured burn rate would span {span} a month, too wide to publish as one number.
+        Anthropic publishes no dollar allowance for Claude and Codex Pro. Each plan here takes a third party's weekly API-equivalent value, the dollars of API usage a week of the plan's limit bought, and multiplies it by 30/7 for a 30-day cycle.
+        Measured values are marked t. A projection, which no account has measured, is marked j.
       </p>
-      <ul className={SMALL_NOTE + " list-disc pl-5"}>
-        <li>The hours are Sonnet 4 and Opus 4 figures from 2025 (archived capture, read {file.plans[0].source.read_date}). They assume interactive coding.</li>
-        <li>Our measured agent burn rate is {millions(heavy)} tokens per active hour ({tp.sample_sessions} pi sessions, 30 days), far heavier than that assumed use.</li>
-        <li>The value of a Claude plan depends on usage intensity more than on the plan, as the table shows.</li>
-        <li>Sonnet 5.5 cache read is {"$" + file.price.cache_read_per_m} per million tokens on the pricing page; the blend uses it.</li>
-      </ul>
       <p>
-        Sensitivity, not a ranking. Each cell is the dollars a plan's hours would buy per {CLAUDE_CYCLE_DAYS}-day cycle at that burn rate (hours × tokens per active hour × the Sonnet 5.5 blend at the measured mix × 30/7),
-        and the Haiku 5.5 billions those dollars buy at the measured mix.
+        Headline values (wokey.ai) are the source's own measurement, with the middle half of its accounts shown as the spread. Range values (promptster.ai) take the lower end of the source's range.
+        Both are conservative against the source's upper figures, and the upper figures are in each source.
       </p>
-      <UnifiedTable testId="claude-sensitivity" columns={cols} rows={rows} />
+      <UnifiedTable testId="third-party" columns={cols} rows={rows} />
       <p className={SMALL_NOTE}>
-        Light (5M) and medium (15M) tokens per active hour are scenario values chosen for this table, not measurements. Heavy is the measured median of pi sessions with at least 9 active minutes over 30 days,
-        gaps capped at 5 minutes, all four token classes ({tp.sample_sessions} sessions; p25 {millions(tp.tokens_per_active_hour.p25)}, p75 {millions(tp.tokens_per_active_hour.p75)}; data/context.json).
+        Samples are small. Claude Pro is measured on 103 accounts and Max 20x on 21 (wokey.ai, 2026-10-19 to 10-26). Claude Max 5x and Codex Pro 5x are one engineer's account over about three weeks (promptster.ai, Sep 14 to Oct 6, 2026); wokey has no Max 5x figure yet.
       </p>
-      {sources.map((t) => (
-        <p key={t} className={SMALL_NOTE}>{t}. Capture {file.plans[0].source.capture_timestamp ?? ""} at {file.plans[0].source.capture ?? file.plans[0].source.url}, read {file.plans[0].source.read_date}.</p>
-      ))}
-      <p className={SMALL_NOTE}>Fees: {file.fee_source.quote}. Price: {file.price.source.url}, read {file.price.source.read_date}.</p>
+      {cross && (
+        <p className={SMALL_NOTE}>
+          Cross-check, not a second measurement: {cross.publisher}, published {cross.published}, gives Claude Max 20x as ${cross.value_usd.toLocaleString("en-US")} a week. {cross.note} Source: {cross.url}.
+        </p>
+      )}
+      <p className={SMALL_NOTE}>
+        Anthropic meters subscription usage in model-weighted units, so an all-Haiku workload stretches the same allowance across far more tokens than a Sonnet workload.
+      </p>
+      <p className={SMALL_NOTE}>
+        Capacity basis (r59). Each Claude and Codex plan's capacity is the token volume a source measured on a real account, times 30/7. It is not priced at a chip model, so it is the same in every model view.
+        The mix behind each measurement is the source's own, and it differs: the Max 5x account was on Sonnet/Opus-class traffic, and wokey does not state its model mix. The tooltip says so beside every figure.
+        Codex has no published token count, so its capacity and $/B show N/A. Its dollar allowance is kept.
+      </p>
+      <p className={SMALL_NOTE}>
+        No hour ceiling (r55). An earlier version capped Claude and Codex capacity at 730 agent hours a month, using 46M tokens per active hour. That figure was a fleet total divided by one session, not one thread's rate, so the ceiling is withdrawn. Capacity is the allowance over the model's price. Threads answers the physical question.
+      </p>
+      <p className={SMALL_NOTE}>
+        ChatGPT Plus (Codex Plus): no third-party measurement was found (read {file.entries[0].read_date}). Its estimate stays on the five-hour message table, marked dagger.
+      </p>
+      <p className={SMALL_NOTE}>
+        Archived Claude Code prompt counts (Pro 10–40, Max 5x 50–200, Max 20x 200–800 per five hours, issue 6611) convert to lower-bound tokens only: one prompt is not one standard-context request, so they under-count and are not used as an allowance.
+      </p>
     </section>
   );
 }
@@ -426,7 +462,21 @@ function AllowanceColumnSection() {
         then the vendor's dashboard reading (vendor_reported), then a figure derived from quota windows (derived), or a credit value (credits). A plan with per-model limits has no pool, so a model it does not list has no allowance.
       </p>
       <p className={SMALL_NOTE}>
+        Per-model limits (OpenCode Go, r53). The page sets a monthly limit for each model, and a model's usage counts against its own limit. So a plan's Measured allowance depends on which models carry its tokens in the monthly window:
+        a main model with at least 70% of the tokens sets the allowance to that model's published limit (Go: DeepSeek V4.1 Flash, $80); with no main model, the limits are weighted by token share.
+        Tokens per cycle are that allowance over the measured blend of the window, so $/B is fee over those tokens. The quota-window figure is shown beside it for comparison and does not set $/B. Go Plus has no account of its own,
+        so its measured $/B is not a row; on the same usage its DeepSeek limit is $160, which gives twice Go's $/B.
+      </p>
+      <p className={SMALL_NOTE}>
         The Measured view's Allowance does not depend on Shape or context. In a model view, the allowance is the same value under every shape: Shape changes only the price per token.
+      </p>
+      <p className={SMALL_NOTE}>
+        Low-signal readings. When every quota window of a lane reads 2% used or less, its capacity and $/B hold the last stable reading (data/published-snapshot.json), and the lane shows the badge stale reading.
+        A reading above 2% replaces the stored one. A lane with no stored reading shows N/A. The reason: the allowance is cost over the used share, so at 1% used a tenth of a point moves the $/B by about 10%.
+      </p>
+      <p className={SMALL_NOTE}>
+        Z.ai exception (r49). A lane with no stored reading is N/A, but Z.ai is kept on the board: its value is the reading computed in build 8779751 (2026-10-27), taken from git and not re-derived,
+        and it is marked seed. No Z.ai window has read above 2% used in any build since r35, so this is the only computed Z.ai reading on record. The first window above 2% used recomputes the lane and removes the seed mark.
       </p>
       <p className={SMALL_NOTE}>
         Bring your own shape: a local collector is planned; the site will price every plan against your own cache share. Its contract is written, and the custom shape stays disabled until it ships.

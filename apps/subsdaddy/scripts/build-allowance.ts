@@ -5,13 +5,15 @@
  * model and tokens), usage.json (the lane's measured mix), models.json (list prices, aliases) and catalog.json
  * (annual price, for a plan whose billing period is a year). Writes nothing else.
  */
-import { readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { LANES } from "../src/data/schema";
 import { allowanceFileSchema, analyzeWindow, bindingWindow, cycleOf, modelPerB, vendorAllowance, type PriceLookup, type UsageRow, type WindowReading } from "../src/data/allowance";
 import { pooledMix, type RefPrice } from "../src/data/estimate";
+import { perModelAllowance, pageLimitsFor, limitOfUpstream, type PageDoc } from "../src/data/per-model-limit";
 import { averagePrice } from "../src/data/peak-offpeak";
 import { LMC_CONTEXT_LONG, LMC_CONTEXT_SHORT } from "../src/data/context";
+import { nextSnapshot, resolvePublished, snapshotFileSchema, type Stable } from "../src/data/published";
 
 const APP = resolve(import.meta.dir, "..");
 const dataDir = join(APP, "data");
@@ -21,12 +23,18 @@ const quota = read("quota.json");
 const usage = read("usage.json");
 const models = read("models.json");
 const plans = read("plans.json");
+// the official per-model limits of OpenCode Go and Go Plus (scripts/collect-opencode-go.ts), r53
+const goDocs = read("opencode-go.json") as PageDoc;
 const catalog = read("catalog.json");
 const rawDir = join(dataDir, "raw", "usage");
 const latest = readdirSync(rawDir).filter((f) => f.endsWith(".json")).sort().at(-1);
 if (!latest) throw new Error("no raw usage export; run collect:usage first");
-const raw = JSON.parse(readFileSync(join(rawDir, latest), "utf8")).rows as Array<Record<string, unknown>>;
-const covStart = Date.parse(usage.coverage_start);
+const rawFile = JSON.parse(readFileSync(join(rawDir, latest), "utf8")) as { export_start?: string; rows: Array<Record<string, unknown>> };
+const raw = rawFile.rows;
+// r52: coverage is measured from the instant the export reaches back to (now minus its window), not from the first row of a lane.
+// An idle lane has no rows for a while, and that is zero usage, not missing coverage. A file without the start is refused.
+const exportStartMs = Date.parse(rawFile.export_start ?? "");
+if (!Number.isFinite(exportStartMs)) throw new Error("raw usage export " + latest + " has no export_start; run collect:usage again");
 const aliases: Record<string, string> = models.model_aliases ?? {};
 const usagePrices: Array<{ openrouter: string; in_per_m: number; out_per_m: number; cache_per_m: number; cache_write_per_m: number | null }> = models.usage_prices ?? [];
 
@@ -76,7 +84,25 @@ function resolverFor(lane: string): PriceLookup {
 
 const refPrice = (r: any): RefPrice => ({ in_per_m: r.in_per_m, out_per_m: r.out_per_m, cache_per_m: r.cache_per_m, cache_write_per_m: r.cache_write_per_m ?? null, overrides: r.overrides ?? [] });
 
-const lanes = LANES.map((lane) => {
+type Mix = { output_share: number; agent_cache_share: number; cache_write_share: number };
+/** The per-model rows of a lane at one allowance: each reference model's tokens and $/B at the 100K and 350K standards. */
+function modelRowsFor(input: { chosen: number; fee: number | null; basis: string; mix: Mix }) {
+  return models.reference.map((r: any) => {
+    const cell = (context: number, label: string) => {
+      if (input.fee === null) return null;
+      const x = modelPerB({ allowance_usd: input.chosen, fee_usd: input.fee, ref: refPrice(r), mix: input.mix, context_tokens: context });
+      return { tokens_per_cycle: x.tokens_cycle, usd_per_b: x.usd_per_b, blended_usd_per_b: x.blended_usd_per_b, measured_at: now, source: "allowance (" + input.basis + ") x list price (models.json) at " + label + " context" };
+    };
+    return { ref: r.ref, short: cell(LMC_CONTEXT_SHORT, "100K"), long: cell(LMC_CONTEXT_LONG, "350K"), reason: input.fee === null ? "no fee for the cycle" : null };
+  });
+}
+
+// the stored stable readings (src/data/published.ts): a build whose windows are all under 2% used holds them; a fresh build replaces them
+const SNAP_PATH = join(dataDir, "published-snapshot.json");
+const snapshotFile = snapshotFileSchema.parse(existsSync(SNAP_PATH) ? JSON.parse(readFileSync(SNAP_PATH, "utf8")) : { source: "none yet", lanes: {} });
+const nextLanes: Record<string, Stable> = {};
+
+const computed = LANES.map((lane) => {
   const obs = quota.observations.find((o: any) => o.lane === lane);
   const plan = plans.plans.find((p: any) => p.plan_id === lane);
   const fee: number | null = plan?.price_month_usd ?? null;
@@ -105,7 +131,8 @@ const lanes = LANES.map((lane) => {
     .filter((r) => r.lane === lane)
     .map((r) => ({ ms: Date.parse(String(r.created_at_utc)), model: String(r.upstream_model), input: Number(r.input), cache_creation: Number(r.cache_creation), cache_read: Number(r.cache_read), output: Number(r.output) }));
   const lookup = resolverFor(lane);
-  const analyses = readings.map((r) => analyzeWindow(r, rows, lookup, covStart, cycle.minutes));
+  const analyses = readings.map((r) => analyzeWindow(r, rows, lookup, exportStartMs, cycle.minutes));
+  for (const w of analyses) console.log("coverage " + lane + " " + w.window + " " + w.coverage.toFixed(3) + " " + w.status + " export_from " + rawFile.export_start);
   const assumedShare = (w: { measured_at: string; resets_at: string; window_minutes: number }) => {
     const end = Date.parse(w.measured_at);
     const from = Date.parse(w.resets_at) - w.window_minutes * 60_000;
@@ -129,6 +156,26 @@ const lanes = LANES.map((lane) => {
 
   if (!b) return empty("no usable window: " + analyses.map((w) => w.window + " " + w.status).join(", "), { windows, fee_per_cycle_usd: feePerCycle, fee_basis: feeBasis });
 
+  // r53: a plan whose monthly limit is set per model (OpenCode Go) takes its allowance from the official limits of the models
+  // carrying the tokens in the monthly window. The derived figure from the quota windows is kept only for comparison.
+  const perModelPlan: string | null = catRow?.per_model_limit_plan ?? null;
+  let perModel: { rule: "single_model" | "weighted"; main_model: string | null; usd: number; blend_per_token: number; parts: Array<{ model: string; share: number; limit_usd: number | null }> } | null = null;
+  if (perModelPlan) {
+    if (!monthly || monthly.allowance_usd_cycle === null || monthly.tokens <= 0) {
+      return empty("per-model limits need a usable monthly window: " + (monthly ? monthly.status : "missing"), { windows, fee_per_cycle_usd: feePerCycle, fee_basis: feeBasis });
+    }
+    const mStart = Date.parse(monthly.start_iso);
+    const mEnd = Date.parse(monthly.measured_at);
+    const tokensByModel = new Map<string, number>();
+    for (const r of rows) if (r.ms >= mStart && r.ms <= mEnd) tokensByModel.set(r.model, (tokensByModel.get(r.model) ?? 0) + r.input + r.cache_creation + r.cache_read + r.output);
+    const limits = pageLimitsFor(goDocs, perModelPlan);
+    const rule = perModelAllowance([...tokensByModel].map(([model, tokens]) => ({ model, tokens, limit_usd: limitOfUpstream(model, limits) })));
+    if (rule.rule === "unavailable") return empty("per-model limits: " + rule.reason, { windows, fee_per_cycle_usd: feePerCycle, fee_basis: feeBasis });
+    const blend = monthly.cost_usd / monthly.tokens;
+    if (!(blend > 0)) return empty("per-model limits: the monthly window has no priced usage", { windows, fee_per_cycle_usd: feePerCycle, fee_basis: feeBasis });
+    perModel = { rule: rule.rule, main_model: rule.rule === "single_model" ? rule.main_model : null, usd: rule.usd, blend_per_token: blend, parts: rule.parts };
+  }
+
   const startMs = Date.parse(b.start_iso);
   const endMs = Date.parse(b.measured_at);
   const inBinding = rows.filter((r) => r.ms >= startMs && r.ms <= endMs);
@@ -139,18 +186,12 @@ const lanes = LANES.map((lane) => {
 
   const derived = b.allowance_usd_cycle as number;
   // the published figure is the allowance; else a matching dashboard pool; else the derived figure. All are recorded.
-  const chosen = published ?? vendor.usd ?? derived;
-  const allowanceBasis = published !== null ? "vendor_published" : vendor.usd !== null ? "vendor_reported" : "derived";
-  const tokensCycle = b.tokens_cycle as number;
+  const chosen = perModel ? perModel.usd : (published ?? vendor.usd ?? derived);
+  const allowanceBasis = perModel ? (perModel.rule === "single_model" ? "vendor_published_per_model" : "vendor_published_weighted") : published !== null ? "vendor_published" : vendor.usd !== null ? "vendor_reported" : "derived";
+  // a per-model plan: the tokens its allowance buys at the measured blend of the monthly window (r53)
+  const tokensCycle = perModel ? (perModel.usd / perModel.blend_per_token) : (b.tokens_cycle as number);
   const measuredPerB = feePerCycle !== null ? feePerCycle / (tokensCycle / 1e9) : null;
-  const modelRows = models.reference.map((r: any) => {
-    const cell = (context: number, label: string) => {
-      if (feePerCycle === null) return null;
-      const x = modelPerB({ allowance_usd: chosen, fee_usd: feePerCycle, ref: refPrice(r), mix: base.mix, context_tokens: context });
-      return { tokens_per_cycle: x.tokens_cycle, usd_per_b: x.usd_per_b, blended_usd_per_b: x.blended_usd_per_b, measured_at: now, source: "allowance (" + allowanceBasis + ") x list price (models.json) at " + label + " context" };
-    };
-    return { ref: r.ref, short: cell(LMC_CONTEXT_SHORT, "100K"), long: cell(LMC_CONTEXT_LONG, "350K"), reason: feePerCycle === null ? "no fee for the cycle" : null };
-  });
+  const modelRows = modelRowsFor({ chosen, fee: feePerCycle, basis: allowanceBasis, mix: base.mix });
   return {
     ...base,
     fee_usd: fee,
@@ -161,6 +202,7 @@ const lanes = LANES.map((lane) => {
     cycle_billed: cycle.billed,
     allowance_usd_per_cycle: chosen,
     allowance_basis: allowanceBasis,
+    per_model: perModel ? { rule: perModel.rule, main_model: perModel.main_model, usd: perModel.usd, blend_usd_per_b: perModel.blend_per_token * 1e9, derived_usd: derived, parts: perModel.parts } : null,
     allowance_published_usd: published,
     allowance_vendor_usd: vendor.usd,
     allowance_vendor_reason: vendor.reason,
@@ -181,12 +223,35 @@ const lanes = LANES.map((lane) => {
   };
 });
 
+const lanes = computed.map((rec: any) => {
+  const windowsNow = rec.windows.map((w: any) => ({ window: w.window, used_pct: w.used_pct, measured_at: w.measured_at, source: "codexbar quota reading" }));
+  if (!rec.binding_window) {
+    const snapshot = snapshotFile.lanes[rec.lane] ?? null;
+    if (snapshot) nextLanes[rec.lane] = snapshot;
+    return { ...rec, stale: null };
+  }
+  const bw = rec.windows.find((w: any) => w.window === rec.binding_window);
+  const complete = rec.cycle_days && rec.fee_per_cycle_usd && rec.tokens_per_cycle && rec.allowance_usd_per_cycle && rec.usd_per_b_measured && rec.allowance_basis;
+  const candidate: Stable | null = complete ? { read_at: bw.measured_at, measured_at: bw.measured_at, source: "codexbar quota reading (binding window), priced at list", published_on: now.slice(0, 10), binding_window: rec.binding_window, cycle_days: rec.cycle_days, fee_per_cycle_usd: rec.fee_per_cycle_usd, tokens_per_cycle: rec.tokens_per_cycle, allowance_usd_per_cycle: rec.allowance_usd_per_cycle, allowance_basis: rec.allowance_basis, usd_per_b_measured: rec.usd_per_b_measured, windows: windowsNow } : null;
+  const snapshot = snapshotFile.lanes[rec.lane] ?? null;
+  const res = resolvePublished({ windows: windowsNow, candidate, snapshot });
+  const kept = nextSnapshot(snapshot, res);
+  if (kept) nextLanes[rec.lane] = kept;
+  if (res.mode === "fresh") return { ...rec, stale: null };
+  if (res.mode === "stale") {
+    const s = res.stable;
+    return { ...rec, binding_window: s.binding_window, cycle_days: s.cycle_days, fee_per_cycle_usd: s.fee_per_cycle_usd, tokens_per_cycle: s.tokens_per_cycle, allowance_usd_per_cycle: s.allowance_usd_per_cycle, allowance_basis: s.allowance_basis, usd_per_b_measured: s.usd_per_b_measured, confidence: "low", reason: null, models: modelRowsFor({ chosen: s.allowance_usd_per_cycle, fee: s.fee_per_cycle_usd, basis: s.allowance_basis, mix: rec.mix }), stale: { read_at: s.read_at, published_on: s.published_on, current_windows: res.current, reason: res.reason, seed: s.seed ?? false, seed_source: s.seed_source ?? null } };
+  }
+  return { ...rec, allowance_usd_per_cycle: null, allowance_basis: null, allowance_derived_usd: null, tokens_per_cycle: null, binding_window: null, binding_coverage: null, binding_unpriced_share: null, binding_assumed_share: null, usd_per_b_measured: null, list_usd_per_b_effective: null, confidence: null, reason: res.reason, models: [], stale: null };
+});
+
 const file = allowanceFileSchema.parse({
   measured_at: now,
   source: "quota windows (codexbar), vendor-reported pool where stated, usage logs priced at list (models.json)",
   context_standards: { short: LMC_CONTEXT_SHORT, long: LMC_CONTEXT_LONG },
   lanes,
 });
+writeFileSync(SNAP_PATH, JSON.stringify({ source: "last stable capacity per lane (src/data/published.ts): written only by a fresh reading, never by a low-signal one", lanes: nextLanes }, null, 2) + "\n");
 writeFileSync(join(dataDir, "allowance.json"), JSON.stringify(file, null, 2) + "\n");
 for (const l of lanes as any[]) {
   const f = (x: number | null | undefined, d = 2) => (x === null || x === undefined ? "N/A" : x.toFixed(d));

@@ -144,6 +144,8 @@ export const usageFileSchema = z.object({
   window_days: z.number().positive(),
   coverage_start: z.iso.datetime(),
   coverage_end: z.iso.datetime(),
+  /** The earliest instant the export reaches back to (now minus window_days). A quota window's coverage is measured from here (r52). */
+  export_start: z.iso.datetime().optional(),
   lanes: z.array(laneUsageSchema).length(LANES.length),
   ...provenance,
 });
@@ -171,7 +173,8 @@ export const benchmarkFileSchema = z.object({
     .array(
       z.object({
         model: z.string().min(1),
-        status: z.enum(["ok", "unavailable"]),
+        // r57: stats_unavailable = every endpoint reported zero throughput; kept_previous = this run could not read the page, so the last trusted snapshot is kept
+        status: z.enum(["ok", "unavailable", "stats_unavailable", "kept_previous"]),
         reason: z.string().min(1).nullable(),
         endpoints: z.number().int().nonnegative(),
         measured_at: z.iso.datetime(),
@@ -290,7 +293,15 @@ export const laneRecordSchema = z.object({
     window: z.enum(["5h", "weekly", "monthly"]).nullable(),
     cycle_days: z.number().positive().nullable(),
     cycle_billed: z.boolean(),
-    allowance_basis: z.enum(["vendor_published", "vendor_reported", "derived"]).nullable().optional(),
+    allowance_basis: z.enum(["vendor_published", "vendor_published_per_model", "vendor_published_weighted", "vendor_reported", "derived"]).nullable().optional(),
+    per_model: z.object({
+  rule: z.enum(["single_model", "weighted"]),
+  main_model: z.string().nullable(),
+  usd: z.number().positive(),
+  blend_usd_per_b: z.number().positive(),
+  derived_usd: z.number().positive().nullable(),
+  parts: z.array(z.object({ model: z.string().min(1), share: z.number().min(0).max(1), limit_usd: z.number().positive().nullable() })),
+}).nullable().optional(),
     allowance_published_usd: z.number().positive().nullable().optional(),
     allowance_vendor_usd: z.number().positive().nullable().optional(),
     allowance_vendor_reason: z.string().nullable().optional(),
@@ -308,6 +319,8 @@ export const laneRecordSchema = z.object({
     reason: z.string().nullable(),
     confidence: z.enum(["low", "normal"]).nullable(),
     confidence_reason: z.string().nullable(),
+    /** Set when the lane holds its last stable reading (r48). */
+    stale: z.object({ read_at: z.string().min(1), published_on: z.string().min(1), current_windows: z.array(z.object({ window: z.string().min(1), used_pct: z.number().min(0).max(100), measured_at: z.string().min(1), source: z.string().min(1) })), reason: z.string().min(1), seed: z.boolean().optional(), seed_source: z.string().min(1).optional() }).nullable().optional(),
     badge: z.string().nullable(),
     windows: z.array(
       z.object({
@@ -334,6 +347,8 @@ export const laneRecordSchema = z.object({
   usd_per_b_basis: z.enum(["measured", "derived"]).nullable(),
   usd_per_b_derived_from: laneSchema.nullable(),
   usd_per_b_source: z.string().nullable(),
+  /** Why a $/B is not published although the lane has a reading (r47: an outlier against the other lanes). */
+  usd_per_b_reason: z.string().nullable().optional(),
   measured: z.object({
     p50_ttft_ms: z.number().nullable(),
     p90_ttft_ms: z.number().nullable(),

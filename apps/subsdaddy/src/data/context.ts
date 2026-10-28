@@ -21,15 +21,20 @@ export const contextFileSchema = z.object({
   sample_sessions: z.number().int().positive(),
   quantiles: z.object({ p50: z.number().nonnegative(), p75: z.number().nonnegative(), p90: z.number().nonnegative(), max: z.number().nonnegative() }),
   histogram: z.array(z.object({ bucket: z.string().min(1), sessions: z.number().int().nonnegative() })).min(1),
-  /** Tokens per active hour of pi sessions (see collect-session-context.ts). Read by the Claude hours allowance; never hard-coded. */
   throughput: z.object({
     window_days: z.number().int().positive(),
     source: z.string().min(1),
     method: z.string().min(1),
-    idle_cap_minutes: z.number().positive(),
-    min_active_minutes: z.number().positive(),
-    sample_sessions: z.number().int().positive(),
-    tokens_per_active_hour: z.object({ p25: z.number().nonnegative(), p50: z.number().nonnegative(), p75: z.number().nonnegative() }),
+    /** Clock hours with any usage in the window, across all sessions (r55). */
+    active_hours: z.number().int().nonnegative(),
+    /** Session-hours: one session with usage in one clock hour (r55). */
+    session_hours: z.number().int().nonnegative(),
+    tokens: z.number().nonnegative(),
+    /** Tokens per session-hour. aggregate = tokens / session_hours; the Threads formula reads aggregate (r55). */
+    tokens_per_session_hour: z.object({ aggregate: z.number().positive(), median: z.number().nonnegative(), mean: z.number().nonnegative(), p90: z.number().nonnegative() }),
+    /** Distinct sessions with usage in the same clock hour (r55). */
+    concurrency: z.object({ median: z.number().nonnegative(), p90: z.number().nonnegative(), max: z.number().nonnegative() }),
+    sample_sessions: z.number().int().nonnegative(),
   }),
 });
 export type ContextFile = z.infer<typeof contextFileSchema>;

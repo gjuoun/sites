@@ -72,6 +72,9 @@ function estimateRow(row: CatalogRow) {
     const reason = row.status === "excluded" ? (row.exclusion_reason ?? "excluded") : (row.allowance_reason ?? "no published usage-dollar allowance");
     return { status: "unavailable" as const, reason, basis: null, values: [] as Value[], range_agent: null };
   }
+  if (row.allowance.some((a) => a.mix_class)) {
+    return { status: "unavailable" as const, reason: "a third-party measured allowance: priced in each model view at that model's list price, capped by the hour ceiling (see methodology)", basis: null, values: [] as Value[], range_agent: null };
+  }
   if (row.offered_models.length === 0) {
     return { status: "unavailable" as const, reason: "its checked model list names no reference model, so no estimate is made for one", basis: null, values: [] as Value[], range_agent: null };
   }
@@ -90,7 +93,7 @@ function estimateRow(row: CatalogRow) {
     // precedence: the official limit for this model, then the lane allowance (published, vendor pool or derived), then a wildcard
     // a plan with per-model limits has no pool: a model it does not list has no allowance
     const allowanceUsd = refPub ? refPub.usd : row.per_model_limit_plan ? null : measuredUsd ?? (wildcard ? wildcard.usd : null);
-    const allowanceBasis = refPub ? (row.per_model_limit_plan ? "vendor_published_per_model" : "vendor_published") : row.per_model_limit_plan ? null : measured ? measured.allowance_basis : wildcard ? (row.allowance_model === "credits" || /credit/i.test(wildcard.basis) ? "credits" : "vendor_published") : null;
+    const allowanceBasis = refPub ? (row.per_model_limit_plan ? "vendor_published_per_model" : "vendor_published") : row.per_model_limit_plan ? null : measured ? measured.allowance_basis : wildcard ? (wildcard.kind ?? (row.allowance_model === "credits" || /credit/i.test(wildcard.basis) ? "credits" : "vendor_published")) : null;
     const allowanceCycle = measured ? measured.cycle_days : 30;
     const pr = priceFor(row, ref);
     if (pr.note) tierNotes.add(pr.note);

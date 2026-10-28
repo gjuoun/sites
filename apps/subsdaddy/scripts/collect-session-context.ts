@@ -5,13 +5,13 @@
  * Context (45 days): for each session, the context at its end is the prompt of its last assistant call:
  * input + cache read + cache write.
  *
- * Throughput (30 days): tokens per active hour. A session's active time is the sum of the gaps between its
- * consecutive messages, each gap counted only up to a 5-minute idle cap. A session counts when it has at least
- * 9 active minutes and at least one assistant call with usage. Tokens are all four classes (input, output,
- * cache read, cache write), so the figure prices with the same mix as the blend.
+ * Throughput (30 days), per session-hour: a session-hour is one pi session with at least one assistant call with usage
+ * inside one clock hour (UTC). Its tokens are the four classes of those calls. The aggregate tokens per session-hour is
+ * all tokens divided by the number of session-hours. Concurrency is the number of distinct sessions in each clock hour
+ * that has any usage. Nothing is read from the sessions' text.
  *
- * The script writes quantiles, a histogram and the throughput quantiles to data/context.json. It never writes
- * to the sessions, and it prints and stores no session id, path, prompt or message content.
+ * The script writes quantiles, a histogram and the throughput to data/context.json. It never writes to the sessions, and
+ * it prints and stores no session id, path, prompt or message content.
  */
 import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
@@ -23,8 +23,6 @@ const APP = resolve(import.meta.dir, "..");
 const ROOT = join(homedir(), ".pi", "agent", "sessions");
 const DAYS = 45;
 const THROUGHPUT_DAYS = 30;
-const IDLE_CAP_MS = 5 * 60_000;
-const MIN_ACTIVE_MS = 9 * 60_000;
 const now = Date.now();
 const since = now - DAYS * 24 * 60 * 60 * 1000;
 const tpSince = now - THROUGHPUT_DAYS * 24 * 60 * 60 * 1000;
@@ -65,31 +63,22 @@ function endContext(path: string): { ts: number; prompt: number } | null {
   return best;
 }
 
-/** One session's tokens (all four classes) and its active time in the throughput window; null if it has no usage. */
-function throughputOf(path: string): { tokens: number; active: number } | null {
-  const stamps: number[] = [];
-  let tokens = 0;
+/** Per clock hour of one session: the tokens of its assistant calls with usage (four classes). */
+function hoursOf(path: string, into: Map<number, number>): void {
   for (const line of readFileSync(path, "utf8").split("\n")) {
     if (!line) continue;
     let o: Record<string, unknown>;
     try { o = JSON.parse(line); } catch { continue; }
     const m = o.message as Msg | undefined;
-    const ts = timeOf(m?.timestamp ?? o.timestamp);
-    if (!Number.isFinite(ts) || ts < tpSince) continue;
-    stamps.push(ts);
     const u = m?.usage;
-    if (m?.role === "assistant" && u) {
-      tokens += (Number(u.input) || 0) + (Number(u.output) || 0) + (Number(u.cacheRead) || 0) + (Number(u.cacheWrite) || 0);
-    }
+    if (m?.role !== "assistant" || !u) continue;
+    const ts = timeOf(m.timestamp ?? o.timestamp);
+    if (!Number.isFinite(ts) || ts < tpSince) continue;
+    const tokens = (Number(u.input) || 0) + (Number(u.output) || 0) + (Number(u.cacheRead) || 0) + (Number(u.cacheWrite) || 0);
+    if (tokens <= 0) continue;
+    const hour = Math.floor(ts / 3_600_000);
+    into.set(hour, (into.get(hour) ?? 0) + tokens);
   }
-  if (stamps.length < 2 || tokens <= 0) return null;
-  stamps.sort((a, b) => a - b);
-  let active = 0;
-  for (let i = 1; i < stamps.length; i++) {
-    const gap = stamps[i] - stamps[i - 1];
-    if (gap <= IDLE_CAP_MS) active += gap;
-  }
-  return { tokens, active };
 }
 
 const BUCKETS: Array<{ label: string; min: number; max: number }> = [
@@ -108,10 +97,22 @@ const round = (v: number) => Math.round(v);
 const quantiles = { p50: round(quantile(xs, 0.5)), p75: round(quantile(xs, 0.75)), p90: round(quantile(xs, 0.9)), max: xs[xs.length - 1] };
 const histogram = BUCKETS.map((b) => ({ bucket: b.label, sessions: xs.filter((x) => x >= b.min && x < b.max).length }));
 
-const tp = files.map(throughputOf).filter((x): x is { tokens: number; active: number } => x !== null && x.active >= MIN_ACTIVE_MS);
-const perHour = tp.map((x) => x.tokens / (x.active / 3_600_000)).sort((a, b) => a - b);
-if (perHour.length === 0) throw new Error("no sessions with 9 active minutes in the last " + THROUGHPUT_DAYS + " days");
-const tokensPerHour = { p25: round(quantile(perHour, 0.25)), p50: round(quantile(perHour, 0.5)), p75: round(quantile(perHour, 0.75)) };
+// throughput per session-hour (r55): one entry per (session, clock hour) with usage
+const sessionHours: number[] = [];
+const concurrency = new Map<number, number>();
+for (const f of files) {
+  const perHour = new Map<number, number>();
+  hoursOf(f, perHour);
+  for (const [hour, tokens] of perHour) {
+    sessionHours.push(tokens);
+    concurrency.set(hour, (concurrency.get(hour) ?? 0) + 1);
+  }
+}
+if (sessionHours.length === 0) throw new Error("no session-hours with usage in the last " + THROUGHPUT_DAYS + " days");
+sessionHours.sort((a, b) => a - b);
+const totalTokens = sessionHours.reduce((a, b) => a + b, 0);
+const conc = [...concurrency.values()].sort((a, b) => a - b);
+const mb = (v: number) => Math.round(v);
 
 const file = contextFileSchema.parse({
   window_days: DAYS,
@@ -123,15 +124,22 @@ const file = contextFileSchema.parse({
   histogram,
   throughput: {
     window_days: THROUGHPUT_DAYS,
-    source: "local pi session logs (read-only, aggregated): all four token classes of every assistant call, per session",
-    method: "active time = sum of gaps between a session's consecutive messages, each gap capped at 5 minutes; sessions with at least 9 active minutes count; tokens per active hour per session; quantiles by R-7",
-    idle_cap_minutes: 5,
-    min_active_minutes: 9,
-    sample_sessions: perHour.length,
-    tokens_per_active_hour: tokensPerHour,
+    source: "local pi session logs (read-only, aggregated): all four token classes of every assistant call, per session and clock hour (UTC)",
+    method: "session-hour = one session with usage in one clock hour; aggregate = all tokens / session-hours; median, mean and p90 are over session-hours (R-7); concurrency = distinct sessions per clock hour that has usage",
+    active_hours: concurrency.size,
+    session_hours: sessionHours.length,
+    tokens: totalTokens,
+    tokens_per_session_hour: {
+      aggregate: mb(totalTokens / sessionHours.length),
+      median: mb(quantile(sessionHours, 0.5)),
+      mean: mb(totalTokens / sessionHours.length),
+      p90: mb(quantile(sessionHours, 0.9)),
+    },
+    concurrency: { median: quantile(conc, 0.5), p90: quantile(conc, 0.9), max: conc[conc.length - 1] },
+    sample_sessions: files.length,
   },
 });
 writeFileSync(join(APP, "data", "context.json"), JSON.stringify(file, null, 2) + "\n");
 console.log("context sessions=" + xs.length + " files=" + files.length + " p50=" + quantiles.p50 + " p75=" + quantiles.p75 + " p90=" + quantiles.p90 + " max=" + quantiles.max);
 console.log("histogram " + histogram.map((h) => h.bucket + " " + h.sessions).join(" · "));
-console.log("throughput sessions=" + perHour.length + " tokens_per_active_hour p25=" + tokensPerHour.p25 + " p50=" + tokensPerHour.p50 + " p75=" + tokensPerHour.p75);
+console.log("throughput active_hours=" + concurrency.size + " session_hours=" + sessionHours.length + " tokens_per_session_hour aggregate=" + file.throughput.tokens_per_session_hour.aggregate + " median=" + file.throughput.tokens_per_session_hour.median + " p90=" + file.throughput.tokens_per_session_hour.p90 + " concurrency median=" + file.throughput.concurrency.median + " p90=" + file.throughput.concurrency.p90 + " max=" + file.throughput.concurrency.max);

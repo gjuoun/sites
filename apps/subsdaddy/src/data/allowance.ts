@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { blendedUsdPerB, cacheFor, pooledMix, priceAt, type RefPrice } from "./estimate";
+import { windowUseSchema } from "./published";
 
 /**
  * The usage allowance of a subscription, in list dollars per billing cycle, read from its quota windows.
@@ -9,7 +10,7 @@ import { blendedUsdPerB, cacheFor, pooledMix, priceAt, type RefPrice } from "./e
  *     prompt length) and summed: cost_usd and tokens. A model with no list price is counted as unpriced tokens.
  *  2. The window's full-cycle allowance = cost ÷ used_fraction × (cycle ÷ window length).
  *     The cycle is the monthly window's length from the reading; with no monthly window, the longest window's.
- *  3. The derived allowance is the minimum over the usable windows. A window is usable unless it is partial
+ *  3. The derived allowance is the minimum over the competing windows (r47: low-signal windows do not compete). A window is usable unless it is partial
  *     (log covers under 95% of its span), unused (0%), or has no priced usage. A window at 2% or less is
  *     low_signal and still usable; it carries low confidence.
  *  4. A vendor-reported pool, when codexbar states one and its used share matches the monthly window, is the
@@ -109,11 +110,24 @@ export function analyzeWindow(r: WindowReading, rows: UsageRow[], lookup: PriceL
   };
 }
 
-/** The tightest usable window sets the derived allowance. Null when no window is usable. */
+/**
+ * The window that sets the derived allowance (r47). A low-signal window (2% used or less) does not compete: its figure
+ * scales with 1/used, so a reading of 1% moves it by whole multiples. Among the other usable windows the tightest
+ * (smallest allowance) binds. When every usable window is low-signal, the longest window binds, with low confidence.
+ * Null when no window is usable.
+ */
 export function bindingWindow(windows: WindowAnalysis[]): WindowAnalysis | null {
   const usable = windows.filter((w) => w.allowance_usd_cycle !== null);
   if (usable.length === 0) return null;
-  return usable.reduce((a, b) => ((b.allowance_usd_cycle as number) < (a.allowance_usd_cycle as number) ? b : a));
+  const competing = usable.filter((w) => w.status !== "low_signal");
+  if (competing.length > 0) return competing.reduce((a, b) => ((b.allowance_usd_cycle as number) < (a.allowance_usd_cycle as number) ? b : a));
+  return usable.reduce((a, b) => (b.window_minutes > a.window_minutes ? b : a));
+}
+
+/** True when every usable window is low-signal: the binding figure then rests on the longest window alone. */
+export function allWindowsLowSignal(windows: WindowAnalysis[]): boolean {
+  const usable = windows.filter((w) => w.allowance_usd_cycle !== null);
+  return usable.length > 0 && usable.every((w) => w.status === "low_signal");
 }
 
 /** The billing cycle: the monthly window's length when the plan has one; else the longest window. */
@@ -182,6 +196,8 @@ export const allowanceFileSchema = z.object({
       lane: z.string().min(1),
       measured_at: z.string().min(1),
       source: z.string().min(1),
+      /** Set when the lane holds its last stable reading (r48): every window is at or under 2% used. */
+      stale: z.object({ read_at: z.string().min(1), published_on: z.string().min(1), current_windows: z.array(windowUseSchema), reason: z.string().min(1), seed: z.boolean().optional(), seed_source: z.string().min(1).optional() }).nullable().optional(),
       fee_usd: z.number().positive().nullable(),
       fee_per_cycle_usd: z.number().positive().nullable(),
       fee_basis: z.string().nullable(),
@@ -189,7 +205,16 @@ export const allowanceFileSchema = z.object({
       cycle_days: z.number().positive().nullable(),
       cycle_billed: z.boolean(),
       allowance_usd_per_cycle: z.number().positive().nullable(),
-      allowance_basis: z.enum(["vendor_published", "vendor_reported", "derived"]).nullable(),
+      allowance_basis: z.enum(["vendor_published", "vendor_published_per_model", "vendor_published_weighted", "vendor_reported", "derived"]).nullable(),
+      /** r53: a per-model plan (OpenCode Go): its allowance from the official limits of the models in the monthly window. */
+      per_model: z.object({
+  rule: z.enum(["single_model", "weighted"]),
+  main_model: z.string().nullable(),
+  usd: z.number().positive(),
+  blend_usd_per_b: z.number().positive(),
+  derived_usd: z.number().positive().nullable(),
+  parts: z.array(z.object({ model: z.string().min(1), share: z.number().min(0).max(1), limit_usd: z.number().positive().nullable() })),
+}).nullable().optional(),
       allowance_published_usd: z.number().positive().nullable().optional(),
       allowance_vendor_usd: z.number().positive().nullable(),
       allowance_vendor_reason: z.string().nullable(),
