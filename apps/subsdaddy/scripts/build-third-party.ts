@@ -49,7 +49,7 @@ for (const e of file.entries) {
   const target = rows.find((r) => r.plan_id === e.plan_id)!;
   const cls = file.mix_classes[e.mix_class];
   const classUsdPerB = blendedUsdPerB({ in_per_m: cls.in_per_m, out_per_m: cls.out_per_m, cache_per_m: cls.cache_per_m, cache_write_per_m: cls.cache_write_per_m }, mix);
-  target.allowance = [{ ref: "*", usd: monthly, basis, kind, ...(community ? { community } : {}), mix_class: e.mix_class, mix_blend_usd_per_million: Number((classUsdPerB / 1000).toPrecision(12)), source: { publisher: e.publisher, url: e.url, published: e.published, note: e.value_kind === "measured" ? "weekly API-equivalent, lower bound of the stated figure: " + (e.value_rule === "headline" ? "headline value" : "range low end") : "projection, not a measurement" } }];
+  target.allowance = [{ ref: "*", usd: monthly, basis, kind, ...(community ? { community } : {}), anchor: e.token_anchor, anchor_absent_reason: e.token_anchor === null ? e.token_anchor_absent_reason : null, mix_class: e.mix_class, mix_blend_usd_per_million: Number((classUsdPerB / 1000).toPrecision(12)), source: { publisher: e.publisher, url: e.url, published: e.published, note: e.value_kind === "measured" ? "weekly API-equivalent, lower bound of the stated figure: " + (e.value_rule === "headline" ? "headline value" : "range low end") : "projection, not a measurement" } }];
   target.allowance_reason = null;
   console.log("build:third-party " + e.plan_id + " weekly=$" + e.weekly_usd + " monthly=$" + monthly.toFixed(2) + " " + kind + " class=" + e.mix_class + " $/B=" + classUsdPerB.toFixed(2));
 }

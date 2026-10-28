@@ -63,13 +63,13 @@ describe("Codex: messages per window converted to tokens", () => {
     expect(lines[1]).toBe("† converted from vendor message limits at 100K context per message");
   });
 
-  test("Codex Pro rows keep their third-party allowance (t, j) and carry no hour cap (r55)", () => {
+  test("Codex Pro rows keep their third-party allowance (t, j), with capacity and $/B N/A (r59)", () => {
     const rows = viewRows(ds, "gpt-6-luna", "short");
     for (const id of ["codex-pro", "codex-pro-20x"]) {
       const row = rows.find((r) => r.key === id)!;
       expect(row.allowance).not.toBeNull();
-      expect(row.usd).not.toBeNull();
-      expect(row.capNote ?? null).toBeNull();
+      expect(row.usd).toBeNull();
+      expect(row.capacity).toBeNull();
     }
     expect(rows.find((r) => r.key === "codex-pro")!.allowance!.sup).toBe("t");
     expect(rows.find((r) => r.key === "codex-pro-20x")!.allowance!.sup).toBe("j");

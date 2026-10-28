@@ -35,7 +35,25 @@ export const mixClassSchema = z.strictObject({
   source: z.strictObject({ url: z.url(), read_date: iso, quote: z.string().min(1) }),
 });
 
+/** The token volume a source measured on a real account, with the source's own figures (r59). Average traffic is not a cap reading. */
+export const tokenAnchorSchema = z.strictObject({
+  label: z.string().min(1),
+  weekly_tokens_total: z.number().positive(),
+  weekly_cache_read_tokens: z.number().nonnegative().nullable(),
+  weekly_uncached_tokens: z.number().nonnegative().nullable(),
+  value_usd_week: z.number().positive(),
+  measurement: z.enum(["at_cap", "average_traffic"]),
+  publisher: z.string().min(1),
+  url: z.url(),
+  date: iso,
+  quote: z.string().min(1),
+  sample: z.string().min(1),
+});
+export type TokenAnchor = z.infer<typeof tokenAnchorSchema>;
+
 export const thirdPartyEntrySchema = z.strictObject({
+  token_anchor: tokenAnchorSchema.nullable().default(null),
+  token_anchor_absent_reason: z.string().min(1).nullable().default(null),
   plan_id: z.string().min(1),
   plan: z.string().min(1),
   fee_usd_per_month: z.number().positive(),
@@ -80,6 +98,7 @@ export const thirdPartyEntrySchema = z.strictObject({
     if (!o.quote.includes(o.weekly_usd.toLocaleString("en-US"))) ctx.addIssue({ code: "custom", message: "the quote of " + o.tweet_id + " does not show " + o.weekly_usd });
   }
   if (e.value_kind === "measured" && e.value_rule === "projection") ctx.addIssue({ code: "custom", message: "a measured value cannot use the projection rule" });
+  if (e.token_anchor === null && !e.token_anchor_absent_reason) ctx.addIssue({ code: "custom", message: "a plan with no token anchor needs the reason" });
   // the quote is the source's own text, so it must show the value as printed (1,602, 940, 270)
   const shown = e.value_rule === "median_of_sources" && e.primary_weekly_usd ? e.primary_weekly_usd : e.weekly_usd;
   if (!e.quote.includes(shown.toLocaleString("en-US"))) ctx.addIssue({ code: "custom", message: "the quote does not show the value" });
