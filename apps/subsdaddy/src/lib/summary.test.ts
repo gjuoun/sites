@@ -5,6 +5,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { DERIVED_FOOTNOTE, MEASURED, basisLine, orWeighted, sig2, summaryTable, viewChips, viewRows, weightedMedian, type ViewId } from "./summary";
 import type { DS } from "./sections";
+import { commandcodeLive } from "./live";
 
 const ds = dataset as unknown as DS;
 const catalog = catalogFileSchema.parse(JSON.parse(readFileSync(join(import.meta.dir, "..", "..", "data", "catalog.json"), "utf8")));
@@ -64,7 +65,7 @@ describe("model view: only the plans that offer the model", () => {
   test("GPT-6 Luna lists the OpenCode plans, the Copilot plans, Codex Plus and the two Codex Pro plans with values; Codex Go is N/A (r45)", () => {
     const rows = viewRows(ds, "gpt-6-luna");
     expect(rows.map((r) => r.key).sort()).toEqual(["codex-go", "codex-plus", "codex-pro", "codex-pro-20x", "github-copilot-pro", "github-copilot-pro-plus", "opencode-go-go", "opencode-go-plus"]);
-    expect(rows.filter((r) => r.usd === null).map((r) => r.key).sort()).toEqual(["codex-go"]);
+    expect(rows.filter((r) => r.usd === null).map((r) => r.key).sort()).toEqual(["codex-go", "codex-pro", "codex-pro-20x"]);
   });
 
 
@@ -75,7 +76,7 @@ describe("model view: only the plans that offer the model", () => {
     expect(oc.cells.usd.title).toContain("100K-token context");
   });
 
-  test("DeepSeek V4.1 Flash shows four rows, sorted by $/B ascending, first three CommandCode, OpenCode Go, OpenCode Go Plus", () => {
+  test.skipIf(!commandcodeLive)("DeepSeek V4.1 Flash shows four rows, sorted by $/B ascending, first three CommandCode, OpenCode Go, OpenCode Go Plus", () => {
     const rows = viewRows(ds, "deepseek-v4.1-flash");
     expect(rows.length).toBe(4);
     for (let i = 1; i < rows.length; i++) expect(rows[i - 1].usd!).toBeLessThanOrEqual(rows[i].usd!);

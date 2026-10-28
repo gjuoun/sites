@@ -349,43 +349,54 @@ export function fmtBillions(b: number): string {
 }
 
 /**
- * A third-party measured allowance (r50), priced at the selected model. The dollars buy tokens at that model's blend
- * (the shape's mix, the context's prompt band). The tokens are capped by the physical ceiling: no more agent hours in a
- * month than there are, at the measured burn rate. A capped row's $/B is its fee over the ceiling, so it depends on
- * the hours only. The measurement-class counterpart (Sonnet for Claude, Luna for Codex) stays in the tooltip.
+ * A third-party allowance (r59). Capacity is the token volume a source measured on a real account, times 30/7 for a
+ * 30-day cycle. It is not priced at any chip model: the mix is the source's own and differs between sources, so the same
+ * capacity is shown in every model view. Rows with no token anchor show N/A for capacity and $/B, with the reason.
+ * The allowance in dollars is kept, and the tooltip says which source it comes from.
  */
 export function thirdPartyRow(r: CatalogRow, a: CatalogRow["allowance"][number], ds: DS, ref: RefId, ctx: ContextId, shape: ShapeDef, or: ReturnType<typeof orWeighted>): ViewRow {
-  const refRow = ds.models.reference.find((x) => x.ref === ref);
-  if (!refRow) throw new Error("no reference price for " + ref);
-  const price = priceAt({ in_per_m: refRow.in_per_m, out_per_m: refRow.out_per_m, cache_per_m: refRow.cache_per_m, cache_write_per_m: refRow.cache_write_per_m ?? null, overrides: refRow.overrides ?? [] } as RefPrice, CONTEXTS[ctx]);
-  const blend = blendedUsdPerB(price.price, mixOf(shape));
+  void ds; void ref; void ctx; void shape;
   const fee = r.price_month_usd ?? 0;
-  // r55: capacity is the allowance over the selected model's blend, nothing else (no hour ceiling)
-  const tokens30d = (a.usd / blend) * 1e9;
-  const capB = tokens30d / 1e9;
-  const parts: string[] = ["dollar-implied: " + fmtBillions(capB)];
-  if (a.mix_blend_usd_per_million) {
-    parts.push("measured-mix counterpart (" + (a.mix_class ?? "") + "): " + fmtBillions(a.usd / (a.mix_blend_usd_per_million * 1000)));
-  }
-  return {
+  const allowance = { usd: a.usd, cycle: 30, sup: supOf(a.kind ?? "", false) ?? "t", title: [thirdPartyTitle(r) ?? a.basis, communityLine(a.community)].filter(Boolean).join("\n") };
+  const base = {
     key: r.plan_id,
     label: r.label,
     fee,
-    tokens30d,
-    capacity: capB.toFixed(2) + "B/mo",
-    capNote: null,
-    capTitle: parts.join(" · "),
-    capacityReason: "",
     capDetail: null,
-    allowance: { usd: a.usd, cycle: 30, sup: supOf(a.kind ?? "", false) ?? "t", title: [thirdPartyTitle(r) ?? a.basis, communityLine(a.community)].filter(Boolean).join("\n") },
+    allowance,
     allowanceReason: "",
-    usd: fee / capB,
-    usdTitle: ["fee ÷ capacity at " + REF_NAMES[ref] + " list price (" + price.band + "), " + shape.label + ", " + contextLabel(ctx) + " context", communityLine(a.community)].filter(Boolean).join("\n"),
-    marker: "",
+    marker: "" as const,
     tps: or.tps,
     tpsTitle: or.title || (or.reason ?? "no OpenRouter data"),
     ttft: or.ttft,
     ttftTitle: or.title || (or.reason ?? "no OpenRouter data"),
+  };
+  const anchor = a.anchor ?? null;
+  if (anchor === null) {
+    const reason = a.anchor_absent_reason ?? "no token count published by the source";
+    return { ...base, tokens30d: null, capacity: null, capNote: null, capTitle: null, capacityReason: reason, usd: null, usdTitle: reason };
+  }
+  const tokens30d = (anchor.weekly_tokens_total * 30) / 7;
+  const capB = tokens30d / 1e9;
+  const valueMultiple = anchor.value_usd_week / fee;
+  const shownMultiple = (a.usd * 7 / 30) / fee;
+  const measurement = anchor.measurement === "at_cap" ? "measurement: at the weekly limit, one account" : "measurement: average weekly traffic, not a cap reading (a floor on capacity)";
+  const capTitle = [
+    "capacity: " + capB.toFixed(2) + "B tokens/30d, measured on a real account (" + anchor.label + ")",
+    "value: " + valueMultiple.toFixed(1) + "× the $" + fee + " fee at Anthropic list prices (weekly API value ÷ monthly fee)",
+    "not comparable across plans: each source used a different model mix (Sonnet/Opus share differs)",
+    measurement,
+    "allowance shown: " + shownMultiple.toFixed(1) + "× (" + (thirdPartyTitle(r) ? a.basis.split(":")[0] : "source") + "); the capacity uses " + anchor.publisher + " instead",
+  ].join("\n");
+  return {
+    ...base,
+    tokens30d,
+    capacity: capB.toFixed(2) + "B/30d",
+    capNote: "@measured mix",
+    capTitle,
+    capacityReason: "",
+    usd: fee / capB,
+    usdTitle: ["fee ÷ measured capacity (" + capB.toFixed(2) + "B tokens per 30 days): not comparable across plans", communityLine(a.community)].filter(Boolean).join("\n"),
   };
 }
 
@@ -479,6 +490,7 @@ const naShort = (reason: string): Cell => ({ ...na(reason), reason: "" });
 export const BRING_YOUR_OWN = "Bring your own shape: a local collector is planned; the site will price every plan against your own cache share.";
 export const MEASURED_FOOTNOTE = "Measured $/B is per plan and reflects that plans own cache share; use Shape to compare on equal terms.";
 
+export const MEASURED_MIX_FOOTNOTE = "Claude/Codex capacities are measured token volumes at each source's own model mix; compare within that caveat.";
 export const SHAPE_FOOTNOTE = "Shape sets the token mix used to price every plan; Measured uses each plans own traffic.";
 
 /** The one-line legend of the four allowance sources, each with a real example from the data. */
@@ -533,6 +545,7 @@ export function summaryTable(ds: DS, view: ViewId, ctx: ContextId = "short", sha
     if (data.some((r) => r.marker === "†")) lines.push(CONVERTED_FOOTNOTE(ctx));
     if (data.some((r) => r.marker === "‡")) lines.push(ARCHIVED_FOOTNOTE(ctx));
   }
+  if (data.some((r) => r.capNote === "@measured mix")) lines.push(MEASURED_MIX_FOOTNOTE);
   lines.push(allowanceLegend(ds));
   lines.push(BRING_YOUR_OWN);
   return { columns: SUMMARY_COLUMNS, rows, footnote: lines.join("\n"), basisLine: basisLine(ds, view) };

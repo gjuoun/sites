@@ -1,3 +1,4 @@
+import { tokenAnchorSchema } from "./third-party";
 import { z } from "zod";
 import { LANES } from "./schema";
 import { REF_IDS, REF_NAMES } from "./estimate";
@@ -39,6 +40,9 @@ export const allowanceEntrySchema = z.strictObject({
   mix_blend_usd_per_million: z.number().positive().optional(),
   /** r56: the X reports behind a median row: their range, count, and month. */
   community: z.strictObject({ min: z.number().positive(), max: z.number().positive(), count: z.number().int().positive(), period: z.string().min(1) }).optional(),
+  /** r59: the source's measured token volume, or the reason there is none (Codex). */
+  anchor: tokenAnchorSchema.nullable().optional(),
+  anchor_absent_reason: z.string().min(1).nullable().optional(),
   source: z.strictObject({ publisher: z.string().min(1), url: z.url(), published: z.iso.date(), note: z.string().min(1) }).optional(),
 });
 

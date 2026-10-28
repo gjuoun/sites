@@ -57,7 +57,7 @@ describe("the shipped export reaches back past every quota window it is used for
     expect(Math.round(days)).toBe(31);
   });
   test("every monthly window in the quota reading starts after the export's start", () => {
-    for (const o of quota.observations) for (const w of o.windows) {
+    for (const o of quota.observations) for (const w of o.windows ?? []) { // an unavailable reading has no windows (r59)
       if (w.window !== "monthly") continue;
       const start = Date.parse(w.resets_at) - w.window_minutes * 60_000;
       expect(Date.parse(file.export_start) <= start).toBe(true);

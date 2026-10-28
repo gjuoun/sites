@@ -54,11 +54,11 @@ describe("Threads: display (r54, unchanged)", () => {
     }
     for (const r of summaryTable(ds, "measured" as never).rows) expect(r.cells.threads.text).toMatch(/^(N\/A|<0\.1|\d+\.\d)$/);
   });
-  test("the Claude threads grow with the allowance: Max 20x > Max 5x > Pro, in the Haiku view", () => {
+  test("the Claude threads follow the measured tokens: Max 5x > Max 20x > Pro (a measurement effect, not plan economics, r59)", () => {
     const rows = summaryTable(ds, "claude-haiku-5.5" as never, "short", SHAPES[0]).rows;
     const v = (k: string) => parseFloat(rows.find((r) => r.key === k)!.cells.threads.text);
-    expect(v("claude-code-max-20x")).toBeGreaterThan(v("claude-code-max-5x"));
-    expect(v("claude-code-max-5x")).toBeGreaterThan(v("claude-code-pro"));
+    expect(v("claude-code-max-5x")).toBeGreaterThan(v("claude-code-max-20x"));
+    expect(v("claude-code-max-20x")).toBeGreaterThan(v("claude-code-pro"));
   });
 });
 

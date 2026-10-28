@@ -177,8 +177,9 @@ function CacheShapeSection() {
   const ds = dataset as unknown as DS;
   const cc = ds.catalog.rows.find((r) => r.plan_id === "commandcode-goat-published")!;
   const go = ds.catalog.rows.find((r) => r.plan_id === "opencode-go-go")!;
-  const ccV = cc.estimate!.values.find((v) => v.ref === "deepseek-v4.1-flash" && v.shape === "agent")!;
-  const goV = go.estimate!.values.find((v) => v.ref === "deepseek-v4.1-flash" && v.shape === "agent")!;
+  // a lane with no value in this build (for example an expired session) is not shown, rather than failing the page (r59)
+  const ccV = cc.estimate?.values.find((v) => v.ref === "deepseek-v4.1-flash" && v.shape === "agent") ?? null;
+  const goV = go.estimate?.values.find((v) => v.ref === "deepseek-v4.1-flash" && v.shape === "agent") ?? null;
   const dsRef = ds.models.reference.find((r) => r.ref === "deepseek-v4.1-flash")!;
   const ccShare = Math.round(cacheShare(ds, "commandcode-goat").share * 100);
   const goShare = Math.round(cacheShare(ds, "opencode-go").share * 100);
@@ -192,8 +193,9 @@ function CacheShapeSection() {
         {" "}{"$"}{dsRef.cache_per_m} per M against {"$"}{dsRef.in_per_m} for an uncached input, about {ratio}×, so the same allowance buys more tokens when more of them are cache reads.
       </p>
       <p>
-        At the list-price blend that gives {"$"}{ccV.blended_usd_per_b.toFixed(2)} per billion tokens for CommandCode's shape and {"$"}{goV.blended_usd_per_b.toFixed(2)} for OpenCode Go's.
-        So on DeepSeek V4.1 Flash, CommandCode shows {"$"}{ccV.usd_per_b!.toFixed(2)} and OpenCode Go {"$"}{goV.usd_per_b!.toFixed(2)}. That gap is real, not a bug.
+        {ccV && goV && ccV.usd_per_b !== null && goV.usd_per_b !== null
+          ? "At the list-price blend that gives $" + ccV.blended_usd_per_b.toFixed(2) + " per billion tokens for CommandCode's shape and $" + goV.blended_usd_per_b.toFixed(2) + " for OpenCode Go's. So on DeepSeek V4.1 Flash, CommandCode shows $" + ccV.usd_per_b.toFixed(2) + " and OpenCode Go $" + goV.usd_per_b.toFixed(2) + ". That gap is real, not a bug."
+          : "CommandCode's figure is not shown in this build: its quota session has expired and needs a fresh sign-in, so it has no reading to compare."}
       </p>
       <p>
         Measured view: each lane's $/B is its fee over the tokens its binding quota window delivers per cycle. A lane's capacity tooltip lists its three windows and its model mix.
@@ -294,7 +296,7 @@ function ThreadsSection() {
         <li>168 hours: a full week of continuous use.</li>
       </ul>
       <p className={SMALL_NOTE}>
-        Read the number as the parallel work the dollars could cover, not as a limit the plan sets. A Claude row reads above one thread because its allowance buys far more tokens a week than one thread's occupancy.
+        Read the number as the parallel work the dollars could cover, not as a limit the plan sets. Claude threads follow the measured tokens. Max 5x is above Max 20x because its one measurement is at the weekly limit, while wokey's 20x figure is average traffic: a measurement effect, not plan economics.
       </p>
     </section>
   );
@@ -386,8 +388,9 @@ function ThirdPartySection() {
         Anthropic meters subscription usage in model-weighted units, so an all-Haiku workload stretches the same allowance across far more tokens than a Sonnet workload.
       </p>
       <p className={SMALL_NOTE}>
-        Pricing (r50). Each third-party row is priced at the model selected in the switch, like every other model row: its allowance buys tokens at that model's blend for the selected shape and context.
-        A Claude row in the Haiku view is therefore priced at pure Haiku. The Sonnet 5.5 and GPT-6 Luna blends at the measured mix appear in the tooltip only, as a counterpart for comparison.
+        Capacity basis (r59). Each Claude and Codex plan's capacity is the token volume a source measured on a real account, times 30/7. It is not priced at a chip model, so it is the same in every model view.
+        The mix behind each measurement is the source's own, and it differs: the Max 5x account was on Sonnet/Opus-class traffic, and wokey does not state its model mix. The tooltip says so beside every figure.
+        Codex has no published token count, so its capacity and $/B show N/A. Its dollar allowance is kept.
       </p>
       <p className={SMALL_NOTE}>
         No hour ceiling (r55). An earlier version capped Claude and Codex capacity at 730 agent hours a month, using 46M tokens per active hour. That figure was a fleet total divided by one session, not one thread's rate, so the ceiling is withdrawn. Capacity is the allowance over the model's price. Threads answers the physical question.

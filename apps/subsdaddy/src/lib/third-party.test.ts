@@ -107,10 +107,10 @@ describe("Claude and Codex Pro now carry an allowance; the retired hours machine
       expect(r.cells.usd.na).toBe(false);
     }
   });
-  test("Codex Pro 5x in the Luna view is priced from its allowance: no hour cap, no capped suffix (r55)", () => {
+  test("Codex Pro 5x in the Luna view is N/A: no token anchor, so no capacity or $/B (r59)", () => {
     const v = viewRows(ds, "gpt-6-luna" as never, "short", SHAPES[0]).find((r) => r.key === "codex-pro")!;
-    expect(v.usd).not.toBeNull();
-    expect(v.capNote ?? null).toBeNull();
+    expect(v.usd).toBeNull();
+    expect(v.capacity).toBeNull();
   });
 });
 
