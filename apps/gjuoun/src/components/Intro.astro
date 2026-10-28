@@ -4,14 +4,4 @@ import { about } from "../data/about";
 
 <div class="intro">
 	<p class="intro-lead">{about.intro}</p>
-	<ul class="intro-index">
-		{
-			about.sections.map((section) => (
-				<li>
-					<a href={section.href}>{section.label}</a>
-					<span>{section.body}</span>
-				</li>
-			))
-		}
-	</ul>
 </div>

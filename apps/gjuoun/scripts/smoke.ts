@@ -309,11 +309,9 @@ function contractFailures(route: string, f: Facts): string[] {
 			bad(`home intro paragraphs ${f.introParagraphs}, want exactly 1`);
 		if (f.introLength < 200)
 			bad(`home intro too short: ${f.introLength} chars`);
-		if (
-			!f.introIndexLinks.includes("/posts/") ||
-			!f.introIndexLinks.includes("/resume/")
-		)
-			bad(`home intro index links ${f.introIndexLinks.join("|")}`);
+		// No index under the bio: the nav already carries the three destinations.
+		if (f.introIndexLinks.length !== 0)
+			bad(`home intro repeats an index: ${f.introIndexLinks.join("|")}`);
 	}
 	if (route === "/resume/") {
 		// All four employers and all five positions, with their dates, in order.
