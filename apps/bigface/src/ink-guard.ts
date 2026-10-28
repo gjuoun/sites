@@ -13,7 +13,6 @@ const BRIGHT = new Set([
   "bf-cyan",
   "bf-lime",
   "bf-yellow",
-  "bf-bright-yellow",
   "bf-ansi-blue",
   "bf-ansi-bright-blue",
   "bf-ansi-cyan",
@@ -48,10 +47,9 @@ export function findInklessBrightPlates(html: string): string[] {
     const slot = /data-slot="([\w-]+)"/.exec(tagAt(html, at))?.[1] ?? "";
     if (TEXTLESS.has(slot)) continue;
     const tokens = (m[1] as string).split(/\s+/).filter(Boolean).map(splitVariant);
-    // The page ships with `data-mode="dark"` on <html> (a theme can be switched to light at runtime),
-    // so a `dark:`-prefixed variant is the state this build paints: normalise it away before matching.
-    const norm = (v: string) => v.replace(/(^|:)dark:/g, "$1");
-    const inks = new Set(tokens.filter(([, u]) => INK.has(u)).map(([v]) => norm(v)));
+    // No variant is normalised: mode lives in color-scheme, so a fill and its ink share the same
+    // variant string in both modes (a dark: class would be a regression, caught by the package guard).
+    const inks = new Set(tokens.filter(([, u]) => INK.has(u)).map(([v]) => v));
     // a ::before/::after with empty content is a decorative dot or rim: there is no text to ink
     // a gradient clipped to the text is the text's own paint, not a plate behind it
     if (tokens.some(([v, u]) => v === "" && u === "bg-clip-text")) continue;
@@ -61,8 +59,7 @@ export function findInklessBrightPlates(html: string): string[] {
       const fill = /^(?:bg|from|via|to)-(.+)$/.exec(utility)?.[1];
       if (!fill || !BRIGHT.has(fill)) continue; // bg-x/20 (translucent tint) never matches
       if (/(?:^|:)(?:before|after):$/.test(variant) && empty.has(variant)) continue;
-      const v = norm(variant);
-      if (!inks.has(v) && !inks.has("")) offenders.push(m[1] as string);
+      if (!inks.has(variant) && !inks.has("")) offenders.push(m[1] as string);
     }
   }
   return offenders;

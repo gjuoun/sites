@@ -51,12 +51,8 @@
       "source": "dark:lime"
     },
     "yellow": {
-      "hex": "#e5e500",
-      "source": "dark:yellow"
-    },
-    "brightYellow": {
       "hex": "#ffeb3b",
-      "source": "dark:brightYellow"
+      "source": "dark:yellow"
     },
     "burntOrange": {
       "hex": "#fc5d23",
@@ -81,7 +77,7 @@
       "source": "alias:green"
     },
     "yellow": {
-      "hex": "#e5e500",
+      "hex": "#ffeb3b",
       "source": "alias:yellow"
     },
     "blue": {
@@ -114,7 +110,7 @@
     },
     "brightYellow": {
       "hex": "#ffeb3b",
-      "source": "alias:brightYellow"
+      "source": "alias:yellow"
     },
     "brightBlue": {
       "hex": "#40c4ff",
@@ -141,7 +137,7 @@
     "string": "yellow",
     "number": "burntOrange",
     "type": "cyan",
-    "operator": "brightYellow",
+    "operator": "yellow",
     "punctuation": "fg",
     "constant": "purple",
     "tag": "lightBlue",

@@ -1,16 +1,15 @@
-// The cross-file theme checker: the shadcn-theme pattern's five checks over the generated theme files.
+// The cross-file theme checker: the shadcn-theme pattern's checks over the generated theme files.
 //
-//   bun run --cwd packages/ui ui:theme
+//   bun run --cwd packages/bigface-business-ui ui:theme
 //   theme-check: ok
-//   theme-check: 2 violation(s)
-//   src/themes/mistplay.css: dark-mode block missing required theme variables: --theme-radius
 //
-// Cross-file by nature (CSS <-> contract.json <-> roles.ts), so it cannot be a linter rule. The parser
-// is a line-based block scanner: theme files are flat declaration lists by contract.
+// The theme is ONE block: a role whose palettes differ is light-dark(light, dark), one whose palettes agree
+// is a bare hex. There is no dark block and no optional tier, so the checks are: one block, exactly the
+// contract keys, every value in one of the two shapes, and a registry entry per stylesheet.
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import contract from "../src/themes/contract.json";
-import { OPTIONAL, REQUIRED, THEMES } from "../src/themes/roles.ts";
+import { REQUIRED, THEMES } from "../src/themes/roles.ts";
 
 export interface Violation {
 	file: string;
@@ -65,12 +64,13 @@ export function readDeclarations(
 	return rules;
 }
 
-const isDark = (selector: string) => selector.includes('[data-mode="dark"]');
+/** light-dark(#a, #b) or one bare hex: the only two value shapes a role may have. */
+const SHAPE = /^(?:light-dark\(#[0-9a-f]{6}, #[0-9a-f]{6}\)|#[0-9a-f]{6})$/;
 
-/** The five checks, over the files in dir and the registry. */
+/** The checks, over the files in dir and the registry. */
 export function checkThemes(dir: string): Violation[] {
 	const violations: Violation[] = [];
-	const known = new Set([...REQUIRED, ...OPTIONAL].map((k) => "--theme-" + k));
+	const known = new Set(REQUIRED.map((k) => "--theme-" + k));
 	const files = existsSync(dir) ? readdirSync(dir, { encoding: "utf8" }) : [];
 	const themeFiles = files.filter(
 		(f) => f.endsWith(".css") && !f.startsWith("_"),
@@ -79,113 +79,45 @@ export function checkThemes(dir: string): Violation[] {
 	for (const theme of THEMES) {
 		const path = join(dir, theme.id + ".css");
 		if (!themeFiles.includes(theme.id + ".css")) {
-			violations.push({
-				file: path,
-				line: 0,
-				message: "registered theme has no stylesheet",
-			});
+			violations.push({ file: path, line: 0, message: "registered theme has no stylesheet" });
 			continue;
 		}
 		const rules = readDeclarations(readFileSync(path, "utf8"));
-		const flat = rules.flatMap((r) => r.decls);
+		if (rules.length !== 1) {
+			violations.push({ file: path, line: 0, message: "expected exactly one block, found " + rules.length });
+			continue;
+		}
+		const decls = rules[0]?.decls ?? [];
 
 		// 1. only --theme-*, only known keys (the typo guard)
-		for (const d of flat) {
-			if (!known.has(d.key)) {
-				violations.push({
-					file: path,
-					line: d.line,
-					message: "unknown theme variable " + d.key,
-				});
-			}
+		for (const d of decls) {
+			if (!known.has(d.key)) violations.push({ file: path, line: d.line, message: "unknown theme variable " + d.key });
 		}
 
-		// 2. the light block has every required key
-		const light = flat.filter((d) => !isDark(d.selector));
-		const missingLight = REQUIRED.map((k) => "--theme-" + k).filter(
-			(k) => !light.some((d) => d.key === k),
-		);
-		if (missingLight.length) {
-			violations.push({
-				file: path,
-				line: 0,
-				message:
-					"light block missing required theme variables: " +
-					missingLight.join(", "),
-			});
+		// 2. every required key, once
+		for (const key of known) {
+			const hits = decls.filter((d) => d.key === key);
+			if (hits.length === 0) violations.push({ file: path, line: 0, message: "missing required theme variable " + key });
+			if (hits.length > 1) violations.push({ file: path, line: 0, message: "duplicate theme variable " + key });
 		}
 
-		// 3. a dark block exists and has every required key on its own
-		const dark = flat.filter((d) => isDark(d.selector));
-		if (!dark.length) {
-			violations.push({ file: path, line: 0, message: "no dark-mode block" });
-		} else {
-			const missingDark = REQUIRED.map((k) => "--theme-" + k).filter(
-				(k) => !dark.some((d) => d.key === k),
-			);
-			if (missingDark.length) {
-				violations.push({
-					file: path,
-					line: 0,
-					message:
-						"dark-mode block missing required theme variables: " +
-						missingDark.join(", "),
-				});
+		// 3. every value is light-dark(a, b) or a bare hex: no selector workaround can hide here
+		for (const d of decls) {
+			if (!SHAPE.test(d.value)) {
+				violations.push({ file: path, line: d.line, message: d.key + " must be light-dark(light, dark) or one hex: " + d.value });
 			}
 		}
 	}
 
-	// 5. registry <-> stylesheets, one to one
+	// 4. registry <-> stylesheets, one to one
 	for (const file of themeFiles) {
 		const id = file.replace(/\.css$/, "");
 		if (!THEMES.some((t) => t.id === id)) {
-			violations.push({
-				file: join(dir, file),
-				line: 0,
-				message: "stylesheet has no registry entry",
-			});
+			violations.push({ file: join(dir, file), line: 0, message: "stylesheet has no registry entry" });
 		}
 	}
 
-	// 4. _reset.css resets exactly the optional keys
-	const resetPath = join(dir, "_reset.css");
-	if (!existsSync(resetPath)) {
-		violations.push({
-			file: resetPath,
-			line: 0,
-			message: "missing _reset.css",
-		});
-	} else {
-		const reset = readDeclarations(readFileSync(resetPath, "utf8")).flatMap(
-			(r) => r.decls,
-		);
-		const want = OPTIONAL.map((k) => "--theme-" + k);
-		const have = reset.map((d) => d.key);
-		const missing = want.filter((k) => !have.includes(k));
-		const extra = have.filter((k) => !want.includes(k));
-		if (missing.length || extra.length) {
-			violations.push({
-				file: resetPath,
-				line: 0,
-				message:
-					"must reset exactly the optional keys — missing: " +
-					(missing.join(", ") || "none") +
-					"; extra: " +
-					(extra.join(", ") || "none"),
-			});
-		}
-		for (const d of reset) {
-			if (d.value !== "initial") {
-				violations.push({
-					file: resetPath,
-					line: d.line,
-					message: d.key + " must be initial",
-				});
-			}
-		}
-	}
-
-	// contract.json and roles.ts must agree on the key list, or every file above is measured wrongly
+	// 5. contract.json and roles.ts must agree on the key list, or every file above is measured wrongly
 	const declared = new Set([
 		...Object.keys(contract.required),
 		...Object.keys(contract.optional),

@@ -71,13 +71,13 @@ test("variant split ignores colons inside arbitrary selectors", () => {
 // Added for the full native set (JW-237). The site is dark-only and shadcn marks its textless
 // indicator parts with data-slot, so both have to be understood or a correct component fails.
 
-test("a dark: fill and a dark: ink are the same state: normalised before matching", () => {
+test("a plain fill and its ink pass: the guard compares classes literally", () => {
   expect(
-    findInklessBrightPlates('<div class="dark:bg-primary dark:text-primary-foreground">x</div>'),
+    findInklessBrightPlates('<div class="bg-primary text-primary-foreground">x</div>'),
   ).toEqual([]);
   // the ink one state away is still missing
   expect(
-    findInklessBrightPlates('<div class="dark:bg-primary text-foreground">x</div>'),
+    findInklessBrightPlates('<div class="hover:bg-primary text-foreground">x</div>'),
   ).toHaveLength(1);
 });
 

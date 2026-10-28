@@ -14,15 +14,25 @@ export const ACCENT_NAMES = [
   "green",
   "lime",
   "yellow",
-  "brightYellow",
   "burntOrange",
   "purple",
 ] as const;
 
 export const lightPalette = lightPaletteJson as Palette;
 
-/** A mode's six neutrals, lightest first. */
+// The business theme's own vocabulary: the six neutrals its roles carry. The palette holds
+// more (lime, yellow and purple, which the accent docs show as data and no CSS variable carries),
+// so the colour page documents the theme, not the raw palette.
+export const THEME_NEUTRALS = ["bg", "panel", "fg", "fgDim", "border", "highlight"] as const;
+
+/** A mode's six palette neutrals, lightest first. */
 export function neutralsLightToDark(p: { colors: Record<string, { hex: string }> }): string[] {
   const hexOf = (name: string) => (p.colors[name] as { hex: string }).hex;
   return [...NEUTRAL_NAMES].sort((a, b) => luminance(hexOf(b)) - luminance(hexOf(a)));
+}
+
+/** The theme's five neutrals, lightest first, in a given palette. */
+export function themeNeutralsLightToDark(p: { colors: Record<string, { hex: string }> }): string[] {
+  const hexOf = (name: string) => (p.colors[name] as { hex: string }).hex;
+  return [...THEME_NEUTRALS].sort((a, b) => luminance(hexOf(b)) - luminance(hexOf(a)));
 }

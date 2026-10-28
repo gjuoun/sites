@@ -23,13 +23,13 @@
   ],
   "exports": {
     "./components/*": "./src/components/*.tsx",
+    "./bg2/*": "./src/bg2/*.ts",
     "./hooks/*": "./src/hooks/*.ts",
     "./lib/utils": "./src/lib/utils.ts",
     "./lib/themes": "./src/lib/themes.ts",
     "./lib/highlighter": "./src/lib/highlighter.tsx",
-    "./theme.css": "./src/styles/theme.css",
+    "./themes/accents": "./src/themes/accents.ts",
     "./themes/*": "./src/themes/*",
-    "./tokens.css": "./src/styles/tokens.css",
     "./styles.css": "./src/styles/styles.css",
     "./package.json": "./package.json"
   },
@@ -39,7 +39,12 @@
     "theme:sync": "bun run scripts/gen-tokens.ts",
     "theme:check": "bun run scripts/gen-tokens.ts --check",
     "ui:theme": "bun run scripts/theme-check.ts",
-    "biz:drift": "bun run scripts/ui-drift.ts"
+    "biz:drift": "bash scripts/ui-registry-probe.sh /tmp/bigface-ui-registry && bun run scripts/ui-lock.ts --registry /tmp/bigface-ui-registry",
+    "ui-lock": "bun run scripts/ui-lock.ts",
+    "ui-registry": "bash scripts/ui-registry-probe.sh /tmp/bigface-ui-registry",
+    "ui-lock:write": "bun run scripts/ui-lock.ts --write --registry /tmp/bigface-ui-registry",
+    "bg2:sync": "bun run scripts/gen-bg2.ts",
+    "bg2:check": "bun run scripts/gen-bg2.ts --check"
   },
   "dependencies": {
     "cn": "^0.5.0"

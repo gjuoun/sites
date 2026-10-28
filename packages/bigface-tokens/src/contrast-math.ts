@@ -44,7 +44,6 @@ export function contrastReport(p: Palette): ContrastRow[] {
     "green",
     "lime",
     "yellow",
-    "brightYellow",
     "burntOrange",
     "purple",
   ] as const;

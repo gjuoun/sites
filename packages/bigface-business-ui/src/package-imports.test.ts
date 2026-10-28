@@ -23,6 +23,7 @@ const walk = (dir: string) => {
 walk(join(here, "components"));
 walk(join(here, "hooks"));
 walk(join(here, "lib"));
+walk(join(here, "bg2"));
 
 const bare = (spec: string): string | null => {
   if (spec.startsWith(".") || spec.startsWith("@gjuoun/bigface-business-ui")) return null;
