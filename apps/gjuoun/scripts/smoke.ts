@@ -304,9 +304,10 @@ function contractFailures(route: string, f: Facts): string[] {
 			bad(`home shows resume entries: ${f.entryHeadings.join(" | ")}`);
 		if (f.headline !== "")
 			bad(`home still shows a resume headline: ${f.headline}`);
-		if (f.introParagraphs < 2)
-			bad(`home intro paragraphs ${f.introParagraphs}, want >= 2`);
-		if (f.introLength < 300)
+		// One paragraph, on purpose: the intro states who he is and what the site holds, and stops.
+		if (f.introParagraphs !== 1)
+			bad(`home intro paragraphs ${f.introParagraphs}, want exactly 1`);
+		if (f.introLength < 200)
 			bad(`home intro too short: ${f.introLength} chars`);
 		if (
 			!f.introIndexLinks.includes("/posts/") ||

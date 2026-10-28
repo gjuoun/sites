@@ -3,13 +3,7 @@ import { about } from "../data/about";
 ---
 
 <div class="intro">
-	<p class="intro-lead">{about.lead}</p>
-	{
-		about.paragraphs.map((paragraph) => (
-			<p>{paragraph}</p>
-		))
-	}
-	<p class="intro-what">{about.whatThisIs.body}</p>
+	<p class="intro-lead">{about.intro}</p>
 	<ul class="intro-index">
 		{
 			about.sections.map((section) => (
