@@ -144,7 +144,7 @@ const FOOTER_GAP = 48;
 const META_GAP_MIN = 24;
 // The tailwind md breakpoint: two card columns at and above it, one below.
 const GRID_MD = 768;
-const PORTFOLIO_COUNT = 4;
+const PORTFOLIO_COUNT = 6;
 // The resume's facts, in reverse-chronological order. Mistplay keeps both of its roles, newest first.
 const EXPECT_ENTRIES = [
 	"Senior Developer II, Mistplay",

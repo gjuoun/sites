@@ -3,7 +3,8 @@
 import { join } from "node:path";
 
 export const LIMITS = {
-	htmlBytes: 30 * 1024,
+	// 32 KB: the portfolio grew to a 6-card grid (JW-245), two cards ≈ 1.7 KB; home peaked at 32393 B.
+	htmlBytes: 32 * 1024,
 	// 32 KB: the stock theme components (cards, chips, buttons) add about 20 KB of Tailwind on top of the site's own 9 KB.
 	cssBytes: 32 * 1024,
 	jsBytes: 4 * 1024,
