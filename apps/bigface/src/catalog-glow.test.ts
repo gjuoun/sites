@@ -183,7 +183,14 @@ for (const width of [1440, 390]) {
 				expect(dist3(hover.fillTL, BLUE), mode + ": hover fill is flat primary (top-left)").toBeLessThanOrEqual(3);
 				expect(dist3(hover.fillBR, BLUE), mode + ": hover fill is flat primary (bottom-right)").toBeLessThanOrEqual(3);
 				expect(hover.ink, mode + ": the ink is the same on hover").toBe(rest.ink);
-				expect(contrast(rgbOf(hover.ink)!, hover.fillMid), mode + ": ink on fill at least 4.5:1").toBeGreaterThanOrEqual(4.5);
+				// Ruling 2026-10-27 (Jun): in light the ink on the fill is the canvas colour, which measures
+				// about 2.27:1. It is a declared exception, pinned to its measured value and reported, not hidden.
+				const inkContrast = contrast(rgbOf(hover.ink)!, hover.fillMid);
+				if (mode === "light") {
+					expect(Math.round(inkContrast * 100) / 100, "light: ink on fill (declared exception)").toBe(2.27);
+				} else {
+					expect(inkContrast, mode + ": ink on fill at least 4.5:1").toBeGreaterThanOrEqual(4.5);
+				}
 				expect(hover.box.T, mode + ": hover lifts the button 2px").toBe(rest.box.T - 2);
 			}
 			expect(r.textBefore).toBe("Glowed 0×");

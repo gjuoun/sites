@@ -45,9 +45,21 @@ describe("coverage is the reach of the export, not the first row of a lane (r52)
   });
 });
 
-describe("the shipped export reaches back past every quota window it is used for (r52)", () => {
-  const dir = join(APP_ROOT, "data", "raw", "usage");
-  const latest = existsSync(dir) ? readdirSync(dir).filter((f) => f.endsWith(".json")).sort().at(-1) : undefined;
+// The raw export is harvested locally and gitignored, so a clean checkout (CI) has no file to read.
+// The suite skips there instead of failing: the assertions describe the shipped data, which only a
+// machine holding that export can check.
+const exportDir = join(APP_ROOT, "data", "raw", "usage");
+const latestExport = existsSync(exportDir)
+  ? readdirSync(exportDir)
+      .filter((f) => f.endsWith(".json"))
+      .sort()
+      .at(-1)
+  : undefined;
+const describeExport = latestExport ? describe : describe.skip;
+
+describeExport("the shipped export reaches back past every quota window it is used for (r52)", () => {
+  const dir = exportDir;
+  const latest = latestExport;
   const file = latest ? JSON.parse(readFileSync(join(dir, latest), "utf8")) : null;
   const quota = JSON.parse(readFileSync(join(APP_ROOT, "data", "quota.json"), "utf8"));
   test("the latest raw export records its start, and that start is 31 days before it was taken", () => {
