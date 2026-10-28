@@ -654,6 +654,16 @@ try {
 								document.querySelector("#theme-toggle") as Element,
 							).fontSize,
 						),
+						hasLabel: Boolean(
+							document
+								.querySelector("#theme-toggle")
+								?.getAttribute("aria-label")
+								?.trim(),
+						),
+						visibleText: (
+							document.querySelector("#theme-toggle") as HTMLElement
+						).innerText.trim(),
+						hasIcon: Boolean(document.querySelector("#theme-toggle svg")),
 					}
 				: null;
 		});
@@ -673,10 +683,17 @@ try {
 				failures.push(
 					`${route} @${MOBILE.width} header height ${head.hh} > 64`,
 				);
-			if (head.tsize > 14)
+			// Icon-only: no visible text, but the button must still carry an accessible name.
+			if (!head.hasLabel)
 				failures.push(
-					`${route} @${MOBILE.width} toggle font ${head.tsize}px > 14px`,
+					`${route} @${MOBILE.width} toggle has no accessible name`,
 				);
+			if (head.visibleText.length > 0)
+				failures.push(
+					`${route} @${MOBILE.width} toggle shows text: ${head.visibleText}`,
+				);
+			if (!head.hasIcon)
+				failures.push(`${route} @${MOBILE.width} toggle has no icon`);
 		}
 		failures.push(
 			...geometryFailures(

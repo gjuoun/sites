@@ -154,7 +154,11 @@ pre {
 .theme-toggle {
 	display: inline-flex;
 	align-items: center;
+	justify-content: center;
 	gap: 0.35rem;
+	min-width: 1.75rem;
+	min-height: 1.75rem;
+	padding: 0.3rem;
 }
 .theme-toggle-icon {
 	display: inline-flex;
@@ -181,22 +185,6 @@ pre {
 	.site-header nav a {
 		padding: 0.2rem 0.45rem;
 		font-size: 0.875rem;
-	}
-	/* Icon-only on phones: the label is hidden visually but still the button's accessible name. */
-	.theme-toggle {
-		font-size: 0.8125rem;
-		padding: 0.35rem;
-		white-space: nowrap;
-	}
-	.theme-toggle-label {
-		position: absolute;
-		width: 1px;
-		height: 1px;
-		margin: -1px;
-		padding: 0;
-		overflow: hidden;
-		clip-path: inset(50%);
-		white-space: nowrap;
 	}
 }
 /* Very narrow screens: the nav scrolls inside its own track instead of pushing the page wide. */
