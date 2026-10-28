@@ -78,6 +78,33 @@ pre {
 	padding: 0.75rem;
 	overflow-x: auto;
 }
+/* Code blocks: the bigface editor theme carries the colours; the site only sets the metrics.
+   Size and tab width are Jun's: 12px on desktop, 11px on phones, two spaces per tab. */
+.astro-code,
+pre {
+	font-size: 12px;
+	line-height: 1.55;
+	tab-size: 2;
+	-moz-tab-size: 2;
+	border-radius: 6px;
+}
+.astro-code {
+	padding: 0.85rem 1rem;
+}
+@media (max-width: 40rem) {
+	.astro-code,
+	pre {
+		font-size: 11px;
+	}
+}
+/* Inline code stays in the page's own palette so it does not read as a code block. */
+:not(pre) > code {
+	font-size: 0.9em;
+	background: var(--theme-frame);
+	border: 1px solid var(--theme-border);
+	border-radius: 4px;
+	padding: 0.05em 0.3em;
+}
 /* Starter copy is a discreet footer note, never part of the content flow. */
 .starter-note {
 	color: var(--theme-muted-ink);
@@ -248,6 +275,52 @@ pre {
 }
 
 /* Home: three sections, each set off from the one before it. */
+/* Visually hidden, still read by assistive tech. */
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+/* The intro at the top of the home page: one lead sentence, two short paragraphs, then the index of the site. */
+.intro {
+	max-width: 62ch;
+}
+.intro-lead {
+	font-size: 1.125rem;
+	line-height: 1.6;
+	margin-bottom: 1rem;
+}
+.intro p {
+	margin-bottom: 1rem;
+}
+.intro-what {
+	margin-top: 1.75rem;
+}
+.intro-index {
+	list-style: none;
+	margin: 0.75rem 0 0;
+	padding: 0;
+	display: grid;
+	gap: 0.5rem;
+}
+.intro-index li {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 0.15rem;
+	padding-left: 0.9rem;
+	border-left: 2px solid var(--theme-border);
+}
+.intro-index a {
+	font-weight: 600;
+}
+.intro-index span {
+	color: var(--theme-fg-dim);
+}
 .home-section + .home-section {
 	margin-top: 2.5rem;
 	padding-top: 1.5rem;

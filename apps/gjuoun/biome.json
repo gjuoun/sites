@@ -29,6 +29,12 @@
           }
         }
       }
+    },
+    {
+      "includes": ["src/themes/bigface-code.json"],
+      "formatter": { "enabled": false },
+      "linter": { "enabled": false },
+      "assist": { "enabled": false }
     }
   ]
 }

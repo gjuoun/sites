@@ -1,0 +1,23 @@
+---
+import { about } from "../data/about";
+---
+
+<div class="intro">
+	<p class="intro-lead">{about.lead}</p>
+	{
+		about.paragraphs.map((paragraph) => (
+			<p>{paragraph}</p>
+		))
+	}
+	<p class="intro-what">{about.whatThisIs.body}</p>
+	<ul class="intro-index">
+		{
+			about.sections.map((section) => (
+				<li>
+					<a href={section.href}>{section.label}</a>
+					<span>{section.body}</span>
+				</li>
+			))
+		}
+	</ul>
+</div>

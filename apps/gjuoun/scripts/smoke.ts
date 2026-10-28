@@ -107,6 +107,9 @@ type Facts = {
 	resumeFacts: ResumeFacts;
 	summaryLength: number;
 	hasFullResumeLink: boolean;
+	introParagraphs: number;
+	introLength: number;
+	introIndexLinks: string[];
 	canonical: string;
 	metaGaps: number[];
 };
@@ -130,8 +133,9 @@ type Geometry = {
 	gridTracks: number;
 };
 // Nav order is Home, then the page sections in the order the home page flows them.
-const NAV_LABELS = ["Home", "Portfolio", "Resume", "Posts"];
-const SECTIONS = ["Portfolio", "Resume", "Posts"];
+// The nav order follows the home page's own flow: Portfolio, then the lessons, then the resume.
+const NAV_LABELS = ["Home", "Portfolio", "Posts", "Resume"];
+const SECTIONS = ["Portfolio", "Posts", "Resume"];
 const DESKTOP = { width: 1440, height: 900 };
 const MOBILE = { width: 390, height: 844 };
 // Page bottom: the footer follows the last content at 3rem on every page.
@@ -224,6 +228,13 @@ const readFacts = (): Facts => {
 		hasFullResumeLink: [...document.querySelectorAll("main a")].some(
 			(a) => (a.getAttribute("href") ?? "") === "/resume/",
 		),
+		introParagraphs: document.querySelectorAll("main .intro p").length,
+		introLength: (
+			document.querySelector("main .intro")?.textContent ?? ""
+		).trim().length,
+		introIndexLinks: [...document.querySelectorAll("main .intro-index a")].map(
+			(a) => a.getAttribute("href") ?? "",
+		),
 		// Everything the resume says, as text: the home page and /resume/ must carry the same facts.
 		resumeFacts: {
 			headline: txt(document.querySelector("main p.headline")),
@@ -279,27 +290,29 @@ function contractFailures(route: string, f: Facts): string[] {
 		bad(`footer starter note ${f.footerNotes}, want ${wantNote}`);
 	const lists = f.lessonLists;
 	if (route === "/") {
-		if (f.headings.join("|") !== "Portfolio|Resume|Posts")
+		if (f.headings.join("|") !== "Introduction|Portfolio|Posts")
 			bad(`home sections ${f.headings.join("|")}`);
-		if (f.metaGaps.length !== 1 || f.metaGaps[0] < META_GAP_MIN)
-			bad(
-				`home contact line gap ${JSON.stringify(f.metaGaps)}, want >= ${META_GAP_MIN}`,
-			);
+		// The contact line lives on /resume/ now, so the home page has no meta gap to measure.
+		if (f.metaGaps.length !== 0)
+			bad(`home still has a resume meta line: ${JSON.stringify(f.metaGaps)}`);
 		if (!lists.some((l) => l.length >= 3 && sequential(l)))
 			bad("home has no numbered lesson list with 3+ ordinals");
 	}
 	if (route === "/") {
-		// The home page is a teaser now: headline, contact and summary only. The full history lives on /resume/.
+		// The home page opens with an introduction and carries no resume of its own: the resume lives on /resume/.
 		if (f.entryHeadings.length !== 0)
 			bad(`home shows resume entries: ${f.entryHeadings.join(" | ")}`);
-		if (f.headline !== "Senior Software Engineer")
-			bad(`home headline is ${f.headline}`);
-		if (!f.contactHrefs.includes("mailto:gjuoun@gmail.com"))
-			bad("home contact line lacks the email");
-		if (!f.contactText.includes("Montreal, Canada"))
-			bad("home contact line lacks Montreal, Canada");
-		if (f.summaryLength < 80) bad(`home summary too short: ${f.summaryLength}`);
-		if (!f.hasFullResumeLink) bad("home lacks the Full resume link");
+		if (f.headline !== "")
+			bad(`home still shows a resume headline: ${f.headline}`);
+		if (f.introParagraphs < 2)
+			bad(`home intro paragraphs ${f.introParagraphs}, want >= 2`);
+		if (f.introLength < 300)
+			bad(`home intro too short: ${f.introLength} chars`);
+		if (
+			!f.introIndexLinks.includes("/posts/") ||
+			!f.introIndexLinks.includes("/resume/")
+		)
+			bad(`home intro index links ${f.introIndexLinks.join("|")}`);
 	}
 	if (route === "/resume/") {
 		// All four employers and all five positions, with their dates, in order.
@@ -675,7 +688,7 @@ try {
 		);
 		await context.close();
 	}
-	// Home carries only the teaser: same headline and contact as the full page, and no history of its own.
+	// The resume lives on /resume/ only: the home page must not repeat any of its history.
 	const home = resumeSnapshots.get("/") as ResumeFacts | undefined;
 	const resume = resumeSnapshots.get("/resume/");
 	expect(
@@ -683,12 +696,13 @@ try {
 		"resume facts missing on / or /resume/",
 	);
 	expect(
-		home!.headline === "Senior Software Engineer",
-		`home teaser headline is ${home!.headline}`,
+		home!.entries.length === 0 && home!.headline === "",
+		`home repeats resume facts: ${JSON.stringify(home)}`,
 	);
 	expect(
-		home!.contact.length > 0 && home!.entries.length === 0,
-		`home teaser carries entries: ${JSON.stringify(home!.entries)}`,
+		resume!.headline === "Senior Software Engineer" &&
+			resume!.entries.length === 6,
+		`/resume/ is not the full page: ${resume!.headline} / ${resume!.entries.length} entries`,
 	);
 } finally {
 	await browser?.close();
