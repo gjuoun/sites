@@ -11,6 +11,7 @@ export const EXTERNAL_HOSTS: readonly string[] = [
 	"qublack.qqntt.com",
 	"bigface.qqntt.com",
 	"subsdaddy.qqntt.com",
+	"bundant.qqntt.com",
 	"www.w3.org",
 	"www.sitemapprotocol.org",
 ];
