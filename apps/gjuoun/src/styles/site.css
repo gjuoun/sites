@@ -82,7 +82,7 @@ pre {
    Size and tab width are Jun's: 12px on desktop, 11px on phones, two spaces per tab. */
 .astro-code,
 pre {
-	font-size: 12px;
+	font-size: 13px;
 	line-height: 1.55;
 	tab-size: 2;
 	-moz-tab-size: 2;
@@ -94,7 +94,7 @@ pre {
 @media (max-width: 40rem) {
 	.astro-code,
 	pre {
-		font-size: 11px;
+		font-size: 12px;
 	}
 }
 /* Inline code stays in the page's own palette so it does not read as a code block. */
