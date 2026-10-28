@@ -8,6 +8,7 @@ import { dataset } from "./dataset";
 import { ALL_SHAPES, SHAPES, MEASURED, summaryTable, viewChips, viewRows, BRING_YOUR_OWN } from "./summary";
 import { CONTEXT_IDS } from "../data/context";
 import type { DS } from "./sections";
+import { commandcodeLive } from "./live";
 
 const ds = dataset as unknown as DS;
 const usage = JSON.parse(readFileSync(join(import.meta.dir, "..", "..", "data", "usage.json"), "utf8"));
@@ -15,7 +16,7 @@ const usage = JSON.parse(readFileSync(join(import.meta.dir, "..", "..", "data", 
 describe("Allowance: the seventh column", () => {
   test("the columns are Plan, Fee/mo, Allowance, Capacity, $/B, tok/s, TTFT p50 in every view", () => {
     for (const c of viewChips(ds)) {
-      expect(summaryTable(ds, c.id).columns.map((x) => x.label)).toEqual(["Plan", "Fee/mo", "Allowance", "Capacity", "$/B", "tok/s", "TTFT p50"]);
+      expect(summaryTable(ds, c.id).columns.map((x) => x.label)).toEqual(["Plan", "Fee/mo", "Allowance", "Capacity", "$/B", "Threads est", "tok/s", "TTFT p50"]);
     }
   });
 
@@ -36,7 +37,7 @@ describe("Allowance: the seventh column", () => {
     for (const l of ds.lanes.lanes) {
       const b = l.capacity.allowance_basis;
       const credit = ds.catalog.rows.find((r: any) => r.measured_lane === l.lane)?.credits_to_usd;
-      want.set(l.lane, b === "vendor_published" ? "p" : b === "derived" ? (credit ? "c" : "d") : b === "vendor_reported" ? "r" : "?");
+      want.set(l.lane, b === "vendor_published" || b === "vendor_published_per_model" || b === "vendor_published_weighted" ? "p" : b === "derived" ? (credit ? "c" : "d") : b === "vendor_reported" ? "r" : "?");
     }
     for (const r of summaryTable(ds, MEASURED).rows) {
       // a lane with no stored stable reading is N/A (r48): it has no marker to check
@@ -45,7 +46,7 @@ describe("Allowance: the seventh column", () => {
     }
   });
 
-  test("the tooltip names every source of a lane's allowance: published, dashboard pool, derived", () => {
+  test.skipIf(!commandcodeLive)("the tooltip names every source of a lane's allowance: published, dashboard pool, derived", () => {
     const cc = ds.lanes.lanes.find((l) => l.lane === "commandcode-goat")!.capacity;
     const t = summaryTable(ds, MEASURED).rows.find((r) => r.key === "commandcode-goat")!.cells.allowance.title ?? "";
     expect(t).toContain("published $" + cc.allowance_published_usd!.toFixed(2));
@@ -79,7 +80,7 @@ describe("Measured: the cache share is in the tooltip and matches usage.json", (
 });
 
 describe("CommandCode and OpenCode Go: equal under every shape and context", () => {
-  test("with their published $80 pools the two $/B are equal in every shape and both contexts", () => {
+  test.skipIf(!commandcodeLive)("with their published $80 pools the two $/B are equal in every shape and both contexts", () => {
     for (const ctx of CONTEXT_IDS) for (const s of SHAPES) {
       const rows = viewRows(ds, "deepseek-v4.1-flash" as never, ctx, s);
       const cc = rows.find((r) => r.key.startsWith("commandcode"))!;

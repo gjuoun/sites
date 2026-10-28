@@ -23,7 +23,21 @@
       "quote": "Claude Pro $20/mo $157 ($142–$170), ≈ $681/mo",
       "cross_check": null,
       "mix_class": "sonnet",
-      "mix_class_note": "measured on Claude Sonnet-class usage (uncached and output tokens priced at Sonnet 5.5 list)"
+      "mix_class_note": "counterpart only (r50): the Sonnet 5.5 blend at the measured mix, shown in the tooltip; the row itself is priced at the selected model",
+      "token_anchor": {
+        "label": "wokey.ai real accounts, 2026-10-19 to 10-26, 103 accounts",
+        "weekly_tokens_total": 141000000,
+        "weekly_cache_read_tokens": null,
+        "weekly_uncached_tokens": 23600000,
+        "value_usd_week": 157,
+        "measurement": "average_traffic",
+        "publisher": "wokey.ai",
+        "url": "https://wokey.ai/claude-usage-limits",
+        "date": "2026-10-26",
+        "quote": "Claude Pro: 83% cache reads, 141M tokens a week, of which only 23.6M are not cache reads",
+        "sample": "103 real subscription accounts, average weekly traffic, not a cap reading"
+      },
+      "token_anchor_absent_reason": null
     },
     {
       "plan_id": "claude-code-max-5x",
@@ -31,7 +45,7 @@
       "fee_usd_per_month": 100,
       "weekly_usd": 940,
       "value_kind": "measured",
-      "value_rule": "lower_bound",
+      "value_rule": "median_of_sources",
       "range_usd": [
         940,
         1170
@@ -46,15 +60,50 @@
       "quote": "Claude delivered about $940–1,170 a week",
       "cross_check": null,
       "mix_class": "sonnet",
-      "mix_class_note": "measured on Claude Sonnet-class usage (uncached and output tokens priced at Sonnet 5.5 list)"
+      "mix_class_note": "counterpart only (r50): the Sonnet 5.5 blend at the measured mix, shown in the tooltip; the row itself is priced at the selected model",
+      "primary_weekly_usd": 940,
+      "community_observations": [
+        {
+          "author": "buildwithhassan",
+          "tweet_id": "2111584427067551764",
+          "url": "https://x.com/buildwithhassan/status/2111584427067551764",
+          "date": "2026-10-17",
+          "quote": "On Max 20x you get about $1,100 of API value a week, while Max 5x gets around $550.",
+          "weekly_usd": 550,
+          "note": "the author's own arithmetic in the post, for Max 5x"
+        },
+        {
+          "author": "SKatalystAI",
+          "tweet_id": "2114395405253333390",
+          "url": "https://x.com/SKatalystAI/status/2114395405253333390",
+          "date": "2026-10-25",
+          "quote": "$1,718 estimated API-equivalent usage",
+          "weekly_usd": 1718,
+          "note": "at 100% of the weekly limit on Max 5x: 5.22 BILLION tokens processed, 5.13B cache read, 14.98M output; the author's own API-equivalent estimate from logs"
+        }
+      ],
+      "token_anchor": {
+        "label": "SKatalyst on X, 100% of weekly limit, one account",
+        "weekly_tokens_total": 5220000000,
+        "weekly_cache_read_tokens": 5130000000,
+        "weekly_uncached_tokens": null,
+        "value_usd_week": 1718,
+        "measurement": "at_cap",
+        "publisher": "X @SKatalystAI",
+        "url": "https://x.com/SKatalystAI/status/2114395405253333390",
+        "date": "2026-10-25",
+        "quote": "Finally hit 100% of my Claude Max 5x weekly limit · 5.22 BILLION tokens processed · 5.13B cache read tokens · $1,718 estimated API-equivalent usage",
+        "sample": "1 account at 100% of its weekly limit"
+      },
+      "token_anchor_absent_reason": null
     },
     {
       "plan_id": "claude-code-max-20x",
       "plan": "Claude Max 20x",
       "fee_usd_per_month": 200,
-      "weekly_usd": 1602,
+      "weekly_usd": 1351,
       "value_kind": "measured",
-      "value_rule": "headline",
+      "value_rule": "median_of_sources",
       "range_usd": [
         1147,
         1745
@@ -75,7 +124,33 @@
         "note": "Measured cap, scaled to 125%; 60 days of logs. Not an independent measurement of the same quantity; shown for reference."
       },
       "mix_class": "sonnet",
-      "mix_class_note": "measured on Claude Sonnet-class usage (uncached and output tokens priced at Sonnet 5.5 list)"
+      "mix_class_note": "counterpart only (r50): the Sonnet 5.5 blend at the measured mix, shown in the tooltip; the row itself is priced at the selected model",
+      "primary_weekly_usd": 1602,
+      "community_observations": [
+        {
+          "author": "buildwithhassan",
+          "tweet_id": "2111584427067551764",
+          "url": "https://x.com/buildwithhassan/status/2111584427067551764",
+          "date": "2026-10-17",
+          "quote": "On Max 20x you get about $1,100 of API value a week, while Max 5x gets around $550.",
+          "weekly_usd": 1100,
+          "note": "the author's own arithmetic in the post, for Max 20x"
+        }
+      ],
+      "token_anchor": {
+        "label": "wokey.ai real accounts, 2026-10-19 to 10-26, 21 accounts",
+        "weekly_tokens_total": 2080000000,
+        "weekly_cache_read_tokens": null,
+        "weekly_uncached_tokens": 182000000,
+        "value_usd_week": 1602,
+        "measurement": "average_traffic",
+        "publisher": "wokey.ai",
+        "url": "https://wokey.ai/claude-usage-limits",
+        "date": "2026-10-26",
+        "quote": "Claude Max 20x: 92% cache reads, 2.08B tokens a week, of which only 182M are not cache reads",
+        "sample": "21 real subscription accounts, average weekly traffic, not a cap reading"
+      },
+      "token_anchor_absent_reason": null
     },
     {
       "plan_id": "codex-pro",
@@ -98,7 +173,9 @@
       "quote": "Codex about $270–340 a week",
       "cross_check": null,
       "mix_class": "luna",
-      "mix_class_note": "measured on GPT-6-class usage; priced here at GPT-6 Luna list, the closest class in our tables"
+      "mix_class_note": "counterpart only (r50): the GPT-6 Luna blend at the measured mix, shown in the tooltip; the row itself is priced at the selected model",
+      "token_anchor": null,
+      "token_anchor_absent_reason": "no token count published by the source (promptster.ai)"
     },
     {
       "plan_id": "codex-pro-20x",
@@ -118,7 +195,9 @@
       "quote": "ChatGPT Pro 20x $200 $1,340 Plus × 20, projected",
       "cross_check": null,
       "mix_class": "luna",
-      "mix_class_note": "measured on GPT-6-class usage; priced here at GPT-6 Luna list, the closest class in our tables"
+      "mix_class_note": "counterpart only (r50): the GPT-6 Luna blend at the measured mix, shown in the tooltip; the row itself is priced at the selected model",
+      "token_anchor": null,
+      "token_anchor_absent_reason": "no token count published by the source (finopsllm.com)"
     }
   ],
   "not_found": [

@@ -144,6 +144,8 @@ export const usageFileSchema = z.object({
   window_days: z.number().positive(),
   coverage_start: z.iso.datetime(),
   coverage_end: z.iso.datetime(),
+  /** The earliest instant the export reaches back to (now minus window_days). A quota window's coverage is measured from here (r52). */
+  export_start: z.iso.datetime().optional(),
   lanes: z.array(laneUsageSchema).length(LANES.length),
   ...provenance,
 });
@@ -171,7 +173,8 @@ export const benchmarkFileSchema = z.object({
     .array(
       z.object({
         model: z.string().min(1),
-        status: z.enum(["ok", "unavailable"]),
+        // r57: stats_unavailable = every endpoint reported zero throughput; kept_previous = this run could not read the page, so the last trusted snapshot is kept
+        status: z.enum(["ok", "unavailable", "stats_unavailable", "kept_previous"]),
         reason: z.string().min(1).nullable(),
         endpoints: z.number().int().nonnegative(),
         measured_at: z.iso.datetime(),
@@ -290,7 +293,15 @@ export const laneRecordSchema = z.object({
     window: z.enum(["5h", "weekly", "monthly"]).nullable(),
     cycle_days: z.number().positive().nullable(),
     cycle_billed: z.boolean(),
-    allowance_basis: z.enum(["vendor_published", "vendor_reported", "derived"]).nullable().optional(),
+    allowance_basis: z.enum(["vendor_published", "vendor_published_per_model", "vendor_published_weighted", "vendor_reported", "derived"]).nullable().optional(),
+    per_model: z.object({
+  rule: z.enum(["single_model", "weighted"]),
+  main_model: z.string().nullable(),
+  usd: z.number().positive(),
+  blend_usd_per_b: z.number().positive(),
+  derived_usd: z.number().positive().nullable(),
+  parts: z.array(z.object({ model: z.string().min(1), share: z.number().min(0).max(1), limit_usd: z.number().positive().nullable() })),
+}).nullable().optional(),
     allowance_published_usd: z.number().positive().nullable().optional(),
     allowance_vendor_usd: z.number().positive().nullable().optional(),
     allowance_vendor_reason: z.string().nullable().optional(),

@@ -5,6 +5,7 @@ import type { DS } from "./sections";
 import { catalogFileSchema, type CatalogRow } from "../data/catalog";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { commandcodeLive } from "./live";
 
 const ds = dataset as unknown as DS;
 const CC = "commandcode-goat-published";
@@ -24,7 +25,7 @@ describe("the shapes", () => {
 });
 
 describe("under one shape, the same fee and the same allowance give the same $/B", () => {
-  test("with equal allowances, CommandCode and OpenCode Go are equal under every shape (same fee, same DeepSeek price)", () => {
+  test.skipIf(!commandcodeLive)("with equal allowances, CommandCode and OpenCode Go are equal under every shape (same fee, same DeepSeek price)", () => {
     for (const s of SHAPES) {
       const cc = shapeUsd({ fee: 10, allowance: 80, price: ccV.price_used as never, ctx_tokens: 100_000, shape: s }).usd;
       const go = shapeUsd({ fee: 10, allowance: 80, price: goV.price_used as never, ctx_tokens: 100_000, shape: s }).usd;
@@ -32,7 +33,7 @@ describe("under one shape, the same fee and the same allowance give the same $/B
     }
   });
 
-  test("with the allowances the data holds, the two $/B differ by exactly the ratio of the allowances, in every shape", () => {
+  test.skipIf(!commandcodeLive)("with the allowances the data holds, the two $/B differ by exactly the ratio of the allowances, in every shape", () => {
     for (const s of SHAPES) {
       const cc = usdOf("deepseek-v4.1-flash", CC, s);
       const go = usdOf("deepseek-v4.1-flash", GO, s);
@@ -40,7 +41,7 @@ describe("under one shape, the same fee and the same allowance give the same $/B
     }
   });
 
-  test("the shape changes the $/B of a plan, so a shape is not a no-op", () => {
+  test.skipIf(!commandcodeLive)("the shape changes the $/B of a plan, so a shape is not a no-op", () => {
     const a = usdOf("deepseek-v4.1-flash", CC, SHAPES[0]);
     const c = usdOf("deepseek-v4.1-flash", CC, SHAPES[2]);
     expect(a).not.toBeCloseTo(c, 6);
@@ -56,7 +57,7 @@ describe("Measured does not depend on the shape", () => {
 });
 
 describe("the assumed-rate share is in the data, and names its rate", () => {
-  test("CommandCode's binding window reports a positive assumed share below half, from deepseek-v4.1-flash-fast", () => {
+  test.skipIf(!commandcodeLive)("CommandCode's binding window reports a positive assumed share below half, from deepseek-v4.1-flash-fast", () => {
     const s = ds.lanes.lanes.find((l: any) => l.lane === "commandcode-goat")!.capacity.assumed_share ?? 0;
     expect(s).toBeGreaterThan(0);
     expect(s).toBeLessThan(0.5);

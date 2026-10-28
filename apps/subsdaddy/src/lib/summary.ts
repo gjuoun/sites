@@ -13,6 +13,7 @@ import { na, value, type BadgeKind, type Cell } from "./cells";
 import { REF_IDS, REF_NAMES, pooledMix, type RefId } from "../data/estimate";
 import { contextLabel, type ContextId } from "../data/context";
 import { staleSentence } from "../data/published";
+import { UPSTREAM_TO_PAGE_MODEL } from "../data/per-model-limit";
 
 /** The held-lane sentence: the date of its last stable reading and its current windows; a seed adds its own clause (r49). */
 export function heldLine(s: { read_at: string; current_windows: Array<{ window: string; used_pct: number; measured_at: string; source: string }>; seed?: boolean | null }): string {
@@ -45,12 +46,35 @@ export const ARCHIVED_FOOTNOTE = (ctx: ContextId) => "‡ converted from vendor 
 export const SUMMARY_COLUMNS: Column[] = [
   { key: "plan", label: "Plan", width: "26%" },
   { key: "fee", label: "Fee/mo", width: "10%", numeric: true },
-  { key: "allowance", label: "Allowance", width: "15%", numeric: true },
-  { key: "capacity", label: "Capacity", width: "14%", numeric: true },
-  { key: "usd", label: "$/B", width: "12%", numeric: true },
-  { key: "tps", label: "tok/s", width: "12%", numeric: true },
-  { key: "ttft", label: "TTFT p50", width: "11%", numeric: true },
+  { key: "allowance", label: "Allowance", width: "14%", numeric: true },
+  { key: "capacity", label: "Capacity", width: "12%", numeric: true },
+  { key: "usd", label: "$/B", width: "10%", numeric: true },
+  { key: "threads", label: "Threads est", width: "8%", numeric: true },
+  { key: "tps", label: "tok/s", width: "10%", numeric: true },
+  { key: "ttft", label: "TTFT p50", width: "10%", numeric: true },
 ];
+
+/** Hours in a week: the full-time ceiling a thread count is measured against (r54). */
+export const THREAD_WEEK_HOURS = 168;
+
+/**
+ * Threads (r55): the agent threads a row's capacity keeps running at full time, derived. A thread's weekly tokens are the
+ * measured tokens per session-hour x 168 h x an occupancy assumption (THREAD_OCCUPANCY). Weekly capacity is the 30-day
+ * capacity scaled to 7 days. Derived, not a vendor figure.
+ */
+export const THREAD_OCCUPANCY = 0.25;
+export function threadsOf(tokens30d: number | null, tokensPerSessionHour: number): number | null {
+  if (tokens30d === null || !(tokensPerSessionHour > 0)) return null;
+  const weekTokens = (tokens30d * 7) / 30;
+  return weekTokens / (tokensPerSessionHour * THREAD_WEEK_HOURS * THREAD_OCCUPANCY);
+}
+
+/** One decimal; below a tenth it reads "<0.1", never 0.0 (r54). */
+export function formatThreads(v: number | null): string {
+  if (v === null) return "N/A";
+  if (v < 0.1) return "<0.1";
+  return v.toFixed(1);
+}
 
 /** A weighted median: the value at which half of the total weight lies at or below it (ascending order). */
 export function weightedMedian(pairs: Array<{ value: number; weight: number }>): number | null {
@@ -101,7 +125,7 @@ export function isCreditRow(r: CatalogRow | undefined): boolean {
 /** The source marker: p published, r vendor reading, d derived from quota windows, c credit value. */
 export function supOf(basis: string | null | undefined, credit: boolean): Sup | null {
   if (basis === "credits") return "c";
-  if (basis === "vendor_published" || basis === "vendor_published_per_model") return "p";
+  if (basis === "vendor_published" || basis === "vendor_published_per_model" || basis === "vendor_published_weighted") return "p";
   if (basis === "vendor_reported") return "r";
   if (basis === "derived") return credit ? "c" : "d";
   if (basis === "third_party_measured") return "t";
@@ -148,6 +172,14 @@ export function cacheMixOf(ds: DS, lane: string): { share: number; short: string
 }
 export const withSup = (c: Cell, sup: Sup): Cell => ({ ...c, sup });
 
+/** The community line in a third-party tooltip: the range of the X reports behind a median row, with their count and month (r56). */
+export function communityLine(c: { min: number; max: number; count: number; period: string } | null | undefined): string | null {
+  if (!c || c.count <= 0) return null;
+  const money = (v: number) => "$" + v.toLocaleString("en-US");
+  const range = c.min === c.max ? money(c.min) : money(c.min) + "–" + c.max.toLocaleString("en-US");
+  return "community range " + range + "/week (" + c.count + (c.count === 1 ? " report" : " reports") + " on X, " + c.period + ")";
+}
+
 /** A third-party allowance's tooltip: its basis (publisher, window, sample, weekly value) with the source's domain and publication date. */
 export function thirdPartyTitle(r: CatalogRow): string | null {
   const a = r.allowance.find((x) => x.ref === "*");
@@ -175,7 +207,7 @@ export function orWeighted(ds: DS, ref: RefId): { tps: number | null; ttft: numb
   const requests = eps.reduce((a, e) => a + (e.request_count ?? 0), 0);
   const tps = weightedMedian(eps.filter((e) => e.p50_throughput !== null).map((e) => ({ value: e.p50_throughput as number, weight: e.request_count ?? 0 })));
   const ttft = weightedMedian(eps.filter((e) => e.p50_latency_ms !== null).map((e) => ({ value: e.p50_latency_ms as number, weight: e.request_count ?? 0 })));
-  return { tps, ttft, title: orId + " · " + eps.length + " endpoints · " + requests.toLocaleString("en-US") + " requests", reason: null };
+  return { tps, ttft, title: orId + " · " + eps.length + " endpoints · " + requests.toLocaleString("en-US") + " requests" + (or.kept ? " · " + or.kept : ""), reason: null };
 }
 
 type DsLane = DS["lanes"]["lanes"][number];
@@ -193,7 +225,9 @@ export function smallTokens(t: number): string {
 export function capDetailOf(l: DsLane): string[] {
   const c = l.capacity as DsLane["capacity"];
   const lines: string[] = c.windows.map((w) => {
-    const head = w.window + " · used " + w.used_pct.toFixed(1) + "% · " + w.status;
+    // a window whose log covers less than 95% of its span is excluded from binding, and says so (r51)
+    const label = w.status === "partial" ? "partial coverage " + Math.round(w.coverage * 100) + "% of span (excluded from binding)" : w.status;
+    const head = w.window + " · used " + w.used_pct.toFixed(1) + "% · " + label;
     if (w.tokens <= 0) return head;
     const cost = smallUsd(w.cost_usd) + " at list · " + smallTokens(w.tokens) + " in window · " + Math.round(w.unpriced_share * 100) + "% unpriced";
     const allow = w.allowance_usd_cycle === null ? "" : " · allowance $" + w.allowance_usd_cycle.toFixed(2) + " per cycle";
@@ -204,7 +238,13 @@ export function capDetailOf(l: DsLane): string[] {
   const vendor = c.allowance_vendor_usd ?? null;
   const derived = c.allowance_derived_usd ?? null;
   const unpricedNote = c.unpriced_share === null || c.unpriced_share === undefined || c.unpriced_share === 0 ? "" : ", includes " + Math.round(c.unpriced_share * 100) + "% unpriced";
-  if (published !== null) {
+  if (c.per_model) {
+    // r53: the official per-model limits set the allowance; the derived figure is a comparison only, never $/B
+    const shares = c.per_model.parts.map((p: { model: string; share: number; limit_usd: number | null }) => (UPSTREAM_TO_PAGE_MODEL[p.model] ?? p.model) + " " + Math.round(p.share * 100) + "% of tokens" + (p.limit_usd === null ? " (no published limit)" : " (limit $" + p.limit_usd.toFixed(0) + ")"));
+    lines.push((c.per_model.rule === "single_model" ? "per-model limit: main model " + (UPSTREAM_TO_PAGE_MODEL[c.per_model.main_model ?? ""] ?? c.per_model.main_model) : "per-model limits weighted by token share") + " → allowance $" + c.per_model.usd.toFixed(2) + " per cycle");
+    lines.push("models: " + shares.join(", "));
+    lines.push("comparison only, not used for $/B: derived from quota windows $" + (c.per_model.derived_usd ?? 0).toFixed(2) + " per cycle");
+  } else if (published !== null) {
     lines.push("published allowance: $" + published.toFixed(2) + " per cycle (used by the model views)");
     if (vendor !== null) lines.push("dashboard pool: $" + vendor.toFixed(2) + " (matches the monthly window): recorded as a difference from the published figure");
     if (derived !== null) lines.push("derived: $" + derived.toFixed(2) + " (from the quota windows" + unpricedNote + ")");
@@ -303,51 +343,63 @@ export function shapeUsd(input: { fee: number; allowance: number; price: RefPric
   return { usd: input.fee / tokensB, tokens_b: tokensB, blend, band: p.band };
 }
 
+/** Billions of tokens for a tooltip: two decimals below 100B, whole billions above. */
+export function fmtBillions(b: number): string {
+  return b >= 100 ? Math.round(b).toLocaleString("en-US") + "B" : b.toFixed(2) + "B";
+}
+
 /**
- * A third-party allowance, priced in the list blend of the class it was measured on (Sonnet for Claude, Luna for Codex).
- * The chip model does not change it: a cheaper model would stretch the same dollars over more tokens, which is not how
- * the measured window behaves. The blend is fixed at the measured mix, so $/B does not move with Shape or context.
+ * A third-party allowance (r59). Capacity is the token volume a source measured on a real account, times 30/7 for a
+ * 30-day cycle. It is not priced at any chip model: the mix is the source's own and differs between sources, so the same
+ * capacity is shown in every model view. Rows with no token anchor show N/A for capacity and $/B, with the reason.
+ * The allowance in dollars is kept, and the tooltip says which source it comes from.
  */
-function mixRow(r: CatalogRow, a: CatalogRow["allowance"][number], ds: DS, or: ReturnType<typeof orWeighted>): ViewRow {
-  const cls = a.mix_class ?? "";
-  const label = cls.charAt(0).toUpperCase() + cls.slice(1);
+export function thirdPartyRow(r: CatalogRow, a: CatalogRow["allowance"][number], ds: DS, ref: RefId, ctx: ContextId, shape: ShapeDef, or: ReturnType<typeof orWeighted>): ViewRow {
+  void ds; void ref; void ctx; void shape;
   const fee = r.price_month_usd ?? 0;
-  const perB = (a.mix_blend_usd_per_million ?? 0.001) * 1000;
-  const capB = a.usd / perB;
-  void ds;
-  return {
+  const allowance = { usd: a.usd, cycle: 30, sup: supOf(a.kind ?? "", false) ?? "t", title: [thirdPartyTitle(r) ?? a.basis, communityLine(a.community)].filter(Boolean).join("\n") };
+  const base = {
     key: r.plan_id,
     label: r.label,
     fee,
-    tokens30d: capB * 1e9,
-    capacity: capB.toFixed(2) + "B/mo",
-    capNote: "@" + cls + " mix",
-    capTitle: "measured under a " + label + "-class mix; a cheaper model does not stretch the same window proportionally",
-    capacityReason: "",
     capDetail: null,
-    allowance: { usd: a.usd, cycle: 30, sup: supOf(a.kind ?? "", false) ?? "t", title: thirdPartyTitle(r) ?? a.basis },
+    allowance,
     allowanceReason: "",
-    usd: fee / capB,
-    usdTitle: "fee ÷ allowance at the " + label + " list blend, measured mix: fixed under every Shape and context",
-    marker: "",
+    marker: "" as const,
     tps: or.tps,
     tpsTitle: or.title || (or.reason ?? "no OpenRouter data"),
     ttft: or.ttft,
     ttftTitle: or.title || (or.reason ?? "no OpenRouter data"),
   };
+  const anchor = a.anchor ?? null;
+  if (anchor === null) {
+    const reason = a.anchor_absent_reason ?? "no token count published by the source";
+    return { ...base, tokens30d: null, capacity: null, capNote: null, capTitle: null, capacityReason: reason, usd: null, usdTitle: reason };
+  }
+  const tokens30d = (anchor.weekly_tokens_total * 30) / 7;
+  const capB = tokens30d / 1e9;
+  const valueMultiple = anchor.value_usd_week / fee;
+  const shownMultiple = (a.usd * 7 / 30) / fee;
+  const measurement = anchor.measurement === "at_cap" ? "measurement: at the weekly limit, one account" : "measurement: average weekly traffic, not a cap reading (a floor on capacity)";
+  const capTitle = [
+    "capacity: " + capB.toFixed(2) + "B tokens/30d, measured on a real account (" + anchor.label + ")",
+    "value: " + valueMultiple.toFixed(1) + "× the $" + fee + " fee at Anthropic list prices (weekly API value ÷ monthly fee)",
+    "not comparable across plans: each source used a different model mix (Sonnet/Opus share differs)",
+    measurement,
+    "allowance shown: " + shownMultiple.toFixed(1) + "× (" + (thirdPartyTitle(r) ? a.basis.split(":")[0] : "source") + "); the capacity uses " + anchor.publisher + " instead",
+  ].join("\n");
+  return {
+    ...base,
+    tokens30d,
+    capacity: capB.toFixed(2) + "B/30d",
+    capNote: "@measured mix",
+    capTitle,
+    capacityReason: "",
+    usd: fee / capB,
+    usdTitle: ["fee ÷ measured capacity (" + capB.toFixed(2) + "B tokens per 30 days): not comparable across plans", communityLine(a.community)].filter(Boolean).join("\n"),
+  };
 }
 
-export const HOURS_PER_MONTH = 730;
-export const PHYSICS_MARK = "more than the 730 hours a month there are";
-
-/** A row whose capacity needs more agent hours a month than exist is N/A, with the hours it would need. Applies to every row. */
-export function physicsOf(r: ViewRow, ds: DS): ViewRow {
-  const heavy = ds.context.throughput.tokens_per_active_hour.p50;
-  if (r.tokens30d === null || r.tokens30d <= heavy * HOURS_PER_MONTH) return r;
-  const hours = Math.round(r.tokens30d / heavy);
-  const reason = "at the measured burn rate (" + (heavy / 1e6).toFixed(1) + "M tokens per active hour) this allowance needs about " + hours.toLocaleString("en-US") + " hours of agent use a month, " + PHYSICS_MARK;
-  return { ...r, capacity: null, capacityReason: reason, capDetail: null, capNote: null, capTitle: null, usd: null, usdTitle: reason, marker: "" };
-}
 
 function modelRows(ds: DS, ref: RefId, ctx: ContextId, shape: ShapeDef): ViewRow[] {
   const or = orWeighted(ds, ref);
@@ -365,7 +417,7 @@ function modelRows(ds: DS, ref: RefId, ctx: ContextId, shape: ShapeDef): ViewRow
     }
     const mixA = r.allowance.find((a) => a.mix_class && a.mix_blend_usd_per_million);
     if (mixA) {
-      out.push(mixRow(r, mixA, ds, or));
+      out.push(thirdPartyRow(r, mixA, ds, ref, ctx, shape, or));
       continue;
     }
     // the value's own allowance, fee and price, re-blended under the chosen shape; no allowance means N/A with its reason
@@ -411,7 +463,7 @@ function modelRows(ds: DS, ref: RefId, ctx: ContextId, shape: ShapeDef): ViewRow
   return out;
 }
 export function viewRows(ds: DS, view: ViewId, ctx: ContextId = "short", shape: ShapeDef = DEFAULT_SHAPE): ViewRow[] {
-  const rows = (view === MEASURED ? measuredRows(ds) : modelRows(ds, view, ctx, shape)).map((r) => physicsOf(r, ds));
+  const rows = (view === MEASURED ? measuredRows(ds) : modelRows(ds, view, ctx, shape));
   return rows.sort((a, b) => (a.usd ?? Infinity) - (b.usd ?? Infinity) || a.label.localeCompare(b.label));
 }
 
@@ -437,8 +489,8 @@ const naShort = (reason: string): Cell => ({ ...na(reason), reason: "" });
 
 export const BRING_YOUR_OWN = "Bring your own shape: a local collector is planned; the site will price every plan against your own cache share.";
 export const MEASURED_FOOTNOTE = "Measured $/B is per plan and reflects that plans own cache share; use Shape to compare on equal terms.";
-export const MIX_FOOTNOTE = "Rows marked @ are measured under one model class, so their $/B does not change with Shape or context.";
-export const PHYSICS_FOOTNOTE = "N/A where an allowance would need more agent hours a month than there are, at the measured burn rate.";
+
+export const MEASURED_MIX_FOOTNOTE = "Claude/Codex capacities are measured token volumes at each source's own model mix; compare within that caveat.";
 export const SHAPE_FOOTNOTE = "Shape sets the token mix used to price every plan; Measured uses each plans own traffic.";
 
 /** The one-line legend of the four allowance sources, each with a real example from the data. */
@@ -461,6 +513,13 @@ export function allowanceLegend(ds: DS): string {
 
 export function summaryTable(ds: DS, view: ViewId, ctx: ContextId = "short", shape: ShapeDef = DEFAULT_SHAPE): SummaryTable {
   const data = viewRows(ds, view, ctx, shape);
+  const tp = ds.context.throughput;
+  const perSessionHour = tp.tokens_per_session_hour.aggregate;
+  const threadsTitle = [
+    (perSessionHour / 1e6).toFixed(1) + "M tokens per session-hour (measured: " + tp.session_hours.toLocaleString("en-US") + " session-hours, " + (tp.tokens / 1e9).toFixed(1) + "B tokens)",
+    "× 168 h × " + Math.round(THREAD_OCCUPANCY * 100) + "% occupancy assumption",
+    "Not a vendor metric",
+  ].join("\n");
   const rows = data.map((r) => ({
     key: r.key,
     cells: {
@@ -469,6 +528,10 @@ export function summaryTable(ds: DS, view: ViewId, ctx: ContextId = "short", sha
       allowance: r.allowance === null ? naShort(r.allowanceReason) : withSup(value("$" + r.allowance.usd.toFixed(2) + "/" + r.allowance.cycle + "d", [], r.allowance.title), r.allowance.sup),
       capacity: r.capacity === null ? naShort(r.capacityReason) : withDetail(value(r.capacity, r.capBadges ?? [], r.capTitle ?? null, r.capNote ?? null), r.capDetail ?? null),
       usd: r.usd === null ? naShort(r.usdTitle) : value(usd(r.usd) + r.marker, [], r.usdTitle),
+      threads: (() => {
+        const t = threadsOf(r.tokens30d, perSessionHour);
+        return t === null ? naShort("no capacity reading, so no thread count") : value(formatThreads(t), [], threadsTitle);
+      })(),
       tps: r.tps === null ? naShort(r.tpsTitle || "no speed data") : value("~" + sig2(r.tps), [], r.tpsTitle),
       ttft: r.ttft === null ? naShort(r.ttftTitle || "no latency data") : value("~" + sig2(r.ttft) + " ms", [], r.ttftTitle),
     },
@@ -482,8 +545,7 @@ export function summaryTable(ds: DS, view: ViewId, ctx: ContextId = "short", sha
     if (data.some((r) => r.marker === "†")) lines.push(CONVERTED_FOOTNOTE(ctx));
     if (data.some((r) => r.marker === "‡")) lines.push(ARCHIVED_FOOTNOTE(ctx));
   }
-  if (data.some((r) => r.capTitle)) lines.push(MIX_FOOTNOTE);
-  if (data.some((r) => r.capacity === null && r.capacityReason.includes(PHYSICS_MARK))) lines.push(PHYSICS_FOOTNOTE);
+  if (data.some((r) => r.capNote === "@measured mix")) lines.push(MEASURED_MIX_FOOTNOTE);
   lines.push(allowanceLegend(ds));
   lines.push(BRING_YOUR_OWN);
   return { columns: SUMMARY_COLUMNS, rows, footnote: lines.join("\n"), basisLine: basisLine(ds, view) };

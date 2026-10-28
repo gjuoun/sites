@@ -5,6 +5,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { DERIVED_FOOTNOTE, MEASURED, basisLine, orWeighted, sig2, summaryTable, viewChips, viewRows, weightedMedian, type ViewId } from "./summary";
 import type { DS } from "./sections";
+import { commandcodeLive } from "./live";
 
 const ds = dataset as unknown as DS;
 const catalog = catalogFileSchema.parse(JSON.parse(readFileSync(join(import.meta.dir, "..", "..", "data", "catalog.json"), "utf8")));
@@ -27,11 +28,11 @@ describe("switch: the three states the page can show", () => {
   });
 });
 
-describe("the one table: seven columns and nothing else", () => {
-  test("every view has exactly Plan, Fee/mo, Allowance, Capacity, $/B, tok/s, TTFT p50", () => {
+describe("the one table: eight columns and nothing else (r54: Threads est)", () => {
+  test("every view has exactly Plan, Fee/mo, Allowance, Capacity, $/B, Threads est, tok/s, TTFT p50", () => {
     for (const c of viewChips(ds)) {
       const t = summaryTable(ds, c.id);
-      expect(t.columns.map((x) => x.label)).toEqual(["Plan", "Fee/mo", "Allowance", "Capacity", "$/B", "tok/s", "TTFT p50"]);
+      expect(t.columns.map((x) => x.label)).toEqual(["Plan", "Fee/mo", "Allowance", "Capacity", "$/B", "Threads est", "tok/s", "TTFT p50"]);
     }
   });
 
@@ -75,7 +76,7 @@ describe("model view: only the plans that offer the model", () => {
     expect(oc.cells.usd.title).toContain("100K-token context");
   });
 
-  test("DeepSeek V4.1 Flash shows four rows, sorted by $/B ascending, first three CommandCode, OpenCode Go, OpenCode Go Plus", () => {
+  test.skipIf(!commandcodeLive)("DeepSeek V4.1 Flash shows four rows, sorted by $/B ascending, first three CommandCode, OpenCode Go, OpenCode Go Plus", () => {
     const rows = viewRows(ds, "deepseek-v4.1-flash");
     expect(rows.length).toBe(4);
     for (let i = 1; i < rows.length; i++) expect(rows[i - 1].usd!).toBeLessThanOrEqual(rows[i].usd!);

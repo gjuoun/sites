@@ -205,7 +205,16 @@ export const allowanceFileSchema = z.object({
       cycle_days: z.number().positive().nullable(),
       cycle_billed: z.boolean(),
       allowance_usd_per_cycle: z.number().positive().nullable(),
-      allowance_basis: z.enum(["vendor_published", "vendor_reported", "derived"]).nullable(),
+      allowance_basis: z.enum(["vendor_published", "vendor_published_per_model", "vendor_published_weighted", "vendor_reported", "derived"]).nullable(),
+      /** r53: a per-model plan (OpenCode Go): its allowance from the official limits of the models in the monthly window. */
+      per_model: z.object({
+  rule: z.enum(["single_model", "weighted"]),
+  main_model: z.string().nullable(),
+  usd: z.number().positive(),
+  blend_usd_per_b: z.number().positive(),
+  derived_usd: z.number().positive().nullable(),
+  parts: z.array(z.object({ model: z.string().min(1), share: z.number().min(0).max(1), limit_usd: z.number().positive().nullable() })),
+}).nullable().optional(),
       allowance_published_usd: z.number().positive().nullable().optional(),
       allowance_vendor_usd: z.number().positive().nullable(),
       allowance_vendor_reason: z.string().nullable(),

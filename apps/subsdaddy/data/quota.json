@@ -2,78 +2,51 @@
   "observations": [
     {
       "lane": "commandcode-goat",
-      "window": "weekly",
-      "window_minutes": 10080,
-      "used_pct": 100,
-      "resets_at": "2026-10-28T15:50:44Z",
-      "windows": [
-        {
-          "window": "weekly",
-          "window_minutes": 10080,
-          "used_pct": 100,
-          "resets_at": "2026-10-28T15:50:44Z",
-          "source": "codexbar quota reading",
-          "measured_at": "2026-10-27T06:33:40.962Z"
-        },
-        {
-          "window": "monthly",
-          "window_minutes": 43200,
-          "used_pct": 50.000967357571426,
-          "resets_at": "2026-11-21T15:49:16Z",
-          "source": "codexbar quota reading",
-          "measured_at": "2026-10-27T06:33:40.962Z"
-        }
-      ],
-      "vendor_pool": {
-        "used_usd": 35,
-        "total_usd": 70,
-        "source": "codexbar plan line",
-        "measured_at": "2026-10-27T06:33:40.962Z"
-      },
-      "measured_at": "2026-10-27T06:33:40.962Z",
-      "source": "codexbar quota reading"
+      "unavailable": "Command Code session is invalid or expired. Sign in to commandcode.ai again.",
+      "measured_at": "2026-10-28T01:50:01.155Z",
+      "source": "codexbar usage"
     },
     {
       "lane": "opencode-go",
       "window": "weekly",
       "window_minutes": 10080,
-      "used_pct": 35.79170773333333,
+      "used_pct": 54.6145112,
       "resets_at": "2026-11-01T23:59:59Z",
       "windows": [
         {
           "window": "5h",
           "window_minutes": 300,
-          "used_pct": 0.010470083333333335,
-          "resets_at": "2026-10-27T11:15:10Z",
+          "used_pct": 22.51062575,
+          "resets_at": "2026-10-28T02:15:10Z",
           "source": "codexbar quota reading",
-          "measured_at": "2026-10-27T06:33:40.962Z"
+          "measured_at": "2026-10-28T01:50:01.155Z"
         },
         {
           "window": "weekly",
           "window_minutes": 10080,
-          "used_pct": 35.79170773333333,
+          "used_pct": 54.6145112,
           "resets_at": "2026-11-01T23:59:59Z",
           "source": "codexbar quota reading",
-          "measured_at": "2026-10-27T06:33:40.962Z"
+          "measured_at": "2026-10-28T01:50:01.155Z"
         },
         {
           "window": "monthly",
           "window_minutes": 43200,
-          "used_pct": 67.89585386666667,
+          "used_pct": 77.3072556,
           "resets_at": "2026-11-19T00:27:51Z",
           "source": "codexbar quota reading",
-          "measured_at": "2026-10-27T06:33:40.962Z"
+          "measured_at": "2026-10-28T01:50:01.155Z"
         }
       ],
       "vendor_pool": null,
-      "measured_at": "2026-10-27T06:33:40.962Z",
+      "measured_at": "2026-10-28T01:50:01.155Z",
       "source": "codexbar quota reading"
     },
     {
       "lane": "zai-glm-max",
       "window": "weekly",
       "window_minutes": 10080,
-      "used_pct": 1,
+      "used_pct": 2,
       "resets_at": "2026-11-02T04:43:38Z",
       "plan_level": "max",
       "windows": [
@@ -81,21 +54,21 @@
           "window": "5h",
           "window_minutes": 300,
           "used_pct": 1,
-          "resets_at": "2026-10-27T10:18:29Z",
+          "resets_at": "2026-10-28T05:01:07Z",
           "source": "codexbar quota reading",
-          "measured_at": "2026-10-27T06:33:40.962Z"
+          "measured_at": "2026-10-28T01:50:01.155Z"
         },
         {
           "window": "weekly",
           "window_minutes": 10080,
-          "used_pct": 1,
+          "used_pct": 2,
           "resets_at": "2026-11-02T04:43:38Z",
           "source": "codexbar quota reading",
-          "measured_at": "2026-10-27T06:33:40.962Z"
+          "measured_at": "2026-10-28T01:50:01.155Z"
         }
       ],
       "vendor_pool": null,
-      "measured_at": "2026-10-27T06:33:40.962Z",
+      "measured_at": "2026-10-28T01:50:01.155Z",
       "source": "codexbar quota reading"
     },
     {
@@ -113,14 +86,14 @@
           "used_pct": 55.06530853025255,
           "resets_at": "2026-11-24T16:00:00Z",
           "source": "codexbar quota reading",
-          "measured_at": "2026-10-27T06:33:40.962Z"
+          "measured_at": "2026-10-28T01:50:01.155Z"
         }
       ],
       "vendor_pool": null,
-      "measured_at": "2026-10-27T06:33:40.962Z",
+      "measured_at": "2026-10-28T01:50:01.155Z",
       "source": "codexbar quota reading"
     }
   ],
-  "measured_at": "2026-10-27T06:33:40.962Z",
+  "measured_at": "2026-10-28T01:50:01.155Z",
   "source": "codexbar usage (probe-quota)"
 }

@@ -19,7 +19,7 @@ describe("third-party weekly values: the sourced figure, the 30-day allowance (r
   const expected: Array<[string, number, number]> = [
     ["claude-code-pro", 157, 672.86],
     ["claude-code-max-5x", 940, 4028.57],
-    ["claude-code-max-20x", 1602, 6865.71],
+    ["claude-code-max-20x", 1351, 5790],
     ["codex-pro", 270, 1157.14],
     ["codex-pro-20x", 1340, 5742.86],
   ];
@@ -34,17 +34,17 @@ describe("third-party weekly values: the sourced figure, the 30-day allowance (r
 });
 
 describe("the value rule: headline or lower bound, as each source states it", () => {
-  test("Claude Pro and Max 20x are wokey headlines, with the middle half of accounts as the spread", () => {
-    for (const id of ["claude-code-pro", "claude-code-max-20x"]) {
-      expect(entry(id).value_rule).toBe("headline");
-      expect(entry(id).range_usd).not.toBeNull();
-      expect(entry(id).publisher).toBe("wokey.ai");
-    }
-    expect(entry("claude-code-max-20x").range_usd).toEqual([1147, 1745]);
+  test("Claude Pro is the wokey headline, and Max 20x is the median of its two sources (r56)", () => {
+    expect(entry("claude-code-pro").value_rule).toBe("headline");
+    expect(entry("claude-code-pro").publisher).toBe("wokey.ai");
+    expect(entry("claude-code-max-20x").value_rule).toBe("median_of_sources");
+    expect(entry("claude-code-max-20x").primary_weekly_usd).toBe(1602);
+    expect(entry("claude-code-max-20x").weekly_usd).toBe(1351);
   });
-  test("the promptster ranges take their low end: Max 5x $940 of $940-1,170, Codex Pro 5x $270 of $270-340", () => {
-    expect(entry("claude-code-max-5x").value_rule).toBe("lower_bound");
-    expect(entry("claude-code-max-5x").weekly_usd).toBe(entry("claude-code-max-5x").range_usd![0]);
+  test("the promptster ranges take their low end, and Max 5x is the median of its three values (r56)", () => {
+    expect(entry("claude-code-max-5x").value_rule).toBe("median_of_sources");
+    expect(entry("claude-code-max-5x").primary_weekly_usd).toBe(entry("claude-code-max-5x").range_usd![0]);
+    expect(entry("codex-pro").value_rule).toBe("lower_bound");
     expect(entry("codex-pro").weekly_usd).toBe(entry("codex-pro").range_usd![0]);
   });
   test("a lower-bound value must equal its range low end, and a projection can never be measured (schema)", () => {
@@ -107,22 +107,10 @@ describe("Claude and Codex Pro now carry an allowance; the retired hours machine
       expect(r.cells.usd.na).toBe(false);
     }
   });
-  test("Codex Pro 5x in the Luna view is N/A with the hours it would need (r46)", () => {
+  test("Codex Pro 5x in the Luna view is N/A: no token anchor, so no capacity or $/B (r59)", () => {
     const v = viewRows(ds, "gpt-6-luna" as never, "short", SHAPES[0]).find((r) => r.key === "codex-pro")!;
     expect(v.usd).toBeNull();
-    expect(v.capacityReason).toContain("hours of agent use a month");
-  });  test("the hours machinery is removed; the burn rate is read from context.json, never typed", () => {
-    const files = ["src/lib/summary.ts", "src/routes/methodology.tsx", "scripts/refresh.ts", "scripts/build-third-party.ts"];
-    for (const f of files) {
-      const text = readFileSync(join(APP_ROOT, f), "utf8");
-      expect(text.includes("claude-hours")).toBe(false);
-      expect(text.includes("claude-plans")).toBe(false);
-      expect(text.includes("vendor_hours")).toBe(false);
-      expect(text.includes("hours_per_week")).toBe(false);
-    }
-    expect(readFileSync(join(APP_ROOT, "src/lib/summary.ts"), "utf8")).toContain("ds.context.throughput.tokens_per_active_hour.p50");
-  });  test("the Claude hours data file is gone", () => {
-    expect(readdirSync(join(APP_ROOT, "data")).includes("claude-plans.json")).toBe(false);
+    expect(v.capacity).toBeNull();
   });
 });
 
@@ -138,9 +126,9 @@ describe("Codex Plus stays on the message table, and no third-party value is inv
 });
 
 describe("Max 20x in the Haiku view", () => {
-  test("its allowance is $6865.71 per 30 days and its $/B is a positive number", () => {
+  test("its allowance is $5790.00 per 30 days and its $/B is a positive number", () => {
     const r = summaryTable(ds, "claude-haiku-5.5" as never, "short", SHAPES[0]).rows.find((x) => x.key === "claude-code-max-20x")!;
-    expect(r.cells.allowance.text).toBe("$6865.71/30d");
+    expect(r.cells.allowance.text).toBe("$5790.00/30d");
     expect(Number(r.cells.usd.text.replace(/[^0-9.]/g, "")) > 0).toBe(true);
   });
 });

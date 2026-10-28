@@ -21,7 +21,7 @@
       "openrouter": "deepseek/deepseek-v4.1-flash-1017"
     }
   ],
-  "measured_at": "2026-10-27T06:33:38.167Z",
+  "measured_at": "2026-10-28T01:49:57.933Z",
   "source": "openrouter.ai/api/v1/models, fetched 2026-10-26 (list price, USD per 1M tokens); lane model mapping as before",
   "reference": [
     {
@@ -31,7 +31,7 @@
       "out_per_m": 0.725,
       "cache_per_m": 0.003625,
       "name": "DeepSeek V4.1 Flash",
-      "official_status": "read 2026-10-27 from https://api-docs.deepseek.com/quick_start/pricing/",
+      "official_status": "read 2026-10-28 from https://api-docs.deepseek.com/quick_start/pricing/",
       "source_priority": "official > openrouter",
       "openrouter_listed": {
         "in_per_m": 0.14,
@@ -41,13 +41,13 @@
       },
       "price_status": "official",
       "price_anomaly": null,
-      "last_verified_at": "2026-10-27T06:33:38.167Z",
+      "last_verified_at": "2026-10-28T01:49:57.933Z",
       "cache_write_per_m": null,
       "overrides": [],
-      "source": "https://api-docs.deepseek.com/quick_start/pricing/, 2026-10-27; hour-weighted peak/off-peak (35/168)",
+      "source": "https://api-docs.deepseek.com/quick_start/pricing/, 2026-10-28; hour-weighted peak/off-peak (35/168)",
       "official": {
         "source": "https://api-docs.deepseek.com/quick_start/pricing/",
-        "fetched_at": "2026-10-27T06:33:38.167Z",
+        "fetched_at": "2026-10-28T01:49:57.933Z",
         "model_label": "deepseek-flash, served by DeepSeek-V4.1-Flash-1017, 1M context",
         "peak": {
           "in_per_m": 0.3,
@@ -83,8 +83,8 @@
       "overrides": [],
       "price_status": "verified",
       "price_anomaly": null,
-      "last_verified_at": "2026-10-27T06:33:38.167Z",
-      "source": "openrouter.ai/api/v1/models, 2026-10-27",
+      "last_verified_at": "2026-10-28T01:49:57.933Z",
+      "source": "openrouter.ai/api/v1/models, 2026-10-28",
       "price_note": null
     },
     {
@@ -115,8 +115,8 @@
       },
       "price_status": "verified",
       "price_anomaly": null,
-      "last_verified_at": "2026-10-27T06:33:38.167Z",
-      "source": "openrouter.ai/api/v1/models, 2026-10-27",
+      "last_verified_at": "2026-10-28T01:49:57.933Z",
+      "source": "openrouter.ai/api/v1/models, 2026-10-28",
       "price_note": null
     },
     {
@@ -147,8 +147,8 @@
       },
       "price_status": "verified",
       "price_anomaly": null,
-      "last_verified_at": "2026-10-27T06:33:38.167Z",
-      "source": "openrouter.ai/api/v1/models, 2026-10-27",
+      "last_verified_at": "2026-10-28T01:49:57.933Z",
+      "source": "openrouter.ai/api/v1/models, 2026-10-28",
       "price_note": null
     },
     {
@@ -170,8 +170,8 @@
       "overrides": [],
       "price_status": "verified",
       "price_anomaly": null,
-      "last_verified_at": "2026-10-27T06:33:38.167Z",
-      "source": "openrouter.ai/api/v1/models, 2026-10-27",
+      "last_verified_at": "2026-10-28T01:49:57.933Z",
+      "source": "openrouter.ai/api/v1/models, 2026-10-28",
       "price_note": null
     }
   ],

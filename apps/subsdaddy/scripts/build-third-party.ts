@@ -7,7 +7,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { catalogFileSchema } from "../src/data/catalog";
-import { thirdPartyFileSchema, monthlyUsd } from "../src/data/third-party";
+import { thirdPartyFileSchema, monthlyUsd, medianOf } from "../src/data/third-party";
 import { blendedUsdPerB, pooledMix } from "../src/data/estimate";
 
 const APP = resolve(import.meta.dir, "..");
@@ -34,11 +34,22 @@ for (const e of file.entries) {
   const how = e.value_kind === "measured"
     ? "measured by " + e.publisher + " (" + e.measured_window + ", " + e.sample + "): weekly API-equivalent $" + e.weekly_usd.toLocaleString("en-US") + (e.value_rule === "headline" ? " (headline; account spread " + e.range_note + ")" : " (lower bound of $" + e.range_usd![0].toLocaleString("en-US") + "–" + e.range_usd![1].toLocaleString("en-US") + ")")
     : "projected by " + e.publisher + ", not measured: weekly API-equivalent $" + e.weekly_usd.toLocaleString("en-US") + " (" + e.sample + ")";
-  const basis = how + " × 30/7 = $" + monthly.toFixed(2) + " per 30 days";
+  const comm = e.community_observations;
+  const medianHow = e.value_rule === "median_of_sources"
+    ? "median of " + (comm.length + 1 === 3 ? "three" : "two") + " independent measurements (" + [e.publisher + " (" + e.measured_window + ")", ...comm.map((o) => "X @" + o.author + " " + o.date)].join("; ") + "): " + [e.primary_weekly_usd!, ...comm.map((o) => o.weekly_usd)].map((v) => "$" + v.toLocaleString("en-US")).join(", ") + " → weekly API-equivalent $" + e.weekly_usd.toLocaleString("en-US")
+    : how;
+  const basis = medianHow + " × 30/7 = $" + monthly.toFixed(2) + " per 30 days";
+  const community = comm.length === 0 ? undefined : {
+    min: Math.min(...comm.map((o) => o.weekly_usd)),
+    max: Math.max(...comm.map((o) => o.weekly_usd)),
+    count: comm.length,
+    period: new Date(comm.map((o) => o.date).sort().at(-1) + "T00:00:00Z").toLocaleString("en-US", { month: "short", year: "numeric", timeZone: "UTC" }),
+  };
+  if (e.value_rule === "median_of_sources" && medianOf([e.primary_weekly_usd!, ...comm.map((o) => o.weekly_usd)]) !== e.weekly_usd) fail(e.plan_id + ": weekly is not the median of its sources");
   const target = rows.find((r) => r.plan_id === e.plan_id)!;
   const cls = file.mix_classes[e.mix_class];
   const classUsdPerB = blendedUsdPerB({ in_per_m: cls.in_per_m, out_per_m: cls.out_per_m, cache_per_m: cls.cache_per_m, cache_write_per_m: cls.cache_write_per_m }, mix);
-  target.allowance = [{ ref: "*", usd: monthly, basis, kind, mix_class: e.mix_class, mix_blend_usd_per_million: Number((classUsdPerB / 1000).toPrecision(12)), source: { publisher: e.publisher, url: e.url, published: e.published, note: e.value_kind === "measured" ? "weekly API-equivalent, lower bound of the stated figure: " + (e.value_rule === "headline" ? "headline value" : "range low end") : "projection, not a measurement" } }];
+  target.allowance = [{ ref: "*", usd: monthly, basis, kind, ...(community ? { community } : {}), anchor: e.token_anchor, anchor_absent_reason: e.token_anchor === null ? e.token_anchor_absent_reason : null, mix_class: e.mix_class, mix_blend_usd_per_million: Number((classUsdPerB / 1000).toPrecision(12)), source: { publisher: e.publisher, url: e.url, published: e.published, note: e.value_kind === "measured" ? "weekly API-equivalent, lower bound of the stated figure: " + (e.value_rule === "headline" ? "headline value" : "range low end") : "projection, not a measurement" } }];
   target.allowance_reason = null;
   console.log("build:third-party " + e.plan_id + " weekly=$" + e.weekly_usd + " monthly=$" + monthly.toFixed(2) + " " + kind + " class=" + e.mix_class + " $/B=" + classUsdPerB.toFixed(2));
 }

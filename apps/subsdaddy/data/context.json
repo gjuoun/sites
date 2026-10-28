@@ -1,13 +1,13 @@
 {
   "window_days": 45,
-  "measured_at": "2026-10-27T06:33:35.801Z",
+  "measured_at": "2026-10-28T01:49:55.430Z",
   "source": "local pi session logs (read-only, aggregated): session-end prompt = input + cache read + cache write of the last assistant call",
   "method": "quantiles by linear interpolation between order statistics (R-7); a session counts once, at its last call",
-  "sample_sessions": 540,
+  "sample_sessions": 584,
   "quantiles": {
-    "p50": 98391,
-    "p75": 221199,
-    "p90": 363573,
+    "p50": 111341,
+    "p75": 229041,
+    "p90": 371208,
     "max": 963868
   },
   "histogram": [
@@ -17,32 +17,39 @@
     },
     {
       "bucket": "20-50k",
-      "sessions": 130
+      "sessions": 131
     },
     {
       "bucket": "50-100k",
-      "sessions": 122
+      "sessions": 124
     },
     {
       "bucket": "100-200k",
-      "sessions": 113
+      "sessions": 126
     },
     {
       "bucket": "200k+",
-      "sessions": 154
+      "sessions": 182
     }
   ],
   "throughput": {
     "window_days": 30,
-    "source": "local pi session logs (read-only, aggregated): all four token classes of every assistant call, per session",
-    "method": "active time = sum of gaps between a session's consecutive messages, each gap capped at 5 minutes; sessions with at least 9 active minutes count; tokens per active hour per session; quantiles by R-7",
-    "idle_cap_minutes": 5,
-    "min_active_minutes": 9,
-    "sample_sessions": 208,
-    "tokens_per_active_hour": {
-      "p25": 27346314,
-      "p50": 46510197,
-      "p75": 67299250
-    }
+    "source": "local pi session logs (read-only, aggregated): all four token classes of every assistant call, per session and clock hour (UTC)",
+    "method": "session-hour = one session with usage in one clock hour; aggregate = all tokens / session-hours; median, mean and p90 are over session-hours (R-7); concurrency = distinct sessions per clock hour that has usage",
+    "active_hours": 252,
+    "session_hours": 924,
+    "tokens": 11431666470,
+    "tokens_per_session_hour": {
+      "aggregate": 12371933,
+      "median": 3704728,
+      "mean": 12371933,
+      "p90": 34963343
+    },
+    "concurrency": {
+      "median": 3,
+      "p90": 7.900000000000006,
+      "max": 22
+    },
+    "sample_sessions": 609
   }
 }
