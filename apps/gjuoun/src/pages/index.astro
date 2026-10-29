@@ -1,9 +1,8 @@
 ---
 import { getCollection } from "astro:content";
-import { buttonVariants } from "@gjuoun/bigface-business-ui/components/ui/button";
-import { cn } from "cn";
-import Intro from "../components/Intro.astro";
-import PostList from "../components/PostList.astro";
+import { ButtonLink } from "../components/ButtonLink";
+import { Intro } from "../components/Intro";
+import { PostList } from "../components/PostList";
 import { ProjectGrid } from "../components/ProjectGrid";
 import Base from "../layouts/Base.astro";
 import { livePosts } from "../lib/collections";
@@ -51,6 +50,6 @@ const latest = posts
 				kicker: p.data.series ? seriesTitles.get(p.data.series) : undefined,
 			}))}
 		/>
-		<p class="not-prose mt-4"><a class={cn(buttonVariants({ variant: "outline" }))} href="/posts/">All posts</a></p>
+		<p class="not-prose mt-4"><ButtonLink variant="outline" href="/posts/" label="All posts" /></p>
 	</section>
 </Base>

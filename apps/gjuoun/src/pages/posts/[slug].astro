@@ -1,8 +1,7 @@
 ---
 import { type CollectionEntry, getCollection, render } from "astro:content";
-import { buttonVariants } from "@gjuoun/bigface-business-ui/components/ui/button";
-import { cn } from "cn";
-import PostList from "../../components/PostList.astro";
+import { LessonNav } from "../../components/LessonNav";
+import { PostList } from "../../components/PostList";
 import Base from "../../layouts/Base.astro";
 import { livePosts } from "../../lib/collections";
 
@@ -61,9 +60,9 @@ const seriesBody =
 const postBody = props.kind === "post" ? await render(props.post) : undefined;
 const pad = (n: number | undefined) => String(n ?? 0).padStart(2, "0");
 const lessonHref = (slug: string) => `/posts/${slug}/`;
-const NAV = "lesson-nav not-prose mt-8 flex flex-wrap justify-between gap-3";
-const back = cn(buttonVariants({ variant: "outline" }));
-const forward = cn(buttonVariants());
+const first = props.kind === "series" ? props.items[0] : undefined;
+const prev = props.kind === "post" ? props.prev : undefined;
+const next = props.kind === "post" ? props.next : undefined;
 ---
 
 {
@@ -86,16 +85,11 @@ const forward = cn(buttonVariants());
 					order: p.data.order,
 				}))}
 			/>
-			<nav class={NAV} aria-label="Series navigation">
-				<a class={back} href="/posts/">← All posts</a>
-				{
-					props.items[0] && (
-						<a class={forward} href={lessonHref(props.items[0].data.slug)}>
-							Start with lesson {pad(props.items[0].data.order)} →
-						</a>
-					)
-				}
-			</nav>
+			<LessonNav
+				label="Series navigation"
+				back={{ href: "/posts/", label: "← All posts" }}
+				forward={first && { href: lessonHref(first.data.slug), label: `Start with lesson ${pad(first.data.order)} →` }}
+			/>
 		</Base>
 	)
 }
@@ -119,22 +113,11 @@ const forward = cn(buttonVariants());
 				<p>{props.post.data.summary}</p>
 				<postBody.Content />
 			</article>
-			<nav class={NAV} aria-label="Lesson navigation">
-				{
-					props.prev && (
-						<a class={back} href={lessonHref(props.prev.data.slug)}>
-							← {pad(props.prev.data.order)} · {props.prev.data.title}
-						</a>
-					)
-				}
-				{
-					props.next && (
-						<a class={forward} href={lessonHref(props.next.data.slug)}>
-							{pad(props.next.data.order)} · {props.next.data.title} →
-						</a>
-					)
-				}
-			</nav>
+			<LessonNav
+				label="Lesson navigation"
+				back={prev && { href: lessonHref(prev.data.slug), label: `← ${pad(prev.data.order)} · ${prev.data.title}` }}
+				forward={next && { href: lessonHref(next.data.slug), label: `${pad(next.data.order)} · ${next.data.title} →` }}
+			/>
 		</Base>
 	)
 }

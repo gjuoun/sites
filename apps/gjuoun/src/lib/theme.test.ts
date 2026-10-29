@@ -8,7 +8,13 @@ const src = (rel: string) =>
 
 test("the toggle writes the package's mode key", () => {
 	expect(MODE_STORAGE_KEY).toBe("bigface-mode");
-	expect(src("components/ThemeToggle.astro")).toContain("MODE_STORAGE_KEY");
+	expect(src("components/ThemeToggle.tsx")).toContain("MODE_STORAGE_KEY");
+});
+
+test("components are React (tsx) only: Astro is for pages and the layout", () => {
+	const files = readdirSync(join(import.meta.dir, "../components"));
+	expect(files.length).toBeGreaterThan(0);
+	expect(files.filter((f) => !f.endsWith(".tsx"))).toEqual([]);
 });
 
 // The site carries no stylesheet of its own: tailwind.css is Tailwind, the typography plugin, the theme, the

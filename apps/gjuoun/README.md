@@ -8,7 +8,7 @@ The portfolio is a card grid built from the theme package's own stock components
 `@gjuoun/bigface-business-ui`). `@astrojs/react` renders them to static HTML at build time (no `client:*` directive, in
 `src/components/ProjectGrid.tsx`), so no React runtime ships. The only stylesheet is `src/styles/tailwind.css`:
 Tailwind, the business theme, the typography plugin, the font, and `@source` for the three components used. Every
-other rule is a Tailwind utility in the markup (shared strings in `src/lib/classes.ts`).
+other rule is a Tailwind utility in the components. Components are React (`src/components/*.tsx`), rendered to static HTML with no `client:*` directive; Astro is used for pages and the layout only.
 
 ## Commands
 
@@ -45,11 +45,11 @@ Starter copy is marked `starter: true` in each post. Once Jun has rewritten an e
 starter. It is never in the content flow, and the resume page never shows it.
 
 The resume (`src/data/resume.ts`) holds only facts from Jun's resume (`notebook: Private/resume/jun-guo-2025.md`).
-The home page and `/resume/` render the same facts (`src/components/ResumeFacts.astro`), and smoke checks that they match.
+The home page and `/resume/` render the same facts (`src/components/ResumeFacts.tsx`), and smoke checks that they match.
 The phone number is never in the content and smoke scans the built output for it.
 
 ## Notes
 
 - Only `var(--theme-*)` values in `src/styles/site.css`; no hand-picked colours (`src/lib/theme.test.ts` checks this).
-- The only client JS is the theme toggle, inline in `ThemeToggle.astro`. The card grid adds none.
+- The only client JS is the theme toggle, inline in `ThemeToggle.tsx`. The card grid adds none.
 - The site URL in `astro.config.mjs` is the only origin. Canonical links, sitemap, RSS, robots and the resume contact line read it. It is `https://jun-blog.qqntt.com` until the cutover, which flips it to `https://jun.qqntt.com`.
