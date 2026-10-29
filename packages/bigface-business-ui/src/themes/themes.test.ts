@@ -12,6 +12,8 @@ import { contrastRatio } from "../../../bigface-tokens/src/contrast-math.ts";
 // The business package is COLOUR ONLY, and the theme is ONE block: a role whose two palettes differ is
 // light-dark(light, dark), one whose palettes agree is a bare hex. These tests hold the package to that
 // contract and to the standing colour rulings. Nothing here asserts a size, a radius or a shadow geometry.
+// What styles.css resolves to (roles, contrast pairs, shadows, the scrim) is derived from the CSS in
+// src/styles/styles.test.ts rather than restated here.
 type Pal = { colors: Record<string, { hex: string }>; ansi: Record<string, { hex: string }> };
 const dark = darkJson as unknown as Pal;
 const light = lightJson as unknown as Pal;
@@ -101,14 +103,6 @@ describe("bigface-business-ui: colour only", () => {
 		expect(text).toContain("--radius: 0.625rem;");
 	});
 
-	test("shadows keep the geometry and take the palette darkest neutral: no black literal", () => {
-		const text = strip(css("styles.css"));
-		expect(text).not.toMatch(/rgb\(0 0 0/);
-		expect(text).not.toMatch(/--color-(black|white)/);
-		expect(text).toContain("color-mix(in oklab, var(--color-scrim) 10%, transparent)");
-		expect(text).toContain("--color-scrim: light-dark(var(--theme-fg), var(--theme-bg));");
-	});
-
 	test("standing colour decision: paper in light, dark canvas in dark, never pure white", () => {
 		const r = roles();
 		expect(pick(r.bg as string, "light")).toBe("#f8f8f0");
@@ -117,21 +111,6 @@ describe("bigface-business-ui: colour only", () => {
 		expect(everything).not.toContain("#fff;");
 		expect(everything).not.toContain("#ffffff");
 		expect(everything).not.toContain("255, 255, 255");
-	});
-
-	test("text pairs clear WCAG AA in both modes", () => {
-		const r = roles();
-		for (const mode of ["light", "dark"] as const) {
-			const onBg = (role: string) => contrastRatio(pick(r[role] as string, mode), pick(r.bg as string, mode));
-			const fillInk = mode === "light" ? r.fg : r.bg;
-			expect(onBg("fg"), mode + " fg on bg").toBeGreaterThanOrEqual(4.5);
-			expect(contrastRatio(pick(fillInk as string, mode), pick(r.blue as string, mode)), mode + " ink on the fill").toBeGreaterThanOrEqual(4.5);
-		}
-		// the muted grey clears AA in both modes; the palette accent does not, and that tradeoff is recorded
-		expect(contrastRatio(pick(r.fgDim as string, "light"), pick(r.bg as string, "light"))).toBeGreaterThanOrEqual(4.5);
-		expect(contrastRatio(pick(r.fgDim as string, "dark"), pick(r.bg as string, "dark"))).toBeGreaterThanOrEqual(4.5);
-		// the accent-as-link measures 2.27:1 on paper: an accepted tradeoff, recorded rather than hidden
-		expect(Math.round(contrastRatio(pick(r.blue as string, "light"), pick(r.bg as string, "light")) * 100) / 100).toBe(2.27);
 	});
 });
 
