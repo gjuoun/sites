@@ -38,7 +38,6 @@
     "test": "bun test src",
     "theme:sync": "bun run scripts/gen-tokens.ts",
     "theme:check": "bun run scripts/gen-tokens.ts --check",
-    "ui:theme": "bun run scripts/theme-check.ts",
     "biz:drift": "bash scripts/ui-registry-probe.sh /tmp/bigface-ui-registry && bun run scripts/ui-lock.ts --registry /tmp/bigface-ui-registry",
     "ui-lock": "bun run scripts/ui-lock.ts",
     "ui-registry": "bash scripts/ui-registry-probe.sh /tmp/bigface-ui-registry",

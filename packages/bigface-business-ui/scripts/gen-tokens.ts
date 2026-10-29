@@ -1,88 +1,21 @@
 // Generates the business package's colour artefacts from the two Bigface palettes and the role map:
 //
-//   src/themes/business.css   the business theme, ONE block: light-dark(light, dark) per role
-//   src/themes/accents.ts     the accent docs table: each palette accent and its deepened plate
+//   src/themes/business.css   the business theme, shadcn's two blocks: light values, then dark values
 //
-//   bun run theme:sync   rewrite both files in place
-//   bun run theme:check  fail when either is stale (CI uses this)
+//   bun run theme:sync   rewrite it in place
+//   bun run theme:check  fail when it is stale (CI uses this)
 //
-// A role names a palette colour; a role whose two palettes agree is written bare, one whose palettes
-// differ is written light-dark(light, dark), so the browser resolves the mode at used-value time and
-// the file needs a single block. Nothing here writes a size, a radius, a shadow geometry, a font or a
+// A role names a palette colour. Like shadcn's :root and .dark, the light block holds every role's light
+// hex and the dark block restates every role with its dark hex; the mode is the data-mode attribute.
+// Nothing here writes a size, a radius, a shadow geometry, a font or a
 // motion value: those are Tailwind's and shadcn's own.
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { REQUIRED, THEMES, type Theme } from "../src/themes/roles.ts";
-import { contrastRatio } from "../../bigface-tokens/src/contrast-math.ts";
 
 export interface PaletteLike {
 	colors: Record<string, { hex: string }>;
 	ansi: Record<string, { hex: string }>;
-}
-
-const toLinear = (v: number): number => {
-	const c = v / 255;
-	return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
-};
-
-/** Two colours mixed in OKLab, as one hex. A computed tint, not a color-mix() the minifier would rewrite. */
-export function mixHex(a: string, pct: number, b: string): string {
-	const lab = (h: string) => {
-		const [r, g, bb] = [1, 3, 5].map((i) =>
-			toLinear(Number.parseInt(h.slice(i, i + 2), 16)),
-		) as [number, number, number];
-		const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * bb);
-		const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * bb);
-		const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * bb);
-		return [
-			0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s,
-			1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s,
-			0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s,
-		] as [number, number, number];
-	};
-	const x = lab(a);
-	const y = lab(b);
-	const t = pct / 100;
-	const L = x[0] * t + y[0] * (1 - t);
-	const A = x[1] * t + y[1] * (1 - t);
-	const B = x[2] * t + y[2] * (1 - t);
-	const l = (L + 0.3963377774 * A + 0.2158037573 * B) ** 3;
-	const m = (L - 0.1055613458 * A - 0.0638541728 * B) ** 3;
-	const s = (L - 0.0894841775 * A - 1.291485548 * B) ** 3;
-	const enc = (v: number) => {
-		const c = v <= 0.0031308 ? 12.92 * v : 1.055 * v ** (1 / 2.4) - 0.055;
-		return Math.round(Math.min(1, Math.max(0, c)) * 255).toString(16).padStart(2, "0");
-	};
-	return (
-		"#" +
-		[
-			4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
-			-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
-			-0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s,
-		]
-			.map(enc)
-			.join("")
-	);
-}
-
-/** WCAG floor for text: a plate must give its accent at least this ratio. */
-export const PLATE_FLOOR = 4.5;
-
-/**
- * The deepened plate of an accent: the lightest mix of the accent into the base that still gives the accent PLATE_FLOOR
- * as text. More accent is lighter, so the contrast falls as the share rises; bisection finds the largest share that
- * still clears the floor. Deterministic: same accent and base, same hex.
- */
-export function solvePlate(accent: string, base: string, floor = PLATE_FLOOR): string {
-	if (contrastRatio(accent, base) < floor) throw new Error("accent " + accent + " cannot clear " + floor + " on " + base);
-	let lo = 0; // always clears the floor
-	let hi = 100; // never does (checked by the loop)
-	for (let i = 0; i < 40; i++) {
-		const mid = (lo + hi) / 2;
-		if (contrastRatio(accent, mixHex(accent, mid, base)) >= floor) lo = mid;
-		else hi = mid;
-	}
-	return mixHex(accent, lo, base);
 }
 
 const hexOf = (palette: PaletteLike, name: string): string => {
@@ -92,69 +25,31 @@ const hexOf = (palette: PaletteLike, name: string): string => {
 };
 
 /**
- * A theme, as one block. A role whose light and dark palette hexes agree is written bare (the accents);
- * one whose hexes differ is written light-dark(light, dark) (the six neutrals).
+ * A theme, as shadcn's two blocks: every role's light hex on :root and [data-mode="light"] (so a light
+ * panel inside a dark page is light), then every role's dark hex on [data-mode="dark"].
  */
 export function renderThemeFile(theme: Theme, dark: PaletteLike, light: PaletteLike): string {
-	const own = '[data-theme="' + theme.id + '"]';
-	const sel = theme.isDefault ? ":root:not([data-theme]),\n" + own : own;
-	const decls = REQUIRED.map((role) => {
-		const paletteName = theme.roles[role];
-		if (!paletteName) throw new Error(theme.id + ": missing role " + role);
-		const l = hexOf(light, paletteName);
-		const d = hexOf(dark, paletteName);
-		return "  --theme-" + role + ": " + (l === d ? l : "light-dark(" + l + ", " + d + ")") + ";";
-	});
+	if (!theme.isDefault) throw new Error(theme.id + ": only the default theme is generated");
+	const decls = (palette: PaletteLike) =>
+		REQUIRED.map((role) => {
+			const paletteName = theme.roles[role];
+			if (!paletteName) throw new Error(theme.id + ": missing role " + role);
+			return "  --theme-" + role + ": " + hexOf(palette, paletteName) + ";";
+		});
 	const extra = Object.keys(theme.roles).filter((k) => !(REQUIRED as readonly string[]).includes(k));
 	if (extra.length) throw new Error(theme.id + ": unknown roles " + extra.join(", "));
 	return [
 		"/* Generated by packages/bigface-business-ui/scripts/gen-tokens.ts from src/themes/roles.ts and the two",
-		"   Bigface palettes. Colour only, one block: light-dark() carries the modes. Do not edit: change the",
-		"   role map, then run theme:sync. */",
+		"   Bigface palettes. Colour only: the light block, then the dark block. Do not edit: change the role map,",
+		"   then run theme:sync. */",
 		"",
-		sel + " {",
-		...decls,
-		"} ",
-		"",
-	].join("\n");
-}
-
-/** The accent docs table: every palette accent and the plate it is read on, for the /ui/business colour page. */
-// The accents the docs table shows: the six theme roles, plus lime, yellow and purple, which the accent docs show
-// as data only (no --theme-* variable). The palette has one yellow: there is no dim yellow to leave out.
-const ACCENT_DOCS = [
-	["blue", "blue"],
-	["light-blue", "lightBlue"],
-	["pale-blue", "paleBlue"],
-	["cyan", "cyan"],
-	["green", "green"],
-	["lime", "lime"],
-	["yellow", "yellow"],
-	["burnt-orange", "burntOrange"],
-	["purple", "purple"],
-] as const;
-
-export function renderAccents(dark: PaletteLike): string {
-	const base = hexOf(dark, "bg");
-	const rows = ACCENT_DOCS.map(([id, paletteName]) => {
-		const accent = hexOf(dark, paletteName);
-		return '\t{ id: "' + id + '", palette: "' + paletteName + '", accent: "' + accent + '", plate: "' + solvePlate(accent, base) + '" },';
-	});
-	return [
-		"// Generated by packages/bigface-business-ui/scripts/gen-tokens.ts from the Bigface palettes. Do not edit.",
-		"// The accent family as documentation data: read by the /ui/business colour page, never by a component.",
-		"// The accent is the palette colour itself in both modes; the plate is the lightest mix of the accent",
-		"// into the dark ink that still gives it PLATE_FLOOR as text.",
-		"export interface AccentDoc {",
-		"\tid: string;",
-		"\tpalette: string;",
-		"\taccent: string;",
-		"\tplate: string;",
+		':root, [data-mode="light"] {',
+		...decls(light),
 		"}",
 		"",
-		"export const ACCENT_DOCS: readonly AccentDoc[] = [",
-		...rows,
-		"] as const;",
+		'[data-mode="dark"] {',
+		...decls(dark),
+		"}",
 		"",
 	].join("\n");
 }
@@ -166,9 +61,7 @@ const lightPalettePath = join(here, "../../bigface-tokens/palette/bigface-light.
 
 /** Every file theme:sync writes, as path to contents. */
 export function renderAll(dark: PaletteLike, light: PaletteLike): Record<string, string> {
-	const files: Record<string, string> = {
-		[join(themesDir, "accents.ts")]: renderAccents(dark),
-	};
+	const files: Record<string, string> = {};
 	for (const theme of THEMES) {
 		files[join(themesDir, theme.id + ".css")] = renderThemeFile(theme, dark, light);
 	}
