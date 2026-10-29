@@ -1,5 +1,7 @@
 ---
 import { type CollectionEntry, getCollection, render } from "astro:content";
+import { buttonVariants } from "@gjuoun/bigface-business-ui/components/ui/button";
+import { cn } from "cn";
 import PostList from "../../components/PostList.astro";
 import Base from "../../layouts/Base.astro";
 import { livePosts } from "../../lib/collections";
@@ -59,6 +61,9 @@ const seriesBody =
 const postBody = props.kind === "post" ? await render(props.post) : undefined;
 const pad = (n: number | undefined) => String(n ?? 0).padStart(2, "0");
 const lessonHref = (slug: string) => `/posts/${slug}/`;
+const NAV = "lesson-nav not-prose mt-8 flex flex-wrap justify-between gap-3";
+const back = cn(buttonVariants({ variant: "outline" }));
+const forward = cn(buttonVariants());
 ---
 
 {
@@ -81,11 +86,11 @@ const lessonHref = (slug: string) => `/posts/${slug}/`;
 					order: p.data.order,
 				}))}
 			/>
-			<nav class="lesson-nav" aria-label="Series navigation">
-				<a class="button button-outline" href="/posts/">← All posts</a>
+			<nav class={NAV} aria-label="Series navigation">
+				<a class={back} href="/posts/">← All posts</a>
 				{
 					props.items[0] && (
-						<a class="button" href={lessonHref(props.items[0].data.slug)}>
+						<a class={forward} href={lessonHref(props.items[0].data.slug)}>
 							Start with lesson {pad(props.items[0].data.order)} →
 						</a>
 					)
@@ -105,7 +110,7 @@ const lessonHref = (slug: string) => `/posts/${slug}/`;
 			<article>
 				{
 					props.seriesTitle && (
-						<p class="kicker">
+						<p class="kicker not-prose text-[0.85rem] text-muted-foreground">
 							Lesson {pad(props.post.data.order)} of {props.total} in {props.seriesTitle}
 						</p>
 					)
@@ -114,17 +119,17 @@ const lessonHref = (slug: string) => `/posts/${slug}/`;
 				<p>{props.post.data.summary}</p>
 				<postBody.Content />
 			</article>
-			<nav class="lesson-nav" aria-label="Lesson navigation">
+			<nav class={NAV} aria-label="Lesson navigation">
 				{
 					props.prev && (
-						<a class="button button-outline" href={lessonHref(props.prev.data.slug)}>
+						<a class={back} href={lessonHref(props.prev.data.slug)}>
 							← {pad(props.prev.data.order)} · {props.prev.data.title}
 						</a>
 					)
 				}
 				{
 					props.next && (
-						<a class="button" href={lessonHref(props.next.data.slug)}>
+						<a class={forward} href={lessonHref(props.next.data.slug)}>
 							{pad(props.next.data.order)} · {props.next.data.title} →
 						</a>
 					)

@@ -3,10 +3,12 @@
 import { join } from "node:path";
 
 export const LIMITS = {
-	// 32 KB: the portfolio grew to a 6-card grid (JW-245), two cards ≈ 1.7 KB; home peaked at 32393 B.
-	htmlBytes: 32 * 1024,
-	// 32 KB: the stock theme components (cards, chips, buttons) add about 20 KB of Tailwind on top of the site's own 9 KB.
-	cssBytes: 32 * 1024,
+	// 41 KB: the site's styling is utilities in the markup (no site stylesheet), and the stock components carry their
+	// own dark: classes; home measured 41598 B (2026-10-29, was 32393 B with site.css).
+	htmlBytes: 41 * 1024,
+	// 48 KB: Tailwind with preflight, the typography plugin (about 14 KB) for page content, and the stock theme
+	// components; measured 48978 B (2026-10-29).
+	cssBytes: 48 * 1024,
 	jsBytes: 4 * 1024,
 } as const;
 

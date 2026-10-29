@@ -6,8 +6,9 @@ a numbered series page, resume, 404, RSS, sitemap.
 
 The portfolio is a card grid built from the theme package's own stock components (`Card`, `Badge`, `Button` from
 `@gjuoun/bigface-business-ui`). React renders them to static HTML at build time (`renderProjectGrid` in
-`src/components/ProjectGrid.tsx`), so no React runtime ships. Tailwind compiles only the three components used
-(`src/styles/tailwind.css`); the site's own rules stay in `src/styles/site.css`.
+`src/components/ProjectGrid.tsx`), so no React runtime ships. The only stylesheet is `src/styles/tailwind.css`:
+Tailwind, the business theme, the typography plugin, the font, and `@source` for the three components used. Every
+other rule is a Tailwind utility in the markup (shared strings in `src/lib/classes.ts`).
 
 ## Commands
 

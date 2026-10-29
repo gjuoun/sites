@@ -1,5 +1,7 @@
 ---
 import { getCollection } from "astro:content";
+import { buttonVariants } from "@gjuoun/bigface-business-ui/components/ui/button";
+import { cn } from "cn";
 import Intro from "../components/Intro.astro";
 import PostList from "../components/PostList.astro";
 import { renderProjectGrid } from "../components/ProjectGrid";
@@ -33,11 +35,12 @@ const latest = posts
 		<h2 id="intro-heading" class="sr-only">Introduction</h2>
 		<Intro />
 	</section>
-	<section class="home-section" aria-labelledby="portfolio-heading">
+	<section aria-labelledby="portfolio-heading">
 		<h2 id="portfolio-heading">Portfolio</h2>
 		<Fragment set:html={grid} />
 	</section>
-	<section class="home-section" aria-labelledby="posts-heading">
+	<!-- The posts are set off from the portfolio above them. -->
+	<section class="mt-10 border-t-2 border-border pt-6 [&>h2]:mt-0" aria-labelledby="posts-heading">
 		<h2 id="posts-heading">Posts</h2>
 		<PostList
 			numbered
@@ -49,6 +52,6 @@ const latest = posts
 				kicker: p.data.series ? seriesTitles.get(p.data.series) : undefined,
 			}))}
 		/>
-		<p><a class="button button-outline" href="/posts/">All posts</a></p>
+		<p class="not-prose mt-4"><a class={cn(buttonVariants({ variant: "outline" }))} href="/posts/">All posts</a></p>
 	</section>
 </Base>

@@ -13,6 +13,10 @@ import {
 } from "@gjuoun/bigface-business-ui/components/ui/card";
 import { renderToStaticMarkup } from "react-dom/server";
 
+// The site's keyboard focus: a solid outline around the stock button, as on every other link.
+const FOCUS =
+	"focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-solid focus-visible:outline-foreground";
+
 export interface GridProject {
 	name: string;
 	summary: string;
@@ -25,7 +29,7 @@ export interface GridProject {
 // and its footer is pushed to the bottom, so the actions line up across the band.
 export function ProjectGrid({ projects }: { projects: GridProject[] }) {
 	return (
-		<ul className="m-0 grid list-none grid-cols-1 gap-4 p-0 md:grid-cols-2">
+		<ul className="not-prose grid list-none grid-cols-1 gap-4 md:grid-cols-2">
 			{projects.map((project) => (
 				<li key={project.name} className="flex">
 					<Card className="flex-1">
@@ -55,7 +59,10 @@ export function ProjectGrid({ projects }: { projects: GridProject[] }) {
 							{project.url || project.repo ? (
 								<div className="flex flex-wrap gap-2">
 									{project.url && (
-										<Button asChild className="motion-reduce:transition-none">
+										<Button
+											asChild
+											className={`${FOCUS} motion-reduce:transition-none motion-reduce:duration-0`}
+										>
 											<a href={project.url}>Visit</a>
 										</Button>
 									)}
@@ -63,7 +70,7 @@ export function ProjectGrid({ projects }: { projects: GridProject[] }) {
 										<Button
 											asChild
 											variant="outline"
-											className="text-foreground motion-reduce:transition-none"
+											className={`${FOCUS} text-foreground motion-reduce:transition-none motion-reduce:duration-0`}
 										>
 											<a href={project.repo}>Source</a>
 										</Button>

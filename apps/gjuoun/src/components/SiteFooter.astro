@@ -1,4 +1,6 @@
 ---
+import { LINK } from "../lib/classes";
+
 interface Props {
 	starter?: boolean;
 }
@@ -6,7 +8,7 @@ const { starter = false } = Astro.props;
 const year = new Date().getFullYear();
 ---
 
-<footer>
-	<p>© {year} Jun Guo · <a href="/rss.xml">RSS</a></p>
-	{starter && <p class="starter-note">Starter copy: written to be reviewed and replaced.</p>}
+<footer class="mx-auto mt-12 max-w-[calc(68ch+2rem)] px-4 pb-4 print:hidden">
+	<p>© {year} Jun Guo · <a class={LINK} href="/rss.xml">RSS</a></p>
+	{starter && <p class="starter-note mt-1 text-[0.85rem] text-muted-foreground">Starter copy: written to be reviewed and replaced.</p>}
 </footer>
