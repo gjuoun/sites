@@ -1,9 +1,13 @@
 /* The business theme in one file, and the one stylesheet a consumer imports.
 
-   It carries the generated palette values (themes/business.css, imported first), the shadcn colour mapping as
-   Tailwind theme keys, the few colours that are formulas rather than palette values, the twelve runtime custom
-   properties component code reads with var(--x), and the base layer. Colour only: every size, radius, shadow
-   geometry, font and motion value is Tailwind's or shadcn's own.
+   Layered the way the dashboard's globals.css is:
+   1. palette   themes/business.css (generated, imported first): --theme-* colours, light-dark() per mode;
+   2. roles     the :root,[data-theme] block below: every shadcn role, declared once. It is the only place a
+                palette colour becomes a role;
+   3. keys      @theme inline: Tailwind colour keys that read the roles (--color-x: var(--x)), the business
+                aliases (which also read roles), and the light-dark() formulas (which read roles too).
+   The one exception: success and info have no shadcn role, so their keys read the palette colour directly.
+   Colour only: every size, radius, shadow geometry, font and motion value is Tailwind's or shadcn's own.
 
    Consumers bring Tailwind themselves (@import "tailwindcss" then this file); this file must not import it, or
    preflight and the theme would be emitted twice. */
@@ -20,42 +24,38 @@
   --font-mono: "Recursive", ui-monospace, "SF Mono", Menlo, monospace;
   --font-display: "Recursive", "Helvetica Neue", system-ui, sans-serif;
 
-  /* shadcn's colour names, as Tailwind colours. Every one resolves to a --theme-* palette role or a formula. */
-  --color-background: var(--theme-bg);
-  --color-foreground: var(--theme-fg);
-  --color-card: var(--theme-panel);
-  --color-card-foreground: var(--theme-fg);
-  --color-popover: var(--theme-panel);
-  --color-popover-foreground: var(--theme-fg);
-  --color-primary: var(--theme-blue);
-  /* the fill ink is each mode's own darkest readable value: light fg, dark canvas (ruling 2026-10-26) */
-  /* Ruling 2026-10-27 (Jun): the ink on the primary fill is the canvas colour in BOTH modes. */
-  --color-primary-foreground: var(--theme-bg);
-  --color-secondary: var(--theme-panel);
-  --color-secondary-foreground: var(--theme-fg);
-  --color-muted: var(--theme-panel);
-  --color-muted-foreground: var(--theme-fgDim);
-  --color-accent: var(--theme-panel);
-  --color-accent-foreground: var(--theme-fg);
-  --color-destructive: var(--theme-burntOrange);
-  --color-border: var(--theme-border);
-  --color-input: var(--theme-border);
-  --color-ring: var(--theme-blue);
-  /* the chart ramp, re-picked 2026-10-27: blue first, then the cool accents in palette order. The old
-     group (blue, lime, yellow, burnt-orange, purple) is retired. */
-  --color-chart-1: var(--theme-blue);
-  --color-chart-2: var(--theme-lightBlue);
-  --color-chart-3: var(--theme-paleBlue);
-  --color-chart-4: var(--theme-cyan);
-  --color-chart-5: var(--theme-green);
-  --color-sidebar: var(--theme-panel);
-  --color-sidebar-foreground: var(--theme-fg);
-  --color-sidebar-primary: var(--theme-blue);
-  --color-sidebar-primary-foreground: var(--theme-bg);
-  --color-sidebar-accent: var(--theme-panel);
-  --color-sidebar-accent-foreground: var(--theme-fg);
-  --color-sidebar-border: var(--theme-border);
-  --color-sidebar-ring: var(--theme-blue);
+  /* shadcn's colour names, as Tailwind colours: each reads its role from the block below */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 
   /* shadcn's radius scale, derived from --radius exactly as the CLI writes it */
   --radius-sm: calc(var(--radius) * 0.6);
@@ -66,55 +66,56 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  /* the business names the site already writes (bg-canvas, text-ink, bg-surface, ...) */
-  --color-canvas: var(--theme-bg);
-  --color-ink: var(--theme-fg);
-  --color-heading: var(--theme-fg);
-  --color-surface: var(--theme-panel);
-  --color-subtle: var(--theme-panel);
-  --color-muted-ink: var(--theme-fgDim);
-  --color-frame: var(--theme-panel);
-  --color-on-frame: var(--theme-fg);
-  --color-solid: var(--theme-panel);
-  --color-on-solid: var(--theme-fg);
-  --color-overlay: var(--theme-bg);
+  /* the business names the site already writes (bg-canvas, text-ink, bg-surface, ...), each an alias of a role */
+  --color-canvas: var(--background);
+  --color-ink: var(--foreground);
+  --color-heading: var(--foreground);
+  --color-surface: var(--card);
+  --color-subtle: var(--muted);
+  --color-muted-ink: var(--muted-foreground);
+  --color-frame: var(--sidebar);
+  --color-on-frame: var(--sidebar-foreground);
+  --color-solid: var(--secondary);
+  --color-on-solid: var(--secondary-foreground);
+  --color-overlay: var(--background);
+  --color-danger: var(--destructive);
+  --color-primary-ink: var(--ring);
+  /* the two semantic colours shadcn has no role for: they read the palette directly */
   --color-success: var(--theme-green);
-  --color-danger: var(--theme-burntOrange);
   --color-info: var(--theme-cyan);
-  --color-primary-ink: var(--theme-blue);
 
-  /* Mode-aware colours that are formulas, not palette values. Each is one token instead of a dark: variant:
+  /* Mode-aware colours that are formulas over the roles. Each is one token instead of a dark: variant:
      light-dark() picks the branch at used-value time, so a component never names a mode. */
-  --color-input-veil: light-dark(transparent, color-mix(in oklab, var(--theme-border) 30%, transparent));
-  --color-input-veil-hover: light-dark(transparent, color-mix(in oklab, var(--theme-border) 50%, transparent));
-  --color-input-veil-off: light-dark(color-mix(in oklab, var(--theme-border) 50%, transparent), color-mix(in oklab, var(--theme-border) 80%, transparent));
-  --color-input-veil-soft: light-dark(transparent, color-mix(in oklab, var(--theme-border) 20%, transparent));
-  --color-input-track: light-dark(var(--theme-border), color-mix(in oklab, var(--theme-border) 80%, transparent));
-  --color-danger-veil: light-dark(color-mix(in oklab, var(--theme-burntOrange) 10%, transparent), color-mix(in oklab, var(--theme-burntOrange) 20%, transparent));
-  --color-danger-veil-hover: light-dark(color-mix(in oklab, var(--theme-burntOrange) 20%, transparent), color-mix(in oklab, var(--theme-burntOrange) 30%, transparent));
-  --color-danger-halo: light-dark(color-mix(in oklab, var(--theme-burntOrange) 20%, transparent), color-mix(in oklab, var(--theme-burntOrange) 40%, transparent));
-  --color-danger-edge: light-dark(var(--theme-burntOrange), color-mix(in oklab, var(--theme-burntOrange) 50%, transparent));
-  --color-danger-line: light-dark(color-mix(in oklab, var(--theme-burntOrange) 30%, transparent), color-mix(in oklab, var(--theme-burntOrange) 40%, transparent));
-  --color-muted-veil-hover: light-dark(var(--theme-panel), color-mix(in oklab, var(--theme-panel) 50%, transparent));
-  --color-tooltip-veil: light-dark(color-mix(in oklab, var(--theme-bg) 20%, transparent), color-mix(in oklab, var(--theme-bg) 10%, transparent));
-  --color-bubble-tint: light-dark(oklch(from var(--theme-blue) 0.93 calc(c * 0.4) h), oklch(from var(--theme-blue) 0.3 calc(c * 0.4) h));
-  --color-bubble-tint-hover: light-dark(oklch(from var(--theme-blue) 0.88 calc(c * 0.5) h), oklch(from var(--theme-blue) 0.35 calc(c * 0.5) h));
-  --color-avatar-edge: light-dark(color-mix(in oklab, var(--theme-border) 100%, transparent), color-mix(in oklab, var(--theme-fg) 40%, transparent));
+  --color-input-veil: light-dark(transparent, color-mix(in oklab, var(--input) 30%, transparent));
+  --color-input-veil-hover: light-dark(transparent, color-mix(in oklab, var(--input) 50%, transparent));
+  --color-input-veil-off: light-dark(color-mix(in oklab, var(--input) 50%, transparent), color-mix(in oklab, var(--input) 80%, transparent));
+  --color-input-veil-soft: light-dark(transparent, color-mix(in oklab, var(--input) 20%, transparent));
+  --color-input-track: light-dark(var(--input), color-mix(in oklab, var(--input) 80%, transparent));
+  --color-danger-veil: light-dark(color-mix(in oklab, var(--destructive) 10%, transparent), color-mix(in oklab, var(--destructive) 20%, transparent));
+  --color-danger-veil-hover: light-dark(color-mix(in oklab, var(--destructive) 20%, transparent), color-mix(in oklab, var(--destructive) 30%, transparent));
+  --color-danger-halo: light-dark(color-mix(in oklab, var(--destructive) 20%, transparent), color-mix(in oklab, var(--destructive) 40%, transparent));
+  --color-danger-edge: light-dark(var(--destructive), color-mix(in oklab, var(--destructive) 50%, transparent));
+  --color-danger-line: light-dark(color-mix(in oklab, var(--destructive) 30%, transparent), color-mix(in oklab, var(--destructive) 40%, transparent));
+  --color-muted-veil-hover: light-dark(var(--muted), color-mix(in oklab, var(--muted) 50%, transparent));
+  --color-tooltip-veil: light-dark(color-mix(in oklab, var(--background) 20%, transparent), color-mix(in oklab, var(--background) 10%, transparent));
+  --color-bubble-tint: light-dark(oklch(from var(--primary) 0.93 calc(c * 0.4) h), oklch(from var(--primary) 0.3 calc(c * 0.4) h));
+  --color-bubble-tint-hover: light-dark(oklch(from var(--primary) 0.88 calc(c * 0.5) h), oklch(from var(--primary) 0.35 calc(c * 0.5) h));
+  --color-avatar-edge: light-dark(color-mix(in oklab, var(--border) 100%, transparent), color-mix(in oklab, var(--foreground) 40%, transparent));
   /* the outline button: a canvas fill in light, a 30% input wash over the canvas in dark */
-  --color-outline-fill: light-dark(var(--theme-bg), color-mix(in oklab, var(--theme-border) 30%, transparent));
-  --color-outline-fill-hover: light-dark(var(--theme-panel), color-mix(in oklab, var(--theme-border) 50%, transparent));
+  --color-outline-fill: light-dark(var(--background), color-mix(in oklab, var(--input) 30%, transparent));
+  --color-outline-fill-hover: light-dark(var(--accent), color-mix(in oklab, var(--input) 50%, transparent));
   /* the selected tab: canvas in light, an input wash and a border in dark */
-  --color-tab-ink: light-dark(color-mix(in oklab, var(--theme-fg) 60%, transparent), var(--theme-fgDim));
-  --color-tab-active-bg: light-dark(var(--theme-bg), color-mix(in oklab, var(--theme-border) 30%, transparent));
-  --color-tab-active-border: light-dark(transparent, var(--theme-border));
-  --color-panel-veil: light-dark(var(--theme-panel), color-mix(in oklab, var(--theme-border) 30%, transparent));
+  --color-tab-ink: light-dark(color-mix(in oklab, var(--foreground) 60%, transparent), var(--muted-foreground));
+  --color-tab-active-bg: light-dark(var(--background), color-mix(in oklab, var(--input) 30%, transparent));
+  --color-tab-active-border: light-dark(transparent, var(--input));
+  --color-panel-veil: light-dark(var(--muted), color-mix(in oklab, var(--input) 30%, transparent));
   /* a checked field: a primary wash and its edge, both weaker in dark */
-  --color-check-veil: light-dark(color-mix(in oklab, var(--theme-blue) 5%, transparent), color-mix(in oklab, var(--theme-blue) 10%, transparent));
-  --color-check-edge: light-dark(color-mix(in oklab, var(--theme-blue) 30%, transparent), color-mix(in oklab, var(--theme-blue) 20%, transparent));
+  --color-check-veil: light-dark(color-mix(in oklab, var(--primary) 5%, transparent), color-mix(in oklab, var(--primary) 10%, transparent));
+  --color-check-edge: light-dark(color-mix(in oklab, var(--primary) 30%, transparent), color-mix(in oklab, var(--primary) 20%, transparent));
   /* the two neutral ends of a mode: the darkest (shadows, scrim) and the lightest (slider thumb). These replace
-     the retired black and white roles: a mode end is a formula over the palette, not a palette colour. */
-  --color-scrim: light-dark(var(--theme-fg), var(--theme-bg));
-  --color-thumb: light-dark(var(--theme-bg), var(--theme-fg));
+     the retired black and white roles: a mode end is a formula over the roles, not a palette colour. */
+  --color-scrim: light-dark(var(--foreground), var(--background));
+  --color-thumb: light-dark(var(--background), var(--foreground));
 
   /* Tailwind's shadow geometry, unchanged. Only the colour is the palette's: the darkest neutral of each mode. */
   --shadow: 0 1px 3px 0 color-mix(in oklab, var(--color-scrim) 10%, transparent), 0 1px 2px -1px color-mix(in oklab, var(--color-scrim) 10%, transparent);
@@ -137,23 +138,47 @@
   color: var(--foreground);
 }
 
-/* The only runtime variables. The themes live in @theme inline, which inlines its values and emits nothing; a
-   custom property is declared here only where component code reads it with var(--x). 12 names: the shadcn
-   defaults the components and this file reference, plus shadcn's own --radius. */
+/* ROLES: the one place a palette colour becomes a shadcn role, every role declared once, plus shadcn's own
+   --radius. @theme inline above reads only these, and stock component code reads them as var(--x).
+   Declared on :root AND on every [data-theme] element: a custom property inherits its resolved value, so a
+   nested theme scope re-resolves the roles from its own --theme-* values. */
 :root,
 [data-theme] {
   --radius: 0.625rem;
   --background: var(--theme-bg);
   --foreground: var(--theme-fg);
-  --primary: var(--theme-blue);
-  --secondary: var(--theme-panel);
-  --muted: var(--theme-panel);
+  --card: var(--theme-panel);
+  --card-foreground: var(--theme-fg);
   --popover: var(--theme-panel);
   --popover-foreground: var(--theme-fg);
+  --primary: var(--theme-blue);
+  /* Ruling 2026-10-27: the ink on the primary fill is the canvas colour in BOTH modes. */
+  --primary-foreground: var(--theme-bg);
+  --secondary: var(--theme-panel);
+  --secondary-foreground: var(--theme-fg);
+  --muted: var(--theme-panel);
+  --muted-foreground: var(--theme-fgDim);
+  --accent: var(--theme-panel);
+  --accent-foreground: var(--theme-fg);
+  --destructive: var(--theme-burntOrange);
   --border: var(--theme-border);
+  --input: var(--theme-border);
+  --ring: var(--theme-blue);
+  /* the chart ramp, re-picked 2026-10-27: blue first, then the cool accents in palette order. The old
+     group (blue, lime, yellow, burnt-orange, purple) is retired. */
   --chart-1: var(--theme-blue);
+  --chart-2: var(--theme-lightBlue);
+  --chart-3: var(--theme-paleBlue);
+  --chart-4: var(--theme-cyan);
+  --chart-5: var(--theme-green);
+  --sidebar: var(--theme-panel);
+  --sidebar-foreground: var(--theme-fg);
+  --sidebar-primary: var(--theme-blue);
+  --sidebar-primary-foreground: var(--theme-bg);
   --sidebar-accent: var(--theme-panel);
+  --sidebar-accent-foreground: var(--theme-fg);
   --sidebar-border: var(--theme-border);
+  --sidebar-ring: var(--theme-blue);
 }
 
 @layer base {

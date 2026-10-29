@@ -13,6 +13,8 @@ const m = loadModel();
 const MODES: Mode[] = ["light", "dark"];
 const value = (name: string, mode: Mode): string => resolve("var(" + name + ")", mode, m.env);
 const HEX = /^#[0-9a-f]{6}$/i;
+/** The semantic colours shadcn has no role for: they read their palette colour bare, in @theme inline. */
+const NO_SHADCN_ROLE = new Set(["--color-success", "--color-info"]);
 
 describe("styles.css resolves", () => {
 	test("every declaration in styles.css resolves in both modes: no var() reads an undeclared name", () => {
@@ -43,6 +45,48 @@ describe("styles.css resolves", () => {
 				expect(palette.has(v), d.name + " " + mode + " = " + v + " is a palette value").toBe(true);
 			}
 		}
+	});
+});
+
+// The layering, as the dashboard has it: palette (business.css) -> roles (:root,[data-theme]) -> Tailwind keys
+// (@theme inline) and formulas. The roles block is where a palette name becomes a role, so it is the only reader
+// of --theme-*, apart from the semantic colours shadcn has no role for (success, info), read bare.
+describe("the role layer", () => {
+	const roleNames = new Set(m.roles.decls.map((d) => d.name));
+	const outsideRoles = m.styles.filter((b) => b !== m.roles);
+
+	test("every shadcn role is declared once and the theme maps it as --color-x: var(--x)", () => {
+		expect(m.duplicates).toEqual([]);
+		expect(roleNames.has("--radius")).toBe(true);
+		const theme = new Map(m.theme.decls.map((d) => [d.name, d.value]));
+		const unmapped = [...roleNames].filter((r) => r !== "--radius" && theme.get("--color-" + r.slice(2)) !== "var(" + r + ")");
+		expect(unmapped).toEqual([]);
+		// and the other way: a --color-x key named after a role reads that role, nothing else
+		const misread = m.theme.decls.filter((d) => roleNames.has("--" + d.name.slice("--color-".length)) && d.name.startsWith("--color-") && d.value !== "var(--" + d.name.slice("--color-".length) + ")");
+		expect(misread.map((d) => d.name + ": " + d.value)).toEqual([]);
+	});
+
+	test("a --theme-* palette name is read only by the roles block, or bare by a colour shadcn has no role for", () => {
+		const offenders: string[] = [];
+		for (const block of outsideRoles)
+			for (const d of block.decls) {
+				if (!varRefs(d.value).some((n) => n.startsWith("--theme-"))) continue;
+				const bare = /^var\(--theme-[\w-]+\)$/.test(d.value);
+				const noRole = d.name.startsWith("--color-") && !roleNames.has("--" + d.name.slice("--color-".length));
+				if (!(bare && noRole && NO_SHADCN_ROLE.has(d.name))) offenders.push(block.prelude + " " + d.name + ": " + d.value);
+			}
+		expect(offenders).toEqual([]);
+	});
+
+	test("a colour alias that is one var() points at a role (or another theme key), never at the palette", () => {
+		const themeKeys = new Set(m.theme.decls.map((d) => d.name));
+		const bad = m.theme.decls
+			.filter((d) => d.name.startsWith("--color-") && /^var\(--[\w-]+\)$/.test(d.value) && !NO_SHADCN_ROLE.has(d.name))
+			.filter((d) => {
+				const target = varRefs(d.value)[0] as string;
+				return !roleNames.has(target) && !themeKeys.has(target);
+			});
+		expect(bad.map((d) => d.name + ": " + d.value)).toEqual([]);
 	});
 });
 
