@@ -30,3 +30,15 @@ export const newestFirst = (posts: Post[]) =>
 				b.data.date.valueOf() - a.data.date.valueOf() ||
 				(a.data.order ?? 0) - (b.data.order ?? 0),
 		);
+
+/** The series, each its title and its lessons in order; the series whose first lesson is oldest comes first. */
+export const seriesGroups = (posts: Post[]) => {
+	const titles = [
+		...new Set(posts.flatMap((p) => (p.data.series ? [p.data.series] : []))),
+	];
+	const first = (title: string) =>
+		Math.min(...lessonsOf(posts, title).map((p) => p.data.date.valueOf()));
+	return titles
+		.sort((a, b) => first(a) - first(b))
+		.map((title) => ({ title, lessons: lessonsOf(posts, title) }));
+};

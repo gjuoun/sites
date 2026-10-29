@@ -1,18 +1,14 @@
 ---
-import { getCollection } from "astro:content";
 import Base from "../../layouts/Base.astro";
 import { livePosts } from "../../lib/collections";
-import { lessonsOf, toPostItem } from "../../lib/posts";
+import { seriesGroups, toPostItem } from "../../lib/posts";
 import { PostsPage } from "../../views/PostsPage";
 
 const posts = await livePosts();
-const series = (await getCollection("series"))
-	.map((e) => e.data)
-	.sort((a, b) => a.order - b.order)
-	.map((s) => ({
-		...s,
-		lessons: lessonsOf(posts, s.slug).map((p) => toPostItem(p)),
-	}));
+const series = seriesGroups(posts).map((s) => ({
+	title: s.title,
+	lessons: s.lessons.map((p) => toPostItem(p)),
+}));
 const standalone = posts
 	.filter((p) => p.data.series === undefined)
 	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())

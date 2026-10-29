@@ -1,45 +1,27 @@
 ---
-import { type CollectionEntry, getCollection } from "astro:content";
+import type { CollectionEntry } from "astro:content";
 import Base from "../../layouts/Base.astro";
 import { livePosts } from "../../lib/collections";
-import { lessonsOf, pad, postHref, toPostItem } from "../../lib/posts";
+import { lessonsOf, pad, postHref } from "../../lib/posts";
 import { PostPage } from "../../views/PostPage";
-import { SeriesPage } from "../../views/SeriesPage";
 
 type Lesson = CollectionEntry<"posts">;
-type Props =
-	| { kind: "series"; series: CollectionEntry<"series">; items: Lesson[] }
-	| {
-			kind: "post";
-			post: Lesson;
-			seriesTitle?: string;
-			total: number;
-			prev?: Lesson;
-			next?: Lesson;
-	  };
+interface Props {
+	post: Lesson;
+	total: number;
+	prev?: Lesson;
+	next?: Lesson;
+}
 
-// One route for both a series page and a lesson: their slugs share /posts/<slug>/.
 export async function getStaticPaths() {
 	const posts = await livePosts();
-	const series = await getCollection("series");
-	const seriesPaths = series.map((s) => ({
-		params: { slug: s.data.slug },
-		props: {
-			kind: "series" as const,
-			series: s,
-			items: lessonsOf(posts, s.data.slug),
-		},
-	}));
-	const postPaths = posts.map((p) => {
-		const siblings = p.data.series ? lessonsOf(posts, p.data.series) : [];
-		const index = siblings.findIndex((q) => q.id === p.id);
+	return posts.map((post) => {
+		const siblings = post.data.series ? lessonsOf(posts, post.data.series) : [];
+		const index = siblings.findIndex((q) => q.id === post.id);
 		return {
-			params: { slug: p.data.slug },
+			params: { slug: post.data.slug },
 			props: {
-				kind: "post" as const,
-				post: p,
-				seriesTitle: series.find((s) => s.data.slug === p.data.series)?.data
-					.title,
+				post,
 				total: siblings.length,
 				prev: index > 0 ? siblings[index - 1] : undefined,
 				next:
@@ -49,38 +31,21 @@ export async function getStaticPaths() {
 			},
 		};
 	});
-	return [...seriesPaths, ...postPaths];
 }
 
-const props = Astro.props;
+const { post, total, prev, next } = Astro.props;
+const { title, summary, series, order, starter } = post.data;
 const link = (p: Lesson | undefined, label: (p: Lesson) => string) =>
 	p && { href: postHref(p.data.slug), label: label(p) };
 ---
 
-{
-	props.kind === "series" && (
-		<Base title={props.series.data.title} description={props.series.data.summary} starter={props.items.some((p) => p.data.starter)}>
-			<SeriesPage
-				title={props.series.data.title}
-				summary={props.series.data.summary}
-				html={props.series.rendered?.html ?? ""}
-				lessons={props.items.map((p) => toPostItem(p))}
-				first={link(props.items[0], (p) => `Start with lesson ${pad(p.data.order)} →`)}
-			/>
-		</Base>
-	)
-}
-{
-	props.kind === "post" && (
-		<Base title={props.post.data.title} description={props.post.data.summary} type="article" starter={props.post.data.starter}>
-			<PostPage
-				title={props.post.data.title}
-				summary={props.post.data.summary}
-				html={props.post.rendered?.html ?? ""}
-				kicker={props.seriesTitle && `Lesson ${pad(props.post.data.order)} of ${props.total} in ${props.seriesTitle}`}
-				prev={link(props.prev, (p) => `← ${pad(p.data.order)} · ${p.data.title}`)}
-				next={link(props.next, (p) => `${pad(p.data.order)} · ${p.data.title} →`)}
-			/>
-		</Base>
-	)
-}
+<Base title={title} description={summary} type="article" starter={starter}>
+	<PostPage
+		title={title}
+		summary={summary}
+		html={post.rendered?.html ?? ""}
+		kicker={series && `Lesson ${pad(order)} of ${total} in ${series}`}
+		prev={link(prev, (p) => `← ${pad(p.data.order)} · ${p.data.title}`)}
+		next={link(next, (p) => `${pad(p.data.order)} · ${p.data.title} →`)}
+	/>
+</Base>

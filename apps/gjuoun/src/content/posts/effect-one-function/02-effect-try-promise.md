@@ -4,7 +4,7 @@ title: "Wrap a promise with Effect.tryPromise"
 slug: "effect-try-promise"
 summary: "Turn a promise that can fail into an Effect."
 date: "2026-10-27"
-series: "effect-one-function"
+series: "Effect, one function at a time"
 order: 2
 tags: ["effect", "typescript"]
 starter: true

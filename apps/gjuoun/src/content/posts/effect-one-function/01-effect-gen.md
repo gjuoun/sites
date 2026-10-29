@@ -4,7 +4,7 @@ title: "Sequence steps with Effect.gen"
 slug: "effect-gen"
 summary: "Write sequential Effect code with yield*."
 date: "2026-10-27"
-series: "effect-one-function"
+series: "Effect, one function at a time"
 order: 1
 tags: ["effect", "typescript"]
 starter: true

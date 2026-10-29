@@ -1,4 +1,3 @@
-import { getCollection } from "astro:content";
 import type { APIContext } from "astro";
 import { livePosts } from "../lib/collections";
 import { siteOrigin } from "../lib/seo";
@@ -6,13 +5,11 @@ import { siteOrigin } from "../lib/seo";
 export async function GET(context: APIContext) {
 	const site = siteOrigin(context.site);
 	const posts = await livePosts();
-	const series = await getCollection("series");
 	const paths = [
 		"/",
 		"/posts/",
 		"/projects/",
 		"/resume/",
-		...series.map((s) => `/posts/${s.data.slug}/`),
 		...posts.map((p) => `/posts/${p.data.slug}/`),
 	];
 	const urls = paths
