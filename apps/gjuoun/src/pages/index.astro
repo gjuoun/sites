@@ -4,7 +4,7 @@ import { buttonVariants } from "@gjuoun/bigface-business-ui/components/ui/button
 import { cn } from "cn";
 import Intro from "../components/Intro.astro";
 import PostList from "../components/PostList.astro";
-import { renderProjectGrid } from "../components/ProjectGrid";
+import { ProjectGrid } from "../components/ProjectGrid";
 import Base from "../layouts/Base.astro";
 import { livePosts } from "../lib/collections";
 
@@ -16,7 +16,6 @@ const seriesTitles = new Map(
 		(e) => [e.data.slug, e.data.title] as const,
 	),
 );
-const grid = renderProjectGrid(projects);
 const posts = await livePosts();
 // Latest lessons: newest first. Ties keep series order, so a course with one date starts at lesson 1.
 const latest = posts
@@ -37,7 +36,7 @@ const latest = posts
 	</section>
 	<section aria-labelledby="portfolio-heading">
 		<h2 id="portfolio-heading">Portfolio</h2>
-		<Fragment set:html={grid} />
+		<ProjectGrid projects={projects} />
 	</section>
 	<!-- The posts are set off from the portfolio above them. -->
 	<section class="mt-10 border-t-2 border-border pt-6 [&>h2]:mt-0" aria-labelledby="posts-heading">

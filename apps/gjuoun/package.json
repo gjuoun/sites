@@ -17,6 +17,7 @@
     "check:snippets": "bun run scripts/check-snippets.ts"
   },
   "dependencies": {
+    "@astrojs/react": "7.1.2",
     "@astrojs/rss": "4.0.19",
     "@gjuoun/bigface-business-ui": "workspace:*",
     "@tailwindcss/typography": "0.5.20",

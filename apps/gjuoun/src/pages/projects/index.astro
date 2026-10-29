@@ -1,15 +1,14 @@
 ---
 import { getCollection } from "astro:content";
-import { renderProjectGrid } from "../../components/ProjectGrid";
+import { ProjectGrid } from "../../components/ProjectGrid";
 import Base from "../../layouts/Base.astro";
 
 const projects = (await getCollection("projects"))
 	.map((e) => e.data)
 	.sort((a, b) => a.order - b.order);
-const grid = renderProjectGrid(projects);
 ---
 
 <Base title="Portfolio" description="Portfolio of projects by Jun Guo, public and private." starter={true}>
 	<h1>Portfolio</h1>
-	<Fragment set:html={grid} />
+	<ProjectGrid projects={projects} />
 </Base>

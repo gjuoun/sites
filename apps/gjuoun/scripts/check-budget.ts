@@ -1,5 +1,7 @@
-// Byte budget over dist/: HTML per page, CSS per file, inline plus _astro js per page, and zero
+// Byte budget over dist/: HTML per page, CSS per file, inline plus the _astro js pages load, and zero
 // off-origin script, link, img, or font requests. The origin comes from astro.config.mjs.
+// Only _astro js that a page references counts: @astrojs/react builds React's client bundle even when no
+// component hydrates, and a file no page loads costs a visitor nothing.
 import { join } from "node:path";
 
 export const LIMITS = {
@@ -37,6 +39,32 @@ export function offOriginRequests(html: string, origin: string): string[] {
 	return out;
 }
 
+/**
+ * The _astro js files a browser can load: named in any page (script src, modulepreload, island urls), plus
+ * every chunk those files import, transitively. `js` maps file name to contents.
+ */
+export function loadedScripts(
+	htmls: string[],
+	js: Record<string, string>,
+): string[] {
+	const names = Object.keys(js);
+	const loaded = new Set(
+		names.filter((n) => htmls.some((h) => h.includes(`/_astro/${n}`))),
+	);
+	for (let grew = true; grew; ) {
+		grew = false;
+		for (const n of names)
+			if (
+				!loaded.has(n) &&
+				[...loaded].some((l) => (js[l] ?? "").includes(n))
+			) {
+				loaded.add(n);
+				grew = true;
+			}
+	}
+	return [...loaded];
+}
+
 export function offOriginCssRequests(css: string): string[] {
 	return [...css.matchAll(CSS_URL)].map((m) => m[1] ?? "");
 }
@@ -56,12 +84,17 @@ if (import.meta.main) {
 	let third = 0;
 	const problems: string[] = [];
 
-	for await (const rel of new Bun.Glob("_astro/*.js").scan({ cwd: dist })) {
-		const size = (await Bun.file(join(dist, rel)).arrayBuffer()).byteLength;
-		jsAstro += size;
-	}
-	for await (const rel of new Bun.Glob("**/*.html").scan({ cwd: dist })) {
-		const html = await Bun.file(join(dist, rel)).text();
+	const files: Record<string, string> = {};
+	for await (const rel of new Bun.Glob("*.js").scan({
+		cwd: join(dist, "_astro"),
+	}))
+		files[rel] = await Bun.file(join(dist, "_astro", rel)).text();
+	const pages: Record<string, string> = {};
+	for await (const rel of new Bun.Glob("**/*.html").scan({ cwd: dist }))
+		pages[rel] = await Bun.file(join(dist, rel)).text();
+	for (const name of loadedScripts(Object.values(pages), files))
+		jsAstro += new TextEncoder().encode(files[name] ?? "").length;
+	for (const [rel, html] of Object.entries(pages)) {
 		const size = new TextEncoder().encode(html).length;
 		if (size > maxHtml) {
 			maxHtml = size;

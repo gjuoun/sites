@@ -1,6 +1,6 @@
 // The portfolio as a card grid. The cards, chips and buttons are the theme package's own stock components
-// (@gjuoun/bigface-business-ui); this file only arranges them. It is rendered to static HTML at build time
-// (renderProjectGrid), so no React runtime reaches the browser.
+// (@gjuoun/bigface-business-ui); this file only arranges them. Pages use it without a client:* directive, so it
+// renders to static HTML at build time and no React runtime reaches the browser.
 import { Badge } from "@gjuoun/bigface-business-ui/components/ui/badge";
 import { Button } from "@gjuoun/bigface-business-ui/components/ui/button";
 import {
@@ -11,7 +11,6 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@gjuoun/bigface-business-ui/components/ui/card";
-import { renderToStaticMarkup } from "react-dom/server";
 
 // The site's keyboard focus: a solid outline around the stock button, as on every other link.
 const FOCUS =
@@ -87,9 +86,4 @@ export function ProjectGrid({ projects }: { projects: GridProject[] }) {
 			))}
 		</ul>
 	);
-}
-
-// The grid as an HTML string, for an Astro page to inject. Build-time only: the page ships no script for it.
-export function renderProjectGrid(projects: GridProject[]): string {
-	return renderToStaticMarkup(<ProjectGrid projects={projects} />);
 }

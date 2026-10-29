@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import react from "@astrojs/react";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 
@@ -17,6 +18,8 @@ export default defineConfig({
   markdown: {
     shikiConfig: { theme: bigfaceCode, wrap: false },
   },
-  // No framework integration: the theme's React components render to static HTML at build time (src/components/ProjectGrid.tsx).
+  // React for the theme's stock components. Used without a client:* directive, they render to static HTML at
+  // build time and ship no React runtime.
+  integrations: [react()],
   vite: { plugins: [tailwindcss()] },
 });
