@@ -19,14 +19,16 @@ test("oklch greys from shadcn's neutral baseColor are rejected", () => {
   expect(findForeignInCss(".x{color:oklch(57.7% .245 27.325)}", known)).toHaveLength(1);
 });
 
-test("Tailwind's default shadow colour #0000001a is rejected", () => {
+test("Tailwind's black and white are accepted at any alpha: stock shadows, overlays and thumb", () => {
   expect(
     findForeignInCss(".s{--tw-shadow:0 1px 3px 0 var(--tw-shadow-color,#0000001a)}", known),
-  ).toEqual(["#0000001a"]);
+  ).toEqual([]);
+  expect(findForeignInCss(".o{background-color:#0000001a;color:#fff;fill:rgb(0 0 0/.1)}", known)).toEqual([]);
+  expect(findForeignInCss(".n{color:black;background:white}", known)).toEqual([]);
 });
 
-test("short hex is expanded: #000 rejected; #333 (a neutral the collapse removed) rejected too", () => {
-  expect(findForeignInCss(".a{color:#000}", known)).toEqual(["#000"]);
+test("short hex is expanded: #000 is black; #333 (a neutral the collapse removed) is rejected", () => {
+  expect(findForeignInCss(".a{color:#000}", known)).toEqual([]);
   // The neutral collapse removed #333333: the expansion is checked against the palette, so #333 is foreign now.
   expect(findForeignInCss(".a{color:#333}", known)).toEqual(["#333"]);
 });
@@ -54,17 +56,17 @@ test("mask layers only read alpha, so their colours are accepted", () => {
   const css =
     ".m{mask-image:linear-gradient(90deg,#0000,#000 8% 92%,#0000);-webkit-mask-image:linear-gradient(#000 0 0)}";
   expect(findForeignInCss(css, known)).toEqual([]);
-  expect(findForeignInCss(".m{mask-image:none;box-shadow:0 30px 60px -40px #000}", known)).toEqual([
-    "#000",
+  expect(findForeignInCss(".m{mask-image:none;box-shadow:0 30px 60px -40px #333}", known)).toEqual([
+    "#333",
   ]);
 });
 
-test("#fff is accepted only as Tailwind's ring-offset initial value", () => {
+test("#fff is accepted, as Tailwind's ring-offset initial value and as white", () => {
   const ok =
     '@property --tw-ring-offset-color{syntax:"*";inherits:false;initial-value:#fff}' +
     "*{--tw-ring-offset-color:#fff}";
   expect(findForeignInCss(ok, known)).toEqual([]);
-  expect(findForeignInCss(".b{background:#fff}", known)).toEqual(["#fff"]);
+  expect(findForeignInCss(".b{background:#fff}", known)).toEqual([]);
 });
 
 test("palette hex in any length/case and palette rgb triples are accepted", () => {
@@ -98,9 +100,9 @@ test("the dead Canvas/CanvasText rules are dropped, the same names elsewhere are
 });
 
 test("<noscript> fallbacks are not painted in a JS browser; outside them the same rule fails", () => {
-  const inside = "<noscript><style>.q{color:#fff;background:#000}</style></noscript>";
+  const inside = "<noscript><style>.q{color:#123456;background:#000}</style></noscript>";
   expect(findForeignInHtml(inside, known)).toEqual([]);
-  expect(findForeignInHtml("<style>.q{color:#fff}</style>", known)).toEqual(["#fff"]);
+  expect(findForeignInHtml("<style>.q{color:#123456}</style>", known)).toEqual(["#123456"]);
 });
 
 // resizable.tsx ships ring-offset-background; the #fff initial value must still never paint.

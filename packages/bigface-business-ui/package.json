@@ -26,7 +26,6 @@
     "./hooks/*": "./src/hooks/*.ts",
     "./lib/utils": "./src/lib/utils.ts",
     "./lib/themes": "./src/lib/themes.ts",
-    "./themes/accents": "./src/themes/accents.ts",
     "./themes/*": "./src/themes/*",
     "./styles.css": "./src/styles/styles.css",
     "./package.json": "./package.json"

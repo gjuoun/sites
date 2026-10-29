@@ -47,8 +47,8 @@ export function findInklessBrightPlates(html: string): string[] {
     const slot = /data-slot="([\w-]+)"/.exec(tagAt(html, at))?.[1] ?? "";
     if (TEXTLESS.has(slot)) continue;
     const tokens = (m[1] as string).split(/\s+/).filter(Boolean).map(splitVariant);
-    // No variant is normalised: mode lives in color-scheme, so a fill and its ink share the same
-    // variant string in both modes (a dark: class would be a regression, caught by the package guard).
+    // A fill and its ink share the same variant string. A stock dark: fill (dark:data-checked:bg-primary)
+    // repeats a light fill in dark mode, so the ink of the same variant without dark: covers it.
     const inks = new Set(tokens.filter(([, u]) => INK.has(u)).map(([v]) => v));
     // a ::before/::after with empty content is a decorative dot or rim: there is no text to ink
     // a gradient clipped to the text is the text's own paint, not a plate behind it
@@ -59,7 +59,8 @@ export function findInklessBrightPlates(html: string): string[] {
       const fill = /^(?:bg|from|via|to)-(.+)$/.exec(utility)?.[1];
       if (!fill || !BRIGHT.has(fill)) continue; // bg-x/20 (translucent tint) never matches
       if (/(?:^|:)(?:before|after):$/.test(variant) && empty.has(variant)) continue;
-      if (!inks.has(variant) && !inks.has("")) offenders.push(m[1] as string);
+      const light = variant.replace(/(^|:)dark:/, "$1");
+      if (!inks.has(variant) && !inks.has(light) && !inks.has("")) offenders.push(m[1] as string);
     }
   }
   return offenders;
