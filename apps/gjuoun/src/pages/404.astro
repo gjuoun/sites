@@ -1,8 +1,8 @@
 ---
 import Base from "../layouts/Base.astro";
+import { NotFoundPage } from "../views/NotFoundPage";
 ---
 
 <Base title="Not found" description="This page does not exist." indexable={false}>
-	<h1>Page not found</h1>
-	<p><a href="/">Back to home</a></p>
+	<NotFoundPage />
 </Base>

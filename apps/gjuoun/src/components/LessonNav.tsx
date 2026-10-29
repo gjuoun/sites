@@ -1,6 +1,6 @@
 import { ButtonLink } from "./ButtonLink";
 
-interface Target {
+export interface LessonLink {
 	href: string;
 	label: string;
 }
@@ -12,8 +12,8 @@ export function LessonNav({
 	forward,
 }: {
 	label: string;
-	back?: Target;
-	forward?: Target;
+	back?: LessonLink;
+	forward?: LessonLink;
 }) {
 	return (
 		<nav

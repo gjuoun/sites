@@ -1,7 +1,7 @@
 ---
 import { getCollection } from "astro:content";
-import { ProjectGrid } from "../../components/ProjectGrid";
 import Base from "../../layouts/Base.astro";
+import { PortfolioPage } from "../../views/PortfolioPage";
 
 const projects = (await getCollection("projects"))
 	.map((e) => e.data)
@@ -9,6 +9,5 @@ const projects = (await getCollection("projects"))
 ---
 
 <Base title="Portfolio" description="Portfolio of projects by Jun Guo, public and private." starter={true}>
-	<h1>Portfolio</h1>
-	<ProjectGrid projects={projects} />
+	<PortfolioPage projects={projects} />
 </Base>

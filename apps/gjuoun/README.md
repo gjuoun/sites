@@ -4,11 +4,25 @@ Static Astro site on the bigface business theme (light by default, dark via the 
 project `jun-blog`. Routes: home (portfolio, resume, latest lessons), `/projects/` (titled Portfolio), posts,
 a numbered series page, resume, 404, RSS, sitemap.
 
-The portfolio is a card grid built from the theme package's own stock components (`Card`, `Badge`, `Button` from
-`@gjuoun/bigface-business-ui`). `@astrojs/react` renders them to static HTML at build time (no `client:*` directive, in
-`src/components/ProjectGrid.tsx`), so no React runtime ships. The only stylesheet is `src/styles/tailwind.css`:
-Tailwind, the business theme, the typography plugin, the font, and `@source` for the three components used. Every
-other rule is a Tailwind utility in the components. Components are React (`src/components/*.tsx`), rendered to static HTML with no `client:*` directive; Astro is used for pages and the layout only.
+## Layout
+
+```text
+src/pages/       routes (.astro): load content, pick a view, wrap it in the document shell
+src/layouts/     Base.astro: <html>, <head>, the pre-paint mode script, header and footer
+src/views/       one React view per page (HomePage, PostPage, ...), each inside <Page> (<main> with prose)
+src/components/  shared React parts: Page, Markdown, Link, ButtonLink, LessonNav, PostList, ProjectGrid, ...
+src/lib/         content helpers (posts, collections, seo, content rules)
+src/data/        hand-written facts (about, resume)
+src/styles/      tailwind.css, the only stylesheet
+```
+
+Views and components are React, rendered to static HTML by `@astrojs/react` with no `client:*` directive, so no
+React runtime ships; the only client JS is the theme toggle's inline script (`ThemeToggle.tsx`). Post and series
+bodies are Astro's rendered Markdown (`entry.rendered.html`), shown through `Markdown`. The portfolio cards, chips
+and buttons are the theme package's stock `Card`, `Badge` and `Button` (`@gjuoun/bigface-business-ui`).
+
+`src/styles/tailwind.css` holds Tailwind, the business theme, the typography plugin, the font, and `@source` for the
+three stock components used; every other rule is a Tailwind utility in a component.
 
 ## Commands
 

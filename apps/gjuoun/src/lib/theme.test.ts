@@ -11,10 +11,15 @@ test("the toggle writes the package's mode key", () => {
 	expect(src("components/ThemeToggle.tsx")).toContain("MODE_STORAGE_KEY");
 });
 
-test("components are React (tsx) only: Astro is for pages and the layout", () => {
-	const files = readdirSync(join(import.meta.dir, "../components"));
-	expect(files.length).toBeGreaterThan(0);
-	expect(files.filter((f) => !f.endsWith(".tsx"))).toEqual([]);
+test("components and views are React (tsx) only: Astro is for routes and the document shell", () => {
+	for (const dir of ["../components", "../views"]) {
+		const files = readdirSync(join(import.meta.dir, dir));
+		expect(files.length, dir).toBeGreaterThan(0);
+		expect(
+			files.filter((f) => !f.endsWith(".tsx")),
+			dir,
+		).toEqual([]);
+	}
 });
 
 // The site carries no stylesheet of its own: tailwind.css is Tailwind, the typography plugin, the theme, the
