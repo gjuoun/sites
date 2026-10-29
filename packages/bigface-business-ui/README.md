@@ -18,8 +18,26 @@ Private for now: nothing is published, and the version is 0.1.0. It is one of th
 | `src/themes/business.css` | the business colours: ONE block, `light-dark(light, dark)` per neutral, generated |
 | `src/themes/accents.ts` | the accent docs table (accent + solved plate), generated data, not theme roles |
 | `src/themes/contract.json` | the colour contract: 12 required roles, no optional tier, no derived role |
-| `src/styles/styles.css` | the only stylesheet: palette import, shadcn mapping, formulas, 12 runtime vars, base |
+| `src/styles/styles.css` | the only stylesheet: palette import, the role block (every shadcn role, once), the Tailwind keys and formulas that read it, base |
 | `src/hooks/use-theme.ts`, `src/lib/themes.ts` | `useMode`, the mode storage key and the pre-paint script |
+
+## How the stylesheet is layered
+
+`styles.css` uses the same layers as the dashboard's `globals.css`. Each layer reads only the one before it:
+
+1. **palette**: `themes/business.css` (generated) sets the `--theme-*` colours, with `light-dark()` for each mode.
+2. **roles**: the `:root,[data-theme]` block declares every shadcn role (`--background`, `--card`, `--primary-foreground`, `--chart-1`, `--sidebar-ring`, ...) exactly once, plus `--radius`. This block is the only place a palette colour becomes a role. Stock component code reads these as `var(--x)`.
+3. **keys**: `@theme inline` maps each role mechanically (`--color-x: var(--x)`). The business aliases (`canvas`, `ink`, `surface`, `muted-ink`, ...) and the `light-dark()` formulas (veils, tints, scrim, thumb) read roles too.
+
+There is one exception. `--color-success` and `--color-info` have no shadcn role, so they read their palette colour directly.
+
+To add a colour, add a role to the block and map it in `@theme inline`; never read a `--theme-*` name anywhere else. `src/styles/styles.test.ts` holds the layering and derives every check from the CSS:
+
+- each role is declared once and mapped;
+- each component's `var(--x)` is declared;
+- the contrast pairs hold;
+- the scrim and thumb are the two neutral ends of a mode;
+- shadows use the scrim colour.
 
 ## BG2 and the glow variant
 
@@ -47,10 +65,10 @@ every mode-dependent colour is a `light-dark()` token. There is no dark block, n
 
 ## The colour rulings this package holds
 
-These are asserted by `src/themes/themes.test.ts`:
+These are asserted by `src/themes/themes.test.ts` and `src/styles/styles.test.ts`:
 
 - light surfaces are paper (`#f8f8f0`) and the dark canvas is `#252925`; pure white is never used
-- the primary **fill** is bigface's native blue `#00b0ff` in both modes, with the dark ink `#252925` on top (6.08:1)
+- the primary **fill** is bigface's native blue `#00b0ff` in both modes, and the ink on it is the canvas colour in both modes (ruling 2026-10-27). In dark that is `#252925` on blue (6.08:1); in light it is paper `#f8f8f0` on blue (2.27:1, below AA), a tradeoff recorded and pinned in `styles.test.ts`
 - the primary **ink** (rings and text) follows the accent blue: `#00b0ff` in both modes (ruling 2026-10-24). It measures 2.27:1 on paper, below AA; a readable light ink is parked for Jun
 - the scrim (`bg-scrim/10`) and the slider thumb (`bg-thumb`) are formulas over the two neutral ends of a mode;
 there is no black or white token
