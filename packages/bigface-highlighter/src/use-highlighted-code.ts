@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { loadHighlighter } from "@gjuoun/bigface-business-ui/lib/highlighter"
+import { loadHighlighter } from "./highlighter.tsx"
 
 export function useHighlightedCode(value: string, language: string) {
   // A trailing newline would render as an extra empty line.
