@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Bigface business theme: 63 shadcn primitives, the business wrappers and one light+dark theme, vendored from @gjuoun/bigface-ui and generated from the Bigface palettes.",
+  "description": "Bigface business theme for Tailwind: 63 stock shadcn components and one light+dark theme generated from the Bigface palettes.",
   "license": "MIT",
   "keywords": [
     "shadcn",
