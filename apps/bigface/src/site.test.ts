@@ -290,8 +290,6 @@ test("the site only ships colours that exist in the palette", () => {
 		...paletteHexes(palette),
 		...paletteHexes(lightPaletteJson as unknown as Palette),
 		...themeHexes,
-		// the accent docs table: accents and their solved plates, rendered as inline styles on the colour page
-		...[...readFileSync(join(siteDir, "../../packages/bigface-business-ui/src/themes/accents.ts"), "utf8").matchAll(/#[0-9a-fA-F]{6}\b/g)].map((m) => m[0].toLowerCase()),
 	]);
 	const htmlFiles = readdirSync(dist, {
 		recursive: true,
@@ -319,24 +317,6 @@ test("the site only ships colours that exist in the palette", () => {
 	expect(offenders).toEqual([]);
 	// And the theme's own background really is the page background.
 	expect(page("")).toContain("#252925");
-});
-
-// native-select.tsx (stock) paints its options with the browser system colours Canvas and CanvasText. A system
-// colour is not a palette colour, so a page may use them only where the built CSS maps them onto the palette: the
-// business theme does, and the console site never uses them.
-test("the Canvas/CanvasText system-colour classes reach a page only where the built CSS maps them onto the palette", () => {
-	const css = readdirSync(join(dist, "_astro"))
-		.filter((f) => f.endsWith(".css"))
-		.map((f) => readFileSync(join(dist, "_astro", f), "utf8"))
-		.join("\n");
-	const mapsCanvas = /\.bg-\\\[Canvas\\\]\{background-color:var\(--background\)\}/.test(css);
-	const mapsCanvasText = /\.text-\\\[CanvasText\\\]\{color:var\(--foreground\)\}/.test(css);
-	const users: string[] = [];
-	for (const f of readdirSync(dist, { recursive: true, encoding: "utf8" }).filter((f) => f.endsWith("index.html"))) {
-		const html = readFileSync(join(dist, f), "utf8");
-		if (html.includes("bg-[Canvas]") || html.includes("text-[CanvasText]")) users.push(f);
-	}
-	expect(users.length === 0 || (mapsCanvas && mapsCanvasText), "system colours used without a palette mapping: " + users.join(", ")).toBe(true);
 });
 
 test("the brand mark ships as a vector favicon, a touch icon and a 1200x630 social card", () => {

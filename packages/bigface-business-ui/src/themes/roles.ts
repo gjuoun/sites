@@ -1,13 +1,12 @@
 // The business theme as data: COLOUR ONLY, and in the palette's own names.
 //
 // A role IS a palette colour: `bg` means the palette's `bg`. The neutrals and accents the components
-// actually use. light-dark() carries the two modes, so there is no per-mode block, no optional tier and
-// no role that exists only to paper over one mode. The six neutrals are the palette's own: bg, panel,
-// fg, fgDim, border and highlight.
+// actually use. Each is written twice, a light hex and a dark hex, in shadcn's two blocks; there is no
+// optional tier. The six neutrals are the palette's own: bg, panel, fg, fgDim, border and highlight.
 //
-// Anything that is not a palette colour is a formula in styles.css (the ink on the primary fill, the
-// translucent veils) or generated data in accents.ts (the deepened plates for the accent docs). A
-// theme stores only what comes out of the palette.
+// Anything that is not a palette colour is shadcn's own (styles.css maps roles, nothing more) or
+// generated data in accents.ts (the deepened plates for the accent docs). A theme stores only what
+// comes out of the palette.
 export const NEUTRALS = ["bg", "panel", "fg", "fgDim", "border", "highlight"] as const;
 
 /**
@@ -17,7 +16,7 @@ export const NEUTRALS = ["bg", "panel", "fg", "fgDim", "border", "highlight"] as
  */
 export const ACCENTS = ["blue", "lightBlue", "paleBlue", "cyan", "green", "burntOrange"] as const;
 
-/** Every role a theme must set. There is no optional tier: the contract is the whole list. */
+/** Every role a theme must set. */
 export const REQUIRED = [...NEUTRALS, ...ACCENTS] as const;
 
 /** A theme maps each role to a palette colour name. */

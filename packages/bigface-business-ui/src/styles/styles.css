@@ -1,30 +1,18 @@
-/* The business theme in one file, and the one stylesheet a consumer imports.
-
-   Layered the way the dashboard's globals.css is:
-   1. palette   themes/business.css (generated, imported first): --theme-* colours, light-dark() per mode;
-   2. roles     the :root,[data-theme] block below: every shadcn role, declared once. It is the only place a
-                palette colour becomes a role;
-   3. keys      @theme inline: Tailwind colour keys that read the roles (--color-x: var(--x)), the business
-                aliases (which also read roles), and the light-dark() formulas (which read roles too).
-   The one exception: success and info have no shadcn role, so their keys read the palette colour directly.
-   Colour only: every size, radius, shadow geometry, font and motion value is Tailwind's or shadcn's own.
-
-   Consumers bring Tailwind themselves (@import "tailwindcss" then this file); this file must not import it, or
-   preflight and the theme would be emitted twice. */
+/* The business theme for Tailwind, written the way shadcn's theming guide writes its default theme
+   (https://ui.shadcn.com/docs/theming, "Default Theme CSS"). Nothing here that the guide does not have:
+   1. palette   themes/business.css (generated): the --theme-* colours, a light block and a dark block;
+   2. variant   dark: follows data-mode, so it works with data-theme scopes instead of a .dark class;
+   3. keys      @theme inline: shadcn's colour names and radius scale, as Tailwind keys;
+   4. roles     every shadcn role, declared once, reading the palette. Declared on every [data-theme] and
+                [data-mode] element too, so a nested scope re-resolves the roles from its own palette;
+   5. base      shadcn's two base rules.
+   Consumers bring Tailwind themselves (@import "tailwindcss" then this file). */
 @import "../themes/business.css";
+@import "shadcn/tailwind.css";
 
-/* There is no dark: variant: mode lives in color-scheme, and every mode-dependent colour is a light-dark()
-   token. A dark: utility anywhere in this package is a regression, and no-legacy-colour.test.ts fails on it. */
+@custom-variant dark (&:where([data-mode="dark"], [data-mode="dark"] *));
 
 @theme inline {
-  /* the shadcn init aliases: components.json's class rewrites read these keys. The stacks are the package's
-     defaults; a consumer that sets its own --font-sans in a later @theme inline wins. */
-  --font-heading: var(--font-sans);
-  --font-sans: "Recursive", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: "Recursive", ui-monospace, "SF Mono", Menlo, monospace;
-  --font-display: "Recursive", "Helvetica Neue", system-ui, sans-serif;
-
-  /* shadcn's colour names, as Tailwind colours: each reads its role from the block below */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -56,8 +44,6 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-
-  /* shadcn's radius scale, derived from --radius exactly as the CLI writes it */
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -65,85 +51,11 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
-
-  /* the business names the site already writes (bg-canvas, text-ink, bg-surface, ...), each an alias of a role */
-  --color-canvas: var(--background);
-  --color-ink: var(--foreground);
-  --color-heading: var(--foreground);
-  --color-surface: var(--card);
-  --color-subtle: var(--muted);
-  --color-muted-ink: var(--muted-foreground);
-  --color-frame: var(--sidebar);
-  --color-on-frame: var(--sidebar-foreground);
-  --color-solid: var(--secondary);
-  --color-on-solid: var(--secondary-foreground);
-  --color-overlay: var(--background);
-  --color-danger: var(--destructive);
-  --color-primary-ink: var(--ring);
-  /* the two semantic colours shadcn has no role for: they read the palette directly */
-  --color-success: var(--theme-green);
-  --color-info: var(--theme-cyan);
-
-  /* Mode-aware colours that are formulas over the roles. Each is one token instead of a dark: variant:
-     light-dark() picks the branch at used-value time, so a component never names a mode. */
-  --color-input-veil: light-dark(transparent, color-mix(in oklab, var(--input) 30%, transparent));
-  --color-input-veil-hover: light-dark(transparent, color-mix(in oklab, var(--input) 50%, transparent));
-  --color-input-veil-off: light-dark(color-mix(in oklab, var(--input) 50%, transparent), color-mix(in oklab, var(--input) 80%, transparent));
-  --color-input-veil-soft: light-dark(transparent, color-mix(in oklab, var(--input) 20%, transparent));
-  --color-input-track: light-dark(var(--input), color-mix(in oklab, var(--input) 80%, transparent));
-  --color-danger-veil: light-dark(color-mix(in oklab, var(--destructive) 10%, transparent), color-mix(in oklab, var(--destructive) 20%, transparent));
-  --color-danger-veil-hover: light-dark(color-mix(in oklab, var(--destructive) 20%, transparent), color-mix(in oklab, var(--destructive) 30%, transparent));
-  --color-danger-halo: light-dark(color-mix(in oklab, var(--destructive) 20%, transparent), color-mix(in oklab, var(--destructive) 40%, transparent));
-  --color-danger-edge: light-dark(var(--destructive), color-mix(in oklab, var(--destructive) 50%, transparent));
-  --color-danger-line: light-dark(color-mix(in oklab, var(--destructive) 30%, transparent), color-mix(in oklab, var(--destructive) 40%, transparent));
-  --color-muted-veil-hover: light-dark(var(--muted), color-mix(in oklab, var(--muted) 50%, transparent));
-  --color-tooltip-veil: light-dark(color-mix(in oklab, var(--background) 20%, transparent), color-mix(in oklab, var(--background) 10%, transparent));
-  --color-bubble-tint: light-dark(oklch(from var(--primary) 0.93 calc(c * 0.4) h), oklch(from var(--primary) 0.3 calc(c * 0.4) h));
-  --color-bubble-tint-hover: light-dark(oklch(from var(--primary) 0.88 calc(c * 0.5) h), oklch(from var(--primary) 0.35 calc(c * 0.5) h));
-  --color-avatar-edge: light-dark(color-mix(in oklab, var(--border) 100%, transparent), color-mix(in oklab, var(--foreground) 40%, transparent));
-  /* the outline button: a canvas fill in light, a 30% input wash over the canvas in dark */
-  --color-outline-fill: light-dark(var(--background), color-mix(in oklab, var(--input) 30%, transparent));
-  --color-outline-fill-hover: light-dark(var(--accent), color-mix(in oklab, var(--input) 50%, transparent));
-  /* the selected tab: canvas in light, an input wash and a border in dark */
-  --color-tab-ink: light-dark(color-mix(in oklab, var(--foreground) 60%, transparent), var(--muted-foreground));
-  --color-tab-active-bg: light-dark(var(--background), color-mix(in oklab, var(--input) 30%, transparent));
-  --color-tab-active-border: light-dark(transparent, var(--input));
-  --color-panel-veil: light-dark(var(--muted), color-mix(in oklab, var(--input) 30%, transparent));
-  /* a checked field: a primary wash and its edge, both weaker in dark */
-  --color-check-veil: light-dark(color-mix(in oklab, var(--primary) 5%, transparent), color-mix(in oklab, var(--primary) 10%, transparent));
-  --color-check-edge: light-dark(color-mix(in oklab, var(--primary) 30%, transparent), color-mix(in oklab, var(--primary) 20%, transparent));
-  /* the two neutral ends of a mode: the darkest (shadows, scrim) and the lightest (slider thumb). These replace
-     the retired black and white roles: a mode end is a formula over the roles, not a palette colour. */
-  --color-scrim: light-dark(var(--foreground), var(--background));
-  --color-thumb: light-dark(var(--background), var(--foreground));
-
-  /* Tailwind's shadow geometry, unchanged. Only the colour is the palette's: the darkest neutral of each mode. */
-  --shadow: 0 1px 3px 0 color-mix(in oklab, var(--color-scrim) 10%, transparent), 0 1px 2px -1px color-mix(in oklab, var(--color-scrim) 10%, transparent);
-  --shadow-2xs: 0 1px color-mix(in oklab, var(--color-scrim) 5%, transparent);
-  --shadow-xs: 0 1px 2px 0 color-mix(in oklab, var(--color-scrim) 5%, transparent);
-  --shadow-sm: 0 1px 3px 0 color-mix(in oklab, var(--color-scrim) 10%, transparent), 0 1px 2px -1px color-mix(in oklab, var(--color-scrim) 10%, transparent);
-  --shadow-md: 0 4px 6px -1px color-mix(in oklab, var(--color-scrim) 10%, transparent), 0 2px 4px -2px color-mix(in oklab, var(--color-scrim) 10%, transparent);
-  --shadow-lg: 0 10px 15px -3px color-mix(in oklab, var(--color-scrim) 10%, transparent), 0 4px 6px -4px color-mix(in oklab, var(--color-scrim) 10%, transparent);
-  --shadow-xl: 0 20px 25px -5px color-mix(in oklab, var(--color-scrim) 10%, transparent), 0 8px 10px -6px color-mix(in oklab, var(--color-scrim) 10%, transparent);
-  --shadow-2xl: 0 25px 50px -12px color-mix(in oklab, var(--color-scrim) 25%, transparent);
 }
 
-/* The stock native-select paints its options with the browser system colours Canvas and CanvasText. Those are
-   keywords, not palette colours, so the business theme maps the two utilities onto its own canvas and ink. The
-   component is unchanged; only the colour it resolves to is the palette's. */
-.bg-\[Canvas\] {
-  background-color: var(--background);
-}
-.text-\[CanvasText\] {
-  color: var(--foreground);
-}
-
-/* ROLES: the one place a palette colour becomes a shadcn role, every role declared once, plus shadcn's own
-   --radius. @theme inline above reads only these, and stock component code reads them as var(--x).
-   Declared on :root AND on every [data-theme] element: a custom property inherits its resolved value, so a
-   nested theme scope re-resolves the roles from its own --theme-* values. */
 :root,
-[data-theme] {
+[data-theme],
+[data-mode] {
   --radius: 0.625rem;
   --background: var(--theme-bg);
   --foreground: var(--theme-fg);
@@ -182,19 +94,6 @@
 }
 
 @layer base {
-  /* Mode lives here and nowhere else: color-scheme is inherited, and light-dark() resolves against it at
-     used-value time. All three lines are needed: [data-mode="light"] lets a light subtree sit inside a dark
-     page (the colour section shows both side by side), and a missing declaration stays light rather than
-     going dark. */
-  :root {
-    color-scheme: light;
-  }
-  [data-mode="light"] {
-    color-scheme: light;
-  }
-  [data-mode="dark"] {
-    color-scheme: dark;
-  }
   * {
     @apply border-border outline-ring/50;
   }

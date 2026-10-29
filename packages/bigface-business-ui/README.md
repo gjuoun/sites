@@ -1,112 +1,67 @@
 # @gjuoun/bigface-business-ui
 
-The shadcn components, as the CLI ships them, in the Bigface **business** colours. The package carries colour
-only: every size, radius, shadow geometry, font and motion value is shadcn's own. A consumer gets the stock
-components, and the colours they resolve to come from the Bigface palettes, light and dark.
+The shadcn components, as the CLI ships them, in the Bigface **business** colours. The package is a Tailwind/shadcn
+theme and nothing else: every size, radius, shadow, font and motion value is shadcn's own, and the colours come from
+the Bigface palettes, light and dark. Syntax highlighting lives in `@gjuoun/bigface-highlighter`.
 
-Private for now: nothing is published, and the version is 0.1.0. It is one of three copies maintained on purpose:
-`@gjuoun/bigface-ui` (the console library the site uses) is separate, and so is any future console package.
+Private for now: nothing is published, and the version is 0.1.0.
 
 ## What is in it
 
 | Path | What |
 |---|---|
-| `src/components/ui/*` | the 63 shadcn components, locked by `src/ui-lock/manifest.json`: 34 are registry bytes, 29 are declared colour exceptions (light-dark() colour, to move into tokens). The 29 are not byte-identical to the registry, and the lock records them as such |
-| `src/bg2/*` | the BG2 alias layer: 63 modules, 372 names, one pure re-export per stock file (`BG2Button` is the `Button` binding) |
-| `src/ui-lock/manifest.json` | the lock: the sha256 of each file, the declared exceptions with their marker and reason, the Button glow variant, and the TODO |
+| `src/components/ui/*` | the 63 shadcn components, byte for byte what `shadcn add` writes, so `shadcn add <name> --overwrite` upgrades them in place |
 | `src/themes/roles.ts` | the colour role map: each role names a palette colour, in the palette's own words |
-| `src/themes/business.css` | the business colours: ONE block, `light-dark(light, dark)` per neutral, generated |
-| `src/themes/accents.ts` | the accent docs table (accent + solved plate), generated data, not theme roles |
-| `src/themes/contract.json` | the colour contract: 12 required roles, no optional tier, no derived role |
-| `src/styles/styles.css` | the only stylesheet: palette import, the role block (every shadcn role, once), the Tailwind keys and formulas that read it, base |
+| `src/themes/business.css` | the business colours, generated: a light block (`:root, [data-mode="light"]`) and a dark block (`[data-mode="dark"]`) |
+| `src/styles/styles.css` | the only stylesheet: shadcn's default theme with the palette in place of its neutrals |
 | `src/hooks/use-theme.ts`, `src/lib/themes.ts` | `useMode`, the mode storage key and the pre-paint script |
+| `src/hooks/use-mobile.ts`, `src/lib/utils.ts` | shadcn's own helpers for the components |
 
 ## How the stylesheet is layered
 
-`styles.css` uses the same layers as the dashboard's `globals.css`. Each layer reads only the one before it:
+`styles.css` is shadcn's "Default Theme CSS" (https://ui.shadcn.com/docs/theming), with two substitutions: the palette
+in place of shadcn's neutral values, and `data-mode` in place of the `.dark` class (so it works with `data-theme`).
 
-1. **palette**: `themes/business.css` (generated) sets the `--theme-*` colours, with `light-dark()` for each mode.
-2. **roles**: the `:root,[data-theme]` block declares every shadcn role (`--background`, `--card`, `--primary-foreground`, `--chart-1`, `--sidebar-ring`, ...) exactly once, plus `--radius`. This block is the only place a palette colour becomes a role. Stock component code reads these as `var(--x)`.
-3. **keys**: `@theme inline` maps each role mechanically (`--color-x: var(--x)`). The business aliases (`canvas`, `ink`, `surface`, `muted-ink`, ...) and the `light-dark()` formulas (veils, tints, scrim, thumb) read roles too.
+1. **palette**: `themes/business.css` (generated) sets the 12 `--theme-*` colours, light block then dark block.
+2. **imports**: `shadcn/tailwind.css`, shadcn's own variants and utilities.
+3. **dark variant**: `@custom-variant dark (&:where([data-mode="dark"], [data-mode="dark"] *));`, so the stock `dark:` classes follow `data-mode`.
+4. **keys**: `@theme inline` maps exactly shadcn's colour tokens (`--color-x: var(--x)`) and its radius scale.
+5. **roles**: the `:root, [data-theme], [data-mode]` block declares every shadcn role once, each reading one palette colour, plus `--radius`. It sits on every scope element, so a light panel inside a dark page resolves light.
+6. **base**: shadcn's two rules (`border-border outline-ring/50`, `bg-background text-foreground`).
 
-There is one exception. `--color-success` and `--color-info` have no shadcn role, so they read their palette colour directly.
+Nothing else: no alias, no formula colour, no shadow, font or `color-scheme` override. `src/themes/shadcn-theme.test.ts`
+holds the file to that shape.
 
-To add a colour, add a role to the block and map it in `@theme inline`; never read a `--theme-*` name anywhere else. `src/styles/styles.test.ts` holds the layering and derives every check from the CSS:
-
-- each role is declared once and mapped;
-- each component's `var(--x)` is declared;
-- the contrast pairs hold;
-- the scrim and thumb are the two neutral ends of a mode;
-- shadows use the scrim colour.
-
-## BG2 and the glow variant
-
-Every stock export has a second name, and the two are the same value. `@gjuoun/bigface-business-ui/components/ui/button` exports `Button`; `@gjuoun/bigface-business-ui/bg2/button` exports `BG2Button`, the identical binding, so React context (Sidebar, Tooltip, Carousel, Field) is not duplicated. The name is `BG2` plus the export name, verbatim: `BG2buttonVariants`, `BG2useSidebar`. The modules are generated by `scripts/gen-bg2.ts` (`bg2:sync`, `bg2:check`).
-
-The glow is a `Button` variant: `<Button variant="glow">` is the hero call to action. It is a gradient from the primary blue to a darker edge (a `color-mix` of `--theme-blue` with the mode's on-primary ink) and `text-primary-foreground` ink. Its shadow is the reference hero shadow in dark: `0 8px 26px` in blue at 30 percent, plus an inset top highlight of `--theme-fg` at 50 percent. Light has no shadow: `light-dark()` cannot return `none` (it takes colours only), so each layer is fully transparent in light and paints nothing. Hover keeps the `-translate-y-0.5` lift, flattens the fill to primary (as the reference does), and in dark adds a second, larger blue shadow (`0 16px 40px -8px`). It adds no custom property: every colour it reads is one the theme already declares. The gradient paints under the transparent border (`bg-clip-border`), so no surface-coloured ring sits between the fill and the shadow. It is the one permitted edit to `components/ui`, marked `// bg2:variant variant.glow` in `button.tsx`. The lock test turns red if an upstream overwrite drops the variant or changes anything else in the file.
-
-The variant is pinned three ways: the lock test (its classes and the existing custom properties it reads), the click count, and the outside band measured in headless Chrome (`catalog-glow.test.ts`: in dark, every pixel 1 to 6px outside the edge lies on the segment from the surface toward `--theme-blue`, with a falloff and no ring; hover is deeper than rest; in light every band pixel equals the canvas; the fill is a gradient at rest and flat on hover; 1440 and 390).
+A `dark:` class inside a light panel that sits inside a dark page still applies: the variant matches any dark
+ancestor. Roles (colours) do follow the nearest scope.
 
 ## Use it
 
-Three lines in the consumer's Tailwind entry, in this order:
+In the consumer's Tailwind entry: Tailwind, then the theme, then an `@source` for each component the app renders
+(Tailwind does not scan `node_modules`):
 
-    @import "tailwindcss" source(none);
-    @source "../node_modules/@gjuoun/bigface-business-ui/src";
+    @import "tailwindcss";
     @import "@gjuoun/bigface-business-ui/styles.css";
+    @source "../node_modules/@gjuoun/bigface-business-ui/src/components/ui/button.tsx";
 
-Mark the page root with the theme and mode. The default mode is light:
+Mark the page root with the mode. The default mode is light:
 
     <html data-theme="business" data-mode="light">
 
-`data-mode` is `light` or `dark`, and it is the only switch: the stylesheet turns it into `color-scheme`, and
-every mode-dependent colour is a `light-dark()` token. There is no dark block, no optional role and no
-`dark:` utility to keep in sync.
-
 ## The colour rulings this package holds
 
-These are asserted by `src/themes/themes.test.ts` and `src/styles/styles.test.ts`:
+Asserted by `src/themes/themes.test.ts`:
 
 - light surfaces are paper (`#f8f8f0`) and the dark canvas is `#252925`; pure white is never used
-- the primary **fill** is bigface's native blue `#00b0ff` in both modes, and the ink on it is the canvas colour in both modes (ruling 2026-10-27). In dark that is `#252925` on blue (6.08:1); in light it is paper `#f8f8f0` on blue (2.27:1, below AA), a tradeoff recorded and pinned in `styles.test.ts`
-- the primary **ink** (rings and text) follows the accent blue: `#00b0ff` in both modes (ruling 2026-10-24). It measures 2.27:1 on paper, below AA; a readable light ink is parked for Jun
-- the scrim (`bg-scrim/10`) and the slider thumb (`bg-thumb`) are formulas over the two neutral ends of a mode;
-there is no black or white token
-- shadows keep Tailwind's geometry; only their colour is the palette's
-- two browser system colours that a stock component uses (`Canvas`, `CanvasText`) resolve to the business canvas
-  and ink, so no colour in the package is outside the palettes
-
-## What was removed when the package went stock
-
-The package was first a themed copy, with feel: a 6px control radius, a spacing unit, a type scale, shadow and
-motion tokens, a plate shadow, and BG wrappers. Those were removed so every component renders as the CLI ships it.
-The 6px radius ruling is therefore retired: controls are shadcn's default radius (`0.625rem`), and a theme no longer
-sets one.
+- the primary fill is bigface's native blue `#00b0ff` in both modes, and the ink on it is the canvas colour in both modes (ruling 2026-10-27)
+- overlays, shadows and the slider thumb are shadcn's own (`bg-black/10`, Tailwind shadows, `bg-white`): the theme does not restyle them
 
 ## Maintain it
 
-    bun run --cwd packages/bigface-business-ui test        # colour contract and rulings
-    bun run --cwd packages/bigface-business-ui theme:sync  # regenerate business.css and accents.ts
-    bun run --cwd packages/bigface-business-ui theme:check # fail when they are stale
-    bun run --cwd packages/bigface-business-ui ui:theme    # the five cross-file rules
-    bun run --cwd packages/bigface-business-ui ui-lock     # the lock: 34 locked, 29 declared, the marked variant (offline)
-    bun run --cwd packages/bigface-business-ui biz:drift   # the 34 locked components against the registry, byte for byte (network, about 10 minutes)
-    bun run --cwd packages/bigface-business-ui bg2:check   # the BG2 modules against the stock exports
+    bun run --cwd packages/bigface-business-ui test         # theme shape, generated file, rulings, declared imports
+    bun run --cwd packages/bigface-business-ui theme:sync   # regenerate business.css from the palettes
+    bun run --cwd packages/bigface-business-ui theme:check  # fail when business.css is stale
+    bun run --cwd packages/bigface-business-ui ui:drift     # the 63 components against `shadcn add`, byte for byte (network, a few minutes)
 
-Three copies are a decision: a shadcn upgrade is applied to each package. `biz:drift` checks each copy against the
-registry, not the copies against each other.
-
-## The accent family and its plates
-
-The theme carries six accents as roles, each the palette's own colour in both modes: blue, light blue (chart-2), pale
-blue (chart-3), cyan, green and burnt orange (`--theme-*`). lime, yellow and purple have no CSS variable: they
-appear only as accent-docs data in `accents.ts`, each with its solved plate.
-
-A plate is solved, not picked: it is the lightest mix of the accent into the dark ink that still gives the accent 4.5:1
-as text (`solvePlate` in `scripts/gen-tokens.ts`, `PLATE_FLOOR`). Two facts follow from the measurements:
-
-- on the paper canvas the accents read at 1.11 to 2.92:1, so as text they are not legible;
-- on their own plates each reads at 4.51 to 4.54:1, and the plate is identical in both modes.
-
-Plates are used where an accent is content (the accent chips and the colour section's accent table). The stock components
-are not restyled, so a stock badge that uses a tint keeps its own colours.
+`ui:drift` runs `shadcn add` against this package's own `components.json` and `styles.css`, so its output is what an
+upgrade would write here (the CLI drops `font-heading`, for one, because the theme declares no heading font).

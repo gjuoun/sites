@@ -11,6 +11,8 @@
 // - colours inside `mask` / `mask-image` values: a mask only reads alpha, nothing is painted
 // - `#fff` as Tailwind's `--tw-ring-offset-color` initial/fallback (never painted while no
 //   `ring-offset-*` utility exists; site.test.ts asserts that)
+// - Tailwind's black and white, at any alpha: the stock shadcn overlays (`bg-black/10`), shadows and
+//   slider thumb (`bg-white`) paint them, and the theme does not restyle the stock components
 
 const NAMED = new Set(
   (
@@ -63,9 +65,9 @@ const stripAllowed = (css: string): string =>
     // `--scroll-fade-*` custom properties are consumed by the scroll-fade utilities' own
     // `mask-image` gradients: they travel in the alpha channel and paint nothing themselves.
     .replace(/--scroll-fade-[\w-]+\s*:[^;{}]*/g, "")
-    // `.bg-[Canvas]` / `.text-[CanvasText]` are native-select.tsx's arbitrary system-colour
-    // utilities. No built element uses those classes (site.test.ts keeps that true), so the rules
-    // are dead CSS: drop them here rather than let a never-painted system colour fail the scan.
+    // `.bg-[Canvas]` / `.text-[CanvasText]` are stock native-select.tsx's system-colour utilities on
+    // its <option>s: the browser's own canvas and text, like the stock black and white, not a theme
+    // colour. Drop them here rather than let a browser keyword fail the scan.
     .replace(/\.bg-\\\[Canvas\\\]\s*\{[^{}]*\}/g, "")
     .replace(/\.text-\\\[CanvasText\\\]\s*\{[^{}]*\}/g, "");
 
@@ -107,8 +109,13 @@ export function ringOffsetOffenders(css: string): string[] {
   return [...bad];
 }
 
+/** Tailwind's black and white: allowed at any alpha besides the palette (see the header). */
+const ENDS = ["#000000", "#ffffff"];
+const NAMED_ENDS = new Set(["black", "white"]);
+
 /** Colour literals in a CSS text (stylesheet, <style> block or style="" value). */
-export function findForeignInCss(css: string, known: Set<string>): string[] {
+export function findForeignInCss(css: string, palette: Set<string>): string[] {
+  const known = new Set([...palette, ...ENDS]);
   const text = stripAllowed(css);
   const bad: string[] = [];
   const triplets = new Set(
@@ -130,7 +137,8 @@ export function findForeignInCss(css: string, known: Set<string>): string[] {
     if (!triplets.has(`${m[1]},${m[2]},${m[3]}`)) bad.push(`rgb(${m[1]},${m[2]},${m[3]})`);
   }
   for (const m of text.matchAll(/rgba?\(\s*from\s+([a-z]+)/gi)) {
-    if (NAMED.has((m[1] as string).toLowerCase())) bad.push(m[0]);
+    const base = (m[1] as string).toLowerCase();
+    if (NAMED.has(base) && !NAMED_ENDS.has(base)) bad.push(m[0]);
   }
 
   for (const m of text.matchAll(/\b(hsla?|hwb|lab|lch|oklab|oklch)\(\s*([^)]*)\)/gi)) {
@@ -154,14 +162,16 @@ export function findForeignInCss(css: string, known: Set<string>): string[] {
       .replace(/var\(\s*--[\w-]+/g, " ")
       .replace(/--[\w-]+/g, " ");
     for (const w of value.matchAll(/(?<![\w-])([a-z]+)(?![\w-])/gi)) {
-      if (NAMED.has((w[1] as string).toLowerCase())) bad.push(`${prop}: ${w[1]}`);
+      const word = (w[1] as string).toLowerCase();
+      if (NAMED.has(word) && !NAMED_ENDS.has(word)) bad.push(`${prop}: ${w[1]}`);
     }
   }
   return bad;
 }
 
 /** Colour literals in an HTML document: <style> blocks, style="" attributes, and any 6/8-digit hex. */
-export function findForeignInHtml(html: string, known: Set<string>): string[] {
+export function findForeignInHtml(html: string, palette: Set<string>): string[] {
+  const known = new Set([...palette, ...ENDS]);
   const bad: string[] = [];
   // A library's no-JS fallback (input-otp ships one with plain white/black) sits inside <noscript>.
   // A JS-capable browser never paints it, and the island it guards needs JS anyway.

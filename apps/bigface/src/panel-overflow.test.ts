@@ -60,7 +60,11 @@ for (const mode of ["light", "dark"] as const) {
 			expect(audit.panels.reduce((n, p) => n + p.checked, 0), "the audit reads the painted colours").toBeGreaterThan(100);
 			// A light page may carry any colour of the light palette, which now includes the accent family (ruling 2026-10-24).
 			// What it may not carry is a dark-only colour: that is the leak this audit exists to catch.
-			const leaks = all.filter((o) => o.mode === "light").map((o) => o.mode + " " + o.color + " " + o.prop + " <" + o.tag + "> x" + o.count);
+			// White is the stock components' own (the slider thumb's bg-white, the native select's Canvas options): the
+			// business theme does not restyle the stock components, so white is allowed here and nowhere else.
+			const leaks = all
+				.filter((o) => o.mode === "light" && o.color !== "rgb(255,255,255)")
+				.map((o) => o.mode + " " + o.color + " " + o.prop + " <" + o.tag + "> x" + o.count);
 			expect(leaks, "colours outside the synced palettes").toEqual([]);
 		},
 		120_000,

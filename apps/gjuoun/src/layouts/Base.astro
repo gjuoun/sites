@@ -1,12 +1,11 @@
 ---
 import "../styles/tailwind.css";
-import "../styles/site.css";
 import {
 	DEFAULT_MODE,
 	themeInitScript,
 } from "@gjuoun/bigface-business-ui/lib/themes";
-import SiteFooter from "../components/SiteFooter.astro";
-import SiteHeader from "../components/SiteHeader.astro";
+import { SiteFooter } from "../components/SiteFooter";
+import { SiteHeader } from "../components/SiteHeader";
 import { buildMeta, type PageType, siteOrigin } from "../lib/seo";
 
 interface Props {
@@ -51,12 +50,14 @@ const meta = buildMeta({
 		<!-- Before first paint: a stored mode (set by the toggle) is applied, so a reload keeps the reader's choice. -->
 		<script is:inline set:html={themeInitScript}></script>
 	</head>
-	<body>
-		<a class="skip-link" href="#main">Skip to content</a>
-		<SiteHeader />
-		<main id="main">
-			<slot />
-		</main>
+	<body class="leading-[1.6]">
+		<a
+			class="absolute -top-12 left-4 bg-background px-3 py-2 text-foreground focus:top-2 print:hidden"
+			href="#main">Skip to content</a
+		>
+		<SiteHeader path={Astro.url.pathname} />
+		<!-- The page: a view renders its own <main> (components/Page.tsx). -->
+		<slot />
 		<SiteFooter starter={starter} />
 	</body>
 </html>

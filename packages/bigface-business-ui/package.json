@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Bigface business theme: 63 shadcn primitives, the business wrappers and one light+dark theme, vendored from @gjuoun/bigface-ui and generated from the Bigface palettes.",
+  "description": "Bigface business theme for Tailwind: 63 stock shadcn components and one light+dark theme generated from the Bigface palettes.",
   "license": "MIT",
   "keywords": [
     "shadcn",
@@ -23,12 +23,9 @@
   ],
   "exports": {
     "./components/*": "./src/components/*.tsx",
-    "./bg2/*": "./src/bg2/*.ts",
     "./hooks/*": "./src/hooks/*.ts",
     "./lib/utils": "./src/lib/utils.ts",
     "./lib/themes": "./src/lib/themes.ts",
-    "./lib/highlighter": "./src/lib/highlighter.tsx",
-    "./themes/accents": "./src/themes/accents.ts",
     "./themes/*": "./src/themes/*",
     "./styles.css": "./src/styles/styles.css",
     "./package.json": "./package.json"
@@ -38,13 +35,8 @@
     "test": "bun test src",
     "theme:sync": "bun run scripts/gen-tokens.ts",
     "theme:check": "bun run scripts/gen-tokens.ts --check",
-    "ui:theme": "bun run scripts/theme-check.ts",
-    "biz:drift": "bash scripts/ui-registry-probe.sh /tmp/bigface-ui-registry && bun run scripts/ui-lock.ts --registry /tmp/bigface-ui-registry",
-    "ui-lock": "bun run scripts/ui-lock.ts",
     "ui-registry": "bash scripts/ui-registry-probe.sh /tmp/bigface-ui-registry",
-    "ui-lock:write": "bun run scripts/ui-lock.ts --write --registry /tmp/bigface-ui-registry",
-    "bg2:sync": "bun run scripts/gen-bg2.ts",
-    "bg2:check": "bun run scripts/gen-bg2.ts --check"
+    "ui:drift": "bash scripts/ui-drift.sh"
   },
   "dependencies": {
     "cn": "^0.5.0"
@@ -65,7 +57,6 @@
     "react-day-picker": "^10.0.2",
     "react-resizable-panels": "^4.14.8",
     "recharts": "3.8.0",
-    "shiki": "^4.5.0",
     "sonner": "^2.0.8",
     "vaul": "^1.1.2"
   },
@@ -106,9 +97,6 @@
     "recharts": {
       "optional": true
     },
-    "shiki": {
-      "optional": true
-    },
     "sonner": {
       "optional": true
     },
@@ -139,7 +127,6 @@
     "react-resizable-panels": "^4.14.8",
     "recharts": "3.8.0",
     "shadcn": "^4.22.1",
-    "shiki": "^4.5.0",
     "sonner": "^2.0.8",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.9.0",

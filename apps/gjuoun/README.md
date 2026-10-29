@@ -4,10 +4,25 @@ Static Astro site on the bigface business theme (light by default, dark via the 
 project `jun-blog`. Routes: home (portfolio, resume, latest lessons), `/projects/` (titled Portfolio), posts,
 a numbered series page, resume, 404, RSS, sitemap.
 
-The portfolio is a card grid built from the theme package's own stock components (`Card`, `Badge`, `Button` from
-`@gjuoun/bigface-business-ui`). React renders them to static HTML at build time (`renderProjectGrid` in
-`src/components/ProjectGrid.tsx`), so no React runtime ships. Tailwind compiles only the three components used
-(`src/styles/tailwind.css`); the site's own rules stay in `src/styles/site.css`.
+## Layout
+
+```text
+src/pages/       routes (.astro): load content, pick a view, wrap it in the document shell
+src/layouts/     Base.astro: <html>, <head>, the pre-paint mode script, header and footer
+src/views/       one React view per page (HomePage, PostPage, ...), each inside <Page> (<main> with prose)
+src/components/  shared React parts: Page, Markdown, Link, ButtonLink, LessonNav, PostList, ProjectGrid, ...
+src/lib/         content helpers (posts, collections, seo, content rules)
+src/data/        hand-written facts (about, resume)
+src/styles/      tailwind.css, the only stylesheet
+```
+
+Views and components are React, rendered to static HTML by `@astrojs/react` with no `client:*` directive, so no
+React runtime ships; the only client JS is the theme toggle's inline script (`ThemeToggle.tsx`). Post and series
+bodies are Astro's rendered Markdown (`entry.rendered.html`), shown through `Markdown`. The portfolio cards, chips
+and buttons are the theme package's stock `Card`, `Badge` and `Button` (`@gjuoun/bigface-business-ui`).
+
+`src/styles/tailwind.css` holds Tailwind, the business theme, the typography plugin, the font, and `@source` for the
+three stock components used; every other rule is a Tailwind utility in a component.
 
 ## Commands
 
@@ -44,11 +59,11 @@ Starter copy is marked `starter: true` in each post. Once Jun has rewritten an e
 starter. It is never in the content flow, and the resume page never shows it.
 
 The resume (`src/data/resume.ts`) holds only facts from Jun's resume (`notebook: Private/resume/jun-guo-2025.md`).
-The home page and `/resume/` render the same facts (`src/components/ResumeFacts.astro`), and smoke checks that they match.
+The home page and `/resume/` render the same facts (`src/components/ResumeFacts.tsx`), and smoke checks that they match.
 The phone number is never in the content and smoke scans the built output for it.
 
 ## Notes
 
 - Only `var(--theme-*)` values in `src/styles/site.css`; no hand-picked colours (`src/lib/theme.test.ts` checks this).
-- The only client JS is the theme toggle, inline in `ThemeToggle.astro`. The card grid adds none.
+- The only client JS is the theme toggle, inline in `ThemeToggle.tsx`. The card grid adds none.
 - The site URL in `astro.config.mjs` is the only origin. Canonical links, sitemap, RSS, robots and the resume contact line read it. It is `https://jun-blog.qqntt.com` until the cutover, which flips it to `https://jun.qqntt.com`.

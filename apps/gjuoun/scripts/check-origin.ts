@@ -2,6 +2,7 @@
 // names for itself: canonical, og:url, sitemap, rss and robots must use it, and the built output may
 // name no other host except the declared external ones. "gqntt" never appears in the output.
 import { join } from "node:path";
+import { loadedScripts } from "./check-budget.ts";
 
 /** External hosts the content links to (project pages, the repo, the profile), plus XML namespace identifiers and the licence comment in the compiled stylesheet, which are not requests. */
 export const EXTERNAL_HOSTS: readonly string[] = [
@@ -81,6 +82,19 @@ if (import.meta.main) {
 		if (TEXT_FILE.test(rel))
 			files.set(rel, await Bun.file(join(dist, rel)).text());
 	}
+	// A bundle no page loads (React's client from @astrojs/react, when nothing hydrates) is never fetched, so the
+	// hosts inside it (react.dev error links) are not requests: scan only the _astro js a page can load.
+	const js = Object.fromEntries(
+		[...files]
+			.filter(([rel]) => /^_astro\/[^/]+\.js$/.test(rel))
+			.map(([rel, t]) => [rel.slice(7), t]),
+	);
+	const pages = [...files]
+		.filter(([rel]) => rel.endsWith(".html"))
+		.map(([, t]) => t);
+	const loaded = new Set(loadedScripts(pages, js));
+	for (const name of Object.keys(js))
+		if (!loaded.has(name)) files.delete(`_astro/${name}`);
 	const problems = originViolations(files, origin);
 	if (problems.length > 0) {
 		for (const p of problems) console.error(`ORIGIN ${p}`);

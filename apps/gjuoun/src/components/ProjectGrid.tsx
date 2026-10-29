@@ -1,6 +1,6 @@
 // The portfolio as a card grid. The cards, chips and buttons are the theme package's own stock components
-// (@gjuoun/bigface-business-ui); this file only arranges them. It is rendered to static HTML at build time
-// (renderProjectGrid), so no React runtime reaches the browser.
+// (@gjuoun/bigface-business-ui); this file only arranges them. Pages use it without a client:* directive, so it
+// renders to static HTML at build time and no React runtime reaches the browser.
 import { Badge } from "@gjuoun/bigface-business-ui/components/ui/badge";
 import { Button } from "@gjuoun/bigface-business-ui/components/ui/button";
 import {
@@ -11,7 +11,10 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@gjuoun/bigface-business-ui/components/ui/card";
-import { renderToStaticMarkup } from "react-dom/server";
+
+// The site's keyboard focus: a solid outline around the stock button, as on every other link.
+const FOCUS =
+	"focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-solid focus-visible:outline-foreground";
 
 export interface GridProject {
 	name: string;
@@ -25,7 +28,7 @@ export interface GridProject {
 // and its footer is pushed to the bottom, so the actions line up across the band.
 export function ProjectGrid({ projects }: { projects: GridProject[] }) {
 	return (
-		<ul className="m-0 grid list-none grid-cols-1 gap-4 p-0 md:grid-cols-2">
+		<ul className="not-prose grid list-none grid-cols-1 gap-4 md:grid-cols-2">
 			{projects.map((project) => (
 				<li key={project.name} className="flex">
 					<Card className="flex-1">
@@ -45,7 +48,7 @@ export function ProjectGrid({ projects }: { projects: GridProject[] }) {
 								>
 									{project.stack.map((tech) => (
 										<li key={tech}>
-											<Badge variant="secondary">{tech}</Badge>
+											<Badge variant="outline">{tech}</Badge>
 										</li>
 									))}
 								</ul>
@@ -55,7 +58,10 @@ export function ProjectGrid({ projects }: { projects: GridProject[] }) {
 							{project.url || project.repo ? (
 								<div className="flex flex-wrap gap-2">
 									{project.url && (
-										<Button asChild className="motion-reduce:transition-none">
+										<Button
+											asChild
+											className={`${FOCUS} motion-reduce:transition-none motion-reduce:duration-0`}
+										>
 											<a href={project.url}>Visit</a>
 										</Button>
 									)}
@@ -63,7 +69,7 @@ export function ProjectGrid({ projects }: { projects: GridProject[] }) {
 										<Button
 											asChild
 											variant="outline"
-											className="text-foreground motion-reduce:transition-none"
+											className={`${FOCUS} text-foreground motion-reduce:transition-none motion-reduce:duration-0`}
 										>
 											<a href={project.repo}>Source</a>
 										</Button>
@@ -80,9 +86,4 @@ export function ProjectGrid({ projects }: { projects: GridProject[] }) {
 			))}
 		</ul>
 	);
-}
-
-// The grid as an HTML string, for an Astro page to inject. Build-time only: the page ships no script for it.
-export function renderProjectGrid(projects: GridProject[]): string {
-	return renderToStaticMarkup(<ProjectGrid projects={projects} />);
 }

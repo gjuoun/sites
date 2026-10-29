@@ -49,7 +49,7 @@ import { Trace, TraceIcon, TraceLine, TraceTitle } from "@gjuoun/bigface-busines
 // axis for have no entry, and the card says so.
 
 const SIDES = ["top", "right", "bottom", "left"] as const;
-const BUTTON_VARIANTS = ["default", "outline", "secondary", "ghost", "destructive", "link", "glow"] as const;
+const BUTTON_VARIANTS = ["default", "outline", "secondary", "ghost", "destructive", "link"] as const;
 const BUTTON_SIZES = ["default", "xs", "sm", "lg"] as const;
 const ICON_SIZES = ["icon", "icon-xs", "icon-sm", "icon-lg"] as const;
 
