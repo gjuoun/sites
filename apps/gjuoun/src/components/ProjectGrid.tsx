@@ -49,7 +49,7 @@ export function ProjectGrid({ projects }: { projects: GridProject[] }) {
 								>
 									{project.stack.map((tech) => (
 										<li key={tech}>
-											<Badge variant="secondary">{tech}</Badge>
+											<Badge variant="outline">{tech}</Badge>
 										</li>
 									))}
 								</ul>
