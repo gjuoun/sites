@@ -4,7 +4,7 @@ title: "Feed a layer with Layer.provide"
 slug: "layer-provide"
 summary: "Feed one layer's output into another layer."
 date: "2026-10-27"
-series: "effect-one-function"
+series: "Effect, one function at a time"
 order: 4
 tags: ["effect", "typescript"]
 starter: true

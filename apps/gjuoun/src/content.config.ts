@@ -11,20 +11,11 @@ const posts = defineCollection({
 		summary: z.string().max(160),
 		date: z.coerce.date(),
 		draft: z.boolean().default(false),
+		// the series title, as readers see it; posts with the same title form one numbered series
 		series: z.string().optional(),
 		order: z.int().min(1).optional(),
 		tags: z.array(z.string()).default([]),
 		starter: z.boolean().default(false),
-	}),
-});
-
-const series = defineCollection({
-	loader: glob({ pattern: "*.md", base: "./src/content/series" }),
-	schema: z.object({
-		title: z.string(),
-		slug: z.string(),
-		summary: z.string().max(160),
-		order: z.int().min(1),
 	}),
 });
 
@@ -42,4 +33,4 @@ const projects = defineCollection({
 	}),
 });
 
-export const collections = { posts, series, projects };
+export const collections = { posts, projects };

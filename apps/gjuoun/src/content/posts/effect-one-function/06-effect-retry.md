@@ -4,7 +4,7 @@ title: "Try again with Effect.retry"
 slug: "effect-retry"
 summary: "Run the effect again after a failure."
 date: "2026-10-27"
-series: "effect-one-function"
+series: "Effect, one function at a time"
 order: 6
 tags: ["effect", "typescript"]
 starter: true

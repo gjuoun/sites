@@ -4,7 +4,7 @@ title: "Stop waiting with Effect.timeout"
 slug: "effect-timeout"
 summary: "Stop waiting after a deadline."
 date: "2026-10-27"
-series: "effect-one-function"
+series: "Effect, one function at a time"
 order: 5
 tags: ["effect", "typescript"]
 starter: true

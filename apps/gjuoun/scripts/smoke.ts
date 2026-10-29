@@ -350,7 +350,7 @@ function contractFailures(route: string, f: Facts): string[] {
 		if (f.buttonBgs.filter((b) => b === PRIMARY_BG).length < 3)
 			bad(`visit buttons not on theme primary: ${JSON.stringify(f.buttonBgs)}`);
 	}
-	if (route === "/posts/" || route === "/posts/effect-one-function/") {
+	if (route === "/posts/") {
 		if (lists.length !== 1 || lists[0].length !== 6 || !sequential(lists[0]))
 			bad(`lesson list ${JSON.stringify(lists)}, want one list 01..06`);
 		if (f.lessonLinks !== 6) bad(`lesson links ${f.lessonLinks}, want 6`);

@@ -9,10 +9,6 @@ export interface PostLike {
 	order?: number;
 }
 
-export interface SeriesLike {
-	slug: string;
-}
-
 export interface ProjectLike {
 	slug: string;
 	status: string;
@@ -22,7 +18,6 @@ export interface ProjectLike {
 
 export interface ContentSet {
 	posts: PostLike[];
-	series: SeriesLike[];
 	projects: ProjectLike[];
 }
 
@@ -38,16 +33,11 @@ export function checkContent(content: ContentSet): string[] {
 		else seen.set(slug, kind);
 	};
 	for (const p of content.posts) claim(p.slug, "post");
-	for (const s of content.series) claim(s.slug, "series");
 
-	const seriesSlugs = new Set(content.series.map((s) => s.slug));
+	// A series is the posts that share a series title; their order must be 1..n.
 	const bySeries = new Map<string, number[]>();
 	for (const p of content.posts) {
 		if (p.series === undefined) continue;
-		if (!seriesSlugs.has(p.series)) {
-			violations.push(`post "${p.slug}" names unknown series "${p.series}"`);
-			continue;
-		}
 		const orders = bySeries.get(p.series) ?? [];
 		orders.push(p.order ?? Number.NaN);
 		bySeries.set(p.series, orders);

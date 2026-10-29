@@ -4,7 +4,7 @@ title: "Recover one error with Effect.catchTag"
 slug: "effect-catch-tag"
 summary: "Recover from one tagged error and leave the others alone."
 date: "2026-10-27"
-series: "effect-one-function"
+series: "Effect, one function at a time"
 order: 3
 tags: ["effect", "typescript"]
 starter: true

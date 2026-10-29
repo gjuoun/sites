@@ -1,8 +1,8 @@
 # gjuoun — Jun's blog
 
 Static Astro site on the bigface business theme (light by default, dark via the toggle). Pages
-project `jun-blog`. Routes: home (portfolio, resume, latest lessons), `/projects/` (titled Portfolio), posts,
-a numbered series page, resume, 404, RSS, sitemap.
+project `jun-blog`. Routes: home (portfolio, resume, latest lessons), `/projects/` (titled Portfolio), posts
+(each series listed under its title), lessons, resume, 404, RSS, sitemap.
 
 ## Layout
 
@@ -17,7 +17,7 @@ src/styles/      tailwind.css, the only stylesheet
 ```
 
 Views and components are React, rendered to static HTML by `@astrojs/react` with no `client:*` directive, so no
-React runtime ships; the only client JS is the theme toggle's inline script (`ThemeToggle.tsx`). Post and series
+React runtime ships; the only client JS is the theme toggle's inline script (`ThemeToggle.tsx`). Post
 bodies are Astro's rendered Markdown (`entry.rendered.html`), shown through `Markdown`. The portfolio cards, chips
 and buttons are the theme package's stock `Card`, `Badge` and `Button` (`@gjuoun/bigface-business-ui`).
 
@@ -44,13 +44,14 @@ bun run check:origin     # one origin (astro.config.mjs) in every self-referenci
 
 1. Create `src/content/posts/<series-or-folder>/<nn>-<slug>.md`.
 2. Frontmatter: `title`, `slug`, `summary` (160 characters at most), `date`, `tags`, and
-   `starter`. For a numbered series, also set `series` (the series slug) and `order` (1..n, no gaps).
+   `starter`. For a numbered series, also set `series` (the series title, as readers see it) and `order`
+   (1..n, no gaps).
 3. Keep one idea per post, with one `ts` block. `bun run check:snippets` must stay green.
 
 ## Add a series
 
-Create `src/content/series/<slug>.md` with `title`, `slug`, `summary`, and `order`. Its posts
-point at it with `series: <slug>`.
+Give its posts the same `series` title and an `order` each. There is no series file: the title in the
+posts is the series, `/posts/` lists it under that title, and each lesson's kicker reads it.
 
 ## Clear the starter flag
 

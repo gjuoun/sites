@@ -8,16 +8,10 @@ import { HomePage } from "../views/HomePage";
 const projects = (await getCollection("projects"))
 	.map((e) => e.data)
 	.sort((a, b) => a.order - b.order);
-const seriesTitles = new Map(
-	(await getCollection("series")).map(
-		(e) => [e.data.slug, e.data.title] as const,
-	),
-);
+// Latest lessons, each with its series title as the kicker.
 const latest = newestFirst(await livePosts())
 	.slice(0, 3)
-	.map((p) =>
-		toPostItem(p, p.data.series ? seriesTitles.get(p.data.series) : undefined),
-	);
+	.map((p) => toPostItem(p, p.data.series));
 ---
 
 <Base description="Jun Guo: an introduction, a portfolio, and short numbered lessons on the things he builds." starter={true}>
