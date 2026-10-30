@@ -30,9 +30,12 @@ const nav = [
       class="group inline-flex items-center gap-[0.65rem] font-display text-[1.1rem] font-bold tracking-[-0.01em] text-foreground no-underline hover:text-foreground"
       href={`${base}/`}
     >
+      <!-- The tile centres the glyph's em box, not its ink: 黢's rendered ink sits ~2.5px above the 34px
+           tile's centre (pixel-measured at 2x), so the glyph carries that nudge and nothing else. -->
       <span
         class="grid size-[34px] place-items-center rounded-[9px] bg-card font-mono text-[1.05rem] text-primary shadow-[0_0_0_1px_var(--ring)] transition-transform duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.06] group-hover:-rotate-6"
-        aria-hidden="true">黢</span
+        aria-hidden="true"
+      ><span class="inline-block translate-y-[2.5px]">黢</span></span
       >
       <span class="max-[520px]:sr-only">Qu Black</span>
     </a>
