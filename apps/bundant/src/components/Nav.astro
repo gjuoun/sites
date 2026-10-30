@@ -2,6 +2,7 @@
 import { Github, Menu } from 'lucide-react';
 import { withBase } from '@/lib/utils';
 import { asset } from "@/lib/assets";
+import ThemeToggle from '@/components/ThemeToggle.astro';
 
 const links = [
   { href: withBase('#features'), label: 'Features' },
@@ -40,6 +41,7 @@ const links = [
     </nav>
 
     <div class="flex items-center gap-1">
+      <ThemeToggle />
       <a
         href="https://github.com/gjuoun/bundant"
         target="_blank"

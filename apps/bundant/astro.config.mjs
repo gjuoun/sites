@@ -69,6 +69,9 @@ function rehypeDocLinks() {
 export default defineConfig({
   site: 'https://bundant.qqntt.com',
   base: '/',
+  // The port is part of the theme round's contract; builds and probes never touch the dev
+  // server lock, so this only matters when a human opens the site locally.
+  server: { port: 4397 },
   trailingSlash: 'ignore',
   integrations: [
     react(),
@@ -82,6 +85,7 @@ export default defineConfig({
       disable404Route: false,
       customCss: ['./src/styles/starlight.css'],
       components: {
+        ThemeProvider: './src/components/starlight/ThemeProvider.astro',
         Header: './src/components/starlight/Header.astro',
         Footer: './src/components/starlight/Footer.astro',
         ThemeSelect: './src/components/starlight/ThemeSelect.astro',

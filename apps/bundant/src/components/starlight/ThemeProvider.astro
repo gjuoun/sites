@@ -1,0 +1,6 @@
+---
+import { docsThemeInitScript } from "@/lib/theme";
+---
+
+<!-- Starlight's <html> is not ours to write: pin the theme id and the mode before first paint. -->
+<script is:inline set:html={docsThemeInitScript}></script>

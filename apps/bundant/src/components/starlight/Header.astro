@@ -1,6 +1,7 @@
 ---
 import Search from '@astrojs/starlight/components/Search.astro';
 import { asset } from "@/lib/assets";
+import ThemeToggle from '@/components/ThemeToggle.astro';
 
 const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
 const links = [
@@ -29,6 +30,7 @@ const links = [
 
     <div class="bf-actions">
       <div class="bf-search"><Search /></div>
+      <ThemeToggle />
       <button
         type="button"
         class="bf-menu"
