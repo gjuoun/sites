@@ -11,7 +11,8 @@ apps/
   qublack/      # qublack.qqntt.com   — the QuBlack font specimen (Astro)
   gjuoun/       # jun-blog (Pages project)  — Jun's blog: posts, projects, resume (Astro)
   jun-hermes/   # jun-hermes.qqntt.com — the OAuth verification site (static)
-  blackboard/   # the review app (Next, local-only) + its landing page
+  blackboard/   # blackboard.qqntt.com — the landing page (Astro, en at / and zh at /zh/);
+                #                        the review app itself lives in gjuoun/blackboard
 packages/
   bigface-shadcn-ui/  # @gjuoun/bigface-shadcn-ui — the 63 stock shadcn components and the
                         #   business theme (colour only, generated from the Bigface palettes)
@@ -29,7 +30,7 @@ bun run check                                  # typecheck + lint + test + build
 ```
 
 Every app exposes the same three task names — `typecheck`, `lint`, `test` — plus `build`
-producing `dist/` (blackboard's deployable artifact is its static `site/` instead).
+producing `dist/`, which is what each deploy uploads.
 
 ## Where the truth lives
 
