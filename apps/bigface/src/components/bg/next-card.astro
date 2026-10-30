@@ -1,6 +1,6 @@
 ---
-import { bgCardVariants } from "@gjuoun/bigface-ui/components/bg/card";
-import { cn } from "@gjuoun/bigface-ui/lib/utils";
+import { bgCardVariants } from "./card.tsx";
+import { cn } from "@gjuoun/bigface-business-ui/lib/utils";
 
 // Link to the next app page.
 interface Props {
@@ -13,11 +13,11 @@ const { href, name } = Astro.props;
 <a
   class={cn(
     bgCardVariants({ tone: "plate" }),
-    "mt-12 flex items-center gap-[0.7rem] rounded-[16px] px-[1.2rem] py-4 font-display text-foreground no-underline hover:border-bf-blue/45 hover:text-foreground",
+    "mt-12 flex items-center gap-[0.7rem] rounded-[16px] px-[1.2rem] py-4 font-display text-foreground no-underline hover:border-primary/45 hover:text-foreground",
   )}
   href={href}
 >
-  <span class="font-code text-[0.7rem] tracking-[0.1em] text-bf-dim uppercase">Next up</span>
+  <span class="font-code text-[0.7rem] tracking-[0.1em] text-muted-foreground uppercase">Next up</span>
   <strong>Bigface for {name}</strong>
-  <span class="ml-auto text-bf-blue" aria-hidden="true">→</span>
+  <span class="ml-auto text-primary" aria-hidden="true">→</span>
 </a>

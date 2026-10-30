@@ -71,7 +71,7 @@ const stripAllowed = (css: string): string =>
     .replace(/\.bg-\\\[Canvas\\\]\s*\{[^{}]*\}/g, "")
     .replace(/\.text-\\\[CanvasText\\\]\s*\{[^{}]*\}/g, "");
 
-// Tokens tailwind.css maps onto a palette variable (`--<token>: var(--bf-*)`).
+// Tokens tailwind.css maps onto a theme role (`--<token>: var(--<role>)`).
 const RING_OFFSET_TOKENS = new Set([
   "background",
   "foreground",
@@ -144,7 +144,7 @@ export function findForeignInCss(css: string, palette: Set<string>): string[] {
   for (const m of text.matchAll(/\b(hsla?|hwb|lab|lch|oklab|oklch)\(\s*([^)]*)\)/gi)) {
     const args = (m[2] as string).trim();
     // Relative colour syntax passes when its base is a palette variable or the element's own
-    // colour: oklch(from var(--bf-blue) …), oklch(from currentColor …). Only lightness, chroma and
+    // colour: oklch(from var(--primary) …), oklch(from currentColor …). Only lightness, chroma and
     // alpha are transformed, and every `color` on this site is a palette-mapped utility or an
     // inherited one (attachment.tsx / trace.tsx ship the shimmer's fallback highlight this way).
     if (/^from\s+(?:var\(|currentcolor)/i.test(args)) continue;

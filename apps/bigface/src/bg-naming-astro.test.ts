@@ -2,9 +2,17 @@ import { expect, test } from "bun:test";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-// The .tsx half of this rule lives with the package (packages/ui/src/bg-naming.test.ts); the
-// .astro composites stay in site/src, so their import names are checked here.
+// Everything the site authors under components/bg is named BG<Name>: .astro composites are imported
+// under BG-prefixed names, and .tsx parts export only BG* names (plus their cva helpers
+// bg*Variants / BG*Props types). The rule lived with the old package before JW-329; the components
+// are app-local now, so the app owns the whole check.
 const src = join(import.meta.dir);
+const bgDir = join(src, "components/bg");
+
+export const badExports = (code: string): string[] =>
+  [...code.matchAll(/export\s+(?:function|const|class|type|interface)\s+(\w+)/g)]
+    .map((m) => m[1] as string)
+    .filter((n) => !/^BG[A-Z]\w*$/.test(n) && !/^bg[A-Z]\w*Variants$/.test(n));
 
 const bad: string[] = [];
 test("components/bg/*.astro are imported under BG-prefixed names", () => {
@@ -22,4 +30,16 @@ test("components/bg/*.astro are imported under BG-prefixed names", () => {
         bad.push(`${f}: ${m[1]}`);
   }
   expect(bad).toEqual([]);
+});
+
+test("components/bg/*.tsx export only BG-prefixed names", () => {
+  const offenders: string[] = [];
+  for (const f of readdirSync(bgDir).filter((f) => f.endsWith(".tsx") && !f.endsWith(".test.tsx")))
+    for (const n of badExports(readFileSync(join(bgDir, f), "utf8"))) offenders.push(`${f}: ${n}`);
+  expect(offenders).toEqual([]);
+});
+
+test("control: a plain Button export is caught", () => {
+  expect(badExports("export function Button() {}")).toEqual(["Button"]);
+  expect(badExports("export function BGButton() {}\nexport const bgButtonVariants = 1")).toEqual([]);
 });

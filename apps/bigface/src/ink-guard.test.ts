@@ -1,9 +1,9 @@
 import { expect, test } from "bun:test";
 import { findInklessBrightPlates, splitVariant } from "./ink-guard.ts";
 
-test("a bright fill with the page's cream ink is flagged", () => {
+test("a bright fill with the muted ink is flagged", () => {
   expect(
-    findInklessBrightPlates('<button class="bg-bf-lime text-foreground">x</button>'),
+    findInklessBrightPlates('<button class="bg-chart-5 text-foreground">x</button>'),
   ).toHaveLength(1);
 });
 
@@ -21,12 +21,12 @@ test("a state fill needs the ink under the same state", () => {
 test("a bright gradient plate needs the ink too", () => {
   expect(
     findInklessBrightPlates(
-      '<a class="bg-linear-135 from-bf-blue to-bf-light-blue text-foreground"></a>',
+      '<a class="bg-linear-135 from-primary to-chart-2 text-foreground"></a>',
     ),
   ).toHaveLength(2);
   expect(
     findInklessBrightPlates(
-      '<a class="bg-linear-135 from-bf-blue to-bf-light-blue text-ink-on-bright"></a>',
+      '<a class="bg-linear-135 from-primary to-chart-2 text-primary-foreground"></a>',
     ),
   ).toEqual([]);
 });
@@ -34,12 +34,12 @@ test("a bright gradient plate needs the ink too", () => {
 test("an empty ::before dot has no text to ink, a ::before with text does", () => {
   expect(
     findInklessBrightPlates(
-      "<p class=\"text-foreground before:bg-bf-blue before:content-['']\">x</p>",
+      "<p class=\"text-foreground before:bg-primary before:content-['']\">x</p>",
     ),
   ).toEqual([]);
   expect(
     findInklessBrightPlates(
-      "<p class=\"text-foreground before:bg-bf-blue before:content-['new']\">x</p>",
+      "<p class=\"text-foreground before:bg-primary before:content-['new']\">x</p>",
     ),
   ).toHaveLength(1);
 });
@@ -47,16 +47,16 @@ test("an empty ::before dot has no text to ink, a ::before with text does", () =
 test("gradient-clipped text is not a plate", () => {
   expect(
     findInklessBrightPlates(
-      '<b class="bg-linear-120 from-bf-fg to-bf-blue bg-clip-text text-transparent">7</b>',
+      '<b class="bg-linear-120 from-foreground to-primary bg-clip-text text-transparent">7</b>',
     ),
   ).toEqual([]);
 });
 
 test("translucent tints and paired fills are not flagged", () => {
-  expect(findInklessBrightPlates('<i class="bg-bf-blue/20 text-foreground"></i>')).toEqual([]);
+  expect(findInklessBrightPlates('<i class="bg-primary/20 text-foreground"></i>')).toEqual([]);
   expect(findInklessBrightPlates('<b class="bg-primary text-primary-foreground"></b>')).toEqual([]);
   expect(
-    findInklessBrightPlates('<b class="bg-bf-lime text-ink-on-bright hover:bg-bf-lime"></b>'),
+    findInklessBrightPlates('<b class="bg-chart-5 text-primary-foreground hover:bg-chart-5"></b>'),
   ).toEqual([]);
 });
 
@@ -68,8 +68,8 @@ test("variant split ignores colons inside arbitrary selectors", () => {
   expect(splitVariant("hover:bg-primary")).toEqual(["hover:", "bg-primary"]);
 });
 
-// Added for the full native set (JW-237). The site is dark-only and shadcn marks its textless
-// indicator parts with data-slot, so both have to be understood or a correct component fails.
+// The site is dark-only and shadcn marks its textless indicator parts with data-slot, so both have
+// to be understood or a correct component fails.
 
 test("a plain fill and its ink pass: the guard compares classes literally", () => {
   expect(
@@ -90,6 +90,14 @@ test("a textless indicator slot is exempt: an indicator carries no text to ink",
   ).toEqual([]);
   // the same class on an ordinary element still needs the ink
   expect(findInklessBrightPlates('<div class="bg-primary"></div>')).toHaveLength(1);
+});
+
+test("an empty dot paints no text, so it needs no ink; the same dot with text does", () => {
+  expect(findInklessBrightPlates('<i class="size-[9px] rounded-full bg-chart-5"></i>')).toEqual([]);
+  expect(findInklessBrightPlates('<span class="bg-chart-5"></span>')).toEqual([]);
+  expect(findInklessBrightPlates('<span class="bg-chart-5">9</span>')).toHaveLength(1);
+  // only phrasing dots are exempt: an empty link is still a plate the guard reads
+  expect(findInklessBrightPlates('<a class="bg-primary"></a>')).toHaveLength(1);
 });
 
 test("the slot is read from the element's own tag, not a neighbour's", () => {

@@ -2,7 +2,6 @@ import { beforeAll, expect, test } from "bun:test";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import lightPaletteJson from "@gjuoun/bigface-tokens/palette-light.json";
-import { MODES } from "@gjuoun/bigface-ui/lib/themes";
 import { $ } from "bun";
 import {
 	findForeignInCss,
@@ -13,7 +12,6 @@ import {
 import type { Palette } from "./data/palette.ts";
 import { contrastRatio, inkOn, palette } from "./data/palette.ts";
 import { targets } from "./data/targets.ts";
-import { bgCatalog } from "./data/ui-catalog.ts";
 import { findInklessBrightPlates } from "./ink-guard.ts";
 
 // The site's build is the app's own `build` script now: this package IS the site, and the
@@ -30,12 +28,20 @@ beforeAll(async () => {
 		throw new Error(`site build failed:\n${r.stderr.toString()}`);
 }, 120_000);
 
-test("one page per target plus home, palette and the component library", () => {
+test("one page per target plus home, palette and the business catalogue", () => {
 	expect(existsSync(join(dist, "index.html"))).toBe(true);
 	expect(existsSync(join(dist, "palette/index.html"))).toBe(true);
-	expect(existsSync(join(dist, "ui/index.html"))).toBe(true);
+	expect(existsSync(join(dist, "ui/business/index.html"))).toBe(true);
+	// 2026-10-30 (JW-329): the legacy workspace and the console showcase are retired; their content
+	// lives on /ui/business/ (see the card's inventory). Sixteen pages ship.
+	expect(existsSync(join(dist, "ui/index.html")), "legacy /ui/ is retired").toBe(false);
+	expect(existsSync(join(dist, "ui/console/index.html")), "console showcase is retired").toBe(false);
 	for (const t of targets)
 		expect(existsSync(join(dist, "apps", t.id, "index.html")), t.id).toBe(true);
+	const pages = readdirSync(dist, { recursive: true, encoding: "utf8" }).filter(
+		(f) => f.endsWith("index.html"),
+	);
+	expect(pages.length).toBe(16);
 });
 
 test("every app page has install steps, a code block, and download links that point at real files", () => {
@@ -77,6 +83,18 @@ test("pages use the palette: background, a syntax colour, and the original JetBr
 	expect(pal).toContain("derived from the background");
 	expect(pal).not.toContain("blended");
 	expect(pal).toContain("byte-for-byte");
+});
+
+// Jun's ruling (2026-10-30, preview review): the home wordmark is flat light blue — the theme role the
+// palette's lightBlue maps to (chart-2) — not the headline gradient the palette page and the app
+// headers still use.
+test("the home hero wordmark is flat light blue, not a gradient", () => {
+	const h1 = /<h1[^>]*>[\s\S]*?<\/h1>/.exec(page(""))?.[0] ?? "";
+	expect(h1, "the home page's one h1").toContain("Bigface");
+	expect(h1).toContain("text-chart-2");
+	expect(h1).not.toContain("bg-clip-text");
+	expect(h1).not.toContain("animate-hue");
+	expect(h1).not.toContain("text-transparent");
 });
 
 test("the VS Code .vsix is packaged into the site", () => {
@@ -189,10 +207,9 @@ test("no element pairs a bright fill class with anything but the dark ink", () =
 
 // Until shadcn is initialised there is no --primary token to pair.
 const tailwindCss = join(siteDir, "src/styles/tailwind.css");
-// The library ships its own structural theme (packages/ui/src/styles/theme.css): semantic colour
-// names plus the font-code utility, no values. If the site's palette reset ever runs after that
-// import, the names vanish and a component silently loses its colours; the colour guard cannot see
-// a missing rule, so pin the mapping here.
+// The theme package ships shadcn's own structural theme (styles.css): semantic colour names, no
+// values. If the site's palette reset ever runs after that import, the names vanish and a component
+// silently loses its colours; the colour guard cannot see a missing rule, so pin the mapping here.
 test("the built CSS keeps the library's theme names and drops Tailwind's default scale", () => {
 	const css = readdirSync(join(dist, "_astro"))
 		.filter((f) => f.endsWith(".css"))
@@ -200,7 +217,6 @@ test("the built CSS keeps the library's theme names and drops Tailwind's default
 		.join("\n");
 	expect(css).toContain(".bg-primary{background-color:var(--primary)}");
 	expect(css).toMatch(/\.font-code\{/);
-	expect(css).toMatch(/\.text-ink-on-bright\{/);
 	expect(css).not.toContain("--color-red-500");
 	expect(css).not.toMatch(/\.bg-red-500\{/);
 });
@@ -212,7 +228,9 @@ test.skipIf(!existsSync(tailwindCss))(
 			.filter((f) => f.endsWith(".css"))
 			.map((f) => readFileSync(join(dist, "_astro", f), "utf8"))
 			.join("\n");
-		expect(css).toMatch(/--primary-foreground:\s*var\(--theme-on-primary\)/);
+		// 2026-10-27 ruling, now in the business package: the ink on the primary fill is each mode's
+		// canvas colour, so the role reads --theme-bg (packages/bigface-business-ui/src/styles/styles.css).
+		expect(css).toMatch(/--primary-foreground:\s*var\(--theme-bg\)/);
 	},
 );
 
@@ -220,10 +238,10 @@ test.skipIf(!existsSync(tailwindCss))(
 // mode. Both are what every dark: variant and every [data-theme] scope keys off, so the site must
 // ship them on the root; a page that lost them would render with the fallback mapping only.
 test("the page root carries the default theme and mode", () => {
-	for (const rel of ["", "ui", "palette"]) {
+	for (const rel of ["", "palette"]) {
 		const html = readFileSync(join(dist, rel, "index.html"), "utf8");
 		const tag = /<html\b[^>]*>/.exec(html)?.[0] ?? "";
-		expect(tag, rel).toContain('data-theme="console"');
+		expect(tag, rel).toContain('data-theme="business"');
 		expect(tag, rel).toContain('data-mode="dark"');
 		expect(/class="[^"]*\bdark\b/.test(tag), rel).toBe(false);
 	}
@@ -231,8 +249,8 @@ test("the page root carries the default theme and mode", () => {
 
 // The business page is the single-theme catalogue: one page root in the business theme and the default mode, all
 // 63 components. The colour section is the only place a theme scope appears on the catalogue: light and dark are
-// shown side by side there. The console page keeps its two scopes. The retired game theme is on neither.
-test("the business catalogue is one business theme with 63 components; console keeps its scopes; game is offline", () => {
+// shown side by side there. The retired console showcase and the game theme are gone.
+test("the business catalogue is one business theme with 63 components; the retired themes are offline", () => {
 	const business = page("ui/business");
 	expect(business).toContain('data-theme="business" data-mode="light"');
 	const scopeAt = [...business.matchAll(/data-slot="theme-scope"/g)].map((m) => m.index ?? -1);
@@ -252,18 +270,11 @@ test("the business catalogue is one business theme with 63 components; console k
 	expect(business.split('aria-label="Jump to a section"').length - 1, "one jump select").toBe(1);
 	for (const id of ["colour", "typography", "accordion", "trace"]) expect(business, "rail links #" + id).toContain('href="#' + id + '"');
 	expect([...business.matchAll(/data-demo="/g)], "63 demos").toHaveLength(63);
-	const cons = page("ui/console");
-	expect([...cons.matchAll(/data-slot="theme-scope"/g)]).toHaveLength(MODES.length);
-	for (const mode of MODES) {
-		expect(cons, "console/" + mode).toContain('data-theme="console" data-mode="' + mode + '"');
-	}
-	for (const rel of ["", "ui", "ui/console", "ui/business"]) {
+	for (const rel of ["", "palette", "ui/business"]) {
 		expect(page(rel), "game on " + rel).not.toContain('data-theme="game"');
+		expect(page(rel), "console on " + rel).not.toContain('data-theme="console"');
 	}
 	expect(existsSync(join(dist, "ui/theme/index.html")), "the gallery page is gone").toBe(false);
-	expect(page("ui")).toContain('href="/ui/business/"');
-	expect(page("ui")).toContain('href="/ui/console/"');
-	expect(page("ui")).not.toContain('href="/ui/theme/"');
 	expect(page("")).not.toContain("bigface-mode");
 });
 
@@ -279,7 +290,7 @@ test("the site only ships colours that exist in the palette", () => {
 	// else is still an offence; themes.test.ts proves each derived value is such a mix.
 	// The derived values of both generators: the console package's mixes, and the business package's mixes and solved
 	// plates (its themes.test.ts proves each business value is a palette colour, a mix, or a solved plate).
-	const themeHexes = ["../../packages/ui/src/themes", "../../packages/bigface-business-ui/src/themes"].flatMap((dir) =>
+	const themeHexes = ["../../packages/bigface-business-ui/src/themes"].flatMap((dir) =>
 		readdirSync(join(siteDir, dir), "utf8")
 			.filter((f) => f.endsWith(".css"))
 			.flatMap((f) =>
@@ -342,56 +353,30 @@ test("the brand mark ships as a vector favicon, a touch icon and a 1200x630 soci
 	expect(home).toContain("img/og.png");
 });
 
-test("the component library page shows every native and BG component, and flags unfinished props", () => {
-	const html = page("ui");
-	for (const name of ["button", "badge", "card", "tabs"])
-		expect(html, name).toContain(
-			`from &quot;@gjuoun/bigface-ui/components/ui/${name}&quot;`,
-		);
-	for (const e of bgCatalog) {
-		expect(html, e.name).toContain(`id="bg-${e.name}"`);
-		expect(html, e.name).toContain(`components/bg/${e.file}`);
-	}
-	const flagged = html.match(/>props not finalised</g) ?? [];
-	expect(flagged.length).toBe(bgCatalog.filter((e) => !e.finalised).length);
-	// every Button variant x size from the shadcn source is rendered
-	expect(
-		html.match(
-			/data-slot="button" data-variant="destructive" data-size="icon-lg"/g,
-		)?.length,
-	).toBeGreaterThanOrEqual(1);
-});
-
-test("the /ui page registers every shadcn native component in the directory", () => {
-	// Directory-driven: the page lists what the package's components/ui holds, so the registry
+test("the business catalogue registers every component the theme package ships", () => {
+	// Directory-driven: the page lists what the package's components/ui holds, so the catalogue
 	// cannot fall behind the CLI. 63 = the registry's 64 (ui) items minus `form`, which ships no
-	// files. The library lives in packages/ui since the npm-package round.
-	const html = page("ui");
+	// files. The library is the theme package since the 2026-10-29 refactor.
+	const html = page("ui/business");
 	const files = readdirSync(
-		join(siteDir, "../../packages/ui/src/components/ui"),
+		join(siteDir, "../../packages/bigface-business-ui/src/components/ui"),
 	).filter((f) => f.endsWith(".tsx"));
 	expect(files.length).toBeGreaterThanOrEqual(63);
-	for (const f of files)
-		expect(html, f).toContain(`data-native="${f.replace(/\.tsx$/, "")}"`);
+	for (const f of files) expect(html, f).toContain(`id="${f.replace(/\.tsx$/, "")}"`);
 });
 
-// The showcase is an internal workspace, not a product page: no marketing chrome, no index, and
-// still the whole catalogue. The header assertion is the one that fails if the page ever goes back
-// to the site layout.
-test("the showcase is an unlisted, chrome-less workspace", () => {
-	const html = page("ui");
+// The catalogue is an internal showcase, not a product page: no marketing chrome, noindex, and the
+// home page never links to it. The legacy /ui/ workspace that carried the site header is retired.
+test("the catalogue is unlisted and the home page does not link it", () => {
+	const html = page("ui/business");
 	expect(html, "site header").not.toContain('id="site-header"');
 	expect(html, "site footer").not.toContain('aria-label="Footer"');
 	expect(html, "noindex").toContain('name="robots" content="noindex"');
-	expect(html, "bleed").toContain("data-bleed");
-	expect(html, "section nav").toContain('aria-label="Library sections"');
-	expect(html, "copy feedback").toContain('id="toast"');
-	expect(html.match(/data-native="/g)?.length, "registrations").toBe(63);
 
 	const home = page("");
 	expect(home, "home header").toContain('id="site-header"');
 	expect(home, "home footer").toContain('aria-label="Footer"');
-	expect(home, "no nav link to the workspace").not.toContain('href="/ui/"');
+	expect(home, "no nav link to the catalogue").not.toContain('href="/ui/"');
 });
 
 test("app pages with a screenshot put it beside the instructions on desktop, stacked in DOM order", () => {

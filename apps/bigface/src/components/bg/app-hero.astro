@@ -1,7 +1,8 @@
 ---
-import { BGBadge } from "@gjuoun/bigface-ui/components/bg/badge";
 import type { Target } from "../../data/targets.ts";
+import { BGBadge } from "./badge.tsx";
 import BGEyebrow from "./eyebrow.astro";
+import BGGradientInk from "./gradient-ink.astro";
 
 // App page header: kind and port number, the name, the tagline, and how far the theme was checked.
 interface Props {
@@ -17,9 +18,9 @@ const { target, index, total, levelLabel } = Astro.props;
   <div>
     <BGEyebrow>{target.kind} · port {String(index + 1).padStart(2, "0")} of {total}</BGEyebrow>
     <h1 class="text-[clamp(2.3rem,5.2vw,3.6rem)] font-extrabold">
-      <span class="bf-grad">Bigface for {target.name}</span>
+      <BGGradientInk>Bigface for {target.name}</BGGradientInk>
     </h1>
-    <p class="bf-lead">{target.tagline}</p>
+    <p class="max-w-[56ch] text-[clamp(1.05rem,1.7vw,1.3rem)] text-muted-foreground">{target.tagline}</p>
     <div class="mt-4 flex flex-wrap gap-[0.45rem]">
       <BGBadge tone={target.check.level}>{levelLabel}</BGBadge>
       <BGBadge tone="pill">{target.files.length} file{target.files.length === 1 ? "" : "s"}</BGBadge>

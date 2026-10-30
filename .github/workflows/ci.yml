@@ -42,12 +42,12 @@ jobs:
         with:
           bun-version: latest
       - run: bun install --frozen-lockfile
-      # tokens.css is generated from the vendored palette. A palette edit must arrive with the
-      # regenerated file; this is the same gate bigface-theme runs on its own themes/.
-      - name: packages/ui tokens.css is up to date
+      # business.css is generated from the two palettes. A palette or role-map edit must arrive
+      # with the regenerated file; this is the same gate bigface-theme runs on its own themes/.
+      - name: packages/bigface-business-ui business.css is up to date
         run: |
-          bun run --cwd packages/ui theme:sync
-          git diff --exit-code packages/ui/src/styles/tokens.css
+          bun run --cwd packages/bigface-business-ui theme:sync
+          git diff --exit-code packages/bigface-business-ui/src/themes/business.css
 
   vendored-bigface:
     runs-on: ubuntu-latest

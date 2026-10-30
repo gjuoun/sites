@@ -67,17 +67,91 @@ const CHROME_CANDIDATES = [
 	"/usr/bin/chromium-browser",
 ];
 
-/** A debugging port the OS has just confirmed free. A fixed or random range can answer from a stale listener. */
-export async function freePort(): Promise<number> {
-	const probe = Bun.serve({ port: 0, fetch: () => new Response("") });
-	const port = probe.port;
-	probe.stop(true);
-	if (port === undefined) throw new Error("no free port for headless Chrome");
-	return port;
-}
-
 export const findChrome = (): string | undefined =>
 	CHROME_CANDIDATES.find((p) => p && existsSync(p));
+
+export interface ChromeHandle {
+	proc: ReturnType<typeof Bun.spawn>;
+	wsUrl: string;
+}
+
+/**
+ * Start headless Chrome and return its page target's WebSocket URL.
+ *
+ * Chrome picks the debugging port itself (--remote-debugging-port=0) and publishes it in
+ * <profile>/DevToolsActivePort. Asking the OS for a free port and then passing that number races
+ * with anything that binds in between: on a cold CI runner Chrome lost that race, exited before it
+ * exposed a target, and the old polling loop spent its whole 12s budget on a dead port. A Chrome
+ * that dies early is now reported with its stderr instead of being polled.
+ */
+export async function launchChrome(
+	profile: string,
+	width: number,
+	height: number,
+): Promise<ChromeHandle> {
+	const chrome = findChrome();
+	if (!chrome) throw new Error("no Chrome found: set CHROME_PATH");
+	const proc = Bun.spawn(
+		[
+			chrome,
+			"--headless=new",
+			"--disable-gpu",
+			"--no-first-run",
+			"--no-default-browser-check",
+			"--hide-scrollbars",
+			"--window-size=" + width + "," + height,
+			"--user-data-dir=" + profile,
+			"--remote-debugging-port=0",
+			"about:blank",
+		],
+		{ stdout: "ignore", stderr: "pipe" },
+	);
+	// Drain stderr continuously: a full pipe blocks Chrome, and a startup failure's reason is the
+	// last thing it said. Only the tail is kept.
+	let stderrTail = "";
+	const drain = (async () => {
+		const reader = proc.stderr.getReader();
+		const decoder = new TextDecoder();
+		for (;;) {
+			const { done, value } = await reader.read();
+			if (done) break;
+			stderrTail = (stderrTail + decoder.decode(value)).slice(-4000);
+		}
+	})();
+	const fail = async (why: string): Promise<never> => {
+		proc.kill();
+		await Promise.race([drain, sleep(500)]);
+		const tail = stderrTail.trim().split("\n").filter(Boolean).slice(-3).join(" | ");
+		throw new Error(why + (tail ? ": " + tail : ""));
+	};
+	const portFile = join(profile, "DevToolsActivePort");
+	let port = "";
+	for (let i = 0; i < 200; i++) {
+		if (await Bun.file(portFile).exists()) {
+			port = ((await Bun.file(portFile).text()).split("\n")[0] ?? "").trim();
+			if (port) break;
+		}
+		if (proc.exitCode !== null)
+			return fail("headless Chrome exited before publishing a debugging port");
+		await sleep(100);
+	}
+	if (!port) return fail("headless Chrome published no debugging port within 20s");
+	for (let i = 0; i < 100; i++) {
+		try {
+			const list = (await (
+				await fetch("http://127.0.0.1:" + port + "/json/list")
+			).json()) as { type: string; webSocketDebuggerUrl?: string }[];
+			const target = list.find((t) => t.type === "page" && t.webSocketDebuggerUrl);
+			if (target?.webSocketDebuggerUrl) return { proc, wsUrl: target.webSocketDebuggerUrl };
+		} catch {
+			/* chrome still binding */
+		}
+		if (proc.exitCode !== null)
+			return fail("headless Chrome exited before exposing a page target");
+		await sleep(100);
+	}
+	return fail("headless Chrome published port " + port + " but no page target appeared");
+}
 
 /** The in-page script: compare every descendant box with its panel's box, in CSS pixels. */
 const PROBE = `(() => {
@@ -201,11 +275,6 @@ async function runProbe<T>(
 	width: number,
 	expression: string,
 ): Promise<T> {
-	const chrome = findChrome();
-	if (!chrome)
-		throw new Error(
-			"no Chrome found - set CHROME_PATH to run the layout measurement",
-		);
 	const server = Bun.serve({
 		port: 0,
 		fetch: async (req) => {
@@ -219,42 +288,10 @@ async function runProbe<T>(
 		},
 	});
 	const profile = mkdtempSync(join(tmpdir(), "bf-chrome-"));
-	const port = await freePort();
-	const proc = Bun.spawn(
-		[
-			chrome,
-			"--headless=new",
-			"--disable-gpu",
-			"--no-first-run",
-			"--no-default-browser-check",
-			"--hide-scrollbars",
-			"--window-size=1440,1200",
-			"--user-data-dir=" + profile,
-			"--remote-debugging-port=" + port,
-			"about:blank",
-		],
-		{ stdout: "ignore", stderr: "ignore" },
-	);
+	const { proc, wsUrl } = await launchChrome(profile, 1440, 1200);
 	let cdp: Cdp | undefined;
 	try {
-		let target: { webSocketDebuggerUrl: string } | undefined;
-		for (let i = 0; i < 80 && !target; i++) {
-			await sleep(150);
-			try {
-				const list = (await (
-					await fetch("http://127.0.0.1:" + port + "/json/list")
-				).json()) as {
-					type: string;
-					webSocketDebuggerUrl: string;
-				}[];
-				target = list.find((t) => t.type === "page");
-			} catch {
-				/* chrome still starting */
-			}
-		}
-		if (!target)
-			throw new Error("headless Chrome did not expose a debugging target");
-		cdp = await connect(target.webSocketDebuggerUrl);
+		cdp = await connect(wsUrl);
 		await cdp.send("Page.enable");
 		await cdp.send("Runtime.enable");
 		// A narrow viewport is where a min-content width really bites: measure the same page at both.
@@ -291,6 +328,16 @@ async function runProbe<T>(
 		server.stop(true);
 		rmSync(profile, { recursive: true, force: true });
 	}
+}
+
+/** Run one expression against a built page at a given width (the 390px phone guard uses this). */
+export async function measurePage<T>(
+	distDir: string,
+	path: string,
+	width: number,
+	expression: string,
+): Promise<T> {
+	return runProbe<T>(distDir, path, width, expression);
 }
 
 /** Geometry, containment and feel metrics for one built page. */
@@ -382,7 +429,7 @@ const paletteFile = (distDir: string, file: string) =>
 
 /**
  * The colour audit for Jun's rule: in a light panel no colour may be a value that exists only in the dark
- * palette (that is a --bf-* leak from the site's inline dark variables), and no element may paint pure
+ * palette (that is a leaked site palette variable), and no element may paint pure
  * white. Both are what the synced palettes forbid; everything else must resolve from --theme-*.
  */
 export async function measurePanelColours(
