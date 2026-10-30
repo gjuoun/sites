@@ -1,10 +1,10 @@
 /* The site's whole stylesheet: Tailwind and the business theme. Every rule the site needs is a
    utility in its markup; the palette, the shadcn roles and the base layer come from the package. */
 @import "tailwindcss";
-@import "@gjuoun/bigface-business-ui/styles.css";
+@import "@gjuoun/bigface-shadcn-ui/styles.css";
 /* Only the stock components the site renders: Tailwind does not scan node_modules. */
-@source "../../../../packages/bigface-business-ui/src/components/ui/accordion.tsx";
-@source "../../../../packages/bigface-business-ui/src/components/ui/badge.tsx";
-@source "../../../../packages/bigface-business-ui/src/components/ui/button.tsx";
+@source "../../../../packages/bigface-shadcn-ui/src/components/ui/accordion.tsx";
+@source "../../../../packages/bigface-shadcn-ui/src/components/ui/badge.tsx";
+@source "../../../../packages/bigface-shadcn-ui/src/components/ui/button.tsx";
 /* The highlighter emits the light-dark() token class; Tailwind only sees it when sourced. */
 @source "../../../../packages/bigface-highlighter/src/highlighter.tsx";

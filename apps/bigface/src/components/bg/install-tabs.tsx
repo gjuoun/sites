@@ -1,4 +1,4 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@gjuoun/bigface-business-ui/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@gjuoun/bigface-shadcn-ui/components/ui/tabs";
 import { BGButton } from "./button.tsx";
 
 export interface BGInstallTab {

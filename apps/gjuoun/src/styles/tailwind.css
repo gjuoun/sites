@@ -1,12 +1,12 @@
 /* The site's whole stylesheet: Tailwind, the typography plugin for page content, the business theme, and the
    site's font. Nothing else: every rule the site needs is a utility in its markup. */
 @import "tailwindcss";
-@import "@gjuoun/bigface-business-ui/styles.css";
+@import "@gjuoun/bigface-shadcn-ui/styles.css";
 @plugin "@tailwindcss/typography";
 /* Only the three stock components the site renders: the package's other 60 would only add CSS nobody loads. */
-@source "../../../../packages/bigface-business-ui/src/components/ui/card.tsx";
-@source "../../../../packages/bigface-business-ui/src/components/ui/badge.tsx";
-@source "../../../../packages/bigface-business-ui/src/components/ui/button.tsx";
+@source "../../../../packages/bigface-shadcn-ui/src/components/ui/card.tsx";
+@source "../../../../packages/bigface-shadcn-ui/src/components/ui/badge.tsx";
+@source "../../../../packages/bigface-shadcn-ui/src/components/ui/button.tsx";
 
 @font-face {
 	font-family: "QuBlack Sans";

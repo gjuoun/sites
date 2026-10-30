@@ -2,10 +2,10 @@ import { describe, expect, test } from "bun:test";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-// The consumer contract, pinned: the theme comes from @gjuoun/bigface-business-ui, the only
+// The consumer contract, pinned: the theme comes from @gjuoun/bigface-shadcn-ui, the only
 // stylesheet is the package plus the site's fonts and motions, the document carries data-theme /
 // data-mode, and no file carries a colour, a retired token or a mode variant of its own.
-const PACKAGE = "@gjuoun/bigface-business-ui";
+const PACKAGE = "@gjuoun/bigface-shadcn-ui";
 const srcRoot = import.meta.dir;
 const stylesDir = join(srcRoot, "styles");
 const css = readFileSync(join(stylesDir, "tailwind.css"), "utf8");
@@ -64,11 +64,11 @@ describe("the stylesheet is the package theme plus the site's fonts and motions"
   test("its top-level statements are exactly the two imports, the @source lines and the theme block", () => {
     expect(topLevelStatements(css)).toEqual([
       '@import "tailwindcss"',
-      '@import "@gjuoun/bigface-business-ui/styles.css"',
-      '@source "../../../../packages/bigface-business-ui/src/components/ui/button.tsx"',
-      '@source "../../../../packages/bigface-business-ui/src/components/ui/badge.tsx"',
-      '@source "../../../../packages/bigface-business-ui/src/components/ui/card.tsx"',
-      '@source "../../../../packages/bigface-business-ui/src/components/ui/tabs.tsx"',
+      '@import "@gjuoun/bigface-shadcn-ui/styles.css"',
+      '@source "../../../../packages/bigface-shadcn-ui/src/components/ui/button.tsx"',
+      '@source "../../../../packages/bigface-shadcn-ui/src/components/ui/badge.tsx"',
+      '@source "../../../../packages/bigface-shadcn-ui/src/components/ui/card.tsx"',
+      '@source "../../../../packages/bigface-shadcn-ui/src/components/ui/tabs.tsx"',
       "@theme inline",
     ]);
   });
@@ -107,7 +107,7 @@ describe("every @source is real and matches what the site renders", () => {
   test("the @source list is exactly the stock components the site imports, transitively", () => {
     const uiDir = join(
       srcRoot,
-      "../../../packages/bigface-business-ui/src/components/ui",
+      "../../../packages/bigface-shadcn-ui/src/components/ui",
     );
     const used = new Set<string>();
     for (const file of codeFiles) {
@@ -124,7 +124,7 @@ describe("every @source is real and matches what the site renders", () => {
       if (closure.has(name)) continue;
       closure.add(name);
       for (const match of read(join(uiDir, name + ".tsx")).matchAll(
-        /@gjuoun\/bigface-business-ui\/components\/ui\/([\w-]+)/g,
+        /@gjuoun\/bigface-shadcn-ui\/components\/ui\/([\w-]+)/g,
       ))
         queue.push(match[1] as string);
     }
@@ -191,12 +191,13 @@ describe("the app keeps no stock copy and no theme of its own", () => {
   });
 });
 
-// 2026-10-30 (follow-up): the yellow is a mode-specific role. The dark canvas keeps the palette's
-// #ffeb3b; the light block carries the same hue darkened by the palette pipeline (darkenUntil) until it
-// clears AA on the paper. Both modes are asserted here, so a palette move cannot quietly lower the ink.
-describe("the yellow inline ink clears AA in both modes", () => {
+// 2026-10-30: the theme now carries the palette's yellow unchanged in both blocks (#ffeb3b), so the
+// "darken it until it clears AA on paper" derivation is gone. Dark still asserts AA, because that is the
+// ink this site uses; light records the palette value and its measured ratio as an explicit exception —
+// on paper #ffeb3b is a fill accent, not body ink, and the chip keeps its shape rather than a recolour.
+describe("yellow is the palette's #ffeb3b in both modes", () => {
   const themeCss = read(
-    join(srcRoot, "../../../packages/bigface-business-ui/src/themes/business.css"),
+    join(srcRoot, "../../../packages/bigface-shadcn-ui/src/themes/bigface.css"),
   );
   const tokens = (selector: string) => {
     const at = themeCss.indexOf(selector + " {");
@@ -232,13 +233,12 @@ describe("the yellow inline ink clears AA in both modes", () => {
     expect(ratio(theme["--theme-yellow"] as string, chip(theme))).toBeGreaterThan(7);
   });
 
-  test("light: the darkened yellow clears AA on the paper and on the chip", () => {
+  test("light: the palette value, pinned as a known low-contrast ink", () => {
     const theme = tokens(':root, [data-mode="light"]');
     const yellow = theme["--theme-yellow"] as string;
-    expect(yellow).not.toBe("#ffeb3b");
-    // The role is derived against the canvas: 4.53:1 on the paper. The chip's own backdrop is 8% of the
-    // border over that paper — 1.5% darker — so it measures 4.46:1; pinned here so a palette move shows.
-    expect(ratio(yellow, theme["--theme-bg"] as string)).toBeGreaterThanOrEqual(4.5);
-    expect(ratio(yellow, chip(theme))).toBeGreaterThanOrEqual(4.4);
+    expect(yellow).toBe("#ffeb3b");
+    // 1.13:1 on the paper. Not an AA ink and not meant to be: in light the role is a fill and underline
+    // accent. Pinned so a palette move, or a silent re-derivation, shows up here.
+    expect(ratio(yellow, theme["--theme-bg"] as string)).toBeCloseTo(1.13, 1);
   });
 });

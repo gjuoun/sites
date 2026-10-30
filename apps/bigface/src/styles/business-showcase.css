@@ -4,9 +4,9 @@
 @import "tailwindcss" source(none);
 @import "tw-animate-css";
 @import "./qublack.css";
-@import "@gjuoun/bigface-business-ui/styles.css";
+@import "@gjuoun/bigface-shadcn-ui/styles.css";
 
-@source "../../../../packages/bigface-business-ui/src";
+@source "../../../../packages/bigface-shadcn-ui/src";
 @source "../pages/ui/business";
 @source not "../**/*.test.ts";
 @source not "../**/*.test.tsx";

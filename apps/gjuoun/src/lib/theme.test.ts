@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { MODE_STORAGE_KEY } from "@gjuoun/bigface-business-ui/lib/themes";
+import { MODE_STORAGE_KEY } from "@gjuoun/bigface-shadcn-ui/lib/themes";
 
 const src = (rel: string) =>
 	readFileSync(join(import.meta.dir, "..", rel), "utf8");
@@ -37,11 +37,11 @@ test("the only stylesheet is tailwind.css, and it holds only imports, sources an
 		.filter(Boolean);
 	expect(top).toEqual([
 		'@import "tailwindcss"',
-		'@import "@gjuoun/bigface-business-ui/styles.css"',
+		'@import "@gjuoun/bigface-shadcn-ui/styles.css"',
 		'@plugin "@tailwindcss/typography"',
-		'@source "../../../../packages/bigface-business-ui/src/components/ui/card.tsx"',
-		'@source "../../../../packages/bigface-business-ui/src/components/ui/badge.tsx"',
-		'@source "../../../../packages/bigface-business-ui/src/components/ui/button.tsx"',
+		'@source "../../../../packages/bigface-shadcn-ui/src/components/ui/card.tsx"',
+		'@source "../../../../packages/bigface-shadcn-ui/src/components/ui/badge.tsx"',
+		'@source "../../../../packages/bigface-shadcn-ui/src/components/ui/button.tsx"',
 		"@font-face",
 		"@font-face",
 		"@theme inline",

@@ -1,4 +1,4 @@
-import { MODE_STORAGE_KEY } from "@gjuoun/bigface-business-ui/lib/themes";
+import { MODE_STORAGE_KEY } from "@gjuoun/bigface-shadcn-ui/lib/themes";
 
 // The light/dark switch. It renders as static HTML; the inline script wires the click: it flips data-mode on <html>,
 // stores the choice under the package's mode key, and mirrors the state in aria-pressed (which also swaps the icon).

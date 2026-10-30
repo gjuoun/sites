@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 // Serves the built site exactly as deployed and asks each registered URL for what the theme switch
-// promises: a 200, a root that declares business+dark, and a stylesheet carrying the business tokens.
+// promises: a 200, a root that declares bigface+dark, and a stylesheet carrying the Bigface tokens.
 //
 //   bun run scripts/probe.mjs
 //   -> PROBE OK n=8
@@ -11,7 +11,7 @@ import { join } from "node:path";
 
 const DIST = join(new URL("..", import.meta.url).pathname.replace(/\/$/, ""), "dist");
 const PORT = 4398;
-const ROUTES = ["/", "/privacy.html", "/terms.html", "/terms-of-use.html", "/404.html", "/oauth2/callback", "/healthz.json", "/assets/business.css"];
+const ROUTES = ["/", "/privacy.html", "/terms.html", "/terms-of-use.html", "/404.html", "/oauth2/callback", "/healthz.json", "/assets/bigface.css"];
 
 function fileFor(pathname) {
   if (pathname === "/") return "index.html";
@@ -46,7 +46,7 @@ try {
     if (route.endsWith(".css")) {
       if (!body.includes("--theme-bg: #252925")) problems.push(route + " is missing the dark --theme-bg token");
     } else if (route.endsWith(".html") || route === "/" || route === "/oauth2/callback") {
-      if (!body.includes('data-theme="business"')) problems.push(route + " is missing data-theme=" + JSON.stringify("business"));
+      if (!body.includes('data-theme="bigface"')) problems.push(route + " is missing data-theme=" + JSON.stringify("bigface"));
       if (!body.includes('data-mode="dark"')) problems.push(route + " is missing data-mode=" + JSON.stringify("dark"));
     }
     console.log("PROBE OK " + res.status + " " + route);

@@ -43,16 +43,15 @@ const subLink =
 const swatches = "grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-[0.7rem]";
 ---
 
-<Base title="Bigface palette" description="Every colour in the Bigface theme, with the original JetBrains source for each one.">
+<Base title="Bigface palette" description="Every colour in the Bigface theme: fifteen values, one palette, light and dark.">
   <section class="pt-[clamp(0.5rem,3vw,2rem)]" data-reveal>
     <BGEyebrow>the source of truth</BGEyebrow>
     <h1 class="text-[clamp(2.6rem,6vw,4.4rem)] leading-[1.02] font-extrabold">
       One palette.<br /><BGGradientInk>Nothing else.</BGGradientInk>
     </h1>
     <p class="max-w-[56ch] text-[clamp(1.05rem,1.7vw,1.3rem)] text-muted-foreground">
-      Every theme in the repo is generated from <code>palette/bigface.json</code>, and every seed
-      in it is <strong>byte-for-byte from the 2018 JetBrains scheme</strong> — each labelled with the
-      exact <code>OPTION#FIELD</code> it came from and checked against the original XML by a test.
+      Every theme in the repo is generated from <code>palette/palette.json</code>, and every seed
+      in it is <strong>byte-for-byte from the 2018 JetBrains scheme</strong>.
       The accents are the scheme's own bytes. The neutrals are derived from the background by one formula, so a tool that needs a surface gets a neutral from that formula, never an invented colour.
     </p>
     <div class="mt-[1.4rem] mb-0 flex flex-wrap gap-2">
@@ -132,7 +131,7 @@ const swatches = "grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-[0.7r
 
   <p class="mt-12 text-[0.85rem] text-muted-foreground" data-reveal>
     Raw file:
-    <a href={`${REPO}/blob/main/palette/bigface.json`}>palette/bigface.json</a> ·
+    <a href={`${REPO}/blob/main/packages/bigface-tokens/palette/palette.json`}>palette/palette.json</a> ·
     <a href={`${REPO}/blob/main/src/targets.ts`}>generator targets</a> · Click any swatch to copy its
     hex.
   </p>

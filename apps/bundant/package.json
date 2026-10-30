@@ -17,7 +17,7 @@
   "dependencies": {
     "@astrojs/react": "4.4.2",
     "@astrojs/starlight": "0.37.7",
-    "@gjuoun/bigface-business-ui": "workspace:*",
+    "@gjuoun/bigface-shadcn-ui": "workspace:*",
     "@gjuoun/bigface-highlighter": "workspace:*",
     "@tailwindcss/vite": "4.3.3",
     "astro": "5.18.2",

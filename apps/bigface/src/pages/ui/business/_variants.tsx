@@ -1,47 +1,47 @@
 import * as React from "react";
-import { Spinner } from "@gjuoun/bigface-business-ui/components/ui/spinner";
+import { Spinner } from "@gjuoun/bigface-shadcn-ui/components/ui/spinner";
 import { toast } from "sonner";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@gjuoun/bigface-business-ui/components/ui/accordion";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@gjuoun/bigface-business-ui/components/ui/alert-dialog";
-import { Alert, AlertDescription, AlertTitle } from "@gjuoun/bigface-business-ui/components/ui/alert";
-import { Attachment, AttachmentContent, AttachmentMedia, AttachmentTitle } from "@gjuoun/bigface-business-ui/components/ui/attachment";
-import { Avatar, AvatarFallback } from "@gjuoun/bigface-business-ui/components/ui/avatar";
-import { Badge } from "@gjuoun/bigface-business-ui/components/ui/badge";
-import { Bubble, BubbleContent, BubbleReactions } from "@gjuoun/bigface-business-ui/components/ui/bubble";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@gjuoun/bigface-shadcn-ui/components/ui/accordion";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@gjuoun/bigface-shadcn-ui/components/ui/alert-dialog";
+import { Alert, AlertDescription, AlertTitle } from "@gjuoun/bigface-shadcn-ui/components/ui/alert";
+import { Attachment, AttachmentContent, AttachmentMedia, AttachmentTitle } from "@gjuoun/bigface-shadcn-ui/components/ui/attachment";
+import { Avatar, AvatarFallback } from "@gjuoun/bigface-shadcn-ui/components/ui/avatar";
+import { Badge } from "@gjuoun/bigface-shadcn-ui/components/ui/badge";
+import { Bubble, BubbleContent, BubbleReactions } from "@gjuoun/bigface-shadcn-ui/components/ui/bubble";
 import { Folder, Home } from "lucide-react";
-import { Button } from "@gjuoun/bigface-business-ui/components/ui/button";
-import { ButtonGroup } from "@gjuoun/bigface-business-ui/components/ui/button-group";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@gjuoun/bigface-business-ui/components/ui/card";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@gjuoun/bigface-business-ui/components/ui/carousel";
-import { Checkbox } from "@gjuoun/bigface-business-ui/components/ui/checkbox";
-import { CodeBlock, CodeBlockContent, CodeBlockLine } from "@gjuoun/bigface-business-ui/components/ui/code-block";
-import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@gjuoun/bigface-business-ui/components/ui/context-menu";
-import { DirectionProvider } from "@gjuoun/bigface-business-ui/components/ui/direction";
-import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@gjuoun/bigface-business-ui/components/ui/drawer";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@gjuoun/bigface-business-ui/components/ui/dropdown-menu";
-import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@gjuoun/bigface-business-ui/components/ui/empty";
-import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldLegend, FieldSet } from "@gjuoun/bigface-business-ui/components/ui/field";
-import { Input } from "@gjuoun/bigface-business-ui/components/ui/input";
-import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput, InputGroupText } from "@gjuoun/bigface-business-ui/components/ui/input-group";
-import { Item, ItemContent, ItemDescription, ItemMedia, ItemTitle } from "@gjuoun/bigface-business-ui/components/ui/item";
-import { Marker, MarkerContent, MarkerIcon } from "@gjuoun/bigface-business-ui/components/ui/marker";
-import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarTrigger } from "@gjuoun/bigface-business-ui/components/ui/menubar";
-import { Message, MessageAvatar, MessageContent, MessageFooter, MessageGroup, MessageHeader } from "@gjuoun/bigface-business-ui/components/ui/message";
-import { NativeSelect, NativeSelectOption } from "@gjuoun/bigface-business-ui/components/ui/native-select";
-import { Progress } from "@gjuoun/bigface-business-ui/components/ui/progress";
-import { RadioGroup, RadioGroupItem } from "@gjuoun/bigface-business-ui/components/ui/radio-group";
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@gjuoun/bigface-business-ui/components/ui/resizable";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@gjuoun/bigface-business-ui/components/ui/select";
-import { Separator } from "@gjuoun/bigface-business-ui/components/ui/separator";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@gjuoun/bigface-business-ui/components/ui/sheet";
-import { Sidebar, SidebarContent, SidebarGroup, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem, SidebarProvider, SidebarTrigger } from "@gjuoun/bigface-business-ui/components/ui/sidebar";
-import { Slider } from "@gjuoun/bigface-business-ui/components/ui/slider";
-import { Switch } from "@gjuoun/bigface-business-ui/components/ui/switch";
-import { Tabs, TabsList, TabsTrigger } from "@gjuoun/bigface-business-ui/components/ui/tabs";
-import { Textarea } from "@gjuoun/bigface-business-ui/components/ui/textarea";
-import { Toggle } from "@gjuoun/bigface-business-ui/components/ui/toggle";
-import { ToggleGroup, ToggleGroupItem } from "@gjuoun/bigface-business-ui/components/ui/toggle-group";
-import { Trace, TraceIcon, TraceLine, TraceTitle } from "@gjuoun/bigface-business-ui/components/ui/trace";
+import { Button } from "@gjuoun/bigface-shadcn-ui/components/ui/button";
+import { ButtonGroup } from "@gjuoun/bigface-shadcn-ui/components/ui/button-group";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@gjuoun/bigface-shadcn-ui/components/ui/card";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@gjuoun/bigface-shadcn-ui/components/ui/carousel";
+import { Checkbox } from "@gjuoun/bigface-shadcn-ui/components/ui/checkbox";
+import { CodeBlock, CodeBlockContent, CodeBlockLine } from "@gjuoun/bigface-shadcn-ui/components/ui/code-block";
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@gjuoun/bigface-shadcn-ui/components/ui/context-menu";
+import { DirectionProvider } from "@gjuoun/bigface-shadcn-ui/components/ui/direction";
+import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@gjuoun/bigface-shadcn-ui/components/ui/drawer";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@gjuoun/bigface-shadcn-ui/components/ui/dropdown-menu";
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@gjuoun/bigface-shadcn-ui/components/ui/empty";
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldLegend, FieldSet } from "@gjuoun/bigface-shadcn-ui/components/ui/field";
+import { Input } from "@gjuoun/bigface-shadcn-ui/components/ui/input";
+import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput, InputGroupText } from "@gjuoun/bigface-shadcn-ui/components/ui/input-group";
+import { Item, ItemContent, ItemDescription, ItemMedia, ItemTitle } from "@gjuoun/bigface-shadcn-ui/components/ui/item";
+import { Marker, MarkerContent, MarkerIcon } from "@gjuoun/bigface-shadcn-ui/components/ui/marker";
+import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarTrigger } from "@gjuoun/bigface-shadcn-ui/components/ui/menubar";
+import { Message, MessageAvatar, MessageContent, MessageFooter, MessageGroup, MessageHeader } from "@gjuoun/bigface-shadcn-ui/components/ui/message";
+import { NativeSelect, NativeSelectOption } from "@gjuoun/bigface-shadcn-ui/components/ui/native-select";
+import { Progress } from "@gjuoun/bigface-shadcn-ui/components/ui/progress";
+import { RadioGroup, RadioGroupItem } from "@gjuoun/bigface-shadcn-ui/components/ui/radio-group";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@gjuoun/bigface-shadcn-ui/components/ui/resizable";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@gjuoun/bigface-shadcn-ui/components/ui/select";
+import { Separator } from "@gjuoun/bigface-shadcn-ui/components/ui/separator";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@gjuoun/bigface-shadcn-ui/components/ui/sheet";
+import { Sidebar, SidebarContent, SidebarGroup, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem, SidebarProvider, SidebarTrigger } from "@gjuoun/bigface-shadcn-ui/components/ui/sidebar";
+import { Slider } from "@gjuoun/bigface-shadcn-ui/components/ui/slider";
+import { Switch } from "@gjuoun/bigface-shadcn-ui/components/ui/switch";
+import { Tabs, TabsList, TabsTrigger } from "@gjuoun/bigface-shadcn-ui/components/ui/tabs";
+import { Textarea } from "@gjuoun/bigface-shadcn-ui/components/ui/textarea";
+import { Toggle } from "@gjuoun/bigface-shadcn-ui/components/ui/toggle";
+import { ToggleGroup, ToggleGroupItem } from "@gjuoun/bigface-shadcn-ui/components/ui/toggle-group";
+import { Trace, TraceIcon, TraceLine, TraceTitle } from "@gjuoun/bigface-shadcn-ui/components/ui/trace";
 
 // Variants and states, per component. A VARIANT is an option the component's own source declares (a cva variant or
 // a typed prop union); a STATE is a real prop (disabled, checked, invalid, value). Each cell is a live instance:
@@ -301,12 +301,12 @@ export const VARIANTS: Record<string, React.ReactNode> = {
 		<div className="flex flex-col divide-y">
 			{(["default", "destructive"] as const).map((v) => (
 				<Row key={v} label={"variant=" + v}>
-					<CodeBlock variant={v} className="w-full max-w-md"><CodeBlockContent><CodeBlockLine>bun add @gjuoun/bigface-business-ui</CodeBlockLine></CodeBlockContent></CodeBlock>
+					<CodeBlock variant={v} className="w-full max-w-md"><CodeBlockContent><CodeBlockLine>bun add @gjuoun/bigface-shadcn-ui</CodeBlockLine></CodeBlockContent></CodeBlock>
 				</Row>
 			))}
 			{(["default", "sm"] as const).map((s) => (
 				<Row key={s} label={"size=" + s}>
-					<CodeBlock size={s} className="w-full max-w-md"><CodeBlockContent><CodeBlockLine>bun add @gjuoun/bigface-business-ui</CodeBlockLine></CodeBlockContent></CodeBlock>
+					<CodeBlock size={s} className="w-full max-w-md"><CodeBlockContent><CodeBlockLine>bun add @gjuoun/bigface-shadcn-ui</CodeBlockLine></CodeBlockContent></CodeBlock>
 				</Row>
 			))}
 			{(["default", "added", "removed", "highlighted"] as const).map((v) => (

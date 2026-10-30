@@ -4,7 +4,7 @@ import {
   DEFAULT_MODE,
   DEFAULT_THEME,
   themeInitScript,
-} from "@gjuoun/bigface-business-ui/lib/themes";
+} from "@gjuoun/bigface-shadcn-ui/lib/themes";
 import "../styles.css";
 
 export const Route = createRootRoute({

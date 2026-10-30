@@ -1,7 +1,7 @@
 import { beforeAll, expect, test } from "bun:test";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import lightPaletteJson from "@gjuoun/bigface-tokens/palette-light.json";
+import { lightPalette } from "./data/palette.ts";
 import { $ } from "bun";
 import {
 	findForeignInCss,
@@ -74,11 +74,13 @@ test("each page states how far it was checked", () => {
 	}
 });
 
-test("pages use the palette: background, a syntax colour, and the original JetBrains source labels", () => {
+test("pages use the palette: background, a syntax colour, and the ANSI alias labels", () => {
 	expect(page("")).toContain("#252925");
 	const pal = page("palette");
 	expect(pal).toContain("#00b0ff");
-	expect(pal).toContain("DEFAULT_KEYWORD#FOREGROUND");
+	// One palette file, no JetBrains provenance: an ANSI slot shows the colour it aliases instead.
+	expect(pal).toContain("→ blue");
+	expect(pal).not.toContain("DEFAULT_KEYWORD#FOREGROUND");
 	// Neutral collapse (2026-10-25): the neutrals are derived from the background by one formula; the accents are the scheme's own.
 	expect(pal).toContain("derived from the background");
 	expect(pal).not.toContain("blended");
@@ -229,7 +231,7 @@ test.skipIf(!existsSync(tailwindCss))(
 			.map((f) => readFileSync(join(dist, "_astro", f), "utf8"))
 			.join("\n");
 		// 2026-10-27 ruling, now in the business package: the ink on the primary fill is each mode's
-		// canvas colour, so the role reads --theme-bg (packages/bigface-business-ui/src/styles/styles.css).
+		// canvas colour, so the role reads --theme-bg (packages/bigface-shadcn-ui/src/styles/styles.css).
 		expect(css).toMatch(/--primary-foreground:\s*var\(--theme-bg\)/);
 	},
 );
@@ -241,7 +243,7 @@ test("the page root carries the default theme and mode", () => {
 	for (const rel of ["", "palette"]) {
 		const html = readFileSync(join(dist, rel, "index.html"), "utf8");
 		const tag = /<html\b[^>]*>/.exec(html)?.[0] ?? "";
-		expect(tag, rel).toContain('data-theme="business"');
+		expect(tag, rel).toContain('data-theme="bigface"');
 		expect(tag, rel).toContain('data-mode="dark"');
 		expect(/class="[^"]*\bdark\b/.test(tag), rel).toBe(false);
 	}
@@ -252,7 +254,7 @@ test("the page root carries the default theme and mode", () => {
 // shown side by side there. The retired console showcase and the game theme are gone.
 test("the business catalogue is one business theme with 63 components; the retired themes are offline", () => {
 	const business = page("ui/business");
-	expect(business).toContain('data-theme="business" data-mode="light"');
+	expect(business).toContain('data-theme="bigface" data-mode="light"');
 	const scopeAt = [...business.matchAll(/data-slot="theme-scope"/g)].map((m) => m.index ?? -1);
 	expect(scopeAt.length, "the colour section shows light and dark scopes").toBeGreaterThan(0);
 	const colourAt = business.indexOf('id="colour"');
@@ -290,7 +292,7 @@ test("the site only ships colours that exist in the palette", () => {
 	// else is still an offence; themes.test.ts proves each derived value is such a mix.
 	// The derived values of both generators: the console package's mixes, and the business package's mixes and solved
 	// plates (its themes.test.ts proves each business value is a palette colour, a mix, or a solved plate).
-	const themeHexes = ["../../packages/bigface-business-ui/src/themes"].flatMap((dir) =>
+	const themeHexes = ["../../packages/bigface-shadcn-ui/src/themes"].flatMap((dir) =>
 		readdirSync(join(siteDir, dir), "utf8")
 			.filter((f) => f.endsWith(".css"))
 			.flatMap((f) =>
@@ -299,7 +301,7 @@ test("the site only ships colours that exist in the palette", () => {
 	);
 	const known = new Set([
 		...paletteHexes(palette),
-		...paletteHexes(lightPaletteJson as unknown as Palette),
+		...paletteHexes(lightPalette),
 		...themeHexes,
 	]);
 	const htmlFiles = readdirSync(dist, {
@@ -359,7 +361,7 @@ test("the business catalogue registers every component the theme package ships",
 	// files. The library is the theme package since the 2026-10-29 refactor.
 	const html = page("ui/business");
 	const files = readdirSync(
-		join(siteDir, "../../packages/bigface-business-ui/src/components/ui"),
+		join(siteDir, "../../packages/bigface-shadcn-ui/src/components/ui"),
 	).filter((f) => f.endsWith(".tsx"));
 	expect(files.length).toBeGreaterThanOrEqual(63);
 	for (const f of files) expect(html, f).toContain(`id="${f.replace(/\.tsx$/, "")}"`);

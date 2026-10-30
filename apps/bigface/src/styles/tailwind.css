@@ -5,13 +5,13 @@
    The business theme brings the colours: the site never names one. */
 @import "tailwindcss" source("../");
 @import "./reset-palette.css";
-@import "@gjuoun/bigface-business-ui/styles.css";
+@import "@gjuoun/bigface-shadcn-ui/styles.css";
 
 /* Tailwind does not scan node_modules: only the stock components this site renders. */
-@source "../../../../packages/bigface-business-ui/src/components/ui/button.tsx";
-@source "../../../../packages/bigface-business-ui/src/components/ui/badge.tsx";
-@source "../../../../packages/bigface-business-ui/src/components/ui/card.tsx";
-@source "../../../../packages/bigface-business-ui/src/components/ui/tabs.tsx";
+@source "../../../../packages/bigface-shadcn-ui/src/components/ui/button.tsx";
+@source "../../../../packages/bigface-shadcn-ui/src/components/ui/badge.tsx";
+@source "../../../../packages/bigface-shadcn-ui/src/components/ui/card.tsx";
+@source "../../../../packages/bigface-shadcn-ui/src/components/ui/tabs.tsx";
 /* Test fixtures spell offending classes on purpose (the colour guard's own assertions do), so the
    scanner must not turn them into CSS. */
 @source not "../**/*.test.ts";

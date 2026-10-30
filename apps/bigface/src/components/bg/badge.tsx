@@ -1,7 +1,7 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import type * as React from "react";
-import { Badge } from "@gjuoun/bigface-business-ui/components/ui/badge";
-import { cn } from "@gjuoun/bigface-business-ui/lib/utils";
+import { Badge } from "@gjuoun/bigface-shadcn-ui/components/ui/badge";
+import { cn } from "@gjuoun/bigface-shadcn-ui/lib/utils";
 
 // Bigface "pill": mono uppercase tag with a dot, tinted by how far a theme was checked.
 export const bgBadgeVariants = cva("", {

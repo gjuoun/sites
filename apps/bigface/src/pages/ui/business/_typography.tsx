@@ -135,7 +135,7 @@ function Prose() {
 			</p>
 			<h2 className="mt-4 scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight">Using the package</h2>
 			<p className="leading-7">Install it, then import the components you need.</p>
-			<pre className="overflow-x-auto rounded-md bg-muted p-4 font-mono text-sm"><code>bun add @gjuoun/bigface-business-ui</code></pre>
+			<pre className="overflow-x-auto rounded-md bg-muted p-4 font-mono text-sm"><code>bun add @gjuoun/bigface-shadcn-ui</code></pre>
 			<ul className="my-2 ml-6 list-disc [&>li]:mt-2">
 				<li>Colour is the only theme.</li>
 				<li>Radius, type and motion are shadcn's own.</li>

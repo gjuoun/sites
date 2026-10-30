@@ -2,11 +2,11 @@ import { describe, expect, test } from "bun:test";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-// The consumer contract, pinned: the theme comes from @gjuoun/bigface-business-ui, the site's whole
+// The consumer contract, pinned: the theme comes from @gjuoun/bigface-shadcn-ui, the site's whole
 // stylesheet is the package plus its fonts, motions and the one font-capability utility, the document
 // carries data-theme/data-mode dark, and no file carries a palette variable, a retired package name or
 // a mode variant of its own.
-const PACKAGE = "@gjuoun/bigface-business-ui";
+const PACKAGE = "@gjuoun/bigface-shadcn-ui";
 // Assembled from parts on purpose: the retirement gate is "a plain grep for the old name finds
 // nothing", and the guard's own source must not be the one file that trips it.
 const OLD = ["@gjuoun", "bigface-ui"].join("/");
@@ -79,7 +79,7 @@ describe("the stylesheet is the package theme plus the site's fonts, motions and
     expect(statements.filter((s) => !s.startsWith("@source not"))).toEqual([
       '@import "tailwindcss" source("../")',
       '@import "./reset-palette.css"',
-      '@import "@gjuoun/bigface-business-ui/styles.css"',
+      '@import "@gjuoun/bigface-shadcn-ui/styles.css"',
       ...sourceLines.map((line) => '@source "' + line + '"'),
       "@theme inline",
       "@utility font-code",
@@ -91,7 +91,7 @@ describe("the stylesheet is the package theme plus the site's fonts, motions and
   test("the palette reset stays in front of the package theme, or its colour keys are cleared", () => {
     const statements = topLevelStatements(css);
     expect(statements.indexOf('@import "./reset-palette.css"')).toBeLessThan(
-      statements.indexOf('@import "@gjuoun/bigface-business-ui/styles.css"'),
+      statements.indexOf('@import "@gjuoun/bigface-shadcn-ui/styles.css"'),
     );
   });
 
@@ -139,7 +139,7 @@ describe("every @source is real and matches what the site renders", () => {
   });
 
   test("the @source list is exactly the stock components the site imports, transitively", () => {
-    const uiDir = join(siteDir, "../../packages/bigface-business-ui/src/components/ui");
+    const uiDir = join(siteDir, "../../packages/bigface-shadcn-ui/src/components/ui");
     const used = new Set<string>();
     for (const file of siteFiles) {
       const pattern = new RegExp(PACKAGE.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "/components/ui/([\\w-]+)", "g");
@@ -153,7 +153,7 @@ describe("every @source is real and matches what the site renders", () => {
       if (closure.has(name)) continue;
       closure.add(name);
       for (const match of read(join(uiDir, name + ".tsx")).matchAll(
-        /@gjuoun\/bigface-business-ui\/components\/ui\/([\w-]+)/g,
+        /@gjuoun\/bigface-shadcn-ui\/components\/ui\/([\w-]+)/g,
       ))
         queue.push(match[1] as string);
     }

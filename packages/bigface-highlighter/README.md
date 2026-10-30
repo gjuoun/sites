@@ -1,6 +1,6 @@
 # @gjuoun/bigface-highlighter
 
-Shiki syntax highlighting for React, moved out of `@gjuoun/bigface-business-ui` (which is a Tailwind/shadcn theme only).
+Shiki syntax highlighting for React, moved out of `@gjuoun/bigface-shadcn-ui` (which is a Tailwind/shadcn theme only).
 
 - `@gjuoun/bigface-highlighter/highlighter`: `loadHighlighter(language)` and `highlightCode(code, language)`. Languages
   load lazily the first time they are used; an unlisted language returns `null`. Each line is a React node of token

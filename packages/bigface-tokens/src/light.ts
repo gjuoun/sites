@@ -1,7 +1,7 @@
 // The palette pipeline's colour maths, the part the theme generator needs.
 //
 // Copied from bigface-theme src/light.ts at the revision in SYNCED_FROM: that file's job is to write
-// palette/bigface-light.json (it imports the palette loaders and the seeds), while all this package needs
+// palette/palette.json (it imports the palette loaders and the seeds), while all this package needs
 // is the one derivation — "the same hue, darkened until it reads". The functions below are that file's
 // functions, unchanged, so a palette edit upstream keeps one meaning of "light-mode accent".
 //

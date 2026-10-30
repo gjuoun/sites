@@ -20,7 +20,7 @@ import { findChrome, launchChrome, openPage, serveDist } from "./theme-mode-prob
 
 const AXES = new Set(["variant", "size", "side", "align", "orientation", "collapsible"]);
 const ROOT = resolve(import.meta.dir, "..");
-const COMP = join(ROOT, "packages/bigface-business-ui/src/components/ui");
+const COMP = join(ROOT, "packages/bigface-shadcn-ui/src/components/ui");
 const BIZ = join(ROOT, "apps/bigface/src/pages/ui/business");
 
 export interface Declared { file: string; owner: string; axis: string; value: string; kind: "cva" | "typed"; classes: string; base: string }

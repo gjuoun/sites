@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { GlobalRegistrator } from "@happy-dom/global-registrator";
-import { MODE_STORAGE_KEY } from "@gjuoun/bigface-business-ui/lib/themes";
+import { MODE_STORAGE_KEY } from "@gjuoun/bigface-shadcn-ui/lib/themes";
 
 // The mode lives in data-mode on <html>: these tests drive the toggle the way a reader does and read
 // the same two stores the pre-paint script reads — the attribute and the package's storage key.

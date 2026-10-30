@@ -5,73 +5,73 @@ import { PARTS } from "./_parts.ts";
 import { Rail } from "./_rail.tsx";
 import { InView } from "./_inview.tsx";
 import { TypographySection } from "./_typography.tsx";
-import { cn } from "@gjuoun/bigface-business-ui/lib/utils";
+import { cn } from "@gjuoun/bigface-shadcn-ui/lib/utils";
 import { toast } from "sonner";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@gjuoun/bigface-business-ui/components/ui/accordion";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@gjuoun/bigface-business-ui/components/ui/alert-dialog";
-import { Alert, AlertDescription, AlertTitle } from "@gjuoun/bigface-business-ui/components/ui/alert";
-import { AspectRatio } from "@gjuoun/bigface-business-ui/components/ui/aspect-ratio";
-import { Avatar, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage } from "@gjuoun/bigface-business-ui/components/ui/avatar";
-import { Badge } from "@gjuoun/bigface-business-ui/components/ui/badge";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@gjuoun/bigface-business-ui/components/ui/breadcrumb";
-import { Button } from "@gjuoun/bigface-business-ui/components/ui/button";
-import { ButtonGroup, ButtonGroupText } from "@gjuoun/bigface-business-ui/components/ui/button-group";
-import { Calendar } from "@gjuoun/bigface-business-ui/components/ui/calendar";
-import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@gjuoun/bigface-business-ui/components/ui/card";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@gjuoun/bigface-business-ui/components/ui/carousel";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@gjuoun/bigface-shadcn-ui/components/ui/accordion";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@gjuoun/bigface-shadcn-ui/components/ui/alert-dialog";
+import { Alert, AlertDescription, AlertTitle } from "@gjuoun/bigface-shadcn-ui/components/ui/alert";
+import { AspectRatio } from "@gjuoun/bigface-shadcn-ui/components/ui/aspect-ratio";
+import { Avatar, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage } from "@gjuoun/bigface-shadcn-ui/components/ui/avatar";
+import { Badge } from "@gjuoun/bigface-shadcn-ui/components/ui/badge";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@gjuoun/bigface-shadcn-ui/components/ui/breadcrumb";
+import { Button } from "@gjuoun/bigface-shadcn-ui/components/ui/button";
+import { ButtonGroup, ButtonGroupText } from "@gjuoun/bigface-shadcn-ui/components/ui/button-group";
+import { Calendar } from "@gjuoun/bigface-shadcn-ui/components/ui/calendar";
+import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@gjuoun/bigface-shadcn-ui/components/ui/card";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@gjuoun/bigface-shadcn-ui/components/ui/carousel";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
-import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@gjuoun/bigface-business-ui/components/ui/chart";
-import { Checkbox } from "@gjuoun/bigface-business-ui/components/ui/checkbox";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@gjuoun/bigface-business-ui/components/ui/collapsible";
-import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "@gjuoun/bigface-business-ui/components/ui/combobox";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandShortcut } from "@gjuoun/bigface-business-ui/components/ui/command";
-import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuLabel, ContextMenuSeparator, ContextMenuShortcut, ContextMenuTrigger } from "@gjuoun/bigface-business-ui/components/ui/context-menu";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@gjuoun/bigface-business-ui/components/ui/dialog";
-import { DirectionProvider } from "@gjuoun/bigface-business-ui/components/ui/direction";
-import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@gjuoun/bigface-business-ui/components/ui/drawer";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger } from "@gjuoun/bigface-business-ui/components/ui/dropdown-menu";
-import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@gjuoun/bigface-business-ui/components/ui/empty";
-import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldLegend, FieldSet } from "@gjuoun/bigface-business-ui/components/ui/field";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@gjuoun/bigface-business-ui/components/ui/hover-card";
-import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput, InputGroupText } from "@gjuoun/bigface-business-ui/components/ui/input-group";
-import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@gjuoun/bigface-business-ui/components/ui/input-otp";
-import { Input } from "@gjuoun/bigface-business-ui/components/ui/input";
-import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "@gjuoun/bigface-business-ui/components/ui/item";
-import { Kbd, KbdGroup } from "@gjuoun/bigface-business-ui/components/ui/kbd";
-import { Label } from "@gjuoun/bigface-business-ui/components/ui/label";
-import { Marker, MarkerContent, MarkerIcon } from "@gjuoun/bigface-business-ui/components/ui/marker";
-import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarTrigger } from "@gjuoun/bigface-business-ui/components/ui/menubar";
-import { useMode } from "@gjuoun/bigface-business-ui/hooks/use-theme";
-import { ToggleGroup, ToggleGroupItem } from "@gjuoun/bigface-business-ui/components/ui/toggle-group";
-import { Toaster } from "@gjuoun/bigface-business-ui/components/ui/sonner";
-import { Message, MessageAvatar, MessageContent, MessageFooter, MessageGroup, MessageHeader } from "@gjuoun/bigface-business-ui/components/ui/message";
-import { Bubble, BubbleContent, BubbleGroup, BubbleReactions } from "@gjuoun/bigface-business-ui/components/ui/bubble";
-import { Attachment, AttachmentAction, AttachmentActions, AttachmentContent, AttachmentDescription, AttachmentGroup, AttachmentMedia, AttachmentTitle, AttachmentTrigger } from "@gjuoun/bigface-business-ui/components/ui/attachment";
-import { CodeBlock, CodeBlockActions, CodeBlockContent, CodeBlockCopyButton, CodeBlockFooter, CodeBlockHeader, CodeBlockLine, CodeBlockTitle } from "@gjuoun/bigface-business-ui/components/ui/code-block";
-import { MessageScroller, MessageScrollerButton, MessageScrollerContent, MessageScrollerItem, MessageScrollerProvider, MessageScrollerViewport } from "@gjuoun/bigface-business-ui/components/ui/message-scroller";
-import { NativeSelect, NativeSelectOption } from "@gjuoun/bigface-business-ui/components/ui/native-select";
-import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@gjuoun/bigface-business-ui/components/ui/navigation-menu";
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@gjuoun/bigface-business-ui/components/ui/pagination";
-import { Popover, PopoverContent, PopoverDescription, PopoverHeader, PopoverTitle, PopoverTrigger } from "@gjuoun/bigface-business-ui/components/ui/popover";
-import { Progress } from "@gjuoun/bigface-business-ui/components/ui/progress";
-import { Questionnaire, QuestionnaireChoice, QuestionnaireChoices, QuestionnaireDescription, QuestionnaireItem, QuestionnaireProgress, QuestionnaireTitle } from "@gjuoun/bigface-business-ui/components/ui/questionnaire";
-import { RadioGroup, RadioGroupItem } from "@gjuoun/bigface-business-ui/components/ui/radio-group";
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@gjuoun/bigface-business-ui/components/ui/resizable";
-import { ScrollArea } from "@gjuoun/bigface-business-ui/components/ui/scroll-area";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@gjuoun/bigface-business-ui/components/ui/select";
-import { Separator } from "@gjuoun/bigface-business-ui/components/ui/separator";
-import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@gjuoun/bigface-business-ui/components/ui/sheet";
-import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from "@gjuoun/bigface-business-ui/components/ui/sidebar";
-import { Skeleton } from "@gjuoun/bigface-business-ui/components/ui/skeleton";
-import { Slider } from "@gjuoun/bigface-business-ui/components/ui/slider";
-import { Spinner } from "@gjuoun/bigface-business-ui/components/ui/spinner";
-import { Switch } from "@gjuoun/bigface-business-ui/components/ui/switch";
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@gjuoun/bigface-business-ui/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@gjuoun/bigface-business-ui/components/ui/tabs";
-import { Textarea } from "@gjuoun/bigface-business-ui/components/ui/textarea";
-import { Toggle } from "@gjuoun/bigface-business-ui/components/ui/toggle";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@gjuoun/bigface-business-ui/components/ui/tooltip";
-import { Trace, TraceCollapsible, TraceCollapsibleContent, TraceCollapsibleTrigger, TraceDescription, TraceIcon, TraceLine, TraceTitle } from "@gjuoun/bigface-business-ui/components/ui/trace";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@gjuoun/bigface-shadcn-ui/components/ui/chart";
+import { Checkbox } from "@gjuoun/bigface-shadcn-ui/components/ui/checkbox";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@gjuoun/bigface-shadcn-ui/components/ui/collapsible";
+import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "@gjuoun/bigface-shadcn-ui/components/ui/combobox";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandShortcut } from "@gjuoun/bigface-shadcn-ui/components/ui/command";
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuLabel, ContextMenuSeparator, ContextMenuShortcut, ContextMenuTrigger } from "@gjuoun/bigface-shadcn-ui/components/ui/context-menu";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@gjuoun/bigface-shadcn-ui/components/ui/dialog";
+import { DirectionProvider } from "@gjuoun/bigface-shadcn-ui/components/ui/direction";
+import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@gjuoun/bigface-shadcn-ui/components/ui/drawer";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger } from "@gjuoun/bigface-shadcn-ui/components/ui/dropdown-menu";
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@gjuoun/bigface-shadcn-ui/components/ui/empty";
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldLegend, FieldSet } from "@gjuoun/bigface-shadcn-ui/components/ui/field";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@gjuoun/bigface-shadcn-ui/components/ui/hover-card";
+import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput, InputGroupText } from "@gjuoun/bigface-shadcn-ui/components/ui/input-group";
+import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@gjuoun/bigface-shadcn-ui/components/ui/input-otp";
+import { Input } from "@gjuoun/bigface-shadcn-ui/components/ui/input";
+import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "@gjuoun/bigface-shadcn-ui/components/ui/item";
+import { Kbd, KbdGroup } from "@gjuoun/bigface-shadcn-ui/components/ui/kbd";
+import { Label } from "@gjuoun/bigface-shadcn-ui/components/ui/label";
+import { Marker, MarkerContent, MarkerIcon } from "@gjuoun/bigface-shadcn-ui/components/ui/marker";
+import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarTrigger } from "@gjuoun/bigface-shadcn-ui/components/ui/menubar";
+import { useMode } from "@gjuoun/bigface-shadcn-ui/hooks/use-theme";
+import { ToggleGroup, ToggleGroupItem } from "@gjuoun/bigface-shadcn-ui/components/ui/toggle-group";
+import { Toaster } from "@gjuoun/bigface-shadcn-ui/components/ui/sonner";
+import { Message, MessageAvatar, MessageContent, MessageFooter, MessageGroup, MessageHeader } from "@gjuoun/bigface-shadcn-ui/components/ui/message";
+import { Bubble, BubbleContent, BubbleGroup, BubbleReactions } from "@gjuoun/bigface-shadcn-ui/components/ui/bubble";
+import { Attachment, AttachmentAction, AttachmentActions, AttachmentContent, AttachmentDescription, AttachmentGroup, AttachmentMedia, AttachmentTitle, AttachmentTrigger } from "@gjuoun/bigface-shadcn-ui/components/ui/attachment";
+import { CodeBlock, CodeBlockActions, CodeBlockContent, CodeBlockCopyButton, CodeBlockFooter, CodeBlockHeader, CodeBlockLine, CodeBlockTitle } from "@gjuoun/bigface-shadcn-ui/components/ui/code-block";
+import { MessageScroller, MessageScrollerButton, MessageScrollerContent, MessageScrollerItem, MessageScrollerProvider, MessageScrollerViewport } from "@gjuoun/bigface-shadcn-ui/components/ui/message-scroller";
+import { NativeSelect, NativeSelectOption } from "@gjuoun/bigface-shadcn-ui/components/ui/native-select";
+import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@gjuoun/bigface-shadcn-ui/components/ui/navigation-menu";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@gjuoun/bigface-shadcn-ui/components/ui/pagination";
+import { Popover, PopoverContent, PopoverDescription, PopoverHeader, PopoverTitle, PopoverTrigger } from "@gjuoun/bigface-shadcn-ui/components/ui/popover";
+import { Progress } from "@gjuoun/bigface-shadcn-ui/components/ui/progress";
+import { Questionnaire, QuestionnaireChoice, QuestionnaireChoices, QuestionnaireDescription, QuestionnaireItem, QuestionnaireProgress, QuestionnaireTitle } from "@gjuoun/bigface-shadcn-ui/components/ui/questionnaire";
+import { RadioGroup, RadioGroupItem } from "@gjuoun/bigface-shadcn-ui/components/ui/radio-group";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@gjuoun/bigface-shadcn-ui/components/ui/resizable";
+import { ScrollArea } from "@gjuoun/bigface-shadcn-ui/components/ui/scroll-area";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@gjuoun/bigface-shadcn-ui/components/ui/select";
+import { Separator } from "@gjuoun/bigface-shadcn-ui/components/ui/separator";
+import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@gjuoun/bigface-shadcn-ui/components/ui/sheet";
+import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from "@gjuoun/bigface-shadcn-ui/components/ui/sidebar";
+import { Skeleton } from "@gjuoun/bigface-shadcn-ui/components/ui/skeleton";
+import { Slider } from "@gjuoun/bigface-shadcn-ui/components/ui/slider";
+import { Spinner } from "@gjuoun/bigface-shadcn-ui/components/ui/spinner";
+import { Switch } from "@gjuoun/bigface-shadcn-ui/components/ui/switch";
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@gjuoun/bigface-shadcn-ui/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@gjuoun/bigface-shadcn-ui/components/ui/tabs";
+import { Textarea } from "@gjuoun/bigface-shadcn-ui/components/ui/textarea";
+import { Toggle } from "@gjuoun/bigface-shadcn-ui/components/ui/toggle";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@gjuoun/bigface-shadcn-ui/components/ui/tooltip";
+import { Trace, TraceCollapsible, TraceCollapsibleContent, TraceCollapsibleTrigger, TraceDescription, TraceIcon, TraceLine, TraceTitle } from "@gjuoun/bigface-shadcn-ui/components/ui/trace";
 
 // The catalogue: every shadcn component in the business package, each in a live demo. A demo's trigger carries
 // data-trigger, the real pointer action that exercises it (click, hover, drag, wheel, contextmenu, focus).
@@ -618,7 +618,7 @@ export function Catalog() {
 				</Category>
 
 				<Category id="cat-layout" title="Layout and disclosure" count={9}>
-				<Section id="accordion" title="Accordion" source="@gjuoun/bigface-business-ui/components/ui/accordion">
+				<Section id="accordion" title="Accordion" source="@gjuoun/bigface-shadcn-ui/components/ui/accordion">
 					<Demo name="accordion" className="block">
 						<Accordion type="single" collapsible className="w-full max-w-md">
 							<AccordionItem value="a">
@@ -895,11 +895,11 @@ export function Catalog() {
 							<CodeBlockHeader>
 								<CodeBlockTitle>install.sh</CodeBlockTitle>
 								<CodeBlockActions>
-									<CodeBlockCopyButton value="bun add @gjuoun/bigface-business-ui" data-trigger="click" onClick={() => setCopied((c) => !c)}>{copied ? "Copied" : "Copy"}</CodeBlockCopyButton>
+									<CodeBlockCopyButton value="bun add @gjuoun/bigface-shadcn-ui" data-trigger="click" onClick={() => setCopied((c) => !c)}>{copied ? "Copied" : "Copy"}</CodeBlockCopyButton>
 								</CodeBlockActions>
 							</CodeBlockHeader>
 							<CodeBlockContent>
-								<CodeBlockLine>bun add @gjuoun/bigface-business-ui</CodeBlockLine>
+								<CodeBlockLine>bun add @gjuoun/bigface-shadcn-ui</CodeBlockLine>
 							</CodeBlockContent>
 							<CodeBlockFooter>bun</CodeBlockFooter>
 						</CodeBlock>
