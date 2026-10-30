@@ -3,7 +3,9 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import darkJson from "../../../bigface-tokens/palette/bigface.json";
 import lightJson from "../../../bigface-tokens/palette/bigface-light.json";
-import { DEFAULT_MODE, REQUIRED, THEMES } from "./roles.ts";
+import { contrastRatio } from "../../../bigface-tokens/src/contrast-math.ts";
+import { darkenUntil, MIN_CONTRAST, toOklch } from "../../../bigface-tokens/src/light.ts";
+import { DEFAULT_MODE, LIGHT_DERIVED, REQUIRED, THEMES } from "./roles.ts";
 import { renderAll, themesDir } from "../../scripts/gen-tokens.ts";
 
 // The business package is COLOUR ONLY, and the theme is shadcn's two blocks: every palette colour as a light
@@ -54,14 +56,30 @@ describe("bigface-business-ui: colour only", () => {
 		expect(css("business.css")).not.toContain("light-dark(");
 	});
 
-	test("every value is one hex from its own palette", () => {
+	test("every value is one palette hex, or a derived role computed from one", () => {
 		for (const mode of ["light", "dark"] as const) {
 			const pal = mode === "light" ? light : dark;
 			for (const [role, value] of Object.entries(roles(mode))) {
 				const paletteName = THEMES[0]!.roles[role] as string;
-				expect(value, mode + " " + role).toBe(hex(pal, paletteName));
+				const derived = mode === "light" && (LIGHT_DERIVED as readonly string[]).includes(role);
+				const expected = derived
+					? darkenUntil(hex(pal, paletteName), hex(pal, "bg"), MIN_CONTRAST)
+					: hex(pal, paletteName);
+				expect(value, mode + " " + role).toBe(expected);
 			}
 		}
+	});
+
+	test("the one derived role: the yellow reads on paper, keeps its hue, and the dark block is untouched", () => {
+		const paper = hex(light, "bg");
+		const darkYellow = roles("dark").yellow as string;
+		const lightYellow = roles("light").yellow as string;
+		expect(LIGHT_DERIVED).toEqual(["yellow"]);
+		expect(darkYellow).toBe("#ffeb3b");
+		expect(lightYellow).not.toBe(darkYellow);
+		expect(contrastRatio(lightYellow, paper)).toBeGreaterThanOrEqual(MIN_CONTRAST);
+		expect(toOklch(lightYellow)[0]).toBeLessThan(toOklch(darkYellow)[0]);
+		expect(Math.abs(toOklch(lightYellow)[2] - toOklch(darkYellow)[2])).toBeLessThan(2);
 	});
 
 	test("standing colour decision: paper in light, dark canvas in dark, never pure white", () => {

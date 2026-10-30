@@ -48,7 +48,7 @@ const origin = Astro.site ? new URL(Astro.site).origin : "";
     <link rel="preload" href={`${base}/fonts/QuBlackMono-Regular.0.woff2`} as="font" type="font/woff2" crossorigin />
   </head>
   <body
-    class="m-0 flex min-h-screen flex-col relative isolate overflow-x-hidden bg-transparent text-foreground [&_img]:inline [&_img]:align-baseline [&_svg]:inline [&_svg]:align-baseline [&_video]:inline [&_video]:align-baseline [&_canvas]:inline [&_canvas]:align-baseline [&_button]:leading-normal [&_input]:leading-normal [&_select]:leading-normal [&_textarea]:leading-normal"
+    class="m-0 flex min-h-screen flex-col relative isolate overflow-x-hidden bg-transparent text-foreground [&_button]:leading-normal [&_input]:leading-normal [&_select]:leading-normal [&_textarea]:leading-normal"
   >
     <BGAtmosphere />
     <BGSiteHeader base={base} repo={REPO} />
