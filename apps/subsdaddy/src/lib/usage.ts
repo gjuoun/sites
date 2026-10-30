@@ -1,4 +1,5 @@
-import { ACCOUNT_TO_LANE, LANES, QUOTA_METERED_ACCOUNTS, type LaneId } from "../data/schema";
+import { ACCOUNT_TO_LANE, LANES, QUOTA_METERED_ACCOUNTS, type LaneId, type TokenCounts } from "../data/schema";
+import { cacheShare } from "../data/derive";
 
 /** Read-only SQL. The statement is fixed in code; only the window length is parameterized, and it is validated. */
 export function usageSql(days: number): string {
@@ -64,6 +65,82 @@ export function groupByPlan(rows: UsageRow[]): Map<LaneId, UsageRow[]> {
   const map = new Map<LaneId, UsageRow[]>(LANES.map((l) => [l, []]));
   for (const r of rows) map.get(r.lane)!.push(r);
   return map;
+}
+
+/** The rows at or after one instant: the recent slice is cut from the same pull as the full window. */
+export function rowsSince(rows: UsageRow[], fromMs: number): UsageRow[] {
+  return rows.filter((r) => Date.parse(r.created_at_utc) >= fromMs);
+}
+
+export type ModelSummary = {
+  upstream_model: string;
+  rows: number;
+  tokens: TokenCounts;
+  cost_usd: number;
+  p50_ttft_ms: number | null;
+  p90_ttft_ms: number | null;
+  p50_output_tps: number | null;
+  measured_at: string;
+  source: string;
+};
+
+export type LaneSummary = {
+  lane: LaneId;
+  rows: number;
+  tokens: TokenCounts;
+  cache_share: number | null;
+  p50_ttft_ms: number | null;
+  p90_ttft_ms: number | null;
+  p50_output_tps: number | null;
+  models: ModelSummary[];
+  measured_at: string;
+  source: string;
+};
+
+/** One lane's roll-up over whatever rows it is given: the full window and the recent slice share this code. */
+export function summarizeLane(lane: LaneId, rows: UsageRow[], measuredAt: string, source: string): LaneSummary {
+  const sum = (f: (r: UsageRow) => number) => rows.reduce((a, r) => a + f(r), 0);
+  const tokens: TokenCounts = {
+    input: sum((r) => r.input),
+    cache_creation: sum((r) => r.cache_creation),
+    cache_read: sum((r) => r.cache_read),
+    output: sum((r) => r.output),
+  };
+  const ttft = rows.map((r) => r.first_token_ms).filter((v): v is number => v !== null);
+  const tps = rows.map(outputTps).filter((v): v is number => v !== null);
+  const models = [...new Set(rows.map((r) => r.upstream_model))].sort().map((m) => {
+    const mr = rows.filter((r) => r.upstream_model === m);
+    const mt = mr.map((r) => r.first_token_ms).filter((v): v is number => v !== null);
+    const mp = mr.map(outputTps).filter((v): v is number => v !== null);
+    return {
+      upstream_model: m,
+      rows: mr.length,
+      tokens: {
+        input: mr.reduce((a, r) => a + r.input, 0),
+        cache_creation: mr.reduce((a, r) => a + r.cache_creation, 0),
+        cache_read: mr.reduce((a, r) => a + r.cache_read, 0),
+        output: mr.reduce((a, r) => a + r.output, 0),
+      },
+      cost_usd: mr.reduce((a, r) => a + r.total_cost, 0),
+      p50_ttft_ms: percentile(mt, 50),
+      p90_ttft_ms: percentile(mt, 90),
+      p50_output_tps: percentile(mp, 50),
+      measured_at: measuredAt,
+      source,
+    };
+  });
+  return {
+    lane,
+    rows: rows.length,
+    tokens,
+    cache_share: rows.length === 0 ? null : cacheShare(tokens),
+    p50_ttft_ms: percentile(ttft, 50),
+    p90_ttft_ms: percentile(ttft, 90),
+    p50_output_tps: percentile(tps, 50),
+    models: rows.length === 0 ? [] : models,
+    measured_at: measuredAt,
+    source,
+  };
 }
 
 /** Nearest-rank percentile; null on an empty sample. */

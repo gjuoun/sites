@@ -140,6 +140,18 @@ export const laneUsageSchema = z.object({
 });
 export type LaneUsage = z.infer<typeof laneUsageSchema>;
 
+/** One window's roll-up: the full export and the recent slice are the same shape. */
+export const usageWindowSchema = z.object({
+  window_days: z.number().positive(),
+  coverage_start: z.iso.datetime(),
+  coverage_end: z.iso.datetime(),
+  /** The earliest instant the export reaches back to (now minus window_days). A quota window's coverage is measured from here (r52). */
+  export_start: z.iso.datetime().optional(),
+  lanes: z.array(laneUsageSchema).length(LANES.length),
+  ...provenance,
+});
+export type UsageWindow = z.infer<typeof usageWindowSchema>;
+
 export const usageFileSchema = z.object({
   window_days: z.number().positive(),
   coverage_start: z.iso.datetime(),
@@ -147,6 +159,8 @@ export const usageFileSchema = z.object({
   /** The earliest instant the export reaches back to (now minus window_days). A quota window's coverage is measured from here (r52). */
   export_start: z.iso.datetime().optional(),
   lanes: z.array(laneUsageSchema).length(LANES.length),
+  /** The recent slice of the same pull: what each lane ran in the last days, cut in memory. */
+  recent: usageWindowSchema,
   ...provenance,
 });
 export type UsageFile = z.infer<typeof usageFileSchema>;
