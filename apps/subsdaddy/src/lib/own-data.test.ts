@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { formatMs, formatShare, formatTokens, formatUsd, quotaLine, rankedLanes, unavailableReason } from "./own-data";
+import { formatMs, formatShare, formatTokens, formatUsd, quotaLine, rankedLanes, unavailableReason, unavailableShort } from "./own-data";
 
 describe("own-data formatting", () => {
   test("tokens read in B above a billion, M above a million, K below", () => {
@@ -37,6 +37,8 @@ describe("own-data formatting", () => {
     expect(line).toBe("5h 0.8% · weekly 77.5% · resets 2026-11-01 23:59Z");
     expect(unavailableReason([{ lane: "commandcode-goat", unavailable: "session expired", measured_at: "", source: "" }] as never, "commandcode-goat")).toBe("session expired");
     expect(unavailableReason([], "commandcode-goat")).toBe("no quota reading");
+    expect(unavailableShort("Command Code session is invalid or expired. Sign in to commandcode.ai again.")).toBe("session expired, re-login needed");
+    expect(unavailableShort("no quota reading")).toBe("no quota reading");
   });
 
   test("lanes rank by $/B ascending, and a lane with no $/B comes last", () => {

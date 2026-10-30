@@ -16,6 +16,7 @@
     "verify:site": "bun run scripts/verify-site.ts",
     "verify:data": "bun run scripts/verify-data.ts",
     "verify:public": "bun run scripts/verify-public.ts",
+    "verify:visual": "bun run scripts/verify-visual.ts",
     "verify:all": "bun run scripts/verify-data.ts && bun run scripts/verify-public.ts",
     "refresh": "bun run scripts/refresh.ts"
   },

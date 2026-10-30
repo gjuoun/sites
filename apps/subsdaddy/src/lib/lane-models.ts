@@ -121,7 +121,7 @@ export function laneModelRows(input: {
       p50_ttft_ms: null,
       p50_output_tps: null,
       limit_usd_month: null,
-      limit_reason: "pooled row: each model is under " + Math.round(OTHER_SHARE * 100) + "% of the lane's tokens, so it has no single p50",
+      limit_reason: "pooled, under " + Math.round(OTHER_SHARE * 100) + "% each",
       measured_at: measuredAt,
       source,
     });

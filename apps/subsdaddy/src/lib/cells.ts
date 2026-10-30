@@ -37,6 +37,8 @@ export type Cell = {
 };
 
 export const na = (reason: string, badges: BadgeKind[] = []): Cell => ({ text: "N/A", na: true, reason, badges, title: reason, note: null, flags: false });
+/** An N/A with a short visible reason and the full text in the hover title: nothing long is ever cut. */
+export const naWith = (reason: string, title: string): Cell => ({ ...na(reason), title });
 export const value = (text: string, badges: BadgeKind[] = [], title: string | null = null, note: string | null = null): Cell => ({
   text,
   na: false,

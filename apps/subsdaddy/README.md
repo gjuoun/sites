@@ -45,14 +45,19 @@ data/raw/quota/*.json        quota history, appended per run (committed)
 bun run dev                 # vite dev server
 bun run build               # vite build + prerender → dist/client
 bun test src                # unit tests (pure math, parsers, data gates)
-bun run refresh             # usage → quota → allowance → dataset → build → verify:site → verify:all
+bun run refresh             # usage → quota → allowance → dataset → build → verify:site → verify:visual → verify:all
 bun run verify:all          # provenance + public-hygiene gates
+bun run verify:visual       # serves dist and fails on any clipped cell at 1440px (both pages)
 ```
 
 `refresh` reads two live sources and nothing else: the gateway's postgres through a fixed read-only
 `SELECT` (`SUBSDADDY_PSQL` overrides the transport; default `ssh qinglong → podman exec psql`) and
 codexbar (`opk get ZAI_API_KEY -- …` supplies Z.ai's key to the child process only). A frozen log of the
 last run is at `/tmp/jun/subsdaddy/refresh.log`.
+
+`verify:visual` runs the shared clipping checker (`~/.hermes/.../subsdaddy-development/scripts/check-overflow.mjs`,
+override with `SUBSDADDY_OVERFLOW_CHECK`) against the built pages: no value may clip, and this site's rule is
+stricter — no cell shows an ellipsis at all, so a clipped description fails too.
 
 ## Known limits
 

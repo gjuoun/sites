@@ -15,7 +15,7 @@ export function LaneBlock({ lane, observations }: { lane: LaneRecord; observatio
   const usd = usdPerB(lane);
   const capacity =
     lane.capacity.tokens_per_cycle === null
-      ? lane.capacity.reason ?? "no capacity reading"
+      ? "no readable quota window"
       : formatTokens(lane.capacity.tokens_per_cycle) + " per " + lane.capacity.cycle_days + "d · " + (lane.capacity.window ?? "?") + " window";
   const speed =
     lane.traffic_7d.p50_output_tps === null || lane.traffic_7d.p50_ttft_ms === null
@@ -32,8 +32,8 @@ export function LaneBlock({ lane, observations }: { lane: LaneRecord; observatio
         tokens: value(formatTokens(m.tokens_7d)),
         requests: value(m.rows_7d.toLocaleString("en-US")),
         cache: m.cache_share_7d === null ? na("no prompt tokens in this model's traffic") : value((m.cache_share_7d * 100).toFixed(1) + "%"),
-        ttft: m.p50_ttft_ms === null ? na(m.limit_reason ?? "no time to first token for this row") : value(formatMs(m.p50_ttft_ms)),
-        tps: m.p50_output_tps === null ? na(m.limit_reason ?? "no output speed for this row") : value(formatTps(m.p50_output_tps)),
+        ttft: m.p50_ttft_ms === null ? na(m.upstream_model === "__other__" ? "pooled" : "no TTFT for this row") : value(formatMs(m.p50_ttft_ms)),
+        tps: m.p50_output_tps === null ? na(m.upstream_model === "__other__" ? "pooled" : "no speed for this row") : value(formatTps(m.p50_output_tps)),
         limit: limit.reason === null ? value(limit.text) : na(limit.reason),
       },
     };
@@ -81,14 +81,14 @@ export function LaneBlock({ lane, observations }: { lane: LaneRecord; observatio
         <UnifiedTable
           testId={"models-" + lane.lane}
           columns={[
-            { key: "model", label: "Model", width: "22%" },
+            { key: "model", label: "Model", width: "24%", wrap: true },
             { key: "share", label: "Share", width: "8%", numeric: true },
             { key: "tokens", label: "Tokens 7d", width: "10%", numeric: true },
             { key: "requests", label: "Requests", width: "9%", numeric: true },
             { key: "cache", label: "Cache", width: "8%", numeric: true },
             { key: "ttft", label: "TTFT p50", width: "11%", numeric: true },
             { key: "tps", label: "tok/s", width: "8%", numeric: true },
-            { key: "limit", label: "Monthly limit", width: "24%", numeric: true },
+            { key: "limit", label: "Monthly limit", width: "22%", numeric: true },
           ]}
           rows={modelRows}
         />

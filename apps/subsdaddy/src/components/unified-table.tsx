@@ -31,16 +31,16 @@ export function Badge({ kind }: { kind: BadgeKind }) {
 }
 
 /** A cell's three slots: the value, its secondary line (reason or note), and its badges. */
-export function CellView({ cell, numeric = false, clip = false }: { cell: Cell; numeric?: boolean; clip?: boolean }) {
+export function CellView({ cell, numeric = false, wrap = false }: { cell: Cell; numeric?: boolean; wrap?: boolean }) {
   const shown = cell.na ? cell.reason : cell.note;
   const body = (
     <span className="block min-w-0" data-na={cell.na ? "yes" : undefined} data-flags={cell.flags ? "yes" : undefined} title={cell.title ?? undefined}>
-      <span className={"block h-5 leading-5 whitespace-nowrap " + (clip ? "truncate " : "") + (numeric ? "text-right " : "") + (cell.na ? "text-muted-foreground" : "font-medium")}>
+      <span className={"block min-h-5 leading-5 " + (wrap ? "whitespace-normal break-words " : "whitespace-nowrap ") + (numeric ? "text-right " : "") + (cell.na ? "text-muted-foreground" : "font-medium")}>
         {cell.text.endsWith("*") ? cell.text.slice(0, -1) : cell.text}
         {cell.text.endsWith("*") && <sup className="ml-px text-[9px] leading-none">*</sup>}
         {cell.sup && <span className="ml-1 text-[0.8em] text-muted-foreground" data-sup={cell.sup}>({cell.sup})</span>}
       </span>
-      <span className={"block h-4 truncate text-xs leading-4 text-muted-foreground " + (numeric ? "text-right" : "")} title={shown ?? undefined}>
+      <span className={"block min-h-4 whitespace-normal break-words text-xs leading-4 text-muted-foreground " + (numeric ? "text-right" : "")} title={shown ?? undefined}>
         {shown ?? ""}
       </span>
       <span className={"mt-1 flex h-5 flex-nowrap items-center gap-1 overflow-hidden " + (numeric ? "justify-end" : "")}>
@@ -63,7 +63,7 @@ export function CellView({ cell, numeric = false, clip = false }: { cell: Cell; 
   );
 }
 
-export type Column = { key: string; label: string; width: string; numeric?: boolean; clip?: boolean };
+export type Column = { key: string; label: string; width: string; numeric?: boolean; /** let this column's text wrap instead of being cut: the rule is no ellipsis, ever */ wrap?: boolean };
 export type Row = { key: string; cells: Record<string, Cell> };
 
 export function UnifiedTable({ testId, columns, rows }: { testId: string; columns: Column[]; rows: Row[] }) {
@@ -88,7 +88,7 @@ export function UnifiedTable({ testId, columns, rows }: { testId: string; column
           <tr key={r.key} data-row={r.key}>
             {columns.map((c) => (
               <td key={c.key} className={CELL + " " + (c.numeric ? NUM : "")} data-col={c.key}>
-                <CellView cell={r.cells[c.key]} numeric={c.numeric} clip={c.clip} />
+                <CellView cell={r.cells[c.key]} numeric={c.numeric} wrap={c.wrap} />
               </td>
             ))}
           </tr>

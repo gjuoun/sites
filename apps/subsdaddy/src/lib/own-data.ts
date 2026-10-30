@@ -38,6 +38,13 @@ export function unavailableReason(observations: readonly QuotaObservation[], lan
   return "unavailable" in o && o.unavailable ? o.unavailable : "no quota reading";
 }
 
+/** A short visible reason for a missing quota reading; the provider's full sentence stays in the hover title. */
+export function unavailableShort(reason: string): string {
+  if (/session/i.test(reason)) return "session expired, re-login needed";
+  if (/no quota reading/i.test(reason)) return "no quota reading";
+  return reason.length > 28 ? "quota unreadable" : reason;
+}
+
 export function formatTokens(v: number | null | undefined): string {
   if (v === null || v === undefined) return "N/A";
   if (v >= 1e9) return (v / 1e9).toFixed(2) + "B";
@@ -101,5 +108,7 @@ export function usdPerB(lane: LaneRecord): { text: string; reason: string | null
 
 /** "$80/mo" for a published per-model limit, else the reason it is absent. */
 export function limitCell(m: LaneModelRow): { text: string; reason: string | null } {
-  return m.limit_usd_month === null ? { text: "N/A", reason: m.limit_reason } : { text: formatUsd(m.limit_usd_month) + "/mo", reason: null };
+  if (m.limit_usd_month !== null) return { text: formatUsd(m.limit_usd_month) + "/mo", reason: null };
+  // the plan-level sentence never needs to be in every row: the lane says it once, this cell says the fact
+  return { text: "N/A", reason: m.limit_reason === "this plan publishes no per-model limit" ? "no per-model limit" : (m.limit_reason ?? "no published limit") };
 }

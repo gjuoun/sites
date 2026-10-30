@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * One-command refresh: collect → quota → allowance → dataset → build → verify:site → verify:all.
+ * One-command refresh: collect → quota → allowance → dataset → build → verify:site → verify:visual → verify:all.
  * Every stage echoes one line; the chain stops at the first non-zero exit; the full log goes to
  * /tmp/jun/subsdaddy/refresh.log. The run start is exported so the freshness gate can compare it.
  * No web fetch: the two reads are the gateway (read-only SQL) and codexbar.
@@ -25,6 +25,7 @@ const stages: Array<[string, string[]]> = [
   ["build:dataset", ["bun", "run", "scripts/build-dataset.ts"]],
   ["build", ["bun", "run", "build"]],
   ["verify:site", ["bun", "run", "scripts/verify-site.ts"]],
+  ["verify:visual", ["bun", "run", "scripts/verify-visual.ts"]],
   ["verify:data", ["bun", "run", "scripts/verify-data.ts"]],
   ["verify:public", ["bun", "run", "scripts/verify-public.ts"]],
 ];
