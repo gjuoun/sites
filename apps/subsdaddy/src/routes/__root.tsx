@@ -1,5 +1,10 @@
 import type { ReactNode } from "react";
 import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
+import {
+  DEFAULT_MODE,
+  DEFAULT_THEME,
+  themeInitScript,
+} from "@gjuoun/bigface-business-ui/lib/themes";
 import "../styles.css";
 
 export const Route = createRootRoute({
@@ -11,6 +16,8 @@ export const Route = createRootRoute({
     ],
     // the site has no favicon file: an empty data icon stops the browser asking for /favicon.ico
     links: [{ rel: "icon", href: "data:," }],
+    // In <head>, before first paint: a stored mode is applied, so a reload keeps the reader's choice.
+    scripts: [{ children: themeInitScript }],
   }),
   component: RootComponent,
 });
@@ -25,7 +32,9 @@ function RootComponent() {
 
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="en">
+    // The pre-paint script rewrites data-theme/data-mode before hydration, so the document element
+    // is intentionally outside React's attribute diff.
+    <html lang="en" data-theme={DEFAULT_THEME} data-mode={DEFAULT_MODE} suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
