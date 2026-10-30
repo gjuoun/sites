@@ -20,8 +20,14 @@ const walk = (dir: string): string[] =>
   });
 const allFiles = walk(srcRoot);
 const isTest = (file: string) => /\.test\.(tsx?|css)$/.test(file);
-const codeFiles = allFiles.filter((file) => /\.(astro|tsx?|css)$/.test(file) && !isTest(file));
 const rel = (file: string) => file.slice(srcRoot.length + 1);
+const codeFiles = allFiles.filter((file) => /\.(astro|tsx?|css)$/.test(file) && !isTest(file));
+// The business catalogue is its own entry with its own stylesheet (business-showcase.css), which scans
+// the whole package on purpose. It is not part of the marketing surface these assertions describe: it
+// displays the generated theme (so it reads --theme-* to print the values) and renders all 63 stock
+// components.
+const isCatalogue = (file: string) => rel(file).startsWith("pages/ui/business/");
+const siteFiles = codeFiles.filter((file) => !isCatalogue(file));
 const read = (file: string) => readFileSync(file, "utf8");
 
 /** Top-level statements of a stylesheet: imports, @source lines, at-rules with their nested blocks. */
@@ -64,14 +70,19 @@ const sourceLines = [...css.matchAll(/@source "([^"]+)"/g)].map((match) => match
 
 describe("the stylesheet is the package theme plus the site's fonts, motions and font-code", () => {
   test("its top-level statements are the three imports, the @source lines and the theme block", () => {
-    expect(topLevelStatements(css)).toEqual([
+    // The statement splitter strips CSS comments, which eats the glob in a test-exclusion line; those
+    // two lines are asserted by prefix below instead of by their text.
+    const statements = topLevelStatements(css);
+    expect(statements.filter((s) => !s.startsWith("@source not"))).toEqual([
       '@import "tailwindcss" source("../")',
       '@import "./reset-palette.css"',
       '@import "@gjuoun/bigface-business-ui/styles.css"',
       ...sourceLines.map((line) => '@source "' + line + '"'),
       "@theme inline",
       "@utility font-code",
+      "@layer base",
     ]);
+    expect(statements.filter((s) => s.startsWith("@source not")).length, "test fixtures are not scanned").toBe(2);
   });
 
   test("the palette reset stays in front of the package theme, or its colour keys are cleared", () => {
@@ -81,8 +92,15 @@ describe("the stylesheet is the package theme plus the site's fonts, motions and
     );
   });
 
-  test("no second layer, variant or colour lives in the stylesheet", () => {
-    expect(css).not.toMatch(/@layer/);
+  test("one base layer for document elements, one font utility, no variant and no colour", () => {
+    // The base layer exists because content typography has to lose to any utility on the element
+    // (an [&_h1] rule out-specifies them); it may style generic document elements and the page's two
+    // state classes only, never a component class.
+    const base = /@layer base \{([\s\S]*)\n\}\s*$/.exec(css)?.[1] ?? "";
+    expect(base).not.toBe("");
+    const selectors = [...base.matchAll(/([^{}]+)\{/g)].map((m) => (m[1] as string).trim());
+    expect(selectors.some((s) => /\bbg-|\btext-\[|data-slot|\.group/.test(s))).toBe(false);
+    expect(css.match(/@layer/g)?.length, "exactly one layer").toBe(1);
     expect(css).not.toMatch(/@custom-variant/);
     expect([...css.matchAll(/@utility\s+(\S+)/g)].map((m) => m[1])).toEqual(["font-code"]);
     expect(css).not.toMatch(/#[0-9a-fA-F]{3,8}\b|\b(rgb|hsl|oklch)\(/);
@@ -95,6 +113,7 @@ describe("the stylesheet is the package theme plus the site's fonts, motions and
     const keys = [...theme.matchAll(/^\s*(--[\w-]+):/gm)].map((m) => m[1]);
     expect(keys.sort()).toEqual([
       "--animate-blink",
+      "--animate-drift",
       "--animate-hue",
       "--animate-marquee",
       "--animate-ring",
@@ -103,7 +122,7 @@ describe("the stylesheet is the package theme plus the site's fonts, motions and
       "--font-mono",
       "--font-sans",
     ]);
-    for (const name of ["bf-hue", "bf-ring", "bf-marquee", "bf-blink"]) {
+    for (const name of ["bf-hue", "bf-ring", "bf-marquee", "bf-blink", "bf-drift"]) {
       expect(theme, name).toContain("@keyframes " + name);
     }
   });
@@ -118,7 +137,7 @@ describe("every @source is real and matches what the site renders", () => {
   test("the @source list is exactly the stock components the site imports, transitively", () => {
     const uiDir = join(siteDir, "../../packages/bigface-business-ui/src/components/ui");
     const used = new Set<string>();
-    for (const file of codeFiles) {
+    for (const file of siteFiles) {
       const pattern = new RegExp(PACKAGE.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "/components/ui/([\\w-]+)", "g");
       for (const match of read(file).matchAll(pattern)) used.add(match[1] as string);
     }
@@ -145,16 +164,20 @@ describe("the app keeps no stock copy and no theme of its own", () => {
     for (const file of codeFiles) expect(read(file), rel(file)).not.toContain("@/components/ui");
   });
 
-  test("no source file carries a palette variable or reads a theme variable directly", () => {
-    for (const file of codeFiles) {
+  test("no marketing file carries a palette variable or reads a theme variable directly", () => {
+    for (const file of siteFiles) {
       const text = read(file);
       expect(text, rel(file)).not.toContain("--bf-");
       expect(text, rel(file)).not.toContain("var(--theme-");
     }
   });
 
-  test("no source file carries a mode variant: the theme follows data-mode", () => {
-    for (const file of codeFiles) expect(read(file), rel(file)).not.toContain("dark:");
+  test("no marketing file carries a mode variant: the theme follows data-mode", () => {
+    // One exception, and it is the opposite case: the install tabs must override the stock trigger's own
+    // dark: active state, because this site's only mode is dark. The rule pins that this stays the only one.
+    const shipped = siteFiles.filter((file) => /\.(astro|tsx|css)$/.test(file));
+    const withDark = shipped.filter((file) => read(file).includes("dark:")).map(rel);
+    expect(withDark).toEqual(["components/bg/install-tabs.tsx"]);
   });
 
   test("the root document carries the theme and the dark default, and no pre-paint mode script", () => {

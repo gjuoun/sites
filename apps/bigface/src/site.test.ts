@@ -206,7 +206,6 @@ test("the built CSS keeps the library's theme names and drops Tailwind's default
 		.join("\n");
 	expect(css).toContain(".bg-primary{background-color:var(--primary)}");
 	expect(css).toMatch(/\.font-code\{/);
-	expect(css).toMatch(/\.text-ink-on-bright\{/);
 	expect(css).not.toContain("--color-red-500");
 	expect(css).not.toMatch(/\.bg-red-500\{/);
 });
@@ -218,7 +217,9 @@ test.skipIf(!existsSync(tailwindCss))(
 			.filter((f) => f.endsWith(".css"))
 			.map((f) => readFileSync(join(dist, "_astro", f), "utf8"))
 			.join("\n");
-		expect(css).toMatch(/--primary-foreground:\s*var\(--theme-on-primary\)/);
+		// 2026-10-27 ruling, now in the business package: the ink on the primary fill is each mode's
+		// canvas colour, so the role reads --theme-bg (packages/bigface-business-ui/src/styles/styles.css).
+		expect(css).toMatch(/--primary-foreground:\s*var\(--theme-bg\)/);
 	},
 );
 
@@ -229,7 +230,7 @@ test("the page root carries the default theme and mode", () => {
 	for (const rel of ["", "palette"]) {
 		const html = readFileSync(join(dist, rel, "index.html"), "utf8");
 		const tag = /<html\b[^>]*>/.exec(html)?.[0] ?? "";
-		expect(tag, rel).toContain('data-theme="console"');
+		expect(tag, rel).toContain('data-theme="business"');
 		expect(tag, rel).toContain('data-mode="dark"');
 		expect(/class="[^"]*\bdark\b/.test(tag), rel).toBe(false);
 	}
@@ -260,6 +261,7 @@ test("the business catalogue is one business theme with 63 components; the retir
 	expect([...business.matchAll(/data-demo="/g)], "63 demos").toHaveLength(63);
 	for (const rel of ["", "palette", "ui/business"]) {
 		expect(page(rel), "game on " + rel).not.toContain('data-theme="game"');
+		expect(page(rel), "console on " + rel).not.toContain('data-theme="console"');
 	}
 	expect(existsSync(join(dist, "ui/theme/index.html")), "the gallery page is gone").toBe(false);
 	expect(page("")).not.toContain("bigface-mode");
@@ -277,7 +279,7 @@ test("the site only ships colours that exist in the palette", () => {
 	// else is still an offence; themes.test.ts proves each derived value is such a mix.
 	// The derived values of both generators: the console package's mixes, and the business package's mixes and solved
 	// plates (its themes.test.ts proves each business value is a palette colour, a mix, or a solved plate).
-	const themeHexes = ["../../packages/ui/src/themes", "../../packages/bigface-business-ui/src/themes"].flatMap((dir) =>
+	const themeHexes = ["../../packages/bigface-business-ui/src/themes"].flatMap((dir) =>
 		readdirSync(join(siteDir, dir), "utf8")
 			.filter((f) => f.endsWith(".css"))
 			.flatMap((f) =>

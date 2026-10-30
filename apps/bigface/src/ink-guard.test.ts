@@ -92,6 +92,14 @@ test("a textless indicator slot is exempt: an indicator carries no text to ink",
   expect(findInklessBrightPlates('<div class="bg-primary"></div>')).toHaveLength(1);
 });
 
+test("an empty dot paints no text, so it needs no ink; the same dot with text does", () => {
+  expect(findInklessBrightPlates('<i class="size-[9px] rounded-full bg-chart-5"></i>')).toEqual([]);
+  expect(findInklessBrightPlates('<span class="bg-chart-5"></span>')).toEqual([]);
+  expect(findInklessBrightPlates('<span class="bg-chart-5">9</span>')).toHaveLength(1);
+  // only phrasing dots are exempt: an empty link is still a plate the guard reads
+  expect(findInklessBrightPlates('<a class="bg-primary"></a>')).toHaveLength(1);
+});
+
 test("the slot is read from the element's own tag, not a neighbour's", () => {
   expect(
     findInklessBrightPlates(

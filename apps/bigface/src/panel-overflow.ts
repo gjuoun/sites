@@ -382,7 +382,7 @@ const paletteFile = (distDir: string, file: string) =>
 
 /**
  * The colour audit for Jun's rule: in a light panel no colour may be a value that exists only in the dark
- * palette (that is a --bf-* leak from the site's inline dark variables), and no element may paint pure
+ * palette (that is a leaked site palette variable), and no element may paint pure
  * white. Both are what the synced palettes forbid; everything else must resolve from --theme-*.
  */
 export async function measurePanelColours(

@@ -1,6 +1,6 @@
 ---
-import { BGCard } from "@gjuoun/bigface-ui/components/bg/card";
-import { BGInstallTabs } from "@gjuoun/bigface-ui/components/bg/install-tabs";
+import { BGCard } from "../components/bg/card.tsx";
+import { BGInstallTabs } from "../components/bg/install-tabs.tsx";
 import BGAppCard from "../components/bg/app-card.astro";
 import BGDivider from "../components/bg/divider.astro";
 import BGFilterChips from "../components/bg/filter-chips.astro";
@@ -74,7 +74,7 @@ const installTabs = [
     <div class="group/strip flex h-24 gap-[0.3rem] max-[620px]:h-[72px]" aria-label="Palette">
       {strip.map((n) => <BGSwatchChip name={n} hex={hex(n)} />)}
     </div>
-    <p class="mt-[0.7rem] mb-0 text-[0.87rem] text-bf-dim">
+    <p class="mt-[0.7rem] mb-0 text-[0.87rem] text-muted-foreground">
       {colourCount} colours in the palette. This page runs on the theme's own background
       <code>{hex("bg")}</code> — every colour here comes from
       <code>palette/bigface.json</code>. Click a swatch to copy its hex.
@@ -82,7 +82,7 @@ const installTabs = [
   </section>
 
   <section
-    class="mt-10 grid grid-cols-4 gap-px overflow-hidden rounded-[16px] border border-bf-border bg-bf-border max-[900px]:grid-cols-2"
+    class="mt-10 grid grid-cols-4 gap-px overflow-hidden rounded-[16px] border border-border bg-border max-[900px]:grid-cols-2"
     data-reveal
   >
     <BGStat value={targets.length} label="ports, one source" />
@@ -104,7 +104,7 @@ const installTabs = [
       <BGInstallTabs client:load items={installTabs} />
     </BGCard>
 
-    <p class="text-bf-dim" data-reveal>
+    <p class="text-muted-foreground" data-reveal>
       Add <code>--dry-run</code> to see what it would do, or <a href={`${base}/install.sh`}>read the
       script</a> first — it is generated from
       <a href={`${REPO}/blob/main/src/installer.ts`}>src/installer.ts</a>.

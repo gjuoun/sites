@@ -40,6 +40,9 @@ export function findInklessBrightPlates(html: string): string[] {
     // none — so they are exempt. Everything else must still pair fill with ink.
     const slot = /data-slot="([\w-]+)"/.exec(tagAt(html, at))?.[1] ?? "";
     if (TEXTLESS.has(slot)) continue;
+    // An empty phrasing element paints no text: the status dot in a card, the traffic lights in the
+    // fake window. It cannot carry an ink, so it is exempt. A dot that holds text still needs one.
+    if (emptyPhrasing(html, at)) continue;
     const tokens = (m[1] as string).split(/\s+/).filter(Boolean).map(splitVariant);
     // A fill and its ink share the same variant string. A stock dark: fill (dark:data-checked:bg-primary)
     // repeats a light fill in dark mode, so the ink of the same variant without dark: covers it.
@@ -59,6 +62,19 @@ export function findInklessBrightPlates(html: string): string[] {
   }
   return offenders;
 }
+
+/** True for an <i>/<span> with nothing between its tags: a decorative dot, not a plate. */
+const emptyPhrasing = (html: string, at: number): boolean => {
+  const start = html.lastIndexOf("<", at);
+  const tag = /^<([a-zA-Z][\w-]*)/.exec(html.slice(start))?.[1] ?? "";
+  if (tag !== "i" && tag !== "span") return false;
+  const open = html.indexOf(">", at);
+  if (open === -1) return false;
+  if (html[open - 1] === "/") return true;
+  const next = html.indexOf("<", open + 1);
+  if (next === -1) return false;
+  return html.slice(open + 1, next).trim() === "" && html.startsWith("</" + tag, next);
+};
 
 /** The opening tag that contains `at`, quoted attribute values included. */
 const tagAt = (html: string, at: number): string => {

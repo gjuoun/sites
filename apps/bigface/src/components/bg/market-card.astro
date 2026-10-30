@@ -1,7 +1,7 @@
 ---
-import { BGButton } from "@gjuoun/bigface-ui/components/bg/button";
-import { bgCardVariants } from "@gjuoun/bigface-ui/components/bg/card";
-import { cn } from "@gjuoun/bigface-ui/lib/utils";
+import { bgCardVariants } from "./card.tsx";
+import { BGButton } from "./button.tsx";
+import { cn } from "@gjuoun/bigface-business-ui/lib/utils";
 import BGEyebrow from "./eyebrow.astro";
 
 // "Published" strip for targets that ship through their app's own gallery.
@@ -23,7 +23,7 @@ const { label, url, name } = Astro.props;
   <div class="flex flex-col gap-[0.15rem]">
     <BGEyebrow class="mb-1">published</BGEyebrow>
     <strong class="font-display text-[1.1rem]">{label}</strong>
-    <span class="text-bf-dim">{name} installs and updates it from its own gallery.</span>
+    <span class="text-muted-foreground">{name} installs and updates it from its own gallery.</span>
   </div>
   <BGButton tone="glow" href={url}>Open listing <span aria-hidden="true">↗</span></BGButton>
 </section>
