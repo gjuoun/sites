@@ -1,23 +1,24 @@
 ---
 import { Github } from 'lucide-react';
-import { buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from '@gjuoun/bigface-business-ui/components/ui/button';
+import { LABEL, PAGE } from '@/lib/layout';
 import { withBase } from '@/lib/utils';
 
 const year = new Date().getFullYear();
 ---
 
 <footer class="bg-background">
-  <div class="container-page">
+  <div class={PAGE}>
     <div class="grid gap-8 border-b border-border py-14 md:grid-cols-[1.2fr_0.8fr] md:items-end">
       <div>
-        <p class="mono-label">Ready when your ssh is</p>
+        <p class={LABEL}>Ready when your ssh is</p>
         <h2 class="mt-3 max-w-lg text-2xl font-semibold tracking-tight sm:text-3xl">
           Ship the next revision without touching the platform.
         </h2>
       </div>
       <div class="grid gap-2.5 sm:flex sm:flex-wrap md:justify-end">
-        <a href={withBase('docs/deploy-yml/')} class={buttonVariants({ className: 'w-full sm:w-auto' })}>Read the docs</a>
-        <a href="https://github.com/gjuoun/bundant" target="_blank" rel="noreferrer" class={buttonVariants({ variant: 'outline', className: 'w-full sm:w-auto' })}>
+        <a href={withBase('docs/deploy-yml/')} class={buttonVariants({ className: 'h-10 w-full px-4 sm:w-auto' })}>Read the docs</a>
+        <a href="https://github.com/gjuoun/bundant" target="_blank" rel="noreferrer" class={buttonVariants({ variant: 'outline', className: 'h-10 w-full px-4 sm:w-auto' })}>
           <Github className="size-4" /> GitHub
         </a>
       </div>

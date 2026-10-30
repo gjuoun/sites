@@ -7,6 +7,7 @@ import {
   type KeyboardEvent as ReactKeyboardEvent,
 } from 'react';
 import { Check, Copy, Search, Terminal, X } from 'lucide-react';
+import { HAIRLINE, PANEL } from '@/lib/tokens';
 
 export type ExplorerCommand = {
   name: string;
@@ -45,9 +46,11 @@ export function commandFromHash(hash: string): string | null {
 
 type Props = {
   commands: ExplorerCommand[];
+  /** Pre-highlighted usage and example markup, keyed by command name (build-time, optional). */
+  highlighted?: Record<string, { usage: string; example: string }>;
 };
 
-export function CommandExplorer({ commands }: Props) {
+export function CommandExplorer({ commands, highlighted }: Props) {
   const searchId = useId();
   const listboxId = useId();
   const listRef = useRef<HTMLDivElement>(null);
@@ -180,13 +183,13 @@ export function CommandExplorer({ commands }: Props) {
   if (!selected) return null;
 
   return (
-    <div className="command-explorer">
-      <div className="command-explorer-list">
-        <label htmlFor={searchId} className="command-explorer-label">
+    <div className="mt-10 grid min-w-0 gap-4 md:grid-cols-[minmax(0,19rem)_minmax(0,1fr)] md:items-start md:gap-6">
+      <div className="relative min-w-0 md:sticky md:top-[5.5rem]">
+        <label htmlFor={searchId} className="mb-2 block font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
           Search commands
         </label>
-        <div className="command-explorer-search">
-          <Search className="command-explorer-search-icon" aria-hidden="true" />
+        <div className="flex min-h-11 items-center gap-2 rounded-lg border border-border bg-card px-3 transition-colors focus-within:border-primary">
+          <Search className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
           <input
             id={searchId}
             type="search"
@@ -196,6 +199,7 @@ export function CommandExplorer({ commands }: Props) {
             aria-autocomplete="list"
             autoComplete="off"
             spellCheck={false}
+            className="min-w-0 flex-1 border-0 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground [&::-webkit-search-cancel-button]:hidden"
             placeholder="deploy, rollback, logs…"
             value={query}
             onInput={(event) => {
@@ -208,7 +212,7 @@ export function CommandExplorer({ commands }: Props) {
           {query !== '' && (
             <button
               type="button"
-              className="command-explorer-clear"
+              className="grid size-6 shrink-0 place-items-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground [&_svg]:size-3.5"
               aria-label="Clear search"
               onClick={() => {
                 setQuery('');
@@ -220,7 +224,7 @@ export function CommandExplorer({ commands }: Props) {
           )}
         </div>
 
-        <p className="command-explorer-count" aria-live="polite">
+        <p className="mt-2 font-mono text-[11px] text-muted-foreground" aria-live="polite">
           {filtered.length} of {commands.length} commands
         </p>
 
@@ -231,20 +235,25 @@ export function CommandExplorer({ commands }: Props) {
           tabIndex={0}
           aria-label="Commands"
           aria-activedescendant={active ? `command-option-${active.name}` : undefined}
-          className="command-explorer-scroll"
+          className="absolute top-[calc(100%+0.375rem)] right-0 left-0 z-30 hidden max-h-72 overflow-y-auto overscroll-contain rounded-lg border border-border bg-card p-2 shadow-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring data-[open=true]:block md:static md:mt-2 md:block md:max-h-[min(38rem,calc(100vh-7rem))] md:shadow-none"
           data-open={mobileOpen ? 'true' : 'false'}
           onKeyDown={onListKeyDown}
         >
           {grouped.length === 0 && (
-            <p className="command-explorer-empty">
-              No command matches <span className="command-explorer-empty-query">“{query.trim()}”</span>.
+            <p className="px-2 py-3 text-[13px] text-muted-foreground">
+              No command matches <span className="text-foreground">“{query.trim()}”</span>.
             </p>
           )}
           {grouped.map((group) => (
-            <div key={group.group} className="command-explorer-group" role="group" aria-label={group.label}>
-              <p className="command-explorer-group-head">
+            <div
+              key={group.group}
+              className={`mt-2 border-t ${HAIRLINE} pt-2 first:mt-0 first:border-t-0 first:pt-0`}
+              role="group"
+              aria-label={group.label}
+            >
+              <p className="flex items-baseline justify-between px-2 py-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
                 {group.label}
-                <span>{group.commands.length}</span>
+                <span className="tracking-normal">{group.commands.length}</span>
               </p>
               {group.commands.map((command) => {
                 const isSelected = command.name === selected.name;
@@ -255,12 +264,14 @@ export function CommandExplorer({ commands }: Props) {
                     role="option"
                     aria-selected={isSelected}
                     data-selected={isSelected ? 'true' : 'false'}
-                    className="command-explorer-option"
+                    className="group grid cursor-pointer gap-0.5 rounded-md px-2.5 py-2 hover:bg-muted aria-selected:bg-muted"
                     onMouseDown={(event) => event.preventDefault()}
                     onClick={() => select(command.name)}
                   >
-                    <span className="command-explorer-option-name">{command.name}</span>
-                    <span className="command-explorer-option-summary">{command.summary}</span>
+                    <span className="font-mono text-[13px] font-semibold wrap-anywhere text-foreground group-aria-selected:text-primary">
+                      {command.name}
+                    </span>
+                    <span className="text-xs leading-[1.4] text-muted-foreground">{command.summary}</span>
                   </div>
                 );
               })}
@@ -270,56 +281,82 @@ export function CommandExplorer({ commands }: Props) {
       </div>
 
       <div
-        className="command-explorer-detail"
+        className="min-w-0 rounded-xl border border-border bg-card p-5 md:p-7"
         role="region"
         aria-live="polite"
         aria-label={`${selected.name} command reference`}
       >
-        <div className="command-explorer-detail-head">
+        <div className="flex items-start justify-between gap-4">
           <div>
-            <div className="command-explorer-badges">
-              <span className="command-explorer-badge">{GROUP_META[selected.group as GroupId]?.label ?? selected.group}</span>
-              <span className="command-explorer-badge command-explorer-badge-muted">bundant {selected.name}</span>
+            <div className="flex flex-wrap gap-1.5">
+              <span className="inline-flex items-center rounded-md border border-border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.08em] text-primary">
+                {GROUP_META[selected.group as GroupId]?.label ?? selected.group}
+              </span>
+              <span className="inline-flex items-center rounded-md border border-border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.08em] text-muted-foreground">
+                bundant {selected.name}
+              </span>
             </div>
-            <h3 className="command-explorer-title">{selected.name}</h3>
+            <h3 className="mt-2 font-mono text-2xl font-semibold tracking-tight wrap-anywhere text-foreground md:text-[1.75rem]">
+              {selected.name}
+            </h3>
           </div>
-          <Terminal className="command-explorer-title-icon" aria-hidden="true" />
+          <Terminal className="mt-1 size-5 shrink-0 text-muted-foreground" aria-hidden="true" />
         </div>
 
-        <p className="command-explorer-summary">{selected.summary}</p>
+        <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground">{selected.summary}</p>
 
-        <div className="command-explorer-block">
-          <p className="command-explorer-block-title">Usage</p>
-          <pre className="command-explorer-usage">
-            <code>{selected.usage}</code>
+        <div className="mt-6">
+          <p className="mb-2 flex items-baseline gap-2 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
+            Usage
+          </p>
+          <pre className={`m-0 overflow-x-auto rounded-md border border-border ${PANEL} px-3.5 py-3 font-mono text-xs leading-[1.7] whitespace-pre-wrap wrap-anywhere text-foreground [&_code]:font-[inherit]`}>
+            {highlighted?.[selected.name]?.usage ? (
+              <code dangerouslySetInnerHTML={{ __html: highlighted[selected.name]!.usage }} />
+            ) : (
+              <code>{selected.usage}</code>
+            )}
           </pre>
         </div>
 
-        <div className="command-explorer-block">
-          <p className="command-explorer-block-title">
-            Flags <span>{selected.flags.length}</span>
+        <div className="mt-6">
+          <p className="mb-2 flex items-baseline gap-2 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
+            Flags <span className="tracking-normal">{selected.flags.length}</span>
           </p>
-          <dl className="command-explorer-flags">
+          <dl className={`m-0 border-t ${HAIRLINE}`}>
             {selected.flags.map((flag) => (
-              <div key={flag.flag} className="command-explorer-flag">
-                <dt>{flag.flag}</dt>
-                <dd>{flag.description}</dd>
+              <div
+                key={flag.flag}
+                className={`grid gap-0.5 border-b ${HAIRLINE} py-2 md:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] md:items-baseline md:gap-4`}
+              >
+                <dt className="min-w-0 font-mono text-xs leading-normal wrap-anywhere text-foreground">{flag.flag}</dt>
+                <dd className="m-0 min-w-0 text-[13px] leading-[1.55] wrap-anywhere text-muted-foreground">{flag.description}</dd>
               </div>
             ))}
           </dl>
         </div>
 
-        <div className="command-explorer-block">
-          <div className="command-explorer-example-head">
-            <p className="command-explorer-block-title">Example</p>
-            <button type="button" className="command-explorer-copy" onClick={copyExample}>
+        <div className="mt-6">
+          <div className="flex items-baseline justify-between gap-4">
+            <p className="mb-2 flex items-baseline gap-2 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
+              Example
+            </p>
+            <button
+              type="button"
+              className="inline-flex min-h-8 items-center gap-1.5 rounded-md border border-border px-2.5 font-mono text-[11px] text-muted-foreground transition-colors hover:border-primary hover:text-foreground [&_svg]:size-3"
+              onClick={copyExample}
+            >
               {copied ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
               {copied ? 'Copied' : 'Copy'}
             </button>
           </div>
-          <pre className="command-explorer-example">
+          <pre className={`m-0 overflow-x-auto rounded-md border border-border ${PANEL} px-3.5 py-3 font-mono text-xs leading-[1.7] whitespace-pre-wrap wrap-anywhere text-foreground [&_code]:font-[inherit]`}>
             <code>
-              <span className="command-explorer-prompt">$</span> {selected.example}
+              <span className="text-primary">$</span>{' '}
+              {highlighted?.[selected.name]?.example ? (
+                <span dangerouslySetInnerHTML={{ __html: highlighted[selected.name]!.example }} />
+              ) : (
+                selected.example
+              )}
             </code>
           </pre>
         </div>

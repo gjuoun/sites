@@ -130,7 +130,7 @@ describe('command explorer selection', () => {
   test('typing then Enter selects the first match', async () => {
     const container = await renderAt('#commands/deploy');
     await type(container, 'scale');
-    expect(container.querySelector('.command-explorer-count')?.textContent).toContain('1 of 23');
+    expect(container.querySelector('p[aria-live="polite"]')?.textContent).toContain('1 of 23');
     await press(container.querySelector('[role="listbox"]') as HTMLElement, 'Enter');
 
     expect(pane(container).querySelector('h3')?.textContent).toBe('scale');

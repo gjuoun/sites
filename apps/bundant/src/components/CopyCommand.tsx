@@ -1,10 +1,18 @@
 import { useState } from 'react';
 import { Check, Copy, Terminal } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from 'cn';
+import { HAIRLINE, PANEL } from '@/lib/tokens';
 
 type Command = { label: string; command: string };
 
-export function CopyCommand({ commands }: { commands: Command[] }) {
+export function CopyCommand({
+  commands,
+  highlighted,
+}: {
+  commands: Command[];
+  /** Build-time highlighted markup, one entry per command (optional). */
+  highlighted?: string[];
+}) {
   const [active, setActive] = useState(0);
   const [copied, setCopied] = useState(false);
   const current = commands[active] ?? commands[0];
@@ -21,7 +29,7 @@ export function CopyCommand({ commands }: { commands: Command[] }) {
 
   return (
     <div className="overflow-hidden rounded-lg border border-border bg-card">
-      <div className="flex items-center justify-between gap-2 border-b border-border-muted bg-code-surface px-2 py-0.5 sm:px-3">
+      <div className={`flex items-center justify-between gap-2 border-b ${HAIRLINE} ${PANEL} px-2 py-0.5 sm:px-3`}>
         <div className="flex items-center gap-0.5">
           <Terminal className="mr-1.5 size-3.5 text-muted-foreground" aria-hidden />
           {commands.map((item, index) => (
@@ -53,7 +61,11 @@ export function CopyCommand({ commands }: { commands: Command[] }) {
       <div className="flex items-center gap-2.5 px-4 py-3">
         <span className="select-none font-mono text-sm text-primary">$</span>
         <code className="overflow-x-auto whitespace-nowrap font-mono text-[0.8125rem] text-foreground">
-          {current.command}
+          {highlighted?.[active] ? (
+            <span dangerouslySetInnerHTML={{ __html: highlighted[active]! }} />
+          ) : (
+            current.command
+          )}
         </code>
       </div>
     </div>

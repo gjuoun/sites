@@ -2,6 +2,8 @@
 import { Github, Menu } from 'lucide-react';
 import { withBase } from '@/lib/utils';
 import { asset } from "@/lib/assets";
+import ThemeToggle from '@/components/ThemeToggle.astro';
+import { PAGE } from '@/lib/layout';
 
 const links = [
   { href: withBase('#features'), label: 'Features' },
@@ -12,7 +14,7 @@ const links = [
 ---
 
 <header class="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur">
-  <div class="container-page flex h-16 items-center justify-between gap-4">
+  <div class={`${PAGE} flex h-16 items-center justify-between gap-4`}>
     <a href={withBase('')} class="flex items-center gap-2.5" aria-label="bundant home">
       <span class="block size-8 shrink-0 overflow-hidden rounded-[4px]" aria-hidden="true">
         <img
@@ -40,6 +42,7 @@ const links = [
     </nav>
 
     <div class="flex items-center gap-1">
+      <ThemeToggle />
       <a
         href="https://github.com/gjuoun/bundant"
         target="_blank"
@@ -61,8 +64,8 @@ const links = [
     </div>
   </div>
 
-  <div id="mobile-menu" class="hidden border-t border-border-muted bg-card md:hidden">
-    <nav class="container-page grid gap-1 py-3" aria-label="Mobile">
+  <div id="mobile-menu" class="hidden border-t border-border/60 bg-card md:hidden">
+    <nav class={`${PAGE} grid gap-1 py-3`} aria-label="Mobile">
       {links.map((link) => (
         <a href={link.href} class="flex min-h-11 items-center rounded-md px-3 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground">
           {link.label}

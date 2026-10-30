@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import './TerminalDemo.css';
+import { LABEL } from '@/lib/layout';
+import { TERMINAL_DOTS } from '@/lib/tokens';
 import {
   findCommandIndex,
   hintBlock,
@@ -143,18 +144,18 @@ export default function TerminalDemo({ demo, layout = 'side' }: Props) {
         role="region"
         aria-label="terminal demo"
       >
-        <div className="flex items-center gap-2 border-b border-border-muted bg-code-surface px-4 py-2.5">
-          <span className="size-2.5 rounded-full bg-destructive" aria-hidden="true" />
-          <span className="size-2.5 rounded-full bg-warning" aria-hidden="true" />
-          <span className="size-2.5 rounded-full bg-success" aria-hidden="true" />
+        <div className="flex items-center gap-2 border-b border-border/60 bg-muted px-4 py-2.5">
+          {TERMINAL_DOTS.map((dot) => (
+            <span key={dot} className={`size-2.5 rounded-full ${dot}`} aria-hidden="true" />
+          ))}
           <span className="ml-2 font-mono text-[11px] text-muted-foreground">bundant · demo</span>
         </div>
 
         <div
           ref={screenRef}
           className={
-            'terminal-demo-screen bg-code-surface px-4 py-4 font-mono text-[11.5px] leading-6' +
-            (layout === 'compact' ? ' terminal-demo-screen--compact' : '')
+            'h-84 overflow-y-auto overscroll-contain bg-muted px-4 py-4 font-mono text-[11.5px] leading-6 [scrollbar-color:var(--border)_transparent] [scrollbar-width:thin]' +
+            (layout === 'compact' ? ' h-32 md:h-76' : ' md:h-100')
           }
           role="log"
           aria-live="polite"
@@ -168,13 +169,16 @@ export default function TerminalDemo({ demo, layout = 'side' }: Props) {
           ) : null}
 
           {blocks.map((block) => (
-            <div key={block.id} className={block.kind === 'hint' ? 'text-warning' : 'mt-3 first:mt-0'}>
+            <div key={block.id} className={block.kind === 'hint' ? 'text-muted-foreground' : 'mt-3 first:mt-0'}>
               {block.kind === 'command' ? (
                 <div className="break-words text-foreground">
                   <span className="text-primary">{prompt}</span>{' '}
                   <span>{block.command}</span>
                   {block.streaming && block.lines.length === 0 ? (
-                    <span className="terminal-demo-cursor ml-1 align-middle" aria-hidden="true" />
+                    <span
+                      className="ml-1 inline-block h-[1.05em] w-2 shrink-0 animate-pulse bg-primary align-middle motion-reduce:animate-none"
+                      aria-hidden="true"
+                    />
                   ) : null}
                 </div>
               ) : null}
@@ -189,7 +193,7 @@ export default function TerminalDemo({ demo, layout = 'side' }: Props) {
 
         <form
           onSubmit={onSubmit}
-          className="flex flex-wrap items-center gap-2 border-t border-border-muted bg-card px-4 py-1.5"
+          className="flex flex-wrap items-center gap-2 border-t border-border/60 bg-card px-4 py-1.5"
         >
           <label htmlFor="terminal-demo-input" className="sr-only">
             Terminal command
@@ -213,7 +217,10 @@ export default function TerminalDemo({ demo, layout = 'side' }: Props) {
             }
             className="h-11 min-w-0 flex-1 bg-transparent font-mono text-[11.5px] text-foreground caret-primary outline-none placeholder:text-muted-foreground"
           />
-          <span className="terminal-demo-cursor" aria-hidden="true" />
+          <span
+            className="inline-block h-[1.05em] w-2 shrink-0 animate-pulse bg-primary align-middle motion-reduce:animate-none"
+            aria-hidden="true"
+          />
           <button
             type="button"
             onClick={() => void run(nextIndex)}
@@ -231,7 +238,7 @@ export default function TerminalDemo({ demo, layout = 'side' }: Props) {
       </div>
 
       <div className="min-w-0">
-        {layout === 'side' ? <p className="mono-label">Commands in this transcript</p> : null}
+        {layout === 'side' ? <p className={LABEL}>Commands in this transcript</p> : null}
         <div className={layout === 'compact' ? 'grid grid-cols-2 gap-2' : 'mt-3 grid gap-2'}>
           {commands.map((command, index) => {
             const name = command.cmd.replace(/^bundant\s+/, '');

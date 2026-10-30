@@ -1,0 +1,9 @@
+---
+// Starlight's markdown typography ships with its MarkdownContent component, so an override has
+// to carry the stylesheet too. The added utilities hide the mermaid source block until the
+// client renderer replaces it, and bring it back if that render fails.
+import '@astrojs/starlight/style/markdown.css';
+---
+<div
+  class="sl-markdown-content [html.mermaid-js:not(.mermaid-failed)_&_pre.mermaid]:invisible"
+><slot /></div>
