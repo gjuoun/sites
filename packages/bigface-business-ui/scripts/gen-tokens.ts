@@ -11,7 +11,8 @@
 // motion value: those are Tailwind's and shadcn's own.
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { REQUIRED, THEMES, type Theme } from "../src/themes/roles.ts";
+import { darkenUntil, MIN_CONTRAST } from "../../bigface-tokens/src/light.ts";
+import { LIGHT_DERIVED, REQUIRED, THEMES, type Theme } from "../src/themes/roles.ts";
 
 export interface PaletteLike {
 	colors: Record<string, { hex: string }>;
@@ -30,11 +31,18 @@ const hexOf = (palette: PaletteLike, name: string): string => {
  */
 export function renderThemeFile(theme: Theme, dark: PaletteLike, light: PaletteLike): string {
 	if (!theme.isDefault) throw new Error(theme.id + ": only the default theme is generated");
-	const decls = (palette: PaletteLike) =>
+	const derived = new Set<string>(LIGHT_DERIVED);
+	const decls = (palette: PaletteLike, mode: "light" | "dark") =>
 		REQUIRED.map((role) => {
 			const paletteName = theme.roles[role];
 			if (!paletteName) throw new Error(theme.id + ": missing role " + role);
-			return "  --theme-" + role + ": " + hexOf(palette, paletteName) + ";";
+			const base = hexOf(palette, paletteName);
+			// A derived role is the same palette colour darkened until it reads on THIS block's canvas.
+			const value =
+				mode === "light" && derived.has(role)
+					? darkenUntil(base, hexOf(palette, "bg"), MIN_CONTRAST)
+					: base;
+			return "  --theme-" + role + ": " + value + ";";
 		});
 	const extra = Object.keys(theme.roles).filter((k) => !(REQUIRED as readonly string[]).includes(k));
 	if (extra.length) throw new Error(theme.id + ": unknown roles " + extra.join(", "));
@@ -44,11 +52,11 @@ export function renderThemeFile(theme: Theme, dark: PaletteLike, light: PaletteL
 		"   then run theme:sync. */",
 		"",
 		':root, [data-mode="light"] {',
-		...decls(light),
+		...decls(light, "light"),
 		"}",
 		"",
 		'[data-mode="dark"] {',
-		...decls(dark),
+		...decls(dark, "dark"),
 		"}",
 		"",
 	].join("\n");

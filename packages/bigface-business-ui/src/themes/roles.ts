@@ -25,6 +25,15 @@ export const ACCENTS = [
 	"yellow",
 ] as const;
 
+/**
+ * Roles whose light-mode ink is derived rather than borrowed. A role normally names one palette colour
+ * for both blocks; the yellow is the exception, because it is read as ink: the palette's bright yellow
+ * measures 1.12:1 on the light paper. The light block therefore carries the same hue and chroma with its
+ * OKLCH lightness lowered until it clears AA (darkenUntil in the palette pipeline) — derived by the
+ * generator, never picked by hand. The dark block keeps the palette value untouched.
+ */
+export const LIGHT_DERIVED = ["yellow"] as const;
+
 /** Every role a theme must set. */
 export const REQUIRED = [...NEUTRALS, ...ACCENTS] as const;
 
