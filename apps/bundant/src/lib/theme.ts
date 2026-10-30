@@ -1,4 +1,4 @@
-import { MODE_STORAGE_KEY, MODES, type Mode } from "@gjuoun/bigface-business-ui/lib/themes";
+import { MODE_STORAGE_KEY, MODES, type Mode } from "@gjuoun/bigface-shadcn-ui/lib/themes";
 
 /** bundant is a dark product page: the product surface, not the marketing paper. */
 export const DEFAULT_MODE: Mode = "dark";
@@ -11,7 +11,7 @@ export const DEFAULT_MODE: Mode = "dark";
  */
 export const docsThemeInitScript = `(() => {
 	const root = document.documentElement;
-	root.dataset.theme = "business";
+	root.dataset.theme = "bigface";
 	let mode = ${JSON.stringify(DEFAULT_MODE)};
 	try {
 		const stored = localStorage.getItem(${JSON.stringify(MODE_STORAGE_KEY)});

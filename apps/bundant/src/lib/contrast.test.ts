@@ -8,7 +8,7 @@ import { contrastRatio } from "@gjuoun/bigface-tokens/contrast-math";
 // toggle, and its accent is a fill colour rather than body text, so the accent pair is pinned
 // to what the package actually ships instead of being asserted as AA.
 const css = readFileSync(
-  join(import.meta.dir, "../../../../packages/bigface-business-ui/src/themes/business.css"),
+  join(import.meta.dir, "../../../../packages/bigface-shadcn-ui/src/themes/bigface.css"),
   "utf8",
 );
 

@@ -19,7 +19,7 @@ src/styles/      tailwind.css, the only stylesheet
 Views and components are React, rendered to static HTML by `@astrojs/react` with no `client:*` directive, so no
 React runtime ships; the only client JS is the theme toggle's inline script (`ThemeToggle.tsx`). Post
 bodies are Astro's rendered Markdown (`entry.rendered.html`), shown through `Markdown`. The portfolio cards, chips
-and buttons are the theme package's stock `Card`, `Badge` and `Button` (`@gjuoun/bigface-business-ui`).
+and buttons are the theme package's stock `Card`, `Badge` and `Button` (`@gjuoun/bigface-shadcn-ui`).
 
 `src/styles/tailwind.css` holds Tailwind, the business theme, the typography plugin, the font, and `@source` for the
 three stock components used; every other rule is a Tailwind utility in a component.

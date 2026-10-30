@@ -377,8 +377,8 @@ const COLOUR_PROBE = `(() => {
   return { panels };
 })()`;
 
-const paletteFile = (distDir: string, file: string) =>
-	join(distDir, "../../../packages/bigface-tokens/palette", file);
+const paletteFile = (distDir: string) =>
+	join(distDir, "../../../packages/bigface-tokens/palette/palette.json");
 
 /**
  * The colour audit for Jun's rule: in a light panel no colour may be a value that exists only in the dark
@@ -391,15 +391,15 @@ export async function measurePanelColours(
 	width = 1440,
 	mode?: "light" | "dark",
 ): Promise<ColourAudit> {
-	const hexesOf = (file: string) =>
+	const hexesOf = (mode: "light" | "dark") =>
 		Object.values(
-			(JSON.parse(readFileSync(paletteFile(distDir, file), "utf8")) as {
-				colors: Record<string, { hex: string }>;
-			}).colors,
-		).map((c) => c.hex.toLowerCase());
+			(JSON.parse(readFileSync(paletteFile(distDir), "utf8")) as {
+				modes: Record<string, { colors: Record<string, string> }>;
+			}).modes[mode]!.colors,
+		).map((hex) => hex.toLowerCase());
 	const probe = COLOUR_PROBE.replace(
 		"__PALETTE__",
-		JSON.stringify({ dark: hexesOf("bigface.json"), light: hexesOf("bigface-light.json") }),
+		JSON.stringify({ dark: hexesOf("dark"), light: hexesOf("light") }),
 	);
 	const setMode = mode ? "document.documentElement.dataset.mode = \"" + mode + "\"; " : "";
 	return runProbe<ColourAudit>(distDir, path, width, setMode + probe);

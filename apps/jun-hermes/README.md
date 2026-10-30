@@ -32,23 +32,23 @@ bun run build                     # checks the vendored theme, then copies 13 fi
 ```
 
 `bun run probe` does the same check without a browser: it serves `dist/` on port 4398 and asks
-each registered URL for a 200, a business/dark root element and the business tokens.
+each registered URL for a 200, a bigface/dark root element and the Bigface tokens.
 
 ## Theme
 
-The site is a static shell for the business theme — no Tailwind, no build step, no JavaScript.
+The site is a static shell for the Bigface theme — no Tailwind, no build step, no JavaScript.
 Every page says so on its root element:
 
 ```html
-<html lang="en" data-theme="business" data-mode="dark">
+<html lang="en" data-theme="bigface" data-mode="dark">
 ```
 
-- `assets/business.css` is **vendored**: a byte-for-byte copy of the theme package's generated
-  output (`packages/bigface-business-ui/src/themes/business.css`). Never edit it here. Change the
+- `assets/bigface.css` is **vendored**: a byte-for-byte copy of the theme package's generated
+  output (`packages/bigface-shadcn-ui/src/themes/bigface.css`). Never edit it here. Change the
   theme in its own package, then copy it again:
 
   ```bash
-  cp packages/bigface-business-ui/src/themes/business.css apps/jun-hermes/assets/business.css
+  cp packages/bigface-shadcn-ui/src/themes/bigface.css apps/jun-hermes/assets/bigface.css
   ```
 
 - `assets/style.css` is this site's own stylesheet and holds no colours: every value reads a

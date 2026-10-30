@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import palette from "@gjuoun/bigface-tokens/palette.json";
+import { palette } from "./data/palette.ts";
 import {
   findForeignInCss,
   findForeignInHtml,

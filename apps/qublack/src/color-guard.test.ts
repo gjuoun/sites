@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-// Every colour on the site is a theme token from @gjuoun/bigface-business-ui. A colour literal, a
+// Every colour on the site is a theme token from @gjuoun/bigface-shadcn-ui. A colour literal, a
 // retired palette variable, or a Tailwind default-palette name in a colour utility means someone
 // bypassed the theme. The generated font faces (qublack-fonts.css) are the one exempt file: they are
 // cutter output and have their own consistency guard.

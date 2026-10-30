@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-// The consumer contract, pinned: the theme comes from @gjuoun/bigface-business-ui, the only
+// The consumer contract, pinned: the theme comes from @gjuoun/bigface-shadcn-ui, the only
 // stylesheets are the Tailwind entry and a token-only Starlight bridge, and no app source
 // carries a colour of its own, a dark: variant or a retired token.
 const srcRoot = join(import.meta.dir, "..");
@@ -36,10 +36,10 @@ describe("the stylesheets are the package theme plus a token bridge", () => {
       .filter(Boolean);
     expect(top).toEqual([
       '@import "tailwindcss"',
-      '@import "@gjuoun/bigface-business-ui/styles.css"',
-      '@source "../../../../packages/bigface-business-ui/src/components/ui/accordion.tsx"',
-      '@source "../../../../packages/bigface-business-ui/src/components/ui/badge.tsx"',
-      '@source "../../../../packages/bigface-business-ui/src/components/ui/button.tsx"',
+      '@import "@gjuoun/bigface-shadcn-ui/styles.css"',
+      '@source "../../../../packages/bigface-shadcn-ui/src/components/ui/accordion.tsx"',
+      '@source "../../../../packages/bigface-shadcn-ui/src/components/ui/badge.tsx"',
+      '@source "../../../../packages/bigface-shadcn-ui/src/components/ui/button.tsx"',
       '@source "../../../../packages/bigface-highlighter/src/highlighter.tsx"',
     ]);
     expect(tailwind).not.toMatch(/#[0-9a-fA-F]{3,8}\b|\b(rgb|hsl|oklch)\(/);
@@ -53,12 +53,12 @@ describe("the stylesheets are the package theme plus a token bridge", () => {
   test("the @source list is exactly what the source imports, transitively", () => {
     const uiDir = join(
       import.meta.dir,
-      "../../../../packages/bigface-business-ui/src/components/ui",
+      "../../../../packages/bigface-shadcn-ui/src/components/ui",
     );
     const used = new Set<string>();
     for (const file of codeFiles) {
       for (const match of read(file).matchAll(
-        /@gjuoun\/bigface-business-ui\/components\/ui\/([\w-]+)/g,
+        /@gjuoun\/bigface-shadcn-ui\/components\/ui\/([\w-]+)/g,
       )) {
         used.add(match[1] as string);
       }
@@ -72,14 +72,14 @@ describe("the stylesheets are the package theme plus a token bridge", () => {
       if (closure.has(name)) continue;
       closure.add(name);
       for (const match of read(join(uiDir, name + ".tsx")).matchAll(
-        /@gjuoun\/bigface-business-ui\/components\/ui\/([\w-]+)/g,
+        /@gjuoun\/bigface-shadcn-ui\/components\/ui\/([\w-]+)/g,
       )) {
         queue.push(match[1] as string);
       }
     }
 
     const pinned = sourceLines
-      .filter((line) => line.includes("bigface-business-ui"))
+      .filter((line) => line.includes("bigface-shadcn-ui"))
       .map((line) => (line.split("/").pop() as string).replace(/\.tsx$/, ""));
     expect(pinned.sort()).toEqual([...closure].sort());
 
@@ -139,7 +139,7 @@ describe("the app keeps no palette, no retired token and no dark: variant", () =
 describe("both shells carry the theme contract", () => {
   test("the home document pins the theme, the mode and the pre-paint script", () => {
     const base = read(join(srcRoot, "layouts/Base.astro"));
-    expect(base).toContain('data-theme="business"');
+    expect(base).toContain('data-theme="bigface"');
     expect(base).toContain('data-mode="dark"');
     expect(base).toContain("themeInitScript");
     expect(read(join(srcRoot, "components/Nav.astro"))).toContain("ThemeToggle");
@@ -168,7 +168,7 @@ describe("both shells carry the theme contract", () => {
     const pkg = JSON.parse(read(join(srcRoot, "../package.json"))) as {
       dependencies?: Record<string, string>;
     };
-    expect(pkg.dependencies?.["@gjuoun/bigface-business-ui"]).toStartWith("workspace:");
+    expect(pkg.dependencies?.["@gjuoun/bigface-shadcn-ui"]).toStartWith("workspace:");
     expect(pkg.dependencies?.["@gjuoun/bigface-highlighter"]).toStartWith("workspace:");
   });
 });

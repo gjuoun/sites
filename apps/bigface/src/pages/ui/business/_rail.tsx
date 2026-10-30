@@ -1,5 +1,5 @@
 import * as React from "react";
-import { cn } from "@gjuoun/bigface-business-ui/lib/utils";
+import { cn } from "@gjuoun/bigface-shadcn-ui/lib/utils";
 import { CATEGORIES } from "./_categories.ts";
 
 // The catalogue's navigation. From 1024px it is a sticky column of every section and component; below that, one

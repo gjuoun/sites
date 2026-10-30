@@ -3,7 +3,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '@gjuoun/bigface-business-ui/components/ui/accordion';
+} from '@gjuoun/bigface-shadcn-ui/components/ui/accordion';
 
 const items = [
   {

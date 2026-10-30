@@ -1,6 +1,6 @@
 // Finds colour literals in shipped HTML/CSS that are not palette values.
 //
-// Every colour on the site comes from palette/bigface.json. This scanner knows every way CSS can
+// Every colour on the site comes from palette/palette.json. This scanner knows every way CSS can
 // spell a colour (3/4/6/8-digit hex, rgb(), hsl()/hwb()/lab()/lch()/oklab()/oklch(), named colours),
 // because Tailwind + shadcn ship oklch() greys and minified short hex that a #rrggbb regex misses.
 //

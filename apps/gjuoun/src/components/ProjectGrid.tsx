@@ -1,8 +1,8 @@
 // The portfolio as a card grid. The cards, chips and buttons are the theme package's own stock components
-// (@gjuoun/bigface-business-ui); this file only arranges them. Pages use it without a client:* directive, so it
+// (@gjuoun/bigface-shadcn-ui); this file only arranges them. Pages use it without a client:* directive, so it
 // renders to static HTML at build time and no React runtime reaches the browser.
-import { Badge } from "@gjuoun/bigface-business-ui/components/ui/badge";
-import { Button } from "@gjuoun/bigface-business-ui/components/ui/button";
+import { Badge } from "@gjuoun/bigface-shadcn-ui/components/ui/badge";
+import { Button } from "@gjuoun/bigface-shadcn-ui/components/ui/button";
 import {
 	Card,
 	CardContent,
@@ -10,7 +10,7 @@ import {
 	CardFooter,
 	CardHeader,
 	CardTitle,
-} from "@gjuoun/bigface-business-ui/components/ui/card";
+} from "@gjuoun/bigface-shadcn-ui/components/ui/card";
 
 // The site's keyboard focus: a solid outline around the stock button, as on every other link.
 const FOCUS =

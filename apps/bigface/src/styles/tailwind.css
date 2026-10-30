@@ -3,7 +3,7 @@
    (@gjuoun/bigface-ui/theme.css: token names, semantic mapping, font-code). This file keeps only what
    is the site's: class scanning, the palette-only reset, site animation tokens, the page utilities
    and the element defaults/atmosphere. Colour values are injected at build time by Base.astro from
-   palette/bigface.json, so tokens.css is deliberately not imported here. */
+   palette/palette.json, so tokens.css is deliberately not imported here. */
 @import "tailwindcss" source("../");
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";

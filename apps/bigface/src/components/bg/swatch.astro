@@ -34,6 +34,8 @@ const { ink, ratio } = inkOn(color.hex);
     class="flex flex-[1_1_auto] flex-col justify-center gap-[0.1rem] px-[0.65rem] pt-[0.55rem] pb-[0.6rem] text-[0.85rem]"
   >
     <strong class="font-semibold tracking-[-0.01em]">{name}</strong>
-    <span class="font-code text-[0.64rem] leading-[1.4] break-all text-bf-fg-muted">{sourceLabel(color)}</span>
+    {sourceLabel(color) && (
+      <span class="font-code text-[0.64rem] leading-[1.4] break-all text-bf-fg-muted">{sourceLabel(color)}</span>
+    )}
   </span>
 </button>

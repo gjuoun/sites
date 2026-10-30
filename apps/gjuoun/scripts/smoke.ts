@@ -520,7 +520,7 @@ try {
 		expect(shape.firstIsSkip, `${route} first focusable is not the skip link`);
 		expect(shape.lang === "en", `${route} html lang ${shape.lang}`);
 		expect(
-			shape.theme === "business" && shape.mode === "light",
+			shape.theme === "bigface" && shape.mode === "light",
 			`${route} theme/mode ${shape.theme}/${shape.mode} on first load`,
 		);
 		expect(

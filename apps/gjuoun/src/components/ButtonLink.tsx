@@ -1,4 +1,4 @@
-import { Button } from "@gjuoun/bigface-business-ui/components/ui/button";
+import { Button } from "@gjuoun/bigface-shadcn-ui/components/ui/button";
 
 // The stock Button as a link, for the Astro pages (an Astro slot cannot be the asChild child, so the label is a prop).
 export function ButtonLink({

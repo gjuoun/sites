@@ -1,4 +1,4 @@
-import { useMode } from "@gjuoun/bigface-business-ui/hooks/use-theme";
+import { useMode } from "@gjuoun/bigface-shadcn-ui/hooks/use-theme";
 
 // The light/dark switch. The mode lives in data-mode on <html> — the package's pre-paint script reads
 // the same storage key — so this component only writes through the package hook. Icon-only, 28px at

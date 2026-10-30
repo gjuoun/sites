@@ -19,7 +19,7 @@
   "dependencies": {
     "@astrojs/react": "7.1.2",
     "@astrojs/rss": "4.0.19",
-    "@gjuoun/bigface-business-ui": "workspace:*",
+    "@gjuoun/bigface-shadcn-ui": "workspace:*",
     "@tailwindcss/typography": "0.5.20",
     "@tailwindcss/vite": "4.3.3",
     "astro": "7.4.2",

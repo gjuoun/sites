@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-// The consumer contract, pinned: the theme comes from @gjuoun/bigface-business-ui, the only
+// The consumer contract, pinned: the theme comes from @gjuoun/bigface-shadcn-ui, the only
 // stylesheet is imports + one @source per stock component the app renders + the site font, and no
 // app source carries a colour of its own, a dark: variant or a retired token.
 const srcRoot = join(import.meta.dir, "..");
@@ -33,9 +33,9 @@ describe("the stylesheet is the package theme plus the site font", () => {
       .filter(Boolean);
     expect(top).toEqual([
       '@import "tailwindcss"',
-      '@import "@gjuoun/bigface-business-ui/styles.css"',
+      '@import "@gjuoun/bigface-shadcn-ui/styles.css"',
       '@import "@fontsource-variable/geist"',
-      '@source "../../../packages/bigface-business-ui/src/components/ui/badge.tsx"',
+      '@source "../../../packages/bigface-shadcn-ui/src/components/ui/badge.tsx"',
       "@theme inline",
     ]);
   });
@@ -49,12 +49,12 @@ describe("the stylesheet is the package theme plus the site font", () => {
   test("the @source list is exactly the stock components the app renders, transitively", () => {
     const uiDir = join(
       import.meta.dir,
-      "../../../../packages/bigface-business-ui/src/components/ui",
+      "../../../../packages/bigface-shadcn-ui/src/components/ui",
     );
     const used = new Set<string>();
     for (const file of allFiles.filter((f) => f.endsWith(".tsx") && !f.endsWith(".test.tsx"))) {
       for (const m of read(file).matchAll(
-        /@gjuoun\/bigface-business-ui\/components\/ui\/([\w-]+)/g,
+        /@gjuoun\/bigface-shadcn-ui\/components\/ui\/([\w-]+)/g,
       ))
         used.add(m[1] as string);
     }
@@ -66,7 +66,7 @@ describe("the stylesheet is the package theme plus the site font", () => {
       if (closure.has(name)) continue;
       closure.add(name);
       for (const m of read(join(uiDir, name + ".tsx")).matchAll(
-        /@gjuoun\/bigface-business-ui\/components\/ui\/([\w-]+)/g,
+        /@gjuoun\/bigface-shadcn-ui\/components\/ui\/([\w-]+)/g,
       ))
         queue.push(m[1] as string);
     }
@@ -97,7 +97,7 @@ describe("the app keeps no stock copy and no palette of its own", () => {
 
   test("the root document carries the theme, the mode and the pre-paint script", () => {
     const root = read(join(srcRoot, "routes/__root.tsx"));
-    expect(root).toContain("@gjuoun/bigface-business-ui/lib/themes");
+    expect(root).toContain("@gjuoun/bigface-shadcn-ui/lib/themes");
     expect(root).toContain("data-theme={DEFAULT_THEME}");
     expect(root).toContain("data-mode={DEFAULT_MODE}");
     expect(root).toContain("themeInitScript");
@@ -108,6 +108,6 @@ describe("the app keeps no stock copy and no palette of its own", () => {
     const pkg = JSON.parse(read(join(srcRoot, "../package.json"))) as {
       dependencies?: Record<string, string>;
     };
-    expect(pkg.dependencies?.["@gjuoun/bigface-business-ui"]).toStartWith("workspace:");
+    expect(pkg.dependencies?.["@gjuoun/bigface-shadcn-ui"]).toStartWith("workspace:");
   });
 });

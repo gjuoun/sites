@@ -14,7 +14,7 @@
   "dependencies": {
     "@astrojs/react": "7.1.0",
     "@base-ui/react": "1.9.0",
-    "@gjuoun/bigface-business-ui": "workspace:*",
+    "@gjuoun/bigface-shadcn-ui": "workspace:*",
     "@gjuoun/bigface-tokens": "workspace:*",
     "@gjuoun/bigface-ui": "workspace:*",
     "@shadcn/react": "0.3.1",

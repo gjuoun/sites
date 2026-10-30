@@ -1,7 +1,7 @@
 import { beforeAll, expect, test } from "bun:test";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import lightPaletteJson from "@gjuoun/bigface-tokens/palette-light.json";
+import { lightPalette } from "./data/palette.ts";
 import { MODES } from "@gjuoun/bigface-ui/lib/themes";
 import { $ } from "bun";
 import {
@@ -68,11 +68,13 @@ test("each page states how far it was checked", () => {
 	}
 });
 
-test("pages use the palette: background, a syntax colour, and the original JetBrains source labels", () => {
+test("pages use the palette: background, a syntax colour, and the ANSI alias labels", () => {
 	expect(page("")).toContain("#252925");
 	const pal = page("palette");
 	expect(pal).toContain("#00b0ff");
-	expect(pal).toContain("DEFAULT_KEYWORD#FOREGROUND");
+	// One palette file, no JetBrains provenance: an ANSI slot shows the colour it aliases instead.
+	expect(pal).toContain("→ blue");
+	expect(pal).not.toContain("DEFAULT_KEYWORD#FOREGROUND");
 	// Neutral collapse (2026-10-25): the neutrals are derived from the background by one formula; the accents are the scheme's own.
 	expect(pal).toContain("derived from the background");
 	expect(pal).not.toContain("blended");
@@ -234,7 +236,7 @@ test("the page root carries the default theme and mode", () => {
 // shown side by side there. The console page keeps its two scopes. The retired game theme is on neither.
 test("the business catalogue is one business theme with 63 components; console keeps its scopes; game is offline", () => {
 	const business = page("ui/business");
-	expect(business).toContain('data-theme="business" data-mode="light"');
+	expect(business).toContain('data-theme="bigface" data-mode="light"');
 	const scopeAt = [...business.matchAll(/data-slot="theme-scope"/g)].map((m) => m.index ?? -1);
 	expect(scopeAt.length, "the colour section shows light and dark scopes").toBeGreaterThan(0);
 	const colourAt = business.indexOf('id="colour"');
@@ -279,7 +281,7 @@ test("the site only ships colours that exist in the palette", () => {
 	// else is still an offence; themes.test.ts proves each derived value is such a mix.
 	// The derived values of both generators: the console package's mixes, and the business package's mixes and solved
 	// plates (its themes.test.ts proves each business value is a palette colour, a mix, or a solved plate).
-	const themeHexes = ["../../packages/ui/src/themes", "../../packages/bigface-business-ui/src/themes"].flatMap((dir) =>
+	const themeHexes = ["../../packages/ui/src/themes", "../../packages/bigface-shadcn-ui/src/themes"].flatMap((dir) =>
 		readdirSync(join(siteDir, dir), "utf8")
 			.filter((f) => f.endsWith(".css"))
 			.flatMap((f) =>
@@ -288,7 +290,7 @@ test("the site only ships colours that exist in the palette", () => {
 	);
 	const known = new Set([
 		...paletteHexes(palette),
-		...paletteHexes(lightPaletteJson as unknown as Palette),
+		...paletteHexes(lightPalette),
 		...themeHexes,
 	]);
 	const htmlFiles = readdirSync(dist, {
