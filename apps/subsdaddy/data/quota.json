@@ -3,97 +3,97 @@
     {
       "lane": "commandcode-goat",
       "unavailable": "Command Code session is invalid or expired. Sign in to commandcode.ai again.",
-      "measured_at": "2026-10-28T01:50:01.155Z",
+      "measured_at": "2026-10-30T17:27:01.388Z",
       "source": "codexbar usage"
     },
     {
       "lane": "opencode-go",
       "window": "weekly",
       "window_minutes": 10080,
-      "used_pct": 54.6145112,
+      "used_pct": 79.70608313333334,
       "resets_at": "2026-11-01T23:59:59Z",
       "windows": [
         {
           "window": "5h",
           "window_minutes": 300,
-          "used_pct": 22.51062575,
-          "resets_at": "2026-10-28T02:15:10Z",
+          "used_pct": 6.261017083333334,
+          "resets_at": "2026-10-30T21:47:02Z",
           "source": "codexbar quota reading",
-          "measured_at": "2026-10-28T01:50:01.155Z"
+          "measured_at": "2026-10-30T17:27:01.388Z"
         },
         {
           "window": "weekly",
           "window_minutes": 10080,
-          "used_pct": 54.6145112,
+          "used_pct": 79.70608313333334,
           "resets_at": "2026-11-01T23:59:59Z",
           "source": "codexbar quota reading",
-          "measured_at": "2026-10-28T01:50:01.155Z"
+          "measured_at": "2026-10-30T17:27:01.388Z"
         },
         {
           "window": "monthly",
           "window_minutes": 43200,
-          "used_pct": 77.3072556,
+          "used_pct": 89.85304156666668,
           "resets_at": "2026-11-19T00:27:51Z",
           "source": "codexbar quota reading",
-          "measured_at": "2026-10-28T01:50:01.155Z"
+          "measured_at": "2026-10-30T17:27:01.388Z"
         }
       ],
       "vendor_pool": null,
-      "measured_at": "2026-10-28T01:50:01.155Z",
+      "measured_at": "2026-10-30T17:27:01.388Z",
       "source": "codexbar quota reading"
     },
     {
       "lane": "zai-glm-max",
       "window": "weekly",
       "window_minutes": 10080,
-      "used_pct": 2,
+      "used_pct": 65,
       "resets_at": "2026-11-02T04:43:38Z",
       "plan_level": "max",
       "windows": [
         {
           "window": "5h",
           "window_minutes": 300,
-          "used_pct": 1,
-          "resets_at": "2026-10-28T05:01:07Z",
+          "used_pct": 3,
+          "resets_at": "2026-10-30T21:03:21Z",
           "source": "codexbar quota reading",
-          "measured_at": "2026-10-28T01:50:01.155Z"
+          "measured_at": "2026-10-30T17:27:01.388Z"
         },
         {
           "window": "weekly",
           "window_minutes": 10080,
-          "used_pct": 2,
+          "used_pct": 65,
           "resets_at": "2026-11-02T04:43:38Z",
           "source": "codexbar quota reading",
-          "measured_at": "2026-10-28T01:50:01.155Z"
+          "measured_at": "2026-10-30T17:27:01.388Z"
         }
       ],
       "vendor_pool": null,
-      "measured_at": "2026-10-28T01:50:01.155Z",
+      "measured_at": "2026-10-30T17:27:01.388Z",
       "source": "codexbar quota reading"
     },
     {
       "lane": "qwen-cloud-token",
       "window": "monthly",
       "window_minutes": 43200,
-      "used_pct": 55.06530853025255,
+      "used_pct": 56.91833967166432,
       "resets_at": "2026-11-24T16:00:00Z",
-      "credits_used": 14041.65,
+      "credits_used": 14514.18,
       "credits_total": 25500,
       "windows": [
         {
           "window": "monthly",
           "window_minutes": 43200,
-          "used_pct": 55.06530853025255,
+          "used_pct": 56.91833967166432,
           "resets_at": "2026-11-24T16:00:00Z",
           "source": "codexbar quota reading",
-          "measured_at": "2026-10-28T01:50:01.155Z"
+          "measured_at": "2026-10-30T17:27:01.388Z"
         }
       ],
       "vendor_pool": null,
-      "measured_at": "2026-10-28T01:50:01.155Z",
+      "measured_at": "2026-10-30T17:27:01.388Z",
       "source": "codexbar quota reading"
     }
   ],
-  "measured_at": "2026-10-28T01:50:01.155Z",
+  "measured_at": "2026-10-30T17:27:01.388Z",
   "source": "codexbar usage (probe-quota)"
 }
