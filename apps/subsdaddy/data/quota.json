@@ -2,44 +2,71 @@
   "observations": [
     {
       "lane": "commandcode-goat",
-      "unavailable": "Command Code session is invalid or expired. Sign in to commandcode.ai again.",
-      "measured_at": "2026-10-30T17:42:18.349Z",
-      "source": "codexbar usage"
+      "window": "weekly",
+      "window_minutes": 10080,
+      "used_pct": 0.059358,
+      "resets_at": "2026-11-04T15:51:20Z",
+      "windows": [
+        {
+          "window": "weekly",
+          "window_minutes": 10080,
+          "used_pct": 0.059358,
+          "resets_at": "2026-11-04T15:51:20Z",
+          "source": "codexbar quota reading",
+          "measured_at": "2026-10-30T17:57:33.377Z"
+        },
+        {
+          "window": "monthly",
+          "window_minutes": 43200,
+          "used_pct": 50.03064635757143,
+          "resets_at": "2026-11-21T15:49:16Z",
+          "source": "codexbar quota reading",
+          "measured_at": "2026-10-30T17:57:33.377Z"
+        }
+      ],
+      "vendor_pool": {
+        "used_usd": 35.02,
+        "total_usd": 70,
+        "source": "codexbar plan line",
+        "measured_at": "2026-10-30T17:57:33.377Z"
+      },
+      "measured_at": "2026-10-30T17:57:33.377Z",
+      "source": "codexbar quota reading"
     },
     {
       "lane": "opencode-go",
       "window": "weekly",
       "window_minutes": 10080,
-      "used_pct": 80.2113112,
+      "used_pct": 80.3915293,
       "resets_at": "2026-11-01T23:59:59Z",
       "windows": [
         {
           "window": "5h",
           "window_minutes": 300,
-          "used_pct": 7.52408725,
+          "used_pct": 7.9746325,
           "resets_at": "2026-10-30T21:47:02Z",
           "source": "codexbar quota reading",
-          "measured_at": "2026-10-30T17:42:18.349Z"
+          "measured_at": "2026-10-30T17:57:33.377Z"
         },
         {
           "window": "weekly",
           "window_minutes": 10080,
-          "used_pct": 80.2113112,
+          "used_pct": 80.3915293,
           "resets_at": "2026-11-01T23:59:59Z",
           "source": "codexbar quota reading",
-          "measured_at": "2026-10-30T17:42:18.349Z"
+          "measured_at": "2026-10-30T17:57:33.377Z"
         },
         {
           "window": "monthly",
           "window_minutes": 43200,
-          "used_pct": 90.1056556,
+          "used_pct": 90.19576465,
           "resets_at": "2026-11-19T00:27:51Z",
           "source": "codexbar quota reading",
-          "measured_at": "2026-10-30T17:42:18.349Z"
+          "measured_at": "2026-10-30T17:57:33.377Z"
         }
       ],
       "vendor_pool": null,
-      "measured_at": "2026-10-30T17:42:18.349Z",
+      "measured_at": "2026-10-30T17:57:33.377Z",
       "source": "codexbar quota reading"
     },
     {
@@ -53,10 +80,10 @@
         {
           "window": "5h",
           "window_minutes": 300,
-          "used_pct": 3,
+          "used_pct": 4,
           "resets_at": "2026-10-30T21:03:21Z",
           "source": "codexbar quota reading",
-          "measured_at": "2026-10-30T17:42:18.349Z"
+          "measured_at": "2026-10-30T17:57:33.377Z"
         },
         {
           "window": "weekly",
@@ -64,36 +91,36 @@
           "used_pct": 65,
           "resets_at": "2026-11-02T04:43:38Z",
           "source": "codexbar quota reading",
-          "measured_at": "2026-10-30T17:42:18.349Z"
+          "measured_at": "2026-10-30T17:57:33.377Z"
         }
       ],
       "vendor_pool": null,
-      "measured_at": "2026-10-30T17:42:18.349Z",
+      "measured_at": "2026-10-30T17:57:33.377Z",
       "source": "codexbar quota reading"
     },
     {
       "lane": "qwen-cloud-token",
       "window": "monthly",
       "window_minutes": 43200,
-      "used_pct": 57.08445855585255,
+      "used_pct": 57.37135147538981,
       "resets_at": "2026-11-24T16:00:00Z",
-      "credits_used": 14556.54,
+      "credits_used": 14629.69,
       "credits_total": 25500,
       "windows": [
         {
           "window": "monthly",
           "window_minutes": 43200,
-          "used_pct": 57.08445855585255,
+          "used_pct": 57.37135147538981,
           "resets_at": "2026-11-24T16:00:00Z",
           "source": "codexbar quota reading",
-          "measured_at": "2026-10-30T17:42:18.349Z"
+          "measured_at": "2026-10-30T17:57:33.377Z"
         }
       ],
       "vendor_pool": null,
-      "measured_at": "2026-10-30T17:42:18.349Z",
+      "measured_at": "2026-10-30T17:57:33.377Z",
       "source": "codexbar quota reading"
     }
   ],
-  "measured_at": "2026-10-30T17:42:18.349Z",
+  "measured_at": "2026-10-30T17:57:33.377Z",
   "source": "codexbar usage (probe-quota)"
 }
