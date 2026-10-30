@@ -22,15 +22,15 @@ const nav = [
 >
 <header
   id="site-header"
-  class="sticky top-0 z-40 border-b border-transparent transition-[border-color,background] duration-300 ease-bf [&.scrolled]:border-bf-border [&.scrolled]:bg-bf-border-muted/92 [&.scrolled]:backdrop-blur-[18px] [&.scrolled]:backdrop-saturate-150"
+  class="sticky top-0 z-40 border-b border-transparent transition-[border-color,background] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] [&.scrolled]:border-bf-border [&.scrolled]:bg-bf-border-muted/92 [&.scrolled]:backdrop-blur-[18px] [&.scrolled]:backdrop-saturate-150"
 >
-  <div class="bf-wrap flex items-center justify-between gap-4 py-[0.85rem]">
+  <div class="mx-auto w-[min(1180px,100%-2.5rem)] max-[760px]:w-[min(1180px,100%-1.75rem)] flex items-center justify-between gap-4 py-[0.85rem]">
     <a
       class="group inline-flex items-center gap-[0.65rem] font-display text-[1.1rem] font-bold tracking-[-0.01em] text-foreground no-underline hover:text-foreground"
       href={`${base}/`}
     >
       <span
-        class="grid size-[34px] place-items-center rounded-[9px] bg-bf-border-muted font-code text-[1.05rem] text-bf-blue shadow-[0_0_0_1px_var(--bf-selection)] transition-transform duration-400 ease-bf group-hover:scale-[1.06] group-hover:-rotate-6"
+        class="grid size-[34px] place-items-center rounded-[9px] bg-bf-border-muted font-mono text-[1.05rem] text-bf-blue shadow-[0_0_0_1px_var(--bf-selection)] transition-transform duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.06] group-hover:-rotate-6"
         aria-hidden="true">黢</span
       >
       <span class="max-[520px]:sr-only">Qu Black</span>

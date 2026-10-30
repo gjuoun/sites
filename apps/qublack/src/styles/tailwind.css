@@ -25,21 +25,12 @@
 }
 
 @theme inline {
-  --font-heading: var(--font-sans);
   --font-sans: "Qu Black Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "Qu Black Mono", ui-monospace, "SF Mono", Menlo, monospace;
   --font-display: "Qu Black Sans", "Helvetica Neue", system-ui, sans-serif;
-  --ease-bf: cubic-bezier(0.22, 1, 0.36, 1);
-  --animate-hue: bf-hue 12s var(--ease-bf) infinite alternate;
-  --animate-ring: bf-ring 22s linear infinite;
-  --animate-marquee: bf-marquee 42s linear infinite;
-  --animate-blink: bf-blink 1.1s step-end infinite;
-
-  @keyframes bf-blink {
-    50% {
-      opacity: 0;
-    }
-  }
+  /* The two motions the site keeps: the headline sweep and the drifting glows. */
+  --animate-hue: bf-hue 12s cubic-bezier(0.22, 1, 0.36, 1) infinite alternate;
+  --animate-drift: bf-drift 26s cubic-bezier(0.22, 1, 0.36, 1) infinite alternate;
 
   @keyframes bf-hue {
     from {
@@ -47,16 +38,6 @@
     }
     to {
       background-position: 100% 50%;
-    }
-  }
-  @keyframes bf-ring {
-    to {
-      transform: rotate(1turn);
-    }
-  }
-  @keyframes bf-marquee {
-    to {
-      transform: translateX(-50%);
     }
   }
   --color-sidebar-ring: var(--sidebar-ring);
@@ -173,65 +154,6 @@
   --sidebar-ring: var(--bf-blue);
 }
 
-/* One two-column grid for the whole site: equal tracks, one 16px gutter, so every section
-   splits on the same vertical line. `bf-cols` goes two-up at 900px, `bf-cols-xl` at 1180px
-   (the hero needs the wider stack); both share the template and the gap. */
-@utility bf-cols {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 1rem;
-  @media (min-width: 900px) {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  }
-}
-
-@utility bf-cols-xl {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 1rem;
-  @media (min-width: 1180px) {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  }
-}
-
-/* The page column: 1180px max, 1.25rem gutters (0.875rem on phones). */
-@utility bf-wrap {
-  width: min(1180px, 100% - 2.5rem);
-  margin-inline: auto;
-  @media (max-width: 760px) {
-    width: min(1180px, 100% - 1.75rem);
-  }
-}
-
-/* The moving caret → pale blue → blue → lime headline ink. */
-@utility bf-grad {
-  background: linear-gradient(
-    100deg,
-    var(--bf-caret) 6%,
-    var(--bf-pale-blue) 30%,
-    var(--bf-blue) 55%,
-    var(--bf-lime) 96%
-  );
-  background-size: 220% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation: var(--animate-hue);
-}
-
-/* Lead paragraph under a heading. */
-@utility bf-lead {
-  font-size: clamp(1.05rem, 1.7vw, 1.3rem);
-  color: var(--fg-muted);
-  max-width: 56ch;
-}
-
-/* The code face: Qu Black Mono, always with ligatures off — this family has none on purpose. */
-@utility font-code {
-  font-family: var(--font-mono);
-  font-variant-ligatures: none;
-}
-
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -331,7 +253,7 @@
         transparent 60%
       );
     filter: blur(8px);
-    animation: bf-drift 26s var(--ease-bf) infinite alternate;
+    animation: bf-drift 26s cubic-bezier(0.22, 1, 0.36, 1) infinite alternate;
     pointer-events: none;
   }
 
@@ -455,8 +377,8 @@
     opacity: 0;
     transform: translateY(16px);
     transition:
-      opacity 0.7s var(--ease-bf),
-      transform 0.7s var(--ease-bf);
+      opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .js [data-reveal].in {

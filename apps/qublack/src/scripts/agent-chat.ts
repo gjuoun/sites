@@ -29,13 +29,13 @@ if (form && input && thread && dataNode) {
     "[&_[data-md-heading]]:m-0 [&_[data-md-heading]]:font-bold [&_[data-md-heading]]:text-[0.92rem] " +
     "[&_[data-md-inline-code]]:rounded-[4px] [&_[data-md-inline-code]]:bg-bf-border/25 " +
     "[&_[data-md-inline-code]]:px-[0.3em] [&_[data-md-inline-code]]:py-[0.05em] " +
-    "[&_[data-md-inline-code]]:font-code [&_[data-md-inline-code]]:text-[0.9em] " +
+    "[&_[data-md-inline-code]]:font-mono [&_[data-md-inline-code]]:text-[0.9em] " +
     "[&_[data-md-list]]:my-0 [&_[data-md-list]]:ml-[1.05rem] [&_[data-md-list]]:list-disc [&_[data-md-list]]:p-0 " +
     "[&_pre[data-md-code]]:mt-0 [&_pre[data-md-code]]:mb-0 [&_pre[data-md-code]]:max-w-full " +
     "[&_pre[data-md-code]]:overflow-x-auto " +
     "[&_pre[data-md-code]]:rounded-[9px] [&_pre[data-md-code]]:border [&_pre[data-md-code]]:border-bf-border/80 " +
     "[&_pre[data-md-code]]:bg-bf-bg/70 [&_pre[data-md-code]]:px-[0.6rem] [&_pre[data-md-code]]:py-[0.5rem] " +
-    "[&_pre[data-md-code]]:font-code [&_pre[data-md-code]]:text-[0.72rem] [&_pre[data-md-code]]:leading-[1.55] " +
+    "[&_pre[data-md-code]]:font-mono [&_pre[data-md-code]]:text-[0.72rem] [&_pre[data-md-code]]:leading-[1.55] " +
     "[&_pre[data-md-code]]:text-bf-fg";
 
   let replyIndex = 0;
@@ -67,7 +67,7 @@ if (form && input && thread && dataNode) {
     ].join(" ");
     const meta = document.createElement("p");
     meta.className =
-      "m-0 mb-[0.3rem] font-code text-[0.62rem] tracking-[0.06em] text-bf-fg-muted uppercase";
+      "m-0 mb-[0.3rem] font-mono text-[0.62rem] tracking-[0.06em] text-bf-fg-muted uppercase";
     meta.textContent = role === "user" ? "you · now" : "agent · streaming";
     const body = document.createElement("div");
     body.className = bodyClass;

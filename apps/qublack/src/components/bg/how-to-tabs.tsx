@@ -15,8 +15,8 @@ function HowToCardPlate({ card }: { card: HowToCard }) {
     >
       <header className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 px-3 pt-[0.6rem] pb-2">
         <div className="flex min-w-0 flex-wrap items-baseline gap-x-2">
-          <span className="font-code text-[0.8rem] text-foreground">{card.title}</span>
-          {card.path && <span className="font-code text-[0.68rem] text-bf-dim">{card.path}</span>}
+          <span className="font-mono text-[0.8rem] text-foreground">{card.title}</span>
+          {card.path && <span className="font-mono text-[0.68rem] text-bf-dim">{card.path}</span>}
         </div>
         {card.code && (
           <BGButton

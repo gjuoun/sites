@@ -18,9 +18,9 @@ const stats = [
 ---
 
 <section id="specimen" class="scroll-mt-24 pt-[clamp(1.5rem,5vw,3.5rem)] pb-6">
-  <div class="bf-wrap" data-reveal>
+  <div class="mx-auto w-[min(1180px,100%-2.5rem)] max-[760px]:w-[min(1180px,100%-1.75rem)]" data-reveal>
     <div
-      class="bf-cols-xl"
+      class="grid grid-cols-1 gap-4 min-[1180px]:grid-cols-2"
       data-two-column
     >
       <div>
@@ -29,11 +29,11 @@ const stats = [
         <h1
           class="mt-[0.6rem] mb-[0.4rem] text-[clamp(3.2rem,7vw,5.2rem)] font-extrabold tracking-[-0.035em]"
         >
-          <span class="bf-grad">黢黑</span>
+          <span class="bg-linear-100/srgb from-chart-3 via-primary to-chart-2 [background-size:220%_100%] bg-clip-text text-transparent animate-hue">黢黑</span>
           <span class="text-foreground">Qu Black</span>
         </h1>
 
-        <p class="bf-lead">
+        <p class="max-w-[56ch] text-[clamp(1.05rem,1.7vw,1.3rem)] text-foreground/75">
           Your agent answers in English, 中文 and code — in the same message. Qu Black renders all
           three on one grid: <strong class="text-foreground">Qu Black Mono</strong> keeps a
           measured <strong class="text-foreground">2:1</strong> cell (汉 1.200em, ASCII 0.600em), so diffs,
@@ -52,10 +52,10 @@ const stats = [
           {
             stats.map((stat) => (
               <div class="bg-bf-border-muted/80 px-[0.8rem] py-[0.65rem]">
-                <dt class="font-code text-[0.58rem] tracking-[0.08em] text-bf-dim uppercase">
+                <dt class="font-mono text-[0.58rem] tracking-[0.08em] text-bf-dim uppercase">
                   {stat.label}
                 </dt>
-                <dd class="m-0 font-code text-[0.95rem] text-foreground">{stat.value}</dd>
+                <dd class="m-0 font-mono text-[0.95rem] text-foreground">{stat.value}</dd>
               </div>
             ))
           }
@@ -80,13 +80,13 @@ const stats = [
              this row past the phone width; below 760px the label tightens its tracking instead of
              wrapping, so the two halves keep one centreline. -->
         <span
-          class="font-code text-[0.72rem] tracking-[0.14em] text-bf-fg-muted uppercase max-[760px]:tracking-[0.08em]"
+          class="font-mono text-[0.72rem] tracking-[0.14em] text-bf-fg-muted uppercase max-[760px]:tracking-[0.08em]"
         >
           editable specimen<span class="hidden min-[760px]:inline"
             > — click and type, Enter to commit, Esc to revert</span
           >
         </span>
-        <span id="face-label" class="font-code text-[0.72rem] text-bf-blue" aria-live="polite"
+        <span id="face-label" class="font-mono text-[0.72rem] text-bf-blue" aria-live="polite"
           >Qu Black Sans Regular</span
         >
       </div>
@@ -121,7 +121,7 @@ const stats = [
       >
         <div class="flex flex-wrap items-center gap-x-4 gap-y-2" data-control-groups>
           <div class="flex items-center gap-2" data-control-group="family">
-            <span class="min-w-[3.25rem] font-code text-[0.72rem] text-bf-dim uppercase">family</span>
+            <span class="min-w-[3.25rem] font-mono text-[0.72rem] text-bf-dim uppercase">family</span>
             <BGButton tone="chip" data-control="family" data-value="sans" aria-pressed="true"
               >Sans</BGButton
             >
@@ -130,7 +130,7 @@ const stats = [
             >
           </div>
           <div class="flex items-center gap-2" data-control-group="weight">
-            <span class="min-w-[3.25rem] font-code text-[0.72rem] text-bf-dim uppercase">weight</span>
+            <span class="min-w-[3.25rem] font-mono text-[0.72rem] text-bf-dim uppercase">weight</span>
             <BGButton tone="chip" data-control="weight" data-value="regular" aria-pressed="true"
               >Regular</BGButton
             >
@@ -139,13 +139,13 @@ const stats = [
             >
           </div>
           <div class="flex items-center gap-2" data-control-group="style">
-            <span class="min-w-[3.25rem] font-code text-[0.72rem] text-bf-dim uppercase">style</span>
+            <span class="min-w-[3.25rem] font-mono text-[0.72rem] text-bf-dim uppercase">style</span>
             <BGButton tone="chip" data-control="italic" data-value="toggle" aria-pressed="false"
               >Italic</BGButton
             >
           </div>
         </div>
-        <span class="ml-auto font-code text-[0.7rem] text-bf-dim" data-control-metrics>
+        <span class="ml-auto font-mono text-[0.7rem] text-bf-dim" data-control-metrics>
           keys: B/L bold · M/N mono · S sans · I italic · ↓↑ sections · 1–8 jump
         </span>
       </div>

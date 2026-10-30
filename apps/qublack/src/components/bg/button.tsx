@@ -16,11 +16,11 @@ export const bgButtonVariants = cva("", {
       ghost:
         "h-auto rounded-full border-bf-selection bg-bf-border/6 px-[1.15rem] py-[0.7rem] text-[0.94rem] font-semibold text-foreground no-underline hover:border-bf-blue hover:bg-bf-blue/8 hover:text-bf-blue",
       // the small mono "copy" pill
-      copy: "h-auto cursor-pointer gap-1.5 rounded-full border-bf-selection bg-bf-border/8 px-[0.6rem] py-[0.35rem] font-code text-[0.72rem] font-normal tracking-[0.04em] text-bf-fg-muted hover:border-bf-blue hover:bg-bf-blue/12 hover:text-foreground [&.done]:border-bf-lime [&.done]:text-bf-lime",
+      copy: "h-auto cursor-pointer gap-1.5 rounded-full border-bf-selection bg-bf-border/8 px-[0.6rem] py-[0.35rem] font-mono text-[0.72rem] font-normal tracking-[0.04em] text-bf-fg-muted hover:border-bf-blue hover:bg-bf-blue/12 hover:text-foreground [&.done]:border-bf-lime [&.done]:text-bf-lime",
       // header link with a hairline: the GitHub call to action
       nav: "h-auto rounded-full border-bf-selection bg-transparent px-3 py-[0.4rem] text-[0.9rem] font-normal text-foreground no-underline hover:border-bf-blue hover:bg-transparent hover:text-bf-blue",
       // filter / chip that fills when aria-pressed
-      chip: "h-auto cursor-pointer rounded-full border-bf-border bg-bf-border/4 px-[0.8rem] py-[0.35rem] font-code text-[0.78rem] leading-[1.65] font-normal tracking-[0.04em] text-bf-fg-muted transition-[color,border-color,background] duration-200 hover:border-bf-selection hover:bg-bf-border/4 hover:text-foreground aria-pressed:border-bf-blue aria-pressed:bg-bf-blue aria-pressed:text-ink-on-bright aria-pressed:hover:bg-bf-blue aria-pressed:hover:text-ink-on-bright",
+      chip: "h-auto cursor-pointer rounded-full border-bf-border bg-bf-border/4 px-[0.8rem] py-[0.35rem] font-mono text-[0.78rem] leading-[1.65] font-normal tracking-[0.04em] text-bf-fg-muted transition-[color,border-color,background] duration-200 hover:border-bf-selection hover:bg-bf-border/4 hover:text-foreground aria-pressed:border-bf-blue aria-pressed:bg-bf-blue aria-pressed:text-ink-on-bright aria-pressed:hover:bg-bf-blue aria-pressed:hover:text-ink-on-bright",
     },
   },
   defaultVariants: { tone: "none" },

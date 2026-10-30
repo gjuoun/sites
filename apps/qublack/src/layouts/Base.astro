@@ -38,7 +38,7 @@ const style = Object.entries(vars)
 ---
 
 <!doctype html>
-<html lang="en" class="dark" style={style}>
+<html lang="en" class="dark [font-variant-ligatures:none]" style={style}>
   <head>
     <meta charset="utf-8" />
     <script is:inline>
@@ -60,7 +60,7 @@ const style = Object.entries(vars)
   </head>
   <body>
     <BGSiteHeader base={base} repo={REPO} />
-    <main id="main"><slot /></main>
+    <main id="main" class="mx-auto w-[min(1180px,100%-2.5rem)] max-[760px]:w-[min(1180px,100%-1.75rem)]"><slot /></main>
     <BGSiteFooter base={base} repo={REPO} />
     <BGToast />
 
