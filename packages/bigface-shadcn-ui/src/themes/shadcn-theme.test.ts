@@ -36,7 +36,7 @@ describe("styles.css is shadcn's default theme", () => {
 		const top = stripComments(styles).replace(/\{[^{}]*(\{[^{}]*\}[^{}]*)*\}/g, "{}");
 		const statements = top.split(/;|\{\}/).map((s) => s.trim().replace(/\s+/g, " ")).filter(Boolean);
 		expect(statements).toEqual([
-			'@import "../themes/business.css"',
+			'@import "../themes/bigface.css"',
 			'@import "shadcn/tailwind.css"',
 			'@custom-variant dark (&:where([data-mode="dark"], [data-mode="dark"] *))',
 			"@theme inline",
@@ -74,7 +74,7 @@ describe("styles.css is shadcn's default theme", () => {
 	});
 });
 
-test("every --theme-* read is a declared palette colour, and business.css declares exactly them", () => {
+test("every --theme-* read is a declared palette colour, and bigface.css declares exactly them", () => {
 	const declared = new Set(REQUIRED.map((k) => "--theme-" + k));
 	const readers = [...sources("components"), ...sources("lib"), ...sources("hooks"), join(SRC, "styles", "styles.css")];
 	const business = join(SRC, "..", "..", "..", "apps", "bigface", "src", "pages", "ui", "business");
@@ -86,7 +86,7 @@ test("every --theme-* read is a declared palette colour, and business.css declar
 		for (const m of readFileSync(f, "utf8").matchAll(/--theme-([A-Za-z][\w-]*)/g)) reads.add("--theme-" + m[1]);
 	}
 	expect([...reads].filter((n) => !declared.has(n))).toEqual([]);
-	const block = readFileSync(join(SRC, "themes", "business.css"), "utf8");
+	const block = readFileSync(join(SRC, "themes", "bigface.css"), "utf8");
 	const names = [...new Set([...block.matchAll(/^\s*(--theme-[\w-]+):/gm)].map((m) => m[1] as string))].sort();
 	expect(names).toEqual([...declared].sort());
 });

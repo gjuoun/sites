@@ -1,4 +1,4 @@
-// The business theme as data: COLOUR ONLY, and in the palette's own names.
+// The Bigface theme as data: COLOUR ONLY, and in the palette's own names.
 //
 // A role IS a palette colour: `bg` means the palette's `bg`. The neutrals and accents the components
 // actually use. Each is written twice, a light hex and a dark hex, in shadcn's two blocks; there is no
@@ -12,8 +12,8 @@ export const NEUTRALS = ["bg", "panel", "fg", "fgDim", "border", "highlight"] as
 /**
  * The accents the components read: primary and ring, destructive, success, info, and the chart ramp
  * (blue → lightBlue → paleBlue → cyan → green) and burntOrange for danger. yellow is the theme's one
- * yellow — the palette's #ffeb3b in both modes — read as ink on a highlighted run of text; the palette
- * has exactly one yellow, so no second one is defined. lime and purple stay accent-docs data.
+ * yellow — the palette's #ffeb3b in both modes — carried as a fill and an underline accent; on paper it
+ * is never body ink (it measures 1.12:1 there). lime and purple stay palette data for ANSI and syntax.
  */
 export const ACCENTS = [
 	"blue",
@@ -26,13 +26,10 @@ export const ACCENTS = [
 ] as const;
 
 /**
- * Roles whose light-mode ink is derived rather than borrowed. A role normally names one palette colour
- * for both blocks; the yellow is the exception, because it is read as ink: the palette's bright yellow
- * measures 1.12:1 on the light paper. The light block therefore carries the same hue and chroma with its
- * OKLCH lightness lowered until it clears AA (darkenUntil in the palette pipeline) — derived by the
- * generator, never picked by hand. The dark block keeps the palette value untouched.
+ * No role is derived. Every value in both blocks is the palette hex itself, so the theme and the palette
+ * can be compared row by row — the light yellow is the palette's yellow (#ffeb3b), not a darkened ink.
+ * A role whose colour cannot read as text on paper is used as a fill there, never as body ink.
  */
-export const LIGHT_DERIVED = ["yellow"] as const;
 
 /** Every role a theme must set. */
 export const REQUIRED = [...NEUTRALS, ...ACCENTS] as const;
@@ -51,7 +48,7 @@ export interface Theme {
 }
 
 /**
- * The business role map is the identity: each role names the palette colour of the same name.
+ * The Bigface role map is the identity: each role names the palette colour of the same name.
  * The map stays (rather than being dropped) because a theme is data: a second theme could point a
  * role at a different palette colour without touching the generator.
  */
@@ -61,10 +58,10 @@ export const COLOURS: ThemeRoles = {
 
 export const THEMES: Theme[] = [
 	{
-		id: "business",
-		label: "Business",
+		id: "bigface",
+		label: "Bigface",
 		isDefault: true,
-		purpose: "The light, quiet marketing and product surfaces, with a dark mode for the same pages.",
+		purpose: "The Bigface palette on shadcn's stock components: paper-light, green-grey dark.",
 		roles: COLOURS,
 	},
 ];
@@ -74,5 +71,5 @@ export const MODE_STORAGE_KEY = "bigface-mode";
 export const MODES = ["light", "dark"] as const;
 export type Mode = (typeof MODES)[number];
 export const DEFAULT_THEME = (THEMES.find((t) => t.isDefault) as Theme).id;
-/** The business package defaults to light: a quiet marketing surface is paper first. */
+/** The Bigface package defaults to light: the paper mode is the theme's own starting point. */
 export const DEFAULT_MODE: Mode = "light";

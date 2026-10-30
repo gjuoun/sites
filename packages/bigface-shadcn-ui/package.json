@@ -1,16 +1,16 @@
 {
-  "name": "@gjuoun/bigface-business-ui",
+  "name": "@gjuoun/bigface-shadcn-ui",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Bigface business theme for Tailwind: 63 stock shadcn components and one light+dark theme generated from the Bigface palettes.",
+  "description": "Bigface for Tailwind: 63 stock shadcn components and one light+dark theme generated from palette/palette.json.",
   "license": "MIT",
   "keywords": [
     "shadcn",
     "tailwindcss",
     "react",
     "bigface",
-    "business"
+    "shadcn"
   ],
   "sideEffects": [
     "**/*.css"

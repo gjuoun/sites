@@ -8,11 +8,11 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@gjuoun/bigface-business-ui/components/ui/dialog"
+} from "@gjuoun/bigface-shadcn-ui/components/ui/dialog"
 import {
   InputGroup,
   InputGroupAddon,
-} from "@gjuoun/bigface-business-ui/components/ui/input-group"
+} from "@gjuoun/bigface-shadcn-ui/components/ui/input-group"
 import { SearchIcon, CheckIcon } from "lucide-react"
 
 function Command({

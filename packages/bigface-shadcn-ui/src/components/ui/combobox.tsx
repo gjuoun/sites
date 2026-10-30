@@ -4,13 +4,13 @@ import * as React from "react"
 import { Combobox as ComboboxPrimitive } from "@base-ui/react"
 import { cn } from "cn"
 
-import { Button } from "@gjuoun/bigface-business-ui/components/ui/button"
+import { Button } from "@gjuoun/bigface-shadcn-ui/components/ui/button"
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupButton,
   InputGroupInput,
-} from "@gjuoun/bigface-business-ui/components/ui/input-group"
+} from "@gjuoun/bigface-shadcn-ui/components/ui/input-group"
 import { ChevronDownIcon, XIcon, CheckIcon } from "lucide-react"
 
 const Combobox = ComboboxPrimitive.Root

@@ -13,11 +13,11 @@
   "iconLibrary": "lucide",
   "rtl": false,
   "aliases": {
-    "components": "@gjuoun/bigface-business-ui/components",
-    "utils": "@gjuoun/bigface-business-ui/lib/utils",
-    "ui": "@gjuoun/bigface-business-ui/components/ui",
-    "lib": "@gjuoun/bigface-business-ui/lib",
-    "hooks": "@gjuoun/bigface-business-ui/hooks"
+    "components": "@gjuoun/bigface-shadcn-ui/components",
+    "utils": "@gjuoun/bigface-shadcn-ui/lib/utils",
+    "ui": "@gjuoun/bigface-shadcn-ui/components/ui",
+    "lib": "@gjuoun/bigface-shadcn-ui/lib",
+    "hooks": "@gjuoun/bigface-shadcn-ui/hooks"
   },
   "menuColor": "default",
   "menuAccent": "subtle",

@@ -2,7 +2,7 @@ import * as React from "react"
 import { Questionnaire as QuestionnairePrimitive } from "@shadcn/react/questionnaire"
 import { cn } from "cn"
 
-import { buttonVariants, type Button } from "@gjuoun/bigface-business-ui/components/ui/button"
+import { buttonVariants, type Button } from "@gjuoun/bigface-shadcn-ui/components/ui/button"
 import { CheckIcon } from "lucide-react"
 
 function Questionnaire({

@@ -7,7 +7,7 @@ import {
 } from "@shadcn/react/message-scroller"
 import { cn } from "cn"
 
-import { Button } from "@gjuoun/bigface-business-ui/components/ui/button"
+import { Button } from "@gjuoun/bigface-shadcn-ui/components/ui/button"
 import { ArrowDownIcon } from "lucide-react"
 
 function MessageScrollerProvider(

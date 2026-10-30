@@ -27,8 +27,8 @@ const runInit = async (stored: { theme?: string; mode?: string }) => {
 
 describe("themeInitScript", () => {
 	test("a stored theme and mode are applied before first paint", async () => {
-		await runInit({ theme: "business", mode: "light" });
-		expect(document.documentElement.dataset.theme).toBe("business");
+		await runInit({ theme: "bigface", mode: "light" });
+		expect(document.documentElement.dataset.theme).toBe("bigface");
 		expect(document.documentElement.dataset.mode).toBe("light");
 	});
 
@@ -58,9 +58,9 @@ describe("useTheme / useMode", () => {
 		};
 		const root = createRoot(document.createElement("div"));
 		await act(async () => root.render(createElement(Probe)));
-		await act(async () => api?.setTheme("business"));
-		expect(document.documentElement.dataset.theme).toBe("business");
-		expect(localStorage.getItem("bigface-theme")).toBe("business");
+		await act(async () => api?.setTheme("bigface"));
+		expect(document.documentElement.dataset.theme).toBe("bigface");
+		expect(localStorage.getItem("bigface-theme")).toBe("bigface");
 		await act(async () => root.unmount());
 	});
 

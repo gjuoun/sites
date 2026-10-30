@@ -25,7 +25,7 @@ walk(join(here, "hooks"));
 walk(join(here, "lib"));
 
 const bare = (spec: string): string | null => {
-  if (spec.startsWith(".") || spec.startsWith("@gjuoun/bigface-business-ui")) return null;
+  if (spec.startsWith(".") || spec.startsWith("@gjuoun/bigface-shadcn-ui")) return null;
   return spec.startsWith("@")
     ? spec.split("/").slice(0, 2).join("/")
     : (spec.split("/")[0] as string);

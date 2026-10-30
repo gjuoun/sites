@@ -5,23 +5,23 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "cn"
 import { Slot } from "radix-ui"
 
-import { useIsMobile } from "@gjuoun/bigface-business-ui/hooks/use-mobile"
-import { Button } from "@gjuoun/bigface-business-ui/components/ui/button"
-import { Input } from "@gjuoun/bigface-business-ui/components/ui/input"
-import { Separator } from "@gjuoun/bigface-business-ui/components/ui/separator"
+import { useIsMobile } from "@gjuoun/bigface-shadcn-ui/hooks/use-mobile"
+import { Button } from "@gjuoun/bigface-shadcn-ui/components/ui/button"
+import { Input } from "@gjuoun/bigface-shadcn-ui/components/ui/input"
+import { Separator } from "@gjuoun/bigface-shadcn-ui/components/ui/separator"
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from "@gjuoun/bigface-business-ui/components/ui/sheet"
-import { Skeleton } from "@gjuoun/bigface-business-ui/components/ui/skeleton"
+} from "@gjuoun/bigface-shadcn-ui/components/ui/sheet"
+import { Skeleton } from "@gjuoun/bigface-shadcn-ui/components/ui/skeleton"
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@gjuoun/bigface-business-ui/components/ui/tooltip"
+} from "@gjuoun/bigface-shadcn-ui/components/ui/tooltip"
 import { PanelLeftIcon } from "lucide-react"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"

@@ -5,7 +5,7 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@gjuoun/bigface-business-ui/components/ui/collapsible"
+} from "@gjuoun/bigface-shadcn-ui/components/ui/collapsible"
 import { ChevronRightIcon } from "lucide-react"
 
 function Trace({ className, ...props }: React.ComponentProps<"div">) {

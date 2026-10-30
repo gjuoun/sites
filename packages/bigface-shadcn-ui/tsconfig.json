@@ -10,7 +10,7 @@
     "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@gjuoun/bigface-business-ui/*": ["./src/*"]
+      "@gjuoun/bigface-shadcn-ui/*": ["./src/*"]
     }
   },
   "include": ["src", "scripts"]
