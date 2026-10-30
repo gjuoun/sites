@@ -20,31 +20,11 @@ const sidebarPath = join(here, 'src/data/sidebar.json');
 const docsSidebar = existsSync(sidebarPath) ? JSON.parse(readFileSync(sidebarPath, 'utf8')) : [];
 
 /**
- * Bigface theme for Expressive Code / Shiki, derived from site/src/data/bigface.json.
- * Keywords blue, strings yellow, numbers burntOrange, comments #75715e,
- * functions lime, types cyan — no stock GitHub rainbow.
+ * Code blocks use the same Shiki pair as the highlighter package (github-light / github-dark);
+ * the frame surface and outline come from the theme's roles. The theme switch follows data-mode,
+ * not Starlight's data-theme, because data-theme carries the theme id here.
  */
-const bigfaceTheme = {
-  name: 'bigface',
-  type: 'dark',
-  colors: {
-    'editor.background': '#2e332e',
-    'editor.foreground': '#d9d9d4',
-    'editorLineNumber.foreground': '#6e6b68',
-    'editor.selectionBackground': '#646464',
-  },
-  tokenColors: [
-    { scope: ['comment', 'punctuation.definition.comment'], settings: { foreground: '#75715e' } },
-    { scope: ['keyword', 'storage', 'storage.type', 'entity.name.tag'], settings: { foreground: '#00b0ff' } },
-    { scope: ['string', 'string.quoted', 'constant.other.symbol'], settings: { foreground: '#e5e500' } },
-    { scope: ['constant.numeric'], settings: { foreground: '#fc5d23' } },
-    { scope: ['entity.name.function', 'support.function', 'meta.function-call'], settings: { foreground: '#c6ff00' } },
-    { scope: ['entity.name.type', 'support.type', 'support.class'], settings: { foreground: '#66d9ef' } },
-    { scope: ['variable', 'variable.other', 'entity.name.variable'], settings: { foreground: '#00c853' } },
-    { scope: ['constant', 'constant.language', 'support.constant'], settings: { foreground: '#ae81ff' } },
-    { scope: ['keyword.operator'], settings: { foreground: '#ffeb3b' } },
-  ],
-};
+const codeThemes = ['github-light', 'github-dark'];
 
 /** Rewrite relative `*.md` links so they resolve to the generated `/docs/...` pages. */
 function rehypeDocLinks() {
@@ -93,12 +73,14 @@ export default defineConfig({
         Head: './src/components/starlight/Head.astro',
       },
       expressiveCode: {
-        themes: [bigfaceTheme],
+        themes: codeThemes,
         useStarlightDarkModeSwitch: false,
+        themeCssSelector: (theme) => `[data-mode="${theme.type}"]`,
         styleOverrides: {
           borderRadius: '0.5rem',
-          codeBackground: '#2e332e',
-          borderColor: '#494848',
+          codeBackground: 'var(--card)',
+          codeForeground: 'var(--foreground)',
+          borderColor: 'var(--border)',
           codeFontSize: '0.8125rem',
         },
       },
@@ -108,7 +90,6 @@ export default defineConfig({
     // Leave the diagram source in the HTML as <pre class="mermaid">; the client
     // renderer (docs pages only) turns it into an SVG. No headless browser at build.
     rehypePlugins: [rehypeDocLinks, [rehypeMermaid, { strategy: 'pre-mermaid' }]],
-    shikiConfig: { theme: bigfaceTheme },
   },
   vite: {
     plugins: [tailwindcss()],

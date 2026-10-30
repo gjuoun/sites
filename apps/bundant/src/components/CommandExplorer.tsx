@@ -7,6 +7,7 @@ import {
   type KeyboardEvent as ReactKeyboardEvent,
 } from 'react';
 import { Check, Copy, Search, Terminal, X } from 'lucide-react';
+import { HAIRLINE, PANEL } from '@/lib/tokens';
 
 export type ExplorerCommand = {
   name: string;
@@ -244,7 +245,7 @@ export function CommandExplorer({ commands }: Props) {
           {grouped.map((group) => (
             <div
               key={group.group}
-              className="mt-2 border-t border-border-muted pt-2 first:mt-0 first:border-t-0 first:pt-0"
+              className={`mt-2 border-t ${HAIRLINE} pt-2 first:mt-0 first:border-t-0 first:pt-0`}
               role="group"
               aria-label={group.label}
             >
@@ -265,7 +266,7 @@ export function CommandExplorer({ commands }: Props) {
                     onMouseDown={(event) => event.preventDefault()}
                     onClick={() => select(command.name)}
                   >
-                    <span className="font-mono text-[13px] font-semibold break-words text-foreground group-aria-selected:text-primary">
+                    <span className="font-mono text-[13px] font-semibold wrap-anywhere text-foreground group-aria-selected:text-primary">
                       {command.name}
                     </span>
                     <span className="text-xs leading-[1.4] text-muted-foreground">{command.summary}</span>
@@ -293,7 +294,7 @@ export function CommandExplorer({ commands }: Props) {
                 bundant {selected.name}
               </span>
             </div>
-            <h3 className="mt-2 font-mono text-2xl font-semibold tracking-tight break-words text-foreground md:text-[1.75rem]">
+            <h3 className="mt-2 font-mono text-2xl font-semibold tracking-tight wrap-anywhere text-foreground md:text-[1.75rem]">
               {selected.name}
             </h3>
           </div>
@@ -306,7 +307,7 @@ export function CommandExplorer({ commands }: Props) {
           <p className="mb-2 flex items-baseline gap-2 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
             Usage
           </p>
-          <pre className="m-0 overflow-x-auto rounded-md border border-code-border bg-code-surface px-3.5 py-3 font-mono text-xs leading-[1.7] whitespace-pre-wrap break-words text-foreground [&_code]:font-[inherit]">
+          <pre className={`m-0 overflow-x-auto rounded-md border border-border ${PANEL} px-3.5 py-3 font-mono text-xs leading-[1.7] whitespace-pre-wrap wrap-anywhere text-foreground [&_code]:font-[inherit]`}>
             <code>{selected.usage}</code>
           </pre>
         </div>
@@ -315,14 +316,14 @@ export function CommandExplorer({ commands }: Props) {
           <p className="mb-2 flex items-baseline gap-2 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
             Flags <span className="tracking-normal">{selected.flags.length}</span>
           </p>
-          <dl className="m-0 border-t border-border-muted">
+          <dl className={`m-0 border-t ${HAIRLINE}`}>
             {selected.flags.map((flag) => (
               <div
                 key={flag.flag}
-                className="grid gap-0.5 border-b border-border-muted py-2 md:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] md:items-baseline md:gap-4"
+                className={`grid gap-0.5 border-b ${HAIRLINE} py-2 md:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] md:items-baseline md:gap-4`}
               >
-                <dt className="font-mono text-xs leading-normal break-words text-foreground">{flag.flag}</dt>
-                <dd className="m-0 text-[13px] leading-[1.55] break-words text-muted-foreground">{flag.description}</dd>
+                <dt className="min-w-0 font-mono text-xs leading-normal wrap-anywhere text-foreground">{flag.flag}</dt>
+                <dd className="m-0 min-w-0 text-[13px] leading-[1.55] wrap-anywhere text-muted-foreground">{flag.description}</dd>
               </div>
             ))}
           </dl>
@@ -342,7 +343,7 @@ export function CommandExplorer({ commands }: Props) {
               {copied ? 'Copied' : 'Copy'}
             </button>
           </div>
-          <pre className="m-0 overflow-x-auto rounded-md border border-code-border bg-code-surface px-3.5 py-3 font-mono text-xs leading-[1.7] whitespace-pre-wrap break-words text-foreground [&_code]:font-[inherit]">
+          <pre className={`m-0 overflow-x-auto rounded-md border border-border ${PANEL} px-3.5 py-3 font-mono text-xs leading-[1.7] whitespace-pre-wrap wrap-anywhere text-foreground [&_code]:font-[inherit]`}>
             <code>
               <span className="text-primary">$</span> {selected.example}
             </code>

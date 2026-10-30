@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Check, Copy, Terminal } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { HAIRLINE, PANEL } from '@/lib/tokens';
 
 type Command = { label: string; command: string };
 
@@ -21,7 +22,7 @@ export function CopyCommand({ commands }: { commands: Command[] }) {
 
   return (
     <div className="overflow-hidden rounded-lg border border-border bg-card">
-      <div className="flex items-center justify-between gap-2 border-b border-border-muted bg-code-surface px-2 py-0.5 sm:px-3">
+      <div className={`flex items-center justify-between gap-2 border-b ${HAIRLINE} ${PANEL} px-2 py-0.5 sm:px-3`}>
         <div className="flex items-center gap-0.5">
           <Terminal className="mr-1.5 size-3.5 text-muted-foreground" aria-hidden />
           {commands.map((item, index) => (
