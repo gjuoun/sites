@@ -1,0 +1,93 @@
+{
+  "name": "Bigface",
+  "modes": {
+    "light": {
+      "colors": {
+        "bg": "#f8f8f0",
+        "panel": "#edede5",
+        "fg": "#2f332f",
+        "fgDim": "#70736e",
+        "border": "#d9dad2",
+        "highlight": "#c7c9c1",
+        "blue": "#00b0ff",
+        "lightBlue": "#40c4ff",
+        "paleBlue": "#b3e5fc",
+        "cyan": "#66d9ef",
+        "green": "#00c853",
+        "lime": "#c6ff00",
+        "yellow": "#ffeb3b",
+        "burntOrange": "#fc5d23",
+        "purple": "#ae81ff"
+      },
+      "ansi": {
+        "black": "border",
+        "red": "burntOrange",
+        "green": "green",
+        "yellow": "yellow",
+        "blue": "blue",
+        "magenta": "purple",
+        "cyan": "cyan",
+        "white": "fg",
+        "brightBlack": "fgDim",
+        "brightRed": "burntOrange",
+        "brightGreen": "lime",
+        "brightYellow": "yellow",
+        "brightBlue": "lightBlue",
+        "brightMagenta": "purple",
+        "brightCyan": "paleBlue",
+        "brightWhite": "bg"
+      }
+    },
+    "dark": {
+      "colors": {
+        "bg": "#252925",
+        "panel": "#2d312d",
+        "fg": "#e8e9e1",
+        "fgDim": "#8c8f89",
+        "border": "#3c403c",
+        "highlight": "#4b4e49",
+        "blue": "#00b0ff",
+        "lightBlue": "#40c4ff",
+        "paleBlue": "#b3e5fc",
+        "cyan": "#66d9ef",
+        "green": "#00c853",
+        "lime": "#c6ff00",
+        "yellow": "#ffeb3b",
+        "burntOrange": "#fc5d23",
+        "purple": "#ae81ff"
+      },
+      "ansi": {
+        "black": "border",
+        "red": "burntOrange",
+        "green": "green",
+        "yellow": "yellow",
+        "blue": "blue",
+        "magenta": "purple",
+        "cyan": "cyan",
+        "white": "fg",
+        "brightBlack": "fgDim",
+        "brightRed": "burntOrange",
+        "brightGreen": "lime",
+        "brightYellow": "yellow",
+        "brightBlue": "lightBlue",
+        "brightMagenta": "purple",
+        "brightCyan": "paleBlue",
+        "brightWhite": "fg"
+      }
+    }
+  },
+  "syntax": {
+    "comment": "fgDim",
+    "keyword": "blue",
+    "function": "lime",
+    "variable": "green",
+    "string": "yellow",
+    "number": "burntOrange",
+    "type": "cyan",
+    "operator": "yellow",
+    "punctuation": "fg",
+    "constant": "purple",
+    "tag": "lightBlue",
+    "parameter": "paleBlue"
+  }
+}
