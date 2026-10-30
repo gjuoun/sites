@@ -6,3 +6,5 @@
 @source "../../../../packages/bigface-business-ui/src/components/ui/accordion.tsx";
 @source "../../../../packages/bigface-business-ui/src/components/ui/badge.tsx";
 @source "../../../../packages/bigface-business-ui/src/components/ui/button.tsx";
+/* The highlighter emits the light-dark() token class; Tailwind only sees it when sourced. */
+@source "../../../../packages/bigface-highlighter/src/highlighter.tsx";

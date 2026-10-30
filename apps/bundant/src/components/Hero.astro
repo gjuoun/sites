@@ -6,7 +6,12 @@ import { CopyCommand } from '@/components/CopyCommand';
 import TerminalDemo from '@/components/TerminalDemo';
 import demo from '@/data/demo.json';
 import { LABEL, PAGE } from '@/lib/layout';
+
+const installHtml = await Promise.all(
+  installCommands.map((command) => highlightHtml(command.command, 'bash')),
+);
 import { installCommands } from '@/lib/features';
+import { highlightHtml } from '@/lib/highlight';
 import { withBase } from '@/lib/utils';
 ---
 
@@ -46,7 +51,7 @@ import { withBase } from '@/lib/utils';
 
     <div class="min-w-0 md:col-start-1 md:row-start-2">
       <div class="max-w-md">
-        <CopyCommand commands={installCommands} client:load />
+        <CopyCommand commands={installCommands} highlighted={installHtml} client:load />
       </div>
 
       <ul class="mt-6 flex flex-col gap-2 text-[0.8125rem] text-muted-foreground sm:flex-row sm:flex-wrap sm:gap-x-5">

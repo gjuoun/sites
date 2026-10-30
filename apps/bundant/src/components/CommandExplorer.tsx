@@ -46,9 +46,11 @@ export function commandFromHash(hash: string): string | null {
 
 type Props = {
   commands: ExplorerCommand[];
+  /** Pre-highlighted usage and example markup, keyed by command name (build-time, optional). */
+  highlighted?: Record<string, { usage: string; example: string }>;
 };
 
-export function CommandExplorer({ commands }: Props) {
+export function CommandExplorer({ commands, highlighted }: Props) {
   const searchId = useId();
   const listboxId = useId();
   const listRef = useRef<HTMLDivElement>(null);
@@ -308,7 +310,11 @@ export function CommandExplorer({ commands }: Props) {
             Usage
           </p>
           <pre className={`m-0 overflow-x-auto rounded-md border border-border ${PANEL} px-3.5 py-3 font-mono text-xs leading-[1.7] whitespace-pre-wrap wrap-anywhere text-foreground [&_code]:font-[inherit]`}>
-            <code>{selected.usage}</code>
+            {highlighted?.[selected.name]?.usage ? (
+              <code dangerouslySetInnerHTML={{ __html: highlighted[selected.name]!.usage }} />
+            ) : (
+              <code>{selected.usage}</code>
+            )}
           </pre>
         </div>
 
@@ -345,7 +351,12 @@ export function CommandExplorer({ commands }: Props) {
           </div>
           <pre className={`m-0 overflow-x-auto rounded-md border border-border ${PANEL} px-3.5 py-3 font-mono text-xs leading-[1.7] whitespace-pre-wrap wrap-anywhere text-foreground [&_code]:font-[inherit]`}>
             <code>
-              <span className="text-primary">$</span> {selected.example}
+              <span className="text-primary">$</span>{' '}
+              {highlighted?.[selected.name]?.example ? (
+                <span dangerouslySetInnerHTML={{ __html: highlighted[selected.name]!.example }} />
+              ) : (
+                selected.example
+              )}
             </code>
           </pre>
         </div>
