@@ -2,7 +2,6 @@ import { beforeAll, expect, test } from "bun:test";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import lightPaletteJson from "@gjuoun/bigface-tokens/palette-light.json";
-import { MODES } from "@gjuoun/bigface-ui/lib/themes";
 import { $ } from "bun";
 import {
 	findForeignInCss,
@@ -13,7 +12,6 @@ import {
 import type { Palette } from "./data/palette.ts";
 import { contrastRatio, inkOn, palette } from "./data/palette.ts";
 import { targets } from "./data/targets.ts";
-import { bgCatalog } from "./data/ui-catalog.ts";
 import { findInklessBrightPlates } from "./ink-guard.ts";
 
 // The site's build is the app's own `build` script now: this package IS the site, and the
@@ -30,12 +28,20 @@ beforeAll(async () => {
 		throw new Error(`site build failed:\n${r.stderr.toString()}`);
 }, 120_000);
 
-test("one page per target plus home, palette and the component library", () => {
+test("one page per target plus home, palette and the business catalogue", () => {
 	expect(existsSync(join(dist, "index.html"))).toBe(true);
 	expect(existsSync(join(dist, "palette/index.html"))).toBe(true);
-	expect(existsSync(join(dist, "ui/index.html"))).toBe(true);
+	expect(existsSync(join(dist, "ui/business/index.html"))).toBe(true);
+	// 2026-10-30 (JW-329): the legacy workspace and the console showcase are retired; their content
+	// lives on /ui/business/ (see the card's inventory). Sixteen pages ship.
+	expect(existsSync(join(dist, "ui/index.html")), "legacy /ui/ is retired").toBe(false);
+	expect(existsSync(join(dist, "ui/console/index.html")), "console showcase is retired").toBe(false);
 	for (const t of targets)
 		expect(existsSync(join(dist, "apps", t.id, "index.html")), t.id).toBe(true);
+	const pages = readdirSync(dist, { recursive: true, encoding: "utf8" }).filter(
+		(f) => f.endsWith("index.html"),
+	);
+	expect(pages.length).toBe(16);
 });
 
 test("every app page has install steps, a code block, and download links that point at real files", () => {
@@ -220,7 +226,7 @@ test.skipIf(!existsSync(tailwindCss))(
 // mode. Both are what every dark: variant and every [data-theme] scope keys off, so the site must
 // ship them on the root; a page that lost them would render with the fallback mapping only.
 test("the page root carries the default theme and mode", () => {
-	for (const rel of ["", "ui", "palette"]) {
+	for (const rel of ["", "palette"]) {
 		const html = readFileSync(join(dist, rel, "index.html"), "utf8");
 		const tag = /<html\b[^>]*>/.exec(html)?.[0] ?? "";
 		expect(tag, rel).toContain('data-theme="console"');
@@ -231,8 +237,8 @@ test("the page root carries the default theme and mode", () => {
 
 // The business page is the single-theme catalogue: one page root in the business theme and the default mode, all
 // 63 components. The colour section is the only place a theme scope appears on the catalogue: light and dark are
-// shown side by side there. The console page keeps its two scopes. The retired game theme is on neither.
-test("the business catalogue is one business theme with 63 components; console keeps its scopes; game is offline", () => {
+// shown side by side there. The retired console showcase and the game theme are gone.
+test("the business catalogue is one business theme with 63 components; the retired themes are offline", () => {
 	const business = page("ui/business");
 	expect(business).toContain('data-theme="business" data-mode="light"');
 	const scopeAt = [...business.matchAll(/data-slot="theme-scope"/g)].map((m) => m.index ?? -1);
@@ -252,18 +258,10 @@ test("the business catalogue is one business theme with 63 components; console k
 	expect(business.split('aria-label="Jump to a section"').length - 1, "one jump select").toBe(1);
 	for (const id of ["colour", "typography", "accordion", "trace"]) expect(business, "rail links #" + id).toContain('href="#' + id + '"');
 	expect([...business.matchAll(/data-demo="/g)], "63 demos").toHaveLength(63);
-	const cons = page("ui/console");
-	expect([...cons.matchAll(/data-slot="theme-scope"/g)]).toHaveLength(MODES.length);
-	for (const mode of MODES) {
-		expect(cons, "console/" + mode).toContain('data-theme="console" data-mode="' + mode + '"');
-	}
-	for (const rel of ["", "ui", "ui/console", "ui/business"]) {
+	for (const rel of ["", "palette", "ui/business"]) {
 		expect(page(rel), "game on " + rel).not.toContain('data-theme="game"');
 	}
 	expect(existsSync(join(dist, "ui/theme/index.html")), "the gallery page is gone").toBe(false);
-	expect(page("ui")).toContain('href="/ui/business/"');
-	expect(page("ui")).toContain('href="/ui/console/"');
-	expect(page("ui")).not.toContain('href="/ui/theme/"');
 	expect(page("")).not.toContain("bigface-mode");
 });
 
@@ -342,56 +340,30 @@ test("the brand mark ships as a vector favicon, a touch icon and a 1200x630 soci
 	expect(home).toContain("img/og.png");
 });
 
-test("the component library page shows every native and BG component, and flags unfinished props", () => {
-	const html = page("ui");
-	for (const name of ["button", "badge", "card", "tabs"])
-		expect(html, name).toContain(
-			`from &quot;@gjuoun/bigface-ui/components/ui/${name}&quot;`,
-		);
-	for (const e of bgCatalog) {
-		expect(html, e.name).toContain(`id="bg-${e.name}"`);
-		expect(html, e.name).toContain(`components/bg/${e.file}`);
-	}
-	const flagged = html.match(/>props not finalised</g) ?? [];
-	expect(flagged.length).toBe(bgCatalog.filter((e) => !e.finalised).length);
-	// every Button variant x size from the shadcn source is rendered
-	expect(
-		html.match(
-			/data-slot="button" data-variant="destructive" data-size="icon-lg"/g,
-		)?.length,
-	).toBeGreaterThanOrEqual(1);
-});
-
-test("the /ui page registers every shadcn native component in the directory", () => {
-	// Directory-driven: the page lists what the package's components/ui holds, so the registry
+test("the business catalogue registers every component the theme package ships", () => {
+	// Directory-driven: the page lists what the package's components/ui holds, so the catalogue
 	// cannot fall behind the CLI. 63 = the registry's 64 (ui) items minus `form`, which ships no
-	// files. The library lives in packages/ui since the npm-package round.
-	const html = page("ui");
+	// files. The library is the theme package since the 2026-10-29 refactor.
+	const html = page("ui/business");
 	const files = readdirSync(
-		join(siteDir, "../../packages/ui/src/components/ui"),
+		join(siteDir, "../../packages/bigface-business-ui/src/components/ui"),
 	).filter((f) => f.endsWith(".tsx"));
 	expect(files.length).toBeGreaterThanOrEqual(63);
-	for (const f of files)
-		expect(html, f).toContain(`data-native="${f.replace(/\.tsx$/, "")}"`);
+	for (const f of files) expect(html, f).toContain(`id="${f.replace(/\.tsx$/, "")}"`);
 });
 
-// The showcase is an internal workspace, not a product page: no marketing chrome, no index, and
-// still the whole catalogue. The header assertion is the one that fails if the page ever goes back
-// to the site layout.
-test("the showcase is an unlisted, chrome-less workspace", () => {
-	const html = page("ui");
+// The catalogue is an internal showcase, not a product page: no marketing chrome, noindex, and the
+// home page never links to it. The legacy /ui/ workspace that carried the site header is retired.
+test("the catalogue is unlisted and the home page does not link it", () => {
+	const html = page("ui/business");
 	expect(html, "site header").not.toContain('id="site-header"');
 	expect(html, "site footer").not.toContain('aria-label="Footer"');
 	expect(html, "noindex").toContain('name="robots" content="noindex"');
-	expect(html, "bleed").toContain("data-bleed");
-	expect(html, "section nav").toContain('aria-label="Library sections"');
-	expect(html, "copy feedback").toContain('id="toast"');
-	expect(html.match(/data-native="/g)?.length, "registrations").toBe(63);
 
 	const home = page("");
 	expect(home, "home header").toContain('id="site-header"');
 	expect(home, "home footer").toContain('aria-label="Footer"');
-	expect(home, "no nav link to the workspace").not.toContain('href="/ui/"');
+	expect(home, "no nav link to the catalogue").not.toContain('href="/ui/"');
 });
 
 test("app pages with a screenshot put it beside the instructions on desktop, stacked in DOM order", () => {
