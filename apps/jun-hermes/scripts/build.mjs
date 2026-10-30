@@ -18,6 +18,7 @@ const files = [
   "404.html",
   "oauth2/callback.html",
   "assets/logo.svg",
+  "assets/business.css",
   "assets/style.css",
   "healthz.json",
   "robots.txt",
