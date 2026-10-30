@@ -15,6 +15,7 @@
   --theme-cyan: #66d9ef;
   --theme-green: #00c853;
   --theme-burntOrange: #fc5d23;
+  --theme-yellow: #ffeb3b;
 }
 
 [data-mode="dark"] {
@@ -30,4 +31,5 @@
   --theme-cyan: #66d9ef;
   --theme-green: #00c853;
   --theme-burntOrange: #fc5d23;
+  --theme-yellow: #ffeb3b;
 }
