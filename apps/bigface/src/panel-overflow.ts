@@ -293,6 +293,16 @@ async function runProbe<T>(
 	}
 }
 
+/** Run one expression against a built page at a given width (the 390px phone guard uses this). */
+export async function measurePage<T>(
+	distDir: string,
+	path: string,
+	width: number,
+	expression: string,
+): Promise<T> {
+	return runProbe<T>(distDir, path, width, expression);
+}
+
 /** Geometry, containment and feel metrics for one built page. */
 export async function measurePanelOverflow(
 	distDir: string,

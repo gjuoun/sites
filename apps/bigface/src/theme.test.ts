@@ -107,7 +107,8 @@ describe("the stylesheet is the package theme plus the site's fonts, motions and
     expect(css).not.toMatch(/@custom-variant/);
     expect([...css.matchAll(/@utility\s+(\S+)/g)].map((m) => m[1])).toEqual(["font-code"]);
     expect(css).not.toMatch(/#[0-9a-fA-F]{3,8}\b|\b(rgb|hsl|oklch)\(/);
-    expect(css).not.toContain("--color-");
+    // The site may READ a package colour key (the one yellow), never define one.
+    expect(css).not.toMatch(/^\s*--color-[\w-]+\s*:/m);
     expect(css).not.toContain("--bf-");
   });
 

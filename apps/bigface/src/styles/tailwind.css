@@ -156,7 +156,8 @@
     font-variant-ligatures: none;
   }
   :not(pre) > code {
-    color: var(--yellow);
+    /* the package's one non-shadcn key: --color-yellow is emitted from --theme-yellow */
+    color: var(--color-yellow);
     background: color-mix(in srgb, var(--border) 8%, transparent);
     border: 1px solid var(--border);
     padding: 0.1em 0.4em;
