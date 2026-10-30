@@ -15,11 +15,20 @@ const script = `(() => {
 		root.dataset.mode = mode;
 		root.style.colorScheme = mode;
 		button.setAttribute("aria-pressed", String(mode === "dark"));
+		const meta = document.querySelector('meta[name="theme-color"]');
+		if (meta) {
+			meta.setAttribute(
+				"content",
+				getComputedStyle(root).getPropertyValue("--theme-bg").trim(),
+			);
+		}
 		const sun = button.querySelector('[data-icon="sun"]');
 		const moon = button.querySelector('[data-icon="moon"]');
 		if (sun) sun.classList.toggle("hidden", mode !== "dark");
 		if (moon) moon.classList.toggle("hidden", mode === "dark");
 	};
+	// color-scheme has to be inline: light-dark() resolves on it, and the package's pre-paint
+	// script only writes data-mode.
 	apply(MODES.includes(root.dataset.mode) ? root.dataset.mode : "dark");
 	button.addEventListener("click", () => {
 		const next = root.dataset.mode === "dark" ? "light" : "dark";

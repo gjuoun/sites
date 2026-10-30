@@ -11,7 +11,8 @@
     "preview": "astro preview",
     "precheck": "bun run sync:docs",
     "check": "astro check",
-    "typecheck": "astro check"
+    "typecheck": "astro check",
+    "test": "bun test src"
   },
   "dependencies": {
     "@astrojs/react": "4.4.2",
@@ -32,6 +33,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "0.9.11",
+    "@gjuoun/bigface-tokens": "workspace:*",
     "@types/jsdom": "30.0.0",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",

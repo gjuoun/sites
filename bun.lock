@@ -72,6 +72,7 @@
       },
       "devDependencies": {
         "@astrojs/check": "0.9.11",
+        "@gjuoun/bigface-tokens": "workspace:*",
         "@types/jsdom": "30.0.0",
         "@types/react": "19.3.0",
         "@types/react-dom": "19.3.0",
