@@ -13,8 +13,9 @@
       "label": "OpenCode Go",
       "price_month_usd": 10,
       "badge": "plan_spec",
+      "per_model_limit_plan": "Go",
       "measured_at": "2026-10-26T06:06:22Z",
-      "source": "published plan price: Go $10/mo (official docs)"
+      "source": "published plan price: Go $10/mo (official docs); per-model monthly limits from the plan's own page (data/opencode-go.json)"
     },
     {
       "plan_id": "zai-glm-max",

@@ -32,7 +32,7 @@
         "stale": null,
         "badge": null,
         "windows": [],
-        "measured_at": "2026-10-28T01:50:09.614Z",
+        "measured_at": "2026-10-30T17:21:50.018Z",
         "source": "quota windows (codexbar) x usage_logs priced at list; allowance.json"
       },
       "usd_per_b": null,
@@ -44,9 +44,79 @@
         "p90_ttft_ms": 8441,
         "p50_output_tps": 201.41116100064144,
         "n": 11743,
-        "measured_at": "2026-10-28T01:50:09.614Z",
+        "measured_at": "2026-10-30T17:21:50.018Z",
         "source": "usage_logs(31d) rows=11743"
       },
+      "traffic_7d": {
+        "window_days": 7,
+        "tokens": 768662003,
+        "requests": 3147,
+        "cache_share": 0.9766523984609689,
+        "p50_ttft_ms": 2761,
+        "p90_ttft_ms": 8499,
+        "p50_output_tps": 212.56038647342996,
+        "reason": null,
+        "measured_at": "2026-10-30T17:18:59.600Z",
+        "source": "sub2api usage_logs (read-only SELECT via podman exec psql)"
+      },
+      "models": [
+        {
+          "upstream_model": "deepseek/deepseek-v4.1-flash",
+          "label": "DeepSeek V4.1 Flash",
+          "tokens_7d": 634772206,
+          "share_7d": 0.8258144717997723,
+          "rows_7d": 2470,
+          "cache_share_7d": 0.9793866186203993,
+          "p50_ttft_ms": 2940,
+          "p50_output_tps": 226.15219721329044,
+          "limit_usd_month": null,
+          "limit_reason": "this plan publishes no per-model limit",
+          "measured_at": "2026-10-30T17:21:50.018Z",
+          "source": "usage_logs(7d) rows=3147"
+        },
+        {
+          "upstream_model": "deepseek/deepseek-v4.1-flash-fast",
+          "label": "DeepSeek V4.1 Flash (fast, unpriced)",
+          "tokens_7d": 84911677,
+          "share_7d": 0.11046685886462375,
+          "rows_7d": 485,
+          "cache_share_7d": 0.9824636370640113,
+          "p50_ttft_ms": 1261,
+          "p50_output_tps": 185.60460652591172,
+          "limit_usd_month": null,
+          "limit_reason": "this plan publishes no per-model limit",
+          "measured_at": "2026-10-30T17:21:50.018Z",
+          "source": "usage_logs(7d) rows=3147"
+        },
+        {
+          "upstream_model": "xiaomi/mimo-v2.6-flash",
+          "label": "MiMo v2.6 Flash",
+          "tokens_7d": 48717533,
+          "share_7d": 0.06337965557014791,
+          "rows_7d": 189,
+          "cache_share_7d": 0.9337841800484687,
+          "p50_ttft_ms": 5727,
+          "p50_output_tps": 42.97994269340974,
+          "limit_usd_month": null,
+          "limit_reason": "this plan publishes no per-model limit",
+          "measured_at": "2026-10-30T17:21:50.018Z",
+          "source": "usage_logs(7d) rows=3147"
+        },
+        {
+          "upstream_model": "__other__",
+          "label": "Other models (1)",
+          "tokens_7d": 260587,
+          "share_7d": 0.0003390137654560245,
+          "rows_7d": 3,
+          "cache_share_7d": 0.43612814844795916,
+          "p50_ttft_ms": null,
+          "p50_output_tps": null,
+          "limit_usd_month": null,
+          "limit_reason": "pooled row: each model is under 1% of the lane's tokens, so it has no single p50",
+          "measured_at": "2026-10-30T17:21:50.018Z",
+          "source": "usage_logs(7d) rows=3147"
+        }
+      ],
       "presets": [
         {
           "shape": "interactive",
@@ -66,7 +136,7 @@
         "low_priced_share",
         "excluded_from_ranking"
       ],
-      "measured_at": "2026-10-28T01:50:09.614Z",
+      "measured_at": "2026-10-30T17:21:50.018Z",
       "source": "usage_logs(31d) + quota windows + published price"
     },
     {
@@ -182,7 +252,7 @@
             "confidence": "normal"
           }
         ],
-        "measured_at": "2026-10-28T01:50:09.614Z",
+        "measured_at": "2026-10-30T17:21:50.018Z",
         "source": "quota windows (codexbar) x usage_logs priced at list; allowance.json"
       },
       "usd_per_b": 4.834326416676377,
@@ -190,13 +260,55 @@
       "usd_per_b_derived_from": null,
       "usd_per_b_source": "usage logs priced at list, quota windows, published price",
       "measured": {
-        "p50_ttft_ms": 2534,
-        "p90_ttft_ms": 8401,
-        "p50_output_tps": 181.7671284163235,
-        "n": 23549,
-        "measured_at": "2026-10-28T01:50:09.614Z",
-        "source": "usage_logs(31d) rows=23549"
+        "p50_ttft_ms": 2431,
+        "p90_ttft_ms": 7727,
+        "p50_output_tps": 178.13333333333333,
+        "n": 27701,
+        "measured_at": "2026-10-30T17:21:50.018Z",
+        "source": "usage_logs(31d) rows=27701"
       },
+      "traffic_7d": {
+        "window_days": 7,
+        "tokens": 1691901988,
+        "requests": 10310,
+        "cache_share": 0.8817815191435254,
+        "p50_ttft_ms": 2404,
+        "p90_ttft_ms": 6735,
+        "p50_output_tps": 161.02683780630105,
+        "reason": null,
+        "measured_at": "2026-10-30T17:18:59.600Z",
+        "source": "sub2api usage_logs (read-only SELECT via podman exec psql)"
+      },
+      "models": [
+        {
+          "upstream_model": "deepseek-v4.1-flash",
+          "label": "DeepSeek V4.1 Flash",
+          "tokens_7d": 1424968898,
+          "share_7d": 0.8422289873212206,
+          "rows_7d": 7559,
+          "cache_share_7d": 0.9200564205518578,
+          "p50_ttft_ms": 2408,
+          "p50_output_tps": 165.1705565529623,
+          "limit_usd_month": 80,
+          "limit_reason": null,
+          "measured_at": "2026-10-30T17:21:50.018Z",
+          "source": "usage_logs(7d) rows=10310"
+        },
+        {
+          "upstream_model": "mimo-v2.6-flash",
+          "label": "MiMo v2.6 Flash",
+          "tokens_7d": 266933090,
+          "share_7d": 0.15777101267877935,
+          "rows_7d": 2751,
+          "cache_share_7d": 0.666875734759738,
+          "p50_ttft_ms": 2357,
+          "p50_output_tps": 77.26204465334901,
+          "limit_usd_month": 60,
+          "limit_reason": null,
+          "measured_at": "2026-10-30T17:21:50.018Z",
+          "source": "usage_logs(7d) rows=10310"
+        }
+      ],
       "presets": [
         {
           "shape": "interactive",
@@ -214,7 +326,7 @@
       "flags": [
         "low_fit"
       ],
-      "measured_at": "2026-10-28T01:50:09.614Z",
+      "measured_at": "2026-10-30T17:21:50.018Z",
       "source": "usage_logs(31d) + quota windows + published price"
     },
     {
@@ -315,7 +427,7 @@
             "confidence": "low"
           }
         ],
-        "measured_at": "2026-10-28T01:50:09.614Z",
+        "measured_at": "2026-10-30T17:21:50.018Z",
         "source": "quota windows (codexbar) x usage_logs priced at list; allowance.json"
       },
       "usd_per_b": 6.244694192061764,
@@ -323,13 +435,55 @@
       "usd_per_b_derived_from": null,
       "usd_per_b_source": "usage logs priced at list, quota windows, published price",
       "measured": {
-        "p50_ttft_ms": 6858,
-        "p90_ttft_ms": 13464,
-        "p50_output_tps": 66.84917382918395,
-        "n": 904,
-        "measured_at": "2026-10-28T01:50:09.614Z",
-        "source": "usage_logs(31d) rows=904"
+        "p50_ttft_ms": 5079,
+        "p90_ttft_ms": 10087,
+        "p50_output_tps": 75.18007202881152,
+        "n": 4639,
+        "measured_at": "2026-10-30T17:21:50.018Z",
+        "source": "usage_logs(31d) rows=4639"
       },
+      "traffic_7d": {
+        "window_days": 7,
+        "tokens": 642687354,
+        "requests": 4639,
+        "cache_share": 0.9422610680397518,
+        "p50_ttft_ms": 5079,
+        "p90_ttft_ms": 10087,
+        "p50_output_tps": 75.18007202881152,
+        "reason": null,
+        "measured_at": "2026-10-30T17:18:59.600Z",
+        "source": "sub2api usage_logs (read-only SELECT via podman exec psql)"
+      },
+      "models": [
+        {
+          "upstream_model": "glm-5.3",
+          "label": "GLM-5.3 (no list price)",
+          "tokens_7d": 525203825,
+          "share_7d": 0.8171995632576271,
+          "rows_7d": 2965,
+          "cache_share_7d": 0.9663560738255549,
+          "p50_ttft_ms": 4836,
+          "p50_output_tps": 79.48476280238769,
+          "limit_usd_month": null,
+          "limit_reason": "this plan publishes no per-model limit",
+          "measured_at": "2026-10-30T17:21:50.018Z",
+          "source": "usage_logs(7d) rows=4639"
+        },
+        {
+          "upstream_model": "glm-5.3-flash",
+          "label": "GLM-5.3-Flash",
+          "tokens_7d": 117483529,
+          "share_7d": 0.18280043674237287,
+          "rows_7d": 1674,
+          "cache_share_7d": 0.8210655529016643,
+          "p50_ttft_ms": 6098,
+          "p50_output_tps": 53.5079662979675,
+          "limit_usd_month": null,
+          "limit_reason": "this plan publishes no per-model limit",
+          "measured_at": "2026-10-30T17:21:50.018Z",
+          "source": "usage_logs(7d) rows=4639"
+        }
+      ],
       "presets": [
         {
           "shape": "interactive",
@@ -344,8 +498,10 @@
           "unavailable": "capacity_usd_unavailable"
         }
       ],
-      "flags": [],
-      "measured_at": "2026-10-28T01:50:09.614Z",
+      "flags": [
+        "no_fit:negative_price"
+      ],
+      "measured_at": "2026-10-30T17:21:50.018Z",
       "source": "usage_logs(31d) + quota windows + published price"
     },
     {
@@ -414,7 +570,7 @@
             "confidence": "normal"
           }
         ],
-        "measured_at": "2026-10-28T01:50:09.614Z",
+        "measured_at": "2026-10-30T17:21:50.018Z",
         "source": "quota windows (codexbar) x usage_logs priced at list; allowance.json"
       },
       "usd_per_b": 28.506257113098325,
@@ -422,13 +578,83 @@
       "usd_per_b_derived_from": null,
       "usd_per_b_source": "usage logs priced at list, quota windows, published price",
       "measured": {
-        "p50_ttft_ms": 3889,
-        "p90_ttft_ms": 9364,
-        "p50_output_tps": 141.7395306028532,
-        "n": 2285,
-        "measured_at": "2026-10-28T01:50:09.614Z",
-        "source": "usage_logs(31d) rows=2285"
+        "p50_ttft_ms": 3896,
+        "p90_ttft_ms": 9473,
+        "p50_output_tps": 146.8235294117647,
+        "n": 2577,
+        "measured_at": "2026-10-30T17:21:50.018Z",
+        "source": "usage_logs(31d) rows=2577"
       },
+      "traffic_7d": {
+        "window_days": 7,
+        "tokens": 462029758,
+        "requests": 2577,
+        "cache_share": 0.9330748234348838,
+        "p50_ttft_ms": 3896,
+        "p90_ttft_ms": 9473,
+        "p50_output_tps": 146.8235294117647,
+        "reason": null,
+        "measured_at": "2026-10-30T17:18:59.600Z",
+        "source": "sub2api usage_logs (read-only SELECT via podman exec psql)"
+      },
+      "models": [
+        {
+          "upstream_model": "deepseek-v4.1-flash-1017",
+          "label": "DeepSeek V4.1 Flash (1017)",
+          "tokens_7d": 269015866,
+          "share_7d": 0.582247920922877,
+          "rows_7d": 1678,
+          "cache_share_7d": 0.9600036048416244,
+          "p50_ttft_ms": 3224,
+          "p50_output_tps": 152.2683655593195,
+          "limit_usd_month": null,
+          "limit_reason": "this plan publishes no per-model limit",
+          "measured_at": "2026-10-30T17:21:50.018Z",
+          "source": "usage_logs(7d) rows=2577"
+        },
+        {
+          "upstream_model": "deepseek-v4.1-flash",
+          "label": "DeepSeek V4.1 Flash",
+          "tokens_7d": 132685574,
+          "share_7d": 0.2871797145152715,
+          "rows_7d": 622,
+          "cache_share_7d": 0.8780522025937083,
+          "p50_ttft_ms": 5835,
+          "p50_output_tps": 155.1246537396122,
+          "limit_usd_month": null,
+          "limit_reason": "this plan publishes no per-model limit",
+          "measured_at": "2026-10-30T17:21:50.018Z",
+          "source": "usage_logs(7d) rows=2577"
+        },
+        {
+          "upstream_model": "qwen3.8-flash",
+          "label": "Qwen3.8 Flash",
+          "tokens_7d": 34047130,
+          "share_7d": 0.07369034009276952,
+          "rows_7d": 142,
+          "cache_share_7d": 0.9357025809795877,
+          "p50_ttft_ms": 5819,
+          "p50_output_tps": 71.59931068986603,
+          "limit_usd_month": null,
+          "limit_reason": "this plan publishes no per-model limit",
+          "measured_at": "2026-10-30T17:21:50.018Z",
+          "source": "usage_logs(7d) rows=2577"
+        },
+        {
+          "upstream_model": "qwen3.8-max",
+          "label": "Qwen3.8 Max",
+          "tokens_7d": 26281188,
+          "share_7d": 0.05688202446908192,
+          "rows_7d": 135,
+          "cache_share_7d": 0.9330213614618978,
+          "p50_ttft_ms": 7236,
+          "p50_output_tps": 39.768215614602674,
+          "limit_usd_month": null,
+          "limit_reason": "this plan publishes no per-model limit",
+          "measured_at": "2026-10-30T17:21:50.018Z",
+          "source": "usage_logs(7d) rows=2577"
+        }
+      ],
       "presets": [
         {
           "shape": "interactive",
@@ -446,10 +672,10 @@
       "flags": [
         "low_fit"
       ],
-      "measured_at": "2026-10-28T01:50:09.614Z",
+      "measured_at": "2026-10-30T17:21:50.018Z",
       "source": "usage_logs(31d) + quota windows + published price"
     }
   ],
-  "measured_at": "2026-10-28T01:50:09.614Z",
+  "measured_at": "2026-10-30T17:21:50.018Z",
   "source": "build-dataset"
 }

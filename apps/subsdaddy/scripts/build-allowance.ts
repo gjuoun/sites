@@ -38,21 +38,7 @@ if (!Number.isFinite(exportStartMs)) throw new Error("raw usage export " + lates
 const aliases: Record<string, string> = models.model_aliases ?? {};
 const usagePrices: Array<{ openrouter: string; in_per_m: number; out_per_m: number; cache_per_m: number; cache_write_per_m: number | null }> = models.usage_prices ?? [];
 
-const MODEL_LABEL: Record<string, string> = {
-  "deepseek/deepseek-v4.1-flash": "DeepSeek V4.1 Flash",
-  "deepseek-v4.1-flash": "DeepSeek V4.1 Flash",
-  "deepseek/deepseek-v4.1-flash-1017": "DeepSeek V4.1 Flash (1017)",
-  "deepseek-v4.1-flash-1017": "DeepSeek V4.1 Flash (1017)",
-  "deepseek/deepseek-v4.1-flash-fast": "DeepSeek V4.1 Flash (fast, unpriced)",
-  "z-ai/glm-5.3-flash": "GLM-5.3-Flash",
-  "glm-5.3-flash": "GLM-5.3-Flash",
-  "glm-5.3": "GLM-5.3 (no list price)",
-  "xiaomi/mimo-v2.6-flash": "MiMo v2.6 Flash",
-  "mimo-v2.6-flash": "MiMo v2.6 Flash",
-  "qwen3.8-flash": "Qwen3.8 Flash",
-  "qwen3.8-max": "Qwen3.8 Max",
-};
-const labelOf = (m: string) => MODEL_LABEL[m] ?? m;
+import { modelLabel as labelOf } from "../src/lib/model-label";
 
 /** True when the model id resolves to a list price marked as an assumed alias rate. */
 function assumedOf(lane: string, model: string): boolean {
