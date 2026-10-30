@@ -7,7 +7,10 @@ import { join } from "node:path";
 // carries data-theme/data-mode dark, and no file carries a palette variable, a retired package name or
 // a mode variant of its own.
 const PACKAGE = "@gjuoun/bigface-business-ui";
-const OLD = "@gjuoun/bigface-ui";
+// Assembled from parts on purpose: the retirement gate is "a plain grep for the old name finds
+// nothing", and the guard's own source must not be the one file that trips it.
+const OLD = ["@gjuoun", "bigface-ui"].join("/");
+const OLD_PATH = ["packages", "ui"].join("/");
 const srcRoot = import.meta.dir;
 const siteDir = join(srcRoot, "..");
 const stylesDir = join(srcRoot, "styles");
@@ -216,7 +219,7 @@ describe("the retired workspaces are gone and the stock catalogue stays", () => 
     for (const file of codeFiles) {
       const text = read(file);
       expect(text, rel(file)).not.toContain(OLD);
-      expect(text, rel(file)).not.toContain("packages/ui");
+      expect(text, rel(file)).not.toContain(OLD_PATH);
     }
   });
 });

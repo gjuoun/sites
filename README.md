@@ -6,14 +6,15 @@ Cloudflare Pages deploy per site.
 ```
 apps/
   bigface/      # bigface.qqntt.com   — the theme specimen site (Astro); also hosts the
-                #                        unlisted /ui/ component workspace
+                #                        unlisted /ui/business/ component catalogue
   bundant/      # bundant.qqntt.com   — the bundant docs site (Astro + Starlight)
   qublack/      # qublack.qqntt.com   — the QuBlack font specimen (Astro)
   gjuoun/       # jun-blog (Pages project)  — Jun's blog: posts, projects, resume (Astro)
   jun-hermes/   # jun-hermes.qqntt.com — the OAuth verification site (static)
   blackboard/   # the review app (Next, local-only) + its landing page
 packages/
-  ui/               # @gjuoun/bigface-ui — 63 shadcn primitives + the Bigface layer
+  bigface-business-ui/  # @gjuoun/bigface-business-ui — the 63 stock shadcn components and the
+                        #   business theme (colour only, generated from the Bigface palettes)
   bigface-tokens/   # @gjuoun/bigface-tokens — synced copies of bigface's palette, themes,
                     #   contrast math and installer, so this repo builds on its own
 ```

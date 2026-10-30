@@ -195,10 +195,9 @@ test("no element pairs a bright fill class with anything but the dark ink", () =
 
 // Until shadcn is initialised there is no --primary token to pair.
 const tailwindCss = join(siteDir, "src/styles/tailwind.css");
-// The library ships its own structural theme (packages/ui/src/styles/theme.css): semantic colour
-// names plus the font-code utility, no values. If the site's palette reset ever runs after that
-// import, the names vanish and a component silently loses its colours; the colour guard cannot see
-// a missing rule, so pin the mapping here.
+// The theme package ships shadcn's own structural theme (styles.css): semantic colour names, no
+// values. If the site's palette reset ever runs after that import, the names vanish and a component
+// silently loses its colours; the colour guard cannot see a missing rule, so pin the mapping here.
 test("the built CSS keeps the library's theme names and drops Tailwind's default scale", () => {
 	const css = readdirSync(join(dist, "_astro"))
 		.filter((f) => f.endsWith(".css"))
