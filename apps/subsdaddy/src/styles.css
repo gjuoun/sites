@@ -3,6 +3,12 @@
 @import "tailwindcss";
 @import "@gjuoun/bigface-business-ui/styles.css";
 @import "@fontsource-variable/geist";
+/* Only the stock components the site renders: Tailwind does not scan node_modules. */
+@source "../../../packages/bigface-business-ui/src/components/ui/badge.tsx";
+@source "../../../packages/bigface-business-ui/src/components/ui/card.tsx";
+@source "../../../packages/bigface-business-ui/src/components/ui/table.tsx";
+@source "../../../packages/bigface-business-ui/src/components/ui/toggle.tsx";
+@source "../../../packages/bigface-business-ui/src/components/ui/toggle-group.tsx";
 
 @theme inline {
   --font-sans: "Geist Variable", sans-serif;
