@@ -1,33 +1,21 @@
-/* Tailwind v4 + shadcn/ui entry.
-   Written by `shadcn init` (radix-nova), then the colour values were replaced: every token below is a
-   var(--bf-*) that Base.astro writes onto <html> from palette/bigface.json. No colour literal lives in
-   this file (the #000 in the grid's mask-image is alpha only, nothing is painted with it). The @theme inline keys are the ones shadcn wrote — keep them (the CLI rewrites component
-   classes against them; removing --font-heading made `card` show as drifted in the probe). */
-/* Class scanning is limited to site/src and skips test fixtures (they spell offending classes on purpose). */
-@import "tailwindcss" source("../");
-@source not "../**/*.test.ts";
-@source not "../**/*.test.tsx";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
+/* The site's whole stylesheet: Tailwind, the business theme, and the four stock components the page
+   renders. Every rule the page needs is a utility in its markup — the palette, the shadcn roles and
+   the base layer all come from the theme package. The site adds its own fonts and the two motions
+   that are part of the specimen's identity; nothing else. */
+@import "tailwindcss";
+@import "@gjuoun/bigface-business-ui/styles.css";
 
-/* Only the four stock components the site renders: Tailwind does not scan node_modules, and the
-   package's other 59 would only add CSS nobody loads. */
+/* Tailwind does not scan node_modules: only the stock components this page renders. */
 @source "../../../../packages/bigface-business-ui/src/components/ui/button.tsx";
 @source "../../../../packages/bigface-business-ui/src/components/ui/badge.tsx";
 @source "../../../../packages/bigface-business-ui/src/components/ui/card.tsx";
 @source "../../../../packages/bigface-business-ui/src/components/ui/tabs.tsx";
 
-@custom-variant dark (&:is(.dark *));
-
-/* Tailwind's own colour scale is cleared: only the palette-backed names below can be generated. */
-@theme {
-  --color-*: initial;
-}
-
 @theme inline {
   --font-sans: "Qu Black Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "Qu Black Mono", ui-monospace, "SF Mono", Menlo, monospace;
   --font-display: "Qu Black Sans", "Helvetica Neue", system-ui, sans-serif;
+
   /* The two motions the site keeps: the headline sweep and the drifting glows. */
   --animate-hue: bf-hue 12s cubic-bezier(0.22, 1, 0.36, 1) infinite alternate;
   --animate-drift: bf-drift 26s cubic-bezier(0.22, 1, 0.36, 1) infinite alternate;
@@ -40,116 +28,13 @@
       background-position: 100% 50%;
     }
   }
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --color-foreground: var(--foreground);
-  --color-background: var(--background);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
 
-  /* Bigface names: every palette colour and ANSI alias as a Tailwind colour (bg-bf-lime, …). */
-  --color-ink-on-bright: var(--ink-on-bright);
-  --color-bf-bg: var(--bf-bg);
-  --color-bf-fg: var(--bf-fg);
-  --color-bf-fg-dim: var(--bf-fg-dim);
-  --color-bf-border: var(--bf-border);
-  --color-bf-border-muted: var(--bf-border-muted);
-  --color-bf-selection: var(--bf-selection);
-  --color-bf-cursor-line: var(--bf-cursor-line);
-  --color-bf-brace-match: var(--bf-brace-match);
-  --color-bf-blue: var(--bf-blue);
-  --color-bf-light-blue: var(--bf-light-blue);
-  --color-bf-pale-blue: var(--bf-pale-blue);
-  --color-bf-cyan: var(--bf-cyan);
-  --color-bf-green: var(--bf-green);
-  --color-bf-lime: var(--bf-lime);
-  --color-bf-yellow: var(--bf-yellow);
-  --color-bf-bright-yellow: var(--bf-bright-yellow);
-  --color-bf-burnt-orange: var(--bf-burnt-orange);
-  --color-bf-purple: var(--bf-purple);
-  --color-bf-comment: var(--bf-comment);
-  --color-bf-caret: var(--bf-caret);
-  --color-bf-fg-muted: var(--fg-muted);
-  --color-bf-dim: var(--dim);
-
-  /* Shadows: Tailwind's defaults are black at 10% — use the theme's own darkest surface instead. */
-  --shadow: 0 1px 3px 0 var(--bf-shadow), 0 1px 2px -1px var(--bf-shadow);
-  --shadow-2xs: 0 1px var(--bf-shadow);
-  --shadow-xs: 0 1px 2px 0 var(--bf-shadow);
-  --shadow-sm: 0 1px 3px 0 var(--bf-shadow), 0 1px 2px -1px var(--bf-shadow);
-  --shadow-md: 0 4px 6px -1px var(--bf-shadow), 0 2px 4px -2px var(--bf-shadow);
-  --shadow-lg: 0 10px 15px -3px var(--bf-shadow), 0 4px 6px -4px var(--bf-shadow);
-  --shadow-xl: 0 20px 25px -5px var(--bf-shadow), 0 8px 10px -6px var(--bf-shadow);
-  --shadow-2xl: 0 25px 50px -12px var(--bf-shadow);
-}
-
-/* shadcn's semantic tokens, mapped onto the palette. Dark-only site: no .dark override block —
-   <html class="dark"> switches on the components' dark: variants, which are designed for these
-   surfaces. */
-:root {
-  --bf-shadow: color-mix(in srgb, var(--bf-bg) 70%, transparent);
-  --background: var(--bf-bg);
-  --foreground: var(--bf-fg);
-  --card: var(--bf-cursor-line);
-  --card-foreground: var(--bf-fg);
-  --popover: var(--bf-cursor-line);
-  --popover-foreground: var(--bf-fg);
-  --primary: var(--bf-blue);
-  --primary-foreground: var(--ink-on-bright);
-  --secondary: var(--bf-border-muted);
-  --secondary-foreground: var(--bf-fg);
-  --muted: var(--bf-border-muted);
-  --muted-foreground: var(--bf-fg-dim);
-  --accent: var(--bf-border-muted);
-  --accent-foreground: var(--bf-fg);
-  --destructive: var(--bf-burnt-orange);
-  --border: var(--bf-border);
-  --input: var(--bf-border);
-  --ring: var(--bf-blue);
-  --chart-1: var(--bf-blue);
-  --chart-2: var(--bf-lime);
-  --chart-3: var(--bf-yellow);
-  --chart-4: var(--bf-burnt-orange);
-  --chart-5: var(--bf-purple);
-  --radius: 0.625rem;
-  --sidebar: var(--bf-cursor-line);
-  --sidebar-foreground: var(--bf-fg);
-  --sidebar-primary: var(--bf-blue);
-  --sidebar-primary-foreground: var(--ink-on-bright);
-  --sidebar-accent: var(--bf-border-muted);
-  --sidebar-accent-foreground: var(--bf-fg);
-  --sidebar-border: var(--bf-border);
-  --sidebar-ring: var(--bf-blue);
+  @keyframes bf-drift {
+    from {
+      transform: translate3d(-2%, -1%, 0) scale(1);
+    }
+    to {
+      transform: translate3d(2%, 2%, 0) scale(1.08);
+    }
+  }
 }

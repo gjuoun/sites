@@ -2,8 +2,8 @@ import { expect, test } from "bun:test";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-// Every colour on the site comes from palette/qublack.json through the --bf-* variables that
-// Base.astro writes onto <html>. A hex literal in a component means someone bypassed the palette.
+// Every colour on the site is a theme token from @gjuoun/bigface-business-ui. A colour literal or a
+// raw token read in a component means someone bypassed the theme.
 const BG_DIR = join(import.meta.dir, "components/bg");
 const HEX = /#[0-9a-fA-F]{3,8}\b/;
 

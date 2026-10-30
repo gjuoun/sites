@@ -1,11 +1,11 @@
 ---
 import "../styles/tailwind.css";
 import "../styles/qublack-fonts.css";
+import { DEFAULT_THEME, themeInitScript } from "@gjuoun/bigface-business-ui/lib/themes";
 import BGSiteFooter from "../components/bg/site-footer.astro";
 import BGSiteHeader from "../components/bg/site-header.astro";
 import BGAtmosphere from "../components/bg/atmosphere.astro";
 import BGToast from "../components/bg/toast.astro";
-import { kebab, palette } from "../data/palette.ts";
 import { REPO } from "../data/site.ts";
 
 interface Props {
@@ -19,30 +19,14 @@ const {
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 const origin = Astro.site ? new URL(Astro.site).origin : "";
 
-// Every colour on this site comes from palette/qublack.json (the Bigface dark palette), exposed
-// under --bf-<colour>; tailwind.css maps shadcn's semantic tokens onto these and nothing else.
-const vars: Record<string, string> = {
-  ...Object.fromEntries(
-    Object.entries(palette.colors).map(([name, color]) => [`--bf-${kebab(name)}`, color.hex]),
-  ),
-  ...Object.fromEntries(
-    Object.entries(palette.ansi).map(([name, color]) => [`--bf-ansi-${kebab(name)}`, color.hex]),
-  ),
-  "--ink-on-bright": "var(--bf-bg)",
-  "--fg-muted": "color-mix(in srgb, var(--bf-fg) 75%, var(--bf-bg))",
-  // 65% (not 55%) keeps small mono labels above WCAG AA on the page background.
-  "--dim": "color-mix(in srgb, var(--bf-fg) 65%, var(--bf-bg))",
-};
-const style = Object.entries(vars)
-  .map(([name, value]) => `${name}:${value}`)
-  .join(";");
 ---
 
 <!doctype html>
 <html
   lang="en"
-  class="dark [font-variant-ligatures:none] bg-background text-foreground font-sans text-[16px] leading-[1.65] [-webkit-text-size-adjust:100%] [scroll-behavior:smooth] [font-variation-settings:'MONO'_0,'CASL'_0,'slnt'_0,'CRSV'_0.5] motion-reduce:[scroll-behavior:auto] motion-reduce:[&_*]:[animation-duration:0.001ms]! motion-reduce:[&_*]:[animation-iteration-count:1]! motion-reduce:[&_*]:[transition-duration:0.001ms]!"
-  style={style}
+  data-theme={DEFAULT_THEME}
+  data-mode="dark"
+  class="[font-variant-ligatures:none] bg-background text-foreground font-sans text-[16px] leading-[1.65] [-webkit-text-size-adjust:100%] [scroll-behavior:smooth] [font-variation-settings:'MONO'_0,'CASL'_0,'slnt'_0,'CRSV'_0.5] motion-reduce:[scroll-behavior:auto] motion-reduce:[&_*]:[animation-duration:0.001ms]! motion-reduce:[&_*]:[animation-iteration-count:1]! motion-reduce:[&_*]:[transition-duration:0.001ms]!"
 >
   <head>
     <meta charset="utf-8" />
@@ -51,7 +35,7 @@ const style = Object.entries(vars)
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
-    <meta name="theme-color" content={palette.colors.bg?.hex} />
+    <script is:inline set:html={themeInitScript}></script>
     <title>{title}</title>
     <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
     <meta property="og:type" content="website" />
