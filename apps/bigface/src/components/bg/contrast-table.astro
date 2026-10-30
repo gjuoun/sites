@@ -5,7 +5,7 @@ import { palette } from "../../data/palette.ts";
 // Every palette colour's contrast on the background, with its WCAG band. Informational only.
 const rows = contrastReport(palette as never);
 const label = (r: number) => (r >= 7 ? "AAA" : r >= 4.5 ? "AA" : r >= 3 ? "large text" : "below 3");
-const cell = "border-b border-bf-border px-[0.6rem] py-[0.4rem]";
+const cell = "border-b border-border px-[0.6rem] py-[0.4rem]";
 ---
 
 <table class="w-full border-collapse text-[0.9rem]">
@@ -13,7 +13,7 @@ const cell = "border-b border-bf-border px-[0.6rem] py-[0.4rem]";
     <tr>
       {
         ["Colour", "Hex", "Ratio on background", "WCAG"].map((h) => (
-          <th class:list={[cell, "font-semibold text-bf-fg-muted"]}>{h}</th>
+          <th class:list={[cell, "font-semibold text-muted-foreground"]}>{h}</th>
         ))
       }
     </tr>
@@ -33,7 +33,7 @@ const cell = "border-b border-bf-border px-[0.6rem] py-[0.4rem]";
             <code>{r.hex}</code>
           </td>
           <td class={cell}>{r.ratio.toFixed(1)} : 1</td>
-          <td class:list={[cell, { "text-bf-burnt-orange": r.ratio < 4.5 }]}>{label(r.ratio)}</td>
+          <td class:list={[cell, { "text-destructive": r.ratio < 4.5 }]}>{label(r.ratio)}</td>
         </tr>
       ))
     }

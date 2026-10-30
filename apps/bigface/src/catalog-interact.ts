@@ -4,7 +4,7 @@
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { findChrome, freePort } from "./panel-overflow.ts";
+import { launchChrome } from "./panel-overflow.ts";
 
 export interface InteractionResult {
 	name: string;
@@ -19,8 +19,6 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /** Run every interaction on the built page at distDir + path. Returns one result per demo that has a trigger. */
 export async function runInteractions(distDir: string, path = "/ui/business/"): Promise<{ total: number; statics: string[]; results: InteractionResult[] }> {
-	const chrome = findChrome();
-	if (!chrome) throw new Error("no Chrome found: set CHROME_PATH");
 	const server = Bun.serve({
 		port: 0,
 		fetch: async (req) => {
@@ -32,26 +30,13 @@ export async function runInteractions(distDir: string, path = "/ui/business/"): 
 		},
 	});
 	const profile = mkdtempSync(join(tmpdir(), "bf-interact-"));
-	const port = await freePort();
-	const proc = Bun.spawn(
-		[chrome, "--headless=new", "--disable-gpu", "--hide-scrollbars", "--window-size=1440,1000", "--user-data-dir=" + profile, "--remote-debugging-port=" + port, "about:blank"],
-		{ stdout: "ignore", stderr: "ignore" },
-	);
+	const { proc, wsUrl } = await launchChrome(profile, 1440, 1000);
 	const results: InteractionResult[] = [];
 	let statics: string[] = [];
 	let total = 0;
 	let ws: WebSocket | undefined;
 	try {
-		let target: { webSocketDebuggerUrl: string } | undefined;
-		for (let i = 0; i < 80 && !target; i++) {
-			await sleep(150);
-			try {
-				const list = (await (await fetch("http://127.0.0.1:" + port + "/json/list")).json()) as { type: string; webSocketDebuggerUrl: string }[];
-				target = list.find((t) => t.type === "page");
-			} catch {}
-		}
-		if (!target) throw new Error("headless Chrome did not expose a target");
-		ws = new WebSocket(target.webSocketDebuggerUrl);
+		ws = new WebSocket(wsUrl);
 		await new Promise((r) => ws!.addEventListener("open", r));
 		let id = 0;
 		const pending = new Map<number, (v: any) => void>();

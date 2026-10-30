@@ -3,7 +3,7 @@
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { findChrome, freePort } from "./panel-overflow.ts";
+import { launchChrome } from "./panel-overflow.ts";
 
 export interface ModeReading {
 	mode: string | undefined;
@@ -21,8 +21,6 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /** Runs the mode sequence on the built page at distDir + path, at the given width. */
 export async function runModeToggle(distDir: string, path: string, width: number): Promise<ModeRun> {
-	const chrome = findChrome();
-	if (!chrome) throw new Error("no Chrome found: set CHROME_PATH");
 	const server = Bun.serve({
 		port: 0,
 		fetch: async (req) => {
@@ -34,23 +32,10 @@ export async function runModeToggle(distDir: string, path: string, width: number
 		},
 	});
 	const profile = mkdtempSync(join(tmpdir(), "bf-mode-"));
-	const port = await freePort();
-	const proc = Bun.spawn(
-		[chrome, "--headless=new", "--disable-gpu", "--hide-scrollbars", "--window-size=" + width + ",1000", "--user-data-dir=" + profile, "--remote-debugging-port=" + port, "about:blank"],
-		{ stdout: "ignore", stderr: "ignore" },
-	);
+	const { proc, wsUrl } = await launchChrome(profile, width, 1000);
 	let ws: WebSocket | undefined;
 	try {
-		let target: { webSocketDebuggerUrl: string } | undefined;
-		for (let i = 0; i < 80 && !target; i++) {
-			await sleep(150);
-			try {
-				const list = (await (await fetch("http://127.0.0.1:" + port + "/json/list")).json()) as { type: string; webSocketDebuggerUrl: string }[];
-				target = list.find((t) => t.type === "page");
-			} catch {}
-		}
-		if (!target) throw new Error("headless Chrome did not expose a target");
-		ws = new WebSocket(target.webSocketDebuggerUrl);
+		ws = new WebSocket(wsUrl);
 		await new Promise((r) => ws!.addEventListener("open", r));
 		let id = 0;
 		const pending = new Map<number, (v: any) => void>();

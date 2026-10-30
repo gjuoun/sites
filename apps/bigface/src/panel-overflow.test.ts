@@ -2,18 +2,18 @@ import { beforeAll, expect, test } from "bun:test";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { $ } from "bun";
-import { findChrome, measureCatalogLayout, measurePanelColours, measurePanelOverflow } from "./panel-overflow.ts";
+import { findChrome, measureCatalogLayout, measurePanelColours } from "./panel-overflow.ts";
 import { runInteractions } from "./catalog-interact.ts";
 import { STATIC_DEMOS } from "./pages/ui/business/_catalog.tsx";
 
 // The business catalogue is stock shadcn in the business colours. So the tests hold the COLOUR contract and the
 // catalogue liveness. No radius, shadow, size or type is asserted: those are shadcn's own, and a test that pins them
-// would pin the CLI defaults, not the theme. The console page keeps its containment test, unchanged.
+// would pin the CLI defaults, not the theme. The legacy /ui/ and /ui/console/ workspaces are retired (JW-329).
 const siteDir = join(import.meta.dir, "..");
 const dist = join(siteDir, "dist");
 
 beforeAll(async () => {
-	if (!existsSync(join(dist, "ui/business/index.html")) || !existsSync(join(dist, "ui/console/index.html"))) {
+	if (!existsSync(join(dist, "ui/business/index.html"))) {
 		const r = await $`bun run build`.cwd(siteDir).quiet().nothrow();
 		if (r.exitCode !== 0) throw new Error("site build failed:\n" + r.stderr.toString());
 	}
@@ -70,17 +70,6 @@ for (const mode of ["light", "dark"] as const) {
 		120_000,
 	);
 }
-
-test.skipIf(!findChrome())(
-	"the console page stays inside its own panels, unchanged by the business package",
-	async () => {
-		const m = await measurePanelOverflow(dist, "/ui/console/", 1440);
-		expect(m.panels, "console renders light and dark").toBe(2);
-		expect(m.offenders.map((o) => o.theme + "/" + o.mode + " " + o.tag)).toEqual([]);
-		expect(m.clipped).toEqual([]);
-	},
-	120_000,
-);
 
 test("the retired game theme is offline in every page the site ships", async () => {
 	const hits = await $`rg -l 'data-theme="game"' ${dist}`.nothrow().quiet();

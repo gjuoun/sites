@@ -1,5 +1,5 @@
 ---
-import { BGButton } from "@gjuoun/bigface-ui/components/bg/button";
+import { BGButton } from "./button.tsx";
 import BGCommandLine from "./command-line.astro";
 import BGEyebrow from "./eyebrow.astro";
 import BGSyntaxPreview from "./syntax-preview.astro";
@@ -21,14 +21,14 @@ const { base, repo, ports, command } = Astro.props;
   <div data-reveal>
     <BGEyebrow>one palette · {ports} ports · since 2018</BGEyebrow>
     <h1
-      class="mt-[0.6rem] mb-[0.4rem] text-[clamp(3.4rem,8.5vw,6.2rem)] font-extrabold tracking-[-0.035em]"
+      class="mt-[0.6rem] mb-[0.4rem] text-[clamp(3.4rem,8.5vw,6.2rem)] font-extrabold tracking-[-0.035em] text-chart-2"
     >
-      <span class="bf-grad">Bigface</span>
+      Bigface
     </h1>
-    <p class="bf-lead">
+    <p class="max-w-[56ch] text-[clamp(1.05rem,1.7vw,1.3rem)] text-muted-foreground">
       One dark palette, ported to {ports} tools. No per-tool tweaking, no variants, no second-guessing.
     </p>
-    <p class="text-bf-fg-muted">
+    <p class="text-muted-foreground">
       Born in 2018 as a JetBrains scheme, now generated for your terminal, editors, shell and notes from
       a single palette file. Every colour that came from the original scheme is checked against it by a
       test.
@@ -47,11 +47,11 @@ const { base, repo, ports, command } = Astro.props;
     aria-hidden="true"
   >
     <div
-      class="absolute z-0 aspect-square w-[min(78%,340px)] animate-ring rounded-full bg-[conic-gradient(from_0deg,color-mix(in_srgb,var(--bf-blue)_0%,transparent)_0deg,color-mix(in_srgb,var(--bf-blue)_55%,transparent)_70deg,color-mix(in_srgb,var(--bf-lime)_35%,transparent)_140deg,color-mix(in_srgb,var(--bf-blue)_0%,transparent)_220deg,color-mix(in_srgb,var(--bf-purple)_40%,transparent)_300deg,color-mix(in_srgb,var(--bf-blue)_0%,transparent)_360deg)] opacity-75 blur-[26px]"
+      class="absolute z-0 aspect-square w-[min(78%,340px)] animate-ring rounded-full bg-[conic-gradient(from_0deg,color-mix(in_srgb,var(--primary)_0%,transparent)_0deg,color-mix(in_srgb,var(--primary)_55%,transparent)_70deg,color-mix(in_srgb,var(--chart-5)_35%,transparent)_140deg,color-mix(in_srgb,var(--primary)_0%,transparent)_220deg,color-mix(in_srgb,var(--chart-2)_40%,transparent)_300deg,color-mix(in_srgb,var(--primary)_0%,transparent)_360deg)] opacity-75 blur-[26px]"
     >
     </div>
     <img
-      class="absolute top-0 -right-2 z-3 h-auto w-[clamp(88px,10vw,132px)] -rotate-6 rounded-[30px] shadow-[0_0_0_6px_var(--bf-bg),0_0_0_7px_color-mix(in_srgb,var(--bf-light-blue)_30%,transparent),0_30px_70px_-22px_color-mix(in_srgb,var(--bf-blue)_85%,transparent)] transition-[rotate] duration-600 ease-bf group-hover/stage:rotate-0"
+      class="absolute top-0 -right-2 z-3 h-auto w-[clamp(88px,10vw,132px)] -rotate-6 rounded-[30px] shadow-[0_0_0_6px_var(--background),0_0_0_7px_color-mix(in_srgb,var(--chart-2)_30%,transparent),0_30px_70px_-22px_color-mix(in_srgb,var(--primary)_85%,transparent)] transition-[rotate] duration-600 ease-bf group-hover/stage:rotate-0"
       data-depth="1"
       src={`${base}/img/bigface-avatar.svg`}
       alt=""
@@ -59,7 +59,7 @@ const { base, repo, ports, command } = Astro.props;
       height="112"
     />
     <div
-      class="relative z-2 w-full transform-[perspective(1400px)_rotateY(-7deg)_rotateX(3deg)] drop-shadow-[0_40px_60px_color-mix(in_srgb,var(--bf-border)_70%,transparent)] transition-transform duration-600 ease-bf group-hover/stage:transform-[perspective(1400px)_rotateY(-2deg)_rotateX(0deg)]"
+      class="relative z-2 w-full transform-[perspective(1400px)_rotateY(-7deg)_rotateX(3deg)] drop-shadow-[0_40px_60px_color-mix(in_srgb,var(--border)_70%,transparent)] transition-transform duration-600 ease-bf group-hover/stage:transform-[perspective(1400px)_rotateY(-2deg)_rotateX(0deg)]"
       data-depth="0.4"
     >
       <BGSyntaxPreview terminal />

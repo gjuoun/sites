@@ -1,6 +1,6 @@
 ---
-import { BGBadge } from "@gjuoun/bigface-ui/components/bg/badge";
-import { BGInstallTabs } from "@gjuoun/bigface-ui/components/bg/install-tabs";
+import { BGBadge } from "../../components/bg/badge.tsx";
+import { BGInstallTabs } from "../../components/bg/install-tabs.tsx";
 import BGAppHero from "../../components/bg/app-hero.astro";
 import BGBreadcrumbs from "../../components/bg/breadcrumbs.astro";
 import BGCodeCard from "../../components/bg/code-card.astro";
@@ -63,9 +63,9 @@ const installTabs = [
             width={target.screenshot.width}
             height={target.screenshot.height}
             loading="lazy"
-            class="block h-auto w-full rounded-[14px] border border-bf-border"
+            class="block h-auto w-full rounded-[14px] border border-border"
           />
-          <figcaption class="mt-2 text-[0.82rem] text-bf-dim">
+          <figcaption class="mt-2 text-[0.82rem] text-muted-foreground">
             {target.screenshot.caption ?? `A real screenshot: ${target.name}, Bigface applied.`}
           </figcaption>
         </figure>
@@ -81,7 +81,7 @@ const installTabs = [
       <div class="mt-[0.6rem]">
         <BGInstallTabs client:load items={installTabs} />
       </div>
-      <p class="text-bf-dim">
+      <p class="text-muted-foreground">
         It never edits your config; it prints the one line you still need to add (or remove).{" "}
         <a href={`${base}/install.sh`}>Read the script</a> first, or add <code>--dry-run</code>.
       </p>
@@ -109,7 +109,7 @@ const installTabs = [
               detail="download the file"
               class="flex-1"
             />
-            <a class="text-[0.75rem] whitespace-nowrap text-bf-dim hover:text-bf-blue" href={rawUrl(target.id, f.path)}>raw on GitHub</a>
+            <a class="text-[0.75rem] whitespace-nowrap text-muted-foreground hover:text-primary" href={rawUrl(target.id, f.path)}>raw on GitHub</a>
           </li>
         ))}
       </ul>
@@ -120,14 +120,14 @@ const installTabs = [
     <h2>What was checked</h2>
     <p class="flex max-w-[68ch] flex-wrap items-baseline gap-[0.7rem]">
       <BGBadge tone={target.check.level}>{levelLabel}</BGBadge>
-      <span class="text-bf-fg-muted">{target.check.text}</span>
+      <span class="text-muted-foreground">{target.check.text}</span>
     </p>
   </section>
 
   <section data-reveal>
     <h2>{main.label}</h2>
     <BGCodeCard path={`themes/${target.id}/${main.path}`} code={shown} truncated={truncated} />
-    <p class="text-bf-dim">
+    <p class="text-muted-foreground">
       Generated from the <a href={`${base}/palette/`}>palette</a>. Source:
       <a href={`${REPO}/tree/main/themes/${target.id}`}>themes/{target.id}</a>.
     </p>

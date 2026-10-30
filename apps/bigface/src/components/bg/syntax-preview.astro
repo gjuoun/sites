@@ -1,9 +1,9 @@
 ---
-import { palette } from "../../data/palette.ts";
-import { bgTextClass } from "./palette-classes.ts";
+import { hex, palette, syntaxHex } from "../../data/palette.ts";
 
 // A fake editor window painted with the syntax roles, optionally with a terminal strip (prompt,
-// output and the 16 ANSI slots) under it.
+// output and the 16 ANSI slots) under it. The colours are specimen data — the palette's own hexes
+// arrive inline — because the theme's roles do not carry lime, purple or the ANSI slots.
 interface Props {
   terminal?: boolean;
 }
@@ -150,7 +150,7 @@ const code: Tok[][] = [
   ],
   [["}", "punctuation"]],
 ];
-const classOf = (role?: string) => bgTextClass[role ? (palette.syntax[role] as string) : "fg"];
+const styleOf = (role?: string) => `color:${role ? syntaxHex(role) : hex("fg")}`;
 const ansi = Object.entries(palette.ansi);
 
 // Rendered as one HTML string per line: template whitespace would otherwise be preserved by
@@ -159,37 +159,37 @@ const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replac
 const render = (line: Tok[]): string =>
   line.length === 0
     ? " "
-    : line.map(([text, role]) => `<span class="${classOf(role)}">${esc(text)}</span>`).join("");
+    : line.map(([text, role]) => `<span style="${styleOf(role)}">${esc(text)}</span>`).join("");
 const dot = "inline-block size-[10px] rounded-full";
 ---
 
 <figure
-  class="m-0 overflow-hidden rounded-[14px] border border-bf-border/22 bg-bf-bg shadow-[inset_0_1px_0_color-mix(in_srgb,var(--bf-fg)_6%,transparent),0_30px_60px_-40px_var(--bf-bg)]"
+  class="m-0 overflow-hidden rounded-[14px] border border-border/22 bg-background shadow-[inset_0_1px_0_color-mix(in_srgb,var(--foreground)_6%,transparent),0_30px_60px_-40px_var(--background)]"
 >
   <div
-    class="flex items-center gap-[0.4rem] border-b border-bf-border/14 bg-linear-to-b/srgb from-bf-fg/5 to-transparent px-[0.85rem] py-[0.45rem] font-code text-[0.72rem] text-bf-fg-dim"
+    class="flex items-center gap-[0.4rem] border-b border-border/14 bg-linear-to-b/srgb from-foreground/5 to-transparent px-[0.85rem] py-[0.45rem] font-code text-[0.72rem] text-muted-foreground"
   >
-    <i class:list={[dot, "bg-bf-burnt-orange"]}></i><i class:list={[dot, "bg-bf-yellow text-ink-on-bright"]}></i><i
-      class:list={[dot, "bg-bf-green"]}></i>
+    <i class:list={[dot, "bg-destructive"]}></i><i class:list={[dot, "bg-yellow text-primary-foreground"]}></i><i
+      class:list={[dot, "bg-chart-5"]}></i>
     <span class="ml-[0.55rem] opacity-60">main.ts</span>
   </div>
 
   <pre
-    class="m-0 rounded-none border-0 bg-transparent px-4 pt-[0.7rem] pb-[0.75rem] text-[0.79rem] leading-[1.52] [counter-reset:line]"><code>{code.map((line) => <span class="block whitespace-pre before:mr-[0.9em] before:inline-block before:w-[1.6em] before:text-right before:text-bf-comment before:select-none before:[counter-increment:line] before:content-[counter(line)]" set:html={render(line)} />)}</code></pre>
+    class="m-0 rounded-none border-0 bg-transparent px-4 pt-[0.7rem] pb-[0.75rem] text-[0.79rem] leading-[1.52] [counter-reset:line]"><code>{code.map((line) => <span class="block whitespace-pre before:mr-[0.9em] before:inline-block before:w-[1.6em] before:text-right before:text-muted-foreground before:select-none before:[counter-increment:line] before:content-[counter(line)]" set:html={render(line)} />)}</code></pre>
 
   {
     terminal && (
-      <div class="border-t border-bf-border/14 px-4 pt-[0.6rem] pb-[0.7rem] font-code text-[0.75rem] leading-[1.6]">
+      <div class="border-t border-border/14 px-4 pt-[0.6rem] pb-[0.7rem] font-code text-[0.75rem] leading-[1.6]">
         <div class="flex items-center whitespace-pre">
-          <span class="text-bf-green">jun</span>
-          <span class="text-bf-comment"> ~/code </span>
-          <span class="text-bf-blue">❯</span>
+          <span class="text-chart-5">jun</span>
+          <span class="text-muted-foreground"> ~/code </span>
+          <span class="text-primary">❯</span>
           <span> git status</span>
-          <span class="ml-[2px] inline-block h-[1em] w-[7px] animate-blink bg-bf-fg" />
+          <span class="ml-[2px] inline-block h-[1em] w-[7px] animate-blink bg-foreground" />
         </div>
         <div class="whitespace-pre">
-          <span class="text-bf-green">On branch</span>
-          <span class="text-bf-fg"> main</span>
+          <span class="text-chart-5">On branch</span>
+          <span class="text-foreground"> main</span>
         </div>
         <div class="mt-[0.6rem] flex h-4 overflow-hidden rounded-[4px]">
           {ansi.map(([name, c]) => (

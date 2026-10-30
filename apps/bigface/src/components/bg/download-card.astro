@@ -1,6 +1,6 @@
 ---
-import { bgCardVariants } from "@gjuoun/bigface-ui/components/bg/card";
-import { cn } from "@gjuoun/bigface-ui/lib/utils";
+import { bgCardVariants } from "./card.tsx";
+import { cn } from "@gjuoun/bigface-shadcn-ui/lib/utils";
 
 // A download link styled as a small card: arrow tile, file label, one line of detail.
 interface Props {
@@ -15,15 +15,15 @@ const { href, label, detail, class: extra = "" } = Astro.props;
 <a
   class={cn(
     bgCardVariants({ tone: "plate" }),
-    "flex items-center gap-[0.8rem] rounded-[14px] px-4 py-[0.8rem] text-foreground no-underline transition-[border-color,transform] duration-250 ease-bf hover:-translate-y-0.5 hover:border-bf-blue/45 hover:text-foreground",
+    "flex items-center gap-[0.8rem] rounded-[14px] px-4 py-[0.8rem] text-foreground no-underline transition-[border-color,transform] duration-250 ease-bf hover:-translate-y-0.5 hover:border-primary/45 hover:text-foreground",
     extra,
   )}
   href={href}
   download
 >
-  <span class="grid size-[34px] place-items-center rounded-[10px] bg-bf-blue/14 text-[0.95rem] text-bf-blue">↓</span>
+  <span class="grid size-[34px] place-items-center rounded-[10px] bg-primary/14 text-[0.95rem] text-primary">↓</span>
   <span>
     <strong class="block font-code text-[0.85rem] font-semibold">{label}</strong>
-    <span class="text-[0.75rem] text-bf-dim">{detail}</span>
+    <span class="text-[0.75rem] text-muted-foreground">{detail}</span>
   </span>
 </a>

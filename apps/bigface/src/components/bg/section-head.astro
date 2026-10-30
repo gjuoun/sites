@@ -12,5 +12,5 @@ const { eyebrow, title } = Astro.props;
 <div class="mb-[1.6rem] max-w-[62ch]" data-reveal>
   <BGEyebrow>{eyebrow}</BGEyebrow>
   <h2 class="mt-2 mb-[0.7rem]">{title}</h2>
-  <p class="bf-lead"><slot /></p>
+  <p class="max-w-[56ch] text-[clamp(1.05rem,1.7vw,1.3rem)] text-muted-foreground"><slot /></p>
 </div>
