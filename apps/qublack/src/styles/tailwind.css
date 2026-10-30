@@ -10,6 +10,13 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/* Only the four stock components the site renders: Tailwind does not scan node_modules, and the
+   package's other 59 would only add CSS nobody loads. */
+@source "../../../../packages/bigface-business-ui/src/components/ui/button.tsx";
+@source "../../../../packages/bigface-business-ui/src/components/ui/badge.tsx";
+@source "../../../../packages/bigface-business-ui/src/components/ui/card.tsx";
+@source "../../../../packages/bigface-business-ui/src/components/ui/tabs.tsx";
+
 @custom-variant dark (&:is(.dark *));
 
 /* Tailwind's own colour scale is cleared: only the palette-backed names below can be generated. */

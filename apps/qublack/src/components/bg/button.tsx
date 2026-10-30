@@ -1,9 +1,9 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import type * as React from "react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Button } from "@gjuoun/bigface-business-ui/components/ui/button";
+import { cn } from "@gjuoun/bigface-business-ui/lib/utils";
 
-// Bigface variants, layered on shadcn's Button without touching components/ui/button.tsx.
+// Bigface variants, layered on the package's stock Button without touching it.
 // `tone` picks a Bigface look; shadcn's own `variant` / `size` still pass straight through. The BG
 // classes are merged last, so on a conflict (background, padding, radius…) they win over shadcn's.
 export const bgButtonVariants = cva("", {

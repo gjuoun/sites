@@ -1,7 +1,7 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import type * as React from "react";
-import { Card } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { Card } from "@gjuoun/bigface-business-ui/components/ui/card";
+import { cn } from "@gjuoun/bigface-business-ui/lib/utils";
 
 // Bigface surface: the deep translucent plate with a hairline border and a long soft shadow.
 // `glow` adds the blue→lime gradient rim. Padding/gap are reset so content keeps its own layout.
