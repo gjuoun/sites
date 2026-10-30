@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Check, Copy, Terminal } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from 'cn';
 import { HAIRLINE, PANEL } from '@/lib/tokens';
 
 type Command = { label: string; command: string };

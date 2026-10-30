@@ -58,14 +58,9 @@
         "@astrojs/starlight": "0.37.7",
         "@gjuoun/bigface-business-ui": "workspace:*",
         "@gjuoun/bigface-highlighter": "workspace:*",
-        "@radix-ui/react-accordion": "1.3.1",
-        "@radix-ui/react-separator": "1.2.0",
-        "@radix-ui/react-slot": "1.5.0",
-        "@radix-ui/react-tabs": "1.2.1",
         "@tailwindcss/vite": "4.3.3",
         "astro": "5.18.2",
         "class-variance-authority": "0.7.1",
-        "clsx": "2.1.1",
         "cn": "0.5.0",
         "lucide-react": "0.577.0",
         "mermaid": "12.2.0",
@@ -73,7 +68,6 @@
         "react": "19.3.1",
         "react-dom": "19.3.1",
         "rehype-mermaid": "3.0.0",
-        "tailwind-merge": "3.7.0",
         "tailwindcss": "4.3.3",
       },
       "devDependencies": {
@@ -2425,8 +2419,6 @@
     "svgo": ["svgo@4.1.0", "", { "dependencies": { "commander": "^11.1.0", "css-select": "^6.0.0", "css-tree": "^3.0.1", "css-what": "^7.0.0", "csso": "^5.0.5", "picocolors": "^1.1.1", "sax": "1.6.1" }, "bin": { "svgo": "bin/svgo.js" } }, "sha512-bkxnTg1kSU0guhIBmibA6UUhrQmPVA1XsQLN+ylCd+UWzbnLkySOcXpyk1mrl05f+pcaCx2eHb+sp6BgMZWX+Q=="],
 
     "systeminformation": ["systeminformation@5.33.16", "", { "os": "!aix", "bin": { "systeminformation": "lib/cli.js" } }, "sha512-R+Lh69IJXfJj6bfyH1In5cIR9FTr4hBS39YvlZHZjsK1p9cuELPq7hplZZIb56ZESMMb+DzdKqqE6Iomi01Mvg=="],
-
-    "tailwind-merge": ["tailwind-merge@3.7.0", "", {}, "sha512-XPPUyAc+cvspz3lHTcR/QgPfW2A0lv/xQNIjX3HGhLR+Nq2lHaLq5MtTesHn8GUr3W3DguT2KT5x3NVgRtYwmA=="],
 
     "tailwindcss": ["tailwindcss@4.3.3", "", {}, "sha512-gOhV3P7ufE62QDGg1zVaTgCR+EtPv92k2nIhVcVKcLmxT1sUBsQGhnZj175j+MqRt4zLF7ic+sCYjfhxMxj7YQ=="],
 
