@@ -151,7 +151,7 @@ counts.ratio === "2.000"
   ? pass("2:1 grid: ratio cell reads 2.000")
   : fail(`2:1 grid: ratio cell reads ${JSON.stringify(counts.ratio)}`);
 const heroCopy = await page.evaluate(() => ({
-  lead: document.querySelector("#specimen p.bf-lead")?.textContent ?? "",
+  lead: document.querySelector("#specimen h1 + p")?.textContent ?? "",
   ctaHeights: [
     ...(document.querySelector("#specimen a[href='#download']")?.parentElement?.children ?? []),
   ].map((child) => Math.round(child.getBoundingClientRect().height * 10) / 10),
@@ -614,10 +614,11 @@ const scanOverflow = async (width: number) => {
         ),
       ],
       howtoCards: document.querySelectorAll("[data-howto-card]").length,
-      // The top bar is trimmed to three items: the install guide, the download, the repo.
+      // The top bar: the install guide, the download, the repo, and the theme toggle (icon-only, so its
+      // accessible name is the label).
       navItems: [...document.querySelectorAll("#site-header nav a, #site-header nav button")]
         .filter((item) => item.getBoundingClientRect().width > 0)
-        .map((item) => item.textContent?.trim() ?? ""),
+        .map((item) => item.textContent?.trim() || item.getAttribute("aria-label") || ""),
       navFits: (() => {
         const nav = document.querySelector<HTMLElement>("#site-header nav");
         return nav ? nav.scrollWidth <= nav.clientWidth + 1 : false;
@@ -716,9 +717,9 @@ for (const width of [390, 834, 1440]) {
     : fail(
         `how-to ${width}px: fits=${audit.howtoListFits}, ${audit.howtoCards} cards, heights ${JSON.stringify(audit.howtoHeights)}`,
       );
-  const NAV = ["How to use", "Download", "GitHub"];
+  const NAV = ["How to use", "Download", "GitHub", "Dark mode"];
   JSON.stringify(audit.navItems) === JSON.stringify(NAV) && audit.navFits
-    ? pass(`nav ${width}px: exactly three items (${audit.navItems.join(" · ")}), nothing clipped`)
+    ? pass(`nav ${width}px: three links and the theme toggle (${audit.navItems.join(" · ")}), nothing clipped`)
     : fail(`nav ${width}px: ${JSON.stringify(audit.navItems)}, fits=${audit.navFits}`);
   audit.heroBottoms === null
     ? pass(`hero ${width}px: one column, so bottom alignment does not apply`)
@@ -808,7 +809,7 @@ await page.setViewport({ width: 1024, height: 900 });
 await page.reload({ waitUntil: "load" });
 const narrow = await page.evaluate(() => {
   const chat = document.getElementById("agent-chat")!.getBoundingClientRect();
-  const wrap = document.querySelector("#specimen .bf-wrap")!.getBoundingClientRect();
+  const wrap = document.querySelector("#specimen > div")!.getBoundingClientRect();
   const heading = document.querySelector("#specimen h1")!.getBoundingClientRect();
   // 1024 is above the 900px two-up breakpoint, so the download columns must share a bottom too.
   const download = [...document.querySelector("#download [data-two-column]")!.children].map(
@@ -859,7 +860,7 @@ await page.reload({ waitUntil: "load" });
 await page.evaluate(() => document.fonts.ready.then(() => undefined));
 const mobile = await page.evaluate(() => {
   const chat = document.getElementById("agent-chat")!.getBoundingClientRect();
-  const wrap = document.querySelector("#specimen .bf-wrap")!.getBoundingClientRect();
+  const wrap = document.querySelector("#specimen > div")!.getBoundingClientRect();
   const header = document.querySelector("[data-specimen-header]")!;
   const centre = (el: Element) => {
     const box = el.getBoundingClientRect();

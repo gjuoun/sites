@@ -27,16 +27,16 @@ if (form && input && thread && dataNode) {
     "[&_[data-md-p]]:m-0 " +
     "[&_[data-md-bold]]:font-bold [&_[data-md-bold]]:text-foreground " +
     "[&_[data-md-heading]]:m-0 [&_[data-md-heading]]:font-bold [&_[data-md-heading]]:text-[0.92rem] " +
-    "[&_[data-md-inline-code]]:rounded-[4px] [&_[data-md-inline-code]]:bg-bf-border/25 " +
+    "[&_[data-md-inline-code]]:rounded-[4px] [&_[data-md-inline-code]]:bg-muted/25 " +
     "[&_[data-md-inline-code]]:px-[0.3em] [&_[data-md-inline-code]]:py-[0.05em] " +
-    "[&_[data-md-inline-code]]:font-code [&_[data-md-inline-code]]:text-[0.9em] " +
+    "[&_[data-md-inline-code]]:font-mono [&_[data-md-inline-code]]:text-[0.9em] " +
     "[&_[data-md-list]]:my-0 [&_[data-md-list]]:ml-[1.05rem] [&_[data-md-list]]:list-disc [&_[data-md-list]]:p-0 " +
     "[&_pre[data-md-code]]:mt-0 [&_pre[data-md-code]]:mb-0 [&_pre[data-md-code]]:max-w-full " +
     "[&_pre[data-md-code]]:overflow-x-auto " +
-    "[&_pre[data-md-code]]:rounded-[9px] [&_pre[data-md-code]]:border [&_pre[data-md-code]]:border-bf-border/80 " +
-    "[&_pre[data-md-code]]:bg-bf-bg/70 [&_pre[data-md-code]]:px-[0.6rem] [&_pre[data-md-code]]:py-[0.5rem] " +
-    "[&_pre[data-md-code]]:font-code [&_pre[data-md-code]]:text-[0.72rem] [&_pre[data-md-code]]:leading-[1.55] " +
-    "[&_pre[data-md-code]]:text-bf-fg";
+    "[&_pre[data-md-code]]:rounded-[9px] [&_pre[data-md-code]]:border [&_pre[data-md-code]]:border-border/80 " +
+    "[&_pre[data-md-code]]:bg-background/70 [&_pre[data-md-code]]:px-[0.6rem] [&_pre[data-md-code]]:py-[0.5rem] " +
+    "[&_pre[data-md-code]]:font-mono [&_pre[data-md-code]]:text-[0.72rem] [&_pre[data-md-code]]:leading-[1.55] " +
+    "[&_pre[data-md-code]]:text-foreground";
 
   let replyIndex = 0;
   let busy = false;
@@ -62,12 +62,12 @@ if (form && input && thread && dataNode) {
     wrapper.className = [
       "min-w-0 max-w-[92%] rounded-[14px] border px-[0.75rem] py-[0.6rem]",
       role === "user"
-        ? "ml-auto border-bf-border bg-bf-border/12"
-        : "mr-auto border-bf-border bg-bf-border-muted",
+        ? "ml-auto border-border bg-muted/12"
+        : "mr-auto border-border bg-card",
     ].join(" ");
     const meta = document.createElement("p");
     meta.className =
-      "m-0 mb-[0.3rem] font-code text-[0.62rem] tracking-[0.06em] text-bf-fg-muted uppercase";
+      "m-0 mb-[0.3rem] font-mono text-[0.62rem] tracking-[0.06em] text-foreground/75 uppercase";
     meta.textContent = role === "user" ? "you · now" : "agent · streaming";
     const body = document.createElement("div");
     body.className = bodyClass;
@@ -86,7 +86,7 @@ if (form && input && thread && dataNode) {
     const reply = bubble("agent");
     const caret = document.createElement("span");
     caret.dataset.caret = "";
-    caret.className = "ml-[0.1em] inline-block animate-blink text-bf-fg-muted";
+    caret.className = "ml-[0.1em] inline-block animate-blink text-foreground/75";
     caret.textContent = "▍";
     reply.body.append(caret);
     document.documentElement.dataset.agentStreaming = "true";

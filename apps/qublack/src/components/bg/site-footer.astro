@@ -4,21 +4,21 @@ interface Props {
   repo: string;
 }
 const { base, repo } = Astro.props;
-const link = "text-bf-blue no-underline transition-colors duration-200 hover:text-bf-lime";
+const link = "text-primary no-underline transition-colors duration-200 hover:text-chart-5";
 ---
 
 <footer
-  class="border-t border-bf-border bg-linear-to-b/srgb from-bf-border-muted/20 to-bf-border-muted/85"
+  class="border-t border-border bg-linear-to-b/srgb from-card/20 to-card/85"
 >
-  <div class="bf-wrap flex flex-wrap items-center justify-between gap-4 py-8">
+  <div class="mx-auto w-[min(1180px,100%-2.5rem)] max-[760px]:w-[min(1180px,100%-1.75rem)] flex flex-wrap items-center justify-between gap-4 py-8">
     <div class="flex items-center gap-[0.7rem] font-display font-bold">
       <span
-        class="grid size-10 place-items-center rounded-[11px] bg-bf-border-muted font-code text-[1.15rem] text-bf-blue shadow-[0_0_0_1px_var(--bf-selection)]"
+        class="grid size-10 place-items-center rounded-[11px] bg-card font-mono text-[1.15rem] text-primary shadow-[0_0_0_1px_var(--ring)]"
         aria-hidden="true">黢</span
       >
       黢黑 Qu Black
     </div>
-    <p class="m-0 text-[0.85rem] text-bf-dim">
+    <p class="max-w-[68ch] m-0 text-[0.85rem] text-muted-foreground">
       Hanzi from Source Han Sans via Sarasa, Latin from Recursive Linear ·
       <a class={link} href={`${repo}/blob/main/OFL.txt`}>SIL OFL 1.1</a> ·
       <a class={link} href={repo}>GitHub</a>

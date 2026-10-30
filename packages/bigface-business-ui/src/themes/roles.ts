@@ -11,10 +11,19 @@ export const NEUTRALS = ["bg", "panel", "fg", "fgDim", "border", "highlight"] as
 
 /**
  * The accents the components read: primary and ring, destructive, success, info, and the chart ramp
- * (blue → lightBlue → paleBlue → cyan → green) and burntOrange for danger. lime, yellow and purple are palette accents with
- * no CSS variable: they stay accent-docs data in accents.ts.
+ * (blue → lightBlue → paleBlue → cyan → green) and burntOrange for danger. yellow is the theme's one
+ * yellow — the palette's #ffeb3b in both modes — read as ink on a highlighted run of text; the palette
+ * has exactly one yellow, so no second one is defined. lime and purple stay accent-docs data.
  */
-export const ACCENTS = ["blue", "lightBlue", "paleBlue", "cyan", "green", "burntOrange"] as const;
+export const ACCENTS = [
+	"blue",
+	"lightBlue",
+	"paleBlue",
+	"cyan",
+	"green",
+	"burntOrange",
+	"yellow",
+] as const;
 
 /** Every role a theme must set. */
 export const REQUIRED = [...NEUTRALS, ...ACCENTS] as const;

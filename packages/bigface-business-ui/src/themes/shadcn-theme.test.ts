@@ -45,13 +45,17 @@ describe("styles.css is shadcn's default theme", () => {
 		]);
 	});
 
-	test("@theme inline is exactly shadcn's colour keys and radius scale", () => {
+	test("@theme inline is shadcn's colour keys, the theme's one yellow, and the radius scale", () => {
 		const theme = decls("@theme inline");
+		// The yellow is the package's one addition to shadcn's key list: the palette's #ffeb3b, exposed so a
+		// highlighted run of text is painted in the theme's yellow rather than in a chart-ramp colour.
 		expect(theme.map((d) => d.name)).toEqual([
 			...SHADCN.map((n) => "--color-" + n),
+			"--color-yellow",
 			...RADIUS.map((n) => "--radius-" + n),
 		]);
 		for (const n of SHADCN) expect(theme.find((d) => d.name === "--color-" + n)?.value).toBe("var(--" + n + ")");
+		expect(theme.find((d) => d.name === "--color-yellow")?.value).toBe("var(--theme-yellow)");
 	});
 
 	test("the roles block declares --radius and every shadcn role, each reading one palette colour", () => {
