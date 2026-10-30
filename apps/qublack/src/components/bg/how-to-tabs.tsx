@@ -45,7 +45,7 @@ function HowToCardPlate({ card }: { card: HowToCard }) {
       {card.code && (
         <pre
           data-howto-code={card.id}
-          className="m-0 max-h-[420px] overflow-x-auto rounded-none border-x-0 border-b-0 border-t border-bf-border bg-bf-border-muted/85 px-3 py-[0.85rem] text-[0.9rem] leading-[1.6]"
+          className="m-0 max-h-[420px] overflow-x-auto rounded-none border-x-0 border-b-0 border-t border-bf-border bg-bf-border-muted/85 px-3 py-[0.85rem] text-[0.9rem] leading-[1.6] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5]"
         >
           <code>{card.code}</code>
         </pre>

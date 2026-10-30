@@ -11,13 +11,13 @@ export function counter() {
 ---
 
 <section id="text" class="scroll-mt-24 py-10">
-  <div class="mx-auto w-[min(1180px,100%-2.5rem)] max-[760px]:w-[min(1180px,100%-1.75rem)]" data-reveal>
+  <div class="mx-auto w-[min(1180px,100%-2.5rem)] max-[760px]:w-[min(1180px,100%-1.75rem)] transition-[opacity,translate] duration-700 [.js_&]:translate-y-4 [.js_&]:opacity-0 [.js_&.in]:translate-y-0 [.js_&.in]:opacity-100" data-reveal>
     <div class="mb-[1.6rem] max-w-[62ch]">
-      <p class="inline-flex items-center gap-2 font-mono text-[0.72rem] tracking-[0.16em] text-bf-fg-muted uppercase before:size-[6px] before:rounded-full before:bg-bf-blue before:shadow-[0_0_0_4px_color-mix(in_srgb,var(--bf-blue)_16%,transparent)] before:content-['']">
+      <p class="my-[1em] max-w-[68ch] inline-flex items-center gap-2 font-mono text-[0.72rem] tracking-[0.16em] text-bf-fg-muted uppercase before:size-[6px] before:rounded-full before:bg-bf-blue before:shadow-[0_0_0_4px_color-mix(in_srgb,var(--bf-blue)_16%,transparent)] before:content-['']">
         05 — Running text
       </p>
-      <h2 class="mt-2 mb-[0.7rem]">Prose next to code</h2>
-      <p class="max-w-[56ch] text-[clamp(1.05rem,1.7vw,1.3rem)] text-foreground/75">
+      <h2 class="mt-2 mb-[0.7rem] text-[clamp(1.7rem,3.2vw,2.4rem)] font-bold leading-[1.08] tracking-[-0.025em] text-balance">Prose next to code</h2>
+      <p class="my-[1em] max-w-[56ch] text-[clamp(1.05rem,1.7vw,1.3rem)] text-foreground/75">
         The same hanzi serve both families. Body copy goes to Qu Black Sans; anything the reader has
         to compare character by character stays in Qu Black Mono.
       </p>
@@ -25,18 +25,18 @@ export function counter() {
 
     <div class="grid grid-cols-1 gap-4 min-[900px]:grid-cols-2" data-two-column>
       <div class="rounded-[18px] border border-bf-border bg-bf-border-muted/70 p-[clamp(1.1rem,2.5vw,1.7rem)]" data-specimen>
-        <p class="m-0 text-[1.02rem] leading-[1.78]">
+        <p class="max-w-[68ch] m-0 text-[1.02rem] leading-[1.78]">
           编译产物不是「打包好的 CSS + compiled JS + 一个 HTML」，而是一个
-          <code class="font-mono text-[0.95em]">app.js</code> 加一个二进制的
-          <code class="font-mono text-[0.95em]">app.pak</code>。TSX 走 MicroTS 编到 JS，交给 QuickJS
+          <code class="font-mono text-[0.95em] border border-bf-border bg-[color-mix(in_srgb,var(--bf-border)_8%,transparent)] px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-bf-yellow">app.js</code> 加一个二进制的
+          <code class="font-mono text-[0.95em] border border-bf-border bg-[color-mix(in_srgb,var(--bf-border)_8%,transparent)] px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-bf-yellow">app.pak</code>。TSX 走 MicroTS 编到 JS，交给 QuickJS
           执行；Tailwind 的类名在构建期换成二进制样式表，运行时只查表。
         </p>
-        <p class="mt-4 mb-0 text-[1.02rem] leading-[1.78]">
+        <p class="max-w-[68ch] mt-4 mb-0 text-[1.02rem] leading-[1.78]">
           Typesetting note: Chinese line height should not copy Latin's 1.5 — 1.78 reads better, and
-          identifiers such as <code class="font-mono text-[0.95em]">className</code> or
-          <code class="font-mono text-[0.95em]">web-compat</code> must stay in the mono family, or
-          <code class="font-mono text-[0.95em]">i</code> and
-          <code class="font-mono text-[0.95em]">l</code> collapse into each other.
+          identifiers such as <code class="font-mono text-[0.95em] border border-bf-border bg-[color-mix(in_srgb,var(--bf-border)_8%,transparent)] px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-bf-yellow">className</code> or
+          <code class="font-mono text-[0.95em] border border-bf-border bg-[color-mix(in_srgb,var(--bf-border)_8%,transparent)] px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-bf-yellow">web-compat</code> must stay in the mono family, or
+          <code class="font-mono text-[0.95em] border border-bf-border bg-[color-mix(in_srgb,var(--bf-border)_8%,transparent)] px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-bf-yellow">i</code> and
+          <code class="font-mono text-[0.95em] border border-bf-border bg-[color-mix(in_srgb,var(--bf-border)_8%,transparent)] px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-bf-yellow">l</code> collapse into each other.
         </p>
       </div>
 
@@ -45,7 +45,7 @@ export function counter() {
           <span class="text-bf-dim">counter.tsx</span>
           <BGCopyButton value={sample} />
         </div>
-        <pre class="m-0 overflow-x-auto p-3 font-mono text-[0.82rem] leading-[1.7]"><code>{sample}</code></pre>
+        <pre class="m-0 overflow-x-auto rounded-[10px] border border-bf-border bg-[color-mix(in_srgb,var(--bf-border-muted)_72%,transparent)] p-3 font-mono text-[0.82rem] leading-[1.7] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5]"><code>{sample}</code></pre>
       </div>
     </div>
   </div>

@@ -5,15 +5,15 @@ import { ASCII_CELLS } from "../../data/ascii.ts";
 ---
 
 <section id="ascii" class="scroll-mt-24 py-10">
-  <div class="mx-auto w-[min(1180px,100%-2.5rem)] max-[760px]:w-[min(1180px,100%-1.75rem)]" data-reveal>
+  <div class="mx-auto w-[min(1180px,100%-2.5rem)] max-[760px]:w-[min(1180px,100%-1.75rem)] transition-[opacity,translate] duration-700 [.js_&]:translate-y-4 [.js_&]:opacity-0 [.js_&.in]:translate-y-0 [.js_&.in]:opacity-100" data-reveal>
     <div class="mb-[1.6rem] max-w-[62ch]">
-      <p class="inline-flex items-center gap-2 font-mono text-[0.72rem] tracking-[0.16em] text-bf-fg-muted uppercase before:size-[6px] before:rounded-full before:bg-bf-blue before:shadow-[0_0_0_4px_color-mix(in_srgb,var(--bf-blue)_16%,transparent)] before:content-['']">
+      <p class="my-[1em] max-w-[68ch] inline-flex items-center gap-2 font-mono text-[0.72rem] tracking-[0.16em] text-bf-fg-muted uppercase before:size-[6px] before:rounded-full before:bg-bf-blue before:shadow-[0_0_0_4px_color-mix(in_srgb,var(--bf-blue)_16%,transparent)] before:content-['']">
         02 — ASCII
       </p>
-      <h2 class="mt-2 mb-[0.7rem]">Ninety-five cells, one width</h2>
-      <p class="max-w-[56ch] text-[clamp(1.05rem,1.7vw,1.3rem)] text-foreground/75">
+      <h2 class="mt-2 mb-[0.7rem] text-[clamp(1.7rem,3.2vw,2.4rem)] font-bold leading-[1.08] tracking-[-0.025em] text-balance">Ninety-five cells, one width</h2>
+      <p class="my-[1em] max-w-[56ch] text-[clamp(1.05rem,1.7vw,1.3rem)] text-foreground/75">
         Every printable ASCII codepoint at the mono face's 0.600em advance. Punctuation sits on the
-        same cell as <code class="font-mono">M</code>, which is what keeps columns straight.
+        same cell as <code class="font-mono border border-bf-border bg-[color-mix(in_srgb,var(--bf-border)_8%,transparent)] px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-bf-yellow">M</code>, which is what keeps columns straight.
       </p>
     </div>
 

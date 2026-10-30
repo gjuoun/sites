@@ -3,6 +3,7 @@ import "../styles/tailwind.css";
 import "../styles/qublack-fonts.css";
 import BGSiteFooter from "../components/bg/site-footer.astro";
 import BGSiteHeader from "../components/bg/site-header.astro";
+import BGAtmosphere from "../components/bg/atmosphere.astro";
 import BGToast from "../components/bg/toast.astro";
 import { kebab, palette } from "../data/palette.ts";
 import { REPO } from "../data/site.ts";
@@ -38,7 +39,11 @@ const style = Object.entries(vars)
 ---
 
 <!doctype html>
-<html lang="en" class="dark [font-variant-ligatures:none]" style={style}>
+<html
+  lang="en"
+  class="dark [font-variant-ligatures:none] bg-background text-foreground font-sans text-[16px] leading-[1.65] [-webkit-text-size-adjust:100%] [scroll-behavior:smooth] [font-variation-settings:'MONO'_0,'CASL'_0,'slnt'_0,'CRSV'_0.5] motion-reduce:[scroll-behavior:auto] motion-reduce:[&_*]:[animation-duration:0.001ms]! motion-reduce:[&_*]:[animation-iteration-count:1]! motion-reduce:[&_*]:[transition-duration:0.001ms]!"
+  style={style}
+>
   <head>
     <meta charset="utf-8" />
     <script is:inline>
@@ -58,9 +63,15 @@ const style = Object.entries(vars)
     <link rel="preload" href={`${base}/fonts/QuBlackSans-Regular.0.woff2`} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={`${base}/fonts/QuBlackMono-Regular.0.woff2`} as="font" type="font/woff2" crossorigin />
   </head>
-  <body>
+  <body
+    class="m-0 flex min-h-screen flex-col relative isolate overflow-x-hidden bg-transparent text-foreground [&_img]:inline [&_img]:align-baseline [&_svg]:inline [&_svg]:align-baseline [&_video]:inline [&_video]:align-baseline [&_canvas]:inline [&_canvas]:align-baseline [&_button]:leading-normal [&_input]:leading-normal [&_select]:leading-normal [&_textarea]:leading-normal"
+  >
+    <BGAtmosphere />
     <BGSiteHeader base={base} repo={REPO} />
-    <main id="main" class="mx-auto w-[min(1180px,100%-2.5rem)] max-[760px]:w-[min(1180px,100%-1.75rem)]"><slot /></main>
+    <main
+      id="main"
+      class="mx-auto w-[min(1180px,100%-2.5rem)] max-[760px]:w-[min(1180px,100%-1.75rem)] flex-1 pt-10 pb-24 max-[760px]:pt-6"
+    ><slot /></main>
     <BGSiteFooter base={base} repo={REPO} />
     <BGToast />
 

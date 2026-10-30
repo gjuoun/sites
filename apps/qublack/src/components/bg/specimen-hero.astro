@@ -18,7 +18,7 @@ const stats = [
 ---
 
 <section id="specimen" class="scroll-mt-24 pt-[clamp(1.5rem,5vw,3.5rem)] pb-6">
-  <div class="mx-auto w-[min(1180px,100%-2.5rem)] max-[760px]:w-[min(1180px,100%-1.75rem)]" data-reveal>
+  <div class="mx-auto w-[min(1180px,100%-2.5rem)] max-[760px]:w-[min(1180px,100%-1.75rem)] transition-[opacity,translate] duration-700 [.js_&]:translate-y-4 [.js_&]:opacity-0 [.js_&.in]:translate-y-0 [.js_&.in]:opacity-100" data-reveal>
     <div
       class="grid grid-cols-1 gap-4 min-[1180px]:grid-cols-2"
       data-two-column
@@ -27,13 +27,13 @@ const stats = [
         <BGEyebrow>A modern font for your agent · v{version}</BGEyebrow>
 
         <h1
-          class="mt-[0.6rem] mb-[0.4rem] text-[clamp(3.2rem,7vw,5.2rem)] font-extrabold tracking-[-0.035em]"
+          class="mt-[0.6rem] mb-[0.4rem] text-[clamp(3.2rem,7vw,5.2rem)] font-extrabold tracking-[-0.035em] leading-[1.08] text-balance"
         >
           <span class="bg-linear-100/srgb from-chart-3 via-primary to-chart-2 [background-size:220%_100%] bg-clip-text text-transparent animate-hue">黢黑</span>
           <span class="text-foreground">Qu Black</span>
         </h1>
 
-        <p class="max-w-[56ch] text-[clamp(1.05rem,1.7vw,1.3rem)] text-foreground/75">
+        <p class="my-[1em] max-w-[56ch] text-[clamp(1.05rem,1.7vw,1.3rem)] text-foreground/75">
           Your agent answers in English, 中文 and code — in the same message. Qu Black renders all
           three on one grid: <strong class="text-foreground">Qu Black Mono</strong> keeps a
           measured <strong class="text-foreground">2:1</strong> cell (汉 1.200em, ASCII 0.600em), so diffs,
@@ -100,14 +100,14 @@ const stats = [
         aria-label="Editable specimen"
         aria-multiline="false"
         data-specimen-scale
-        class="m-0 cursor-text leading-[1.25] font-normal outline-none focus-visible:rounded-lg focus-visible:ring-2 focus-visible:ring-bf-blue/60"
+        class="max-w-[68ch] m-0 cursor-text leading-[1.25] font-normal outline-none focus-visible:rounded-lg focus-visible:ring-2 focus-visible:ring-bf-blue/60 [--specimen-size:clamp(1.9rem,5vw,3.4rem)] text-[calc(var(--specimen-size)*var(--specimen-scale,1))]"
         >黢黑 Qu Black 中英混排 2:1 grid · 字体 specimen</p
       >
       <p
         id="specimen-sample"
         data-specimen
         data-specimen-scale
-        class="mt-4 mb-0 leading-[1.6] text-bf-fg-muted"
+        class="max-w-[68ch] mt-4 mb-0 leading-[1.6] text-bf-fg-muted [--specimen-size:clamp(1rem,2vw,1.35rem)] text-[calc(var(--specimen-size)*var(--specimen-scale,1))]"
       >
         汉 a 国 b 图 c 一 d 口 e — the mono face keeps 汉字 twice as wide as ASCII, so code blocks,
         tables and terminal output line up across languages.
@@ -152,18 +152,3 @@ const stats = [
     </div>
   </div>
 </section>
-
-<style>
-  /* The editable specimen keeps one optical size across families: font-size × specimen-scale,
-     where the client sets --specimen-scale to 1 (Sans) or 833/1000 (Mono). Only these two lines
-     scale — the ASCII table and the 2:1 proof keep the real metrics. */
-  #hero-specimen {
-    --specimen-size: clamp(1.9rem, 5vw, 3.4rem);
-  }
-  #specimen-sample {
-    --specimen-size: clamp(1rem, 2vw, 1.35rem);
-  }
-  [data-specimen-scale] {
-    font-size: calc(var(--specimen-size) * var(--specimen-scale, 1));
-  }
-</style>

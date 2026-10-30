@@ -7,14 +7,14 @@ const latin = "abcdefghijkl";
 ---
 
 <section id="grid" class="scroll-mt-24 py-10">
-  <div class="mx-auto w-[min(1180px,100%-2.5rem)] max-[760px]:w-[min(1180px,100%-1.75rem)]" data-reveal>
+  <div class="mx-auto w-[min(1180px,100%-2.5rem)] max-[760px]:w-[min(1180px,100%-1.75rem)] transition-[opacity,translate] duration-700 [.js_&]:translate-y-4 [.js_&]:opacity-0 [.js_&.in]:translate-y-0 [.js_&.in]:opacity-100" data-reveal>
     <div class="mb-[1.6rem] max-w-[62ch]">
-      <p class="inline-flex items-center gap-2 font-mono text-[0.72rem] tracking-[0.16em] text-bf-fg-muted uppercase before:size-[6px] before:rounded-full before:bg-bf-blue before:shadow-[0_0_0_4px_color-mix(in_srgb,var(--bf-blue)_16%,transparent)] before:content-['']">
+      <p class="my-[1em] max-w-[68ch] inline-flex items-center gap-2 font-mono text-[0.72rem] tracking-[0.16em] text-bf-fg-muted uppercase before:size-[6px] before:rounded-full before:bg-bf-blue before:shadow-[0_0_0_4px_color-mix(in_srgb,var(--bf-blue)_16%,transparent)] before:content-['']">
         04 — The grid
       </p>
-      <h2 class="mt-2 mb-[0.7rem]">One hanzi is two ASCII cells</h2>
-      <p class="max-w-[56ch] text-[clamp(1.05rem,1.7vw,1.3rem)] text-foreground/75">
-        Qu Black Mono is built on a 1000-unit Sarasa cell with <code class="font-mono">unitsPerEm</code>
+      <h2 class="mt-2 mb-[0.7rem] text-[clamp(1.7rem,3.2vw,2.4rem)] font-bold leading-[1.08] tracking-[-0.025em] text-balance">One hanzi is two ASCII cells</h2>
+      <p class="my-[1em] max-w-[56ch] text-[clamp(1.05rem,1.7vw,1.3rem)] text-foreground/75">
+        Qu Black Mono is built on a 1000-unit Sarasa cell with <code class="font-mono border border-bf-border bg-[color-mix(in_srgb,var(--bf-border)_8%,transparent)] px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-bf-yellow">unitsPerEm</code>
         set to 833: glyphs never move, the em shrinks, and the 1000-unit hanzi cell reads as
         1.200em while the 500-unit ASCII cell reads as 0.600em.
       </p>
@@ -22,7 +22,7 @@ const latin = "abcdefghijkl";
 
     <div class="grid grid-cols-1 gap-4 min-[900px]:grid-cols-2 items-start" data-two-column>
       <div class="rounded-[18px] border border-bf-border bg-bf-border-muted/70 p-[clamp(1rem,2.5vw,1.6rem)]">
-        <p class="mb-3 font-mono text-[0.7rem] tracking-[0.12em] text-bf-dim uppercase">
+        <p class="max-w-[68ch] mb-3 font-mono text-[0.7rem] tracking-[0.12em] text-bf-dim uppercase">
           Qu Black Mono — hanzi over two latin cells
         </p>
         <div class="overflow-x-auto">
@@ -57,12 +57,12 @@ const latin = "abcdefghijkl";
       </div>
 
       <div class="rounded-[18px] border border-bf-border bg-bf-border-muted/70 p-[clamp(1rem,2.5vw,1.6rem)]">
-        <p class="mb-3 font-mono text-[0.7rem] tracking-[0.12em] text-bf-dim uppercase">
+        <p class="max-w-[68ch] mb-3 font-mono text-[0.7rem] tracking-[0.12em] text-bf-dim uppercase">
           Qu Black Sans — proportional
         </p>
         <div class="text-[clamp(1.15rem,2.6vw,1.5rem)] leading-[1.6]">
-          中英混排时，比例家族让正文更自然：<code class="font-mono">className</code> 与
-          <code class="font-mono">app.pak</code> 仍然留在等宽家族里。
+          中英混排时，比例家族让正文更自然：<code class="font-mono border border-bf-border bg-[color-mix(in_srgb,var(--bf-border)_8%,transparent)] px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-bf-yellow">className</code> 与
+          <code class="font-mono border border-bf-border bg-[color-mix(in_srgb,var(--bf-border)_8%,transparent)] px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-bf-yellow">app.pak</code> 仍然留在等宽家族里。
         </div>
         <dl
           class="mt-4 grid grid-cols-2 gap-px overflow-hidden rounded-[12px] border border-bf-border"

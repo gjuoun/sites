@@ -73,7 +73,7 @@ const md =
           ]}
           data-message={message.role}
         >
-          <p class="m-0 mb-[0.3rem] font-mono text-[0.62rem] tracking-[0.06em] text-bf-fg-muted uppercase">
+          <p class="max-w-[68ch] m-0 mb-[0.3rem] font-mono text-[0.62rem] tracking-[0.06em] text-bf-fg-muted uppercase">
             {message.meta}
           </p>
           <div class={md} data-message-body set:html={renderMarkdown(message.markdown)} />
