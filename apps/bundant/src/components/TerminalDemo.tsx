@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import './TerminalDemo.css';
 import {
   findCommandIndex,
   hintBlock,
@@ -153,8 +152,8 @@ export default function TerminalDemo({ demo, layout = 'side' }: Props) {
         <div
           ref={screenRef}
           className={
-            'terminal-demo-screen bg-code-surface px-4 py-4 font-mono text-[11.5px] leading-6' +
-            (layout === 'compact' ? ' terminal-demo-screen--compact' : '')
+            'h-84 overflow-y-auto overscroll-contain bg-code-surface px-4 py-4 font-mono text-[11.5px] leading-6 [scrollbar-color:var(--border)_transparent] [scrollbar-width:thin]' +
+            (layout === 'compact' ? ' h-32 md:h-76' : ' md:h-100')
           }
           role="log"
           aria-live="polite"
@@ -174,7 +173,10 @@ export default function TerminalDemo({ demo, layout = 'side' }: Props) {
                   <span className="text-primary">{prompt}</span>{' '}
                   <span>{block.command}</span>
                   {block.streaming && block.lines.length === 0 ? (
-                    <span className="terminal-demo-cursor ml-1 align-middle" aria-hidden="true" />
+                    <span
+                      className="ml-1 inline-block h-[1.05em] w-2 shrink-0 animate-pulse bg-primary align-middle motion-reduce:animate-none"
+                      aria-hidden="true"
+                    />
                   ) : null}
                 </div>
               ) : null}
@@ -213,7 +215,10 @@ export default function TerminalDemo({ demo, layout = 'side' }: Props) {
             }
             className="h-11 min-w-0 flex-1 bg-transparent font-mono text-[11.5px] text-foreground caret-primary outline-none placeholder:text-muted-foreground"
           />
-          <span className="terminal-demo-cursor" aria-hidden="true" />
+          <span
+            className="inline-block h-[1.05em] w-2 shrink-0 animate-pulse bg-primary align-middle motion-reduce:animate-none"
+            aria-hidden="true"
+          />
           <button
             type="button"
             onClick={() => void run(nextIndex)}
