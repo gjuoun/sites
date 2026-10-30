@@ -5,23 +5,17 @@
 // check is per element: every opaque bright fill class needs an ink class under the same variant
 // (or an unconditional one).
 
+// The business theme's bright fills: the primary plate, the chart ramp the accents live on, and the
+// theme's one yellow. The ink on all of them is the canvas colour (--primary-foreground).
 const BRIGHT = new Set([
   "primary",
-  "bf-blue",
-  "bf-light-blue",
-  "bf-pale-blue",
-  "bf-cyan",
-  "bf-lime",
-  "bf-yellow",
-  "bf-ansi-blue",
-  "bf-ansi-bright-blue",
-  "bf-ansi-cyan",
-  "bf-ansi-bright-cyan",
-  "bf-ansi-bright-green",
-  "bf-ansi-yellow",
-  "bf-ansi-bright-yellow",
+  "chart-2",
+  "chart-3",
+  "chart-4",
+  "chart-5",
+  "yellow",
 ]);
-const INK = new Set(["text-primary-foreground", "text-ink-on-bright"]);
+const INK = new Set(["text-primary-foreground", "text-background"]);
 
 /** Split "hover:aria-pressed:bg-primary" into ["hover:aria-pressed:", "bg-primary"], bracket-aware. */
 export const splitVariant = (token: string): [string, string] => {
