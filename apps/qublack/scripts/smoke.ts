@@ -804,6 +804,45 @@ opticalMono.asciiCell === opticalSans.asciiCell
   ? pass(`specimen optics: the ASCII table keeps its real size (${opticalSans.asciiCell}px)`)
   : fail(`specimen optics: ascii cell ${opticalSans.asciiCell}px -> ${opticalMono.asciiCell}px`);
 
+// 6. The theme toggle: exactly one icon at a time, the mode in data-mode, the choice kept on reload.
+const iconState = () =>
+  page.evaluate(() => {
+    const button = document.getElementById("theme-toggle")!;
+    const visible = [...button.querySelectorAll("svg")].filter(
+      (svg) => getComputedStyle(svg).display !== "none",
+    );
+    return {
+      mode: document.documentElement.dataset.mode,
+      pressed: button.getAttribute("aria-pressed"),
+      visible: visible.length,
+      width: Math.round(button.getBoundingClientRect().width),
+    };
+  });
+const iconsDark = await iconState();
+await page.click("#theme-toggle");
+await new Promise((resolve) => setTimeout(resolve, 250));
+const iconsLight = await iconState();
+await page.reload({ waitUntil: "load" });
+await new Promise((resolve) => setTimeout(resolve, 250));
+const iconsReloaded = await iconState();
+iconsDark.mode === "dark" &&
+iconsDark.pressed === "true" &&
+iconsDark.visible === 1 &&
+iconsLight.mode === "light" &&
+iconsLight.pressed === "false" &&
+iconsLight.visible === 1
+  ? pass(
+      `theme toggle: one icon per mode (dark ${iconsDark.visible}, light ${iconsLight.visible}), pressed follows the mode`,
+    )
+  : fail(`theme toggle: dark ${JSON.stringify(iconsDark)}, light ${JSON.stringify(iconsLight)}`);
+iconsLight.width === iconsDark.width && iconsReloaded.mode === "light" && iconsReloaded.visible === 1
+  ? pass(
+      `theme toggle: the button keeps its width (${iconsDark.width}px) and the light choice survives a reload`,
+    )
+  : fail(
+      `theme toggle: widths ${iconsDark.width}/${iconsLight.width}, reload ${JSON.stringify(iconsReloaded)}`,
+    );
+
 // The delta's own threshold: below ~1020px the hero is one column and the chat owns the row.
 await page.setViewport({ width: 1024, height: 900 });
 await page.reload({ waitUntil: "load" });

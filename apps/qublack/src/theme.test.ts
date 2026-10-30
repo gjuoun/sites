@@ -173,6 +173,16 @@ describe("the app keeps no stock copy and no theme of its own", () => {
     }
   });
 
+  test("the document carries no descendant display rule that out-specifies a component", () => {
+    // 2026-10-30: a page-wide "[&_svg]:inline" on <body> (a stand-in for Tailwind's preflight override)
+    // beat the toggle's ".hidden" on specificity, so both icons showed in light mode. Display belongs to
+    // the element that needs it, never to a blanket descendant selector on the document.
+    const base = read(join(srcRoot, "layouts/Base.astro"));
+    const body = /<body[\s\S]*?>/.exec(base)?.[0] ?? "";
+    expect(body).not.toBe("");
+    expect(body).not.toMatch(/\[&_[a-z]+\]:(inline|inline-block|block|flex|grid|none)\b/);
+  });
+
   test("the theme package is a workspace dependency", () => {
     const pkg = JSON.parse(read(join(srcRoot, "../package.json"))) as {
       dependencies?: Record<string, string>;
