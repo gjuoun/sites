@@ -85,6 +85,18 @@ test("pages use the palette: background, a syntax colour, and the original JetBr
 	expect(pal).toContain("byte-for-byte");
 });
 
+// Jun's ruling (2026-10-30, preview review): the home wordmark is flat light blue — the theme role the
+// palette's lightBlue maps to (chart-2) — not the headline gradient the palette page and the app
+// headers still use.
+test("the home hero wordmark is flat light blue, not a gradient", () => {
+	const h1 = /<h1[^>]*>[\s\S]*?<\/h1>/.exec(page(""))?.[0] ?? "";
+	expect(h1, "the home page's one h1").toContain("Bigface");
+	expect(h1).toContain("text-chart-2");
+	expect(h1).not.toContain("bg-clip-text");
+	expect(h1).not.toContain("animate-hue");
+	expect(h1).not.toContain("text-transparent");
+});
+
 test("the VS Code .vsix is packaged into the site", () => {
 	expect(existsSync(join(dist, "downloads/bigface-theme-0.1.0.vsix"))).toBe(
 		true,

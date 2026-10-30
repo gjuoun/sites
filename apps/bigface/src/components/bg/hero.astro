@@ -2,7 +2,6 @@
 import { BGButton } from "./button.tsx";
 import BGCommandLine from "./command-line.astro";
 import BGEyebrow from "./eyebrow.astro";
-import BGGradientInk from "./gradient-ink.astro";
 import BGSyntaxPreview from "./syntax-preview.astro";
 
 // Home hero: pitch + actions + one-line install on the left, the parallax stage (spinning ring,
@@ -22,9 +21,9 @@ const { base, repo, ports, command } = Astro.props;
   <div data-reveal>
     <BGEyebrow>one palette · {ports} ports · since 2018</BGEyebrow>
     <h1
-      class="mt-[0.6rem] mb-[0.4rem] text-[clamp(3.4rem,8.5vw,6.2rem)] font-extrabold tracking-[-0.035em]"
+      class="mt-[0.6rem] mb-[0.4rem] text-[clamp(3.4rem,8.5vw,6.2rem)] font-extrabold tracking-[-0.035em] text-chart-2"
     >
-      <BGGradientInk>Bigface</BGGradientInk>
+      Bigface
     </h1>
     <p class="max-w-[56ch] text-[clamp(1.05rem,1.7vw,1.3rem)] text-muted-foreground">
       One dark palette, ported to {ports} tools. No per-tool tweaking, no variants, no second-guessing.
