@@ -13,7 +13,7 @@ import { join, resolve } from "node:path";
 const APP = resolve(import.meta.dir, "..");
 const dataDir = join(APP, "data");
 const started = Date.parse(process.env.SUBSDADDY_REFRESH_START ?? "") || 0;
-const READING = ["used_pct", "p50_throughput", "p50_latency_ms", "tokens_per_cycle", "usd_per_b", "p50_ttft_ms", "p50_output_tps", "usd_per_b_obs"];
+const READING = ["used_pct", "tokens_per_cycle", "tokens_7d", "share_7d", "usd_per_b", "p50_ttft_ms", "p50_output_tps"];
 const REFRESHED = new Set(["usage.json", "quota.json", "lanes.json", "allowance.json"]);
 const problems: string[] = [];
 let provenanceMissing = 0;
@@ -56,9 +56,20 @@ for (const f of readdirSync(dataDir).filter((x) => x.endsWith(".json"))) {
   if (REFRESHED.has(f) && started && measured && measured < started) problems.push(`${f}: measured_at predates the refresh start (stale)`);
 }
 
-type LaneCheck = { lane: string; usd_per_b: number | null; usd_per_b_basis: string | null; usd_per_b_derived_from: string | null; usd_per_b_source: string | null; capacity: { method: string } };
+type LaneCheck = {
+  lane: string;
+  usd_per_b: number | null;
+  usd_per_b_basis: string | null;
+  usd_per_b_derived_from: string | null;
+  usd_per_b_source: string | null;
+  capacity: { method: string };
+  traffic_7d: { tokens: number | null };
+  models: Array<{ upstream_model: string; tokens_7d: number }>;
+};
 const lanes = JSON.parse(readFileSync(join(dataDir, "lanes.json"), "utf8")).lanes as LaneCheck[];
 for (const l of lanes) {
+  // a lane that ran traffic must name the models that carried it: the page has no other way to show them
+  if (l.traffic_7d.tokens !== null && l.models.length === 0) problems.push(`${l.lane}: traffic in the recent window but no model rows`);
   if (l.usd_per_b === null) continue;
   if (l.usd_per_b_basis === "derived") {
     // a derived figure is provenanced by its peer and must say so
