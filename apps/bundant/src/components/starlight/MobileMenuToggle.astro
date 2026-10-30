@@ -1,0 +1,44 @@
+---
+/**
+ * Starlight's floating menu button would sit on top of the header's own menu button. The host
+ * still has to exist: `[aria-expanded] ~ .sidebar-pane` is what opens the drawer. So it renders
+ * hidden, and the header's button drives it; the element definition below is kept because
+ * overriding this component replaces Starlight's own script.
+ */
+---
+<starlight-menu-button class="hidden">
+  <button aria-expanded="false" aria-label="Menu" aria-controls="starlight__sidebar"></button>
+</starlight-menu-button>
+
+<script>
+  class StarlightMenuButton extends HTMLElement {
+    btn = this.querySelector('button')!;
+
+    constructor() {
+      super();
+      this.btn.addEventListener('click', () => this.toggleExpanded());
+      const parentNav = this.closest('nav');
+      if (parentNav) parentNav.addEventListener('keyup', (e) => this.closeOnEscape(e));
+    }
+
+    setExpanded(expanded: boolean) {
+      this.setAttribute('aria-expanded', String(expanded));
+      document.body.toggleAttribute('data-mobile-menu-expanded', expanded);
+    }
+
+    toggleExpanded() {
+      this.setExpanded(this.getAttribute('aria-expanded') !== 'true');
+    }
+
+    closeOnEscape(e: KeyboardEvent) {
+      if (e.code === 'Escape') {
+        this.setExpanded(false);
+        this.btn.focus();
+      }
+    }
+  }
+
+  if (!customElements.get('starlight-menu-button')) {
+    customElements.define('starlight-menu-button', StarlightMenuButton);
+  }
+</script>

@@ -66,6 +66,8 @@ export default defineConfig({
       customCss: ['./src/styles/starlight.css'],
       components: {
         ThemeProvider: './src/components/starlight/ThemeProvider.astro',
+        MarkdownContent: './src/components/starlight/MarkdownContent.astro',
+        MobileMenuToggle: './src/components/starlight/MobileMenuToggle.astro',
         Header: './src/components/starlight/Header.astro',
         Footer: './src/components/starlight/Footer.astro',
         ThemeSelect: './src/components/starlight/ThemeSelect.astro',
