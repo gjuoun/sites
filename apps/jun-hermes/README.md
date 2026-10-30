@@ -27,5 +27,33 @@ DNS (`CNAME <user>.github.io` for a subdomain, A/AAAA records for the apex).
 ## Local preview
 
 ```bash
-python3 -m http.server 8080
+bun run build                     # checks the vendored theme, then copies 13 files into dist/
+(cd dist && python3 -m http.server 4398)
 ```
+
+`bun run probe` does the same check without a browser: it serves `dist/` on port 4398 and asks
+each registered URL for a 200, a business/dark root element and the business tokens.
+
+## Theme
+
+The site is a static shell for the business theme — no Tailwind, no build step, no JavaScript.
+Every page says so on its root element:
+
+```html
+<html lang="en" data-theme="business" data-mode="dark">
+```
+
+- `assets/business.css` is **vendored**: a byte-for-byte copy of the theme package's generated
+  output (`packages/bigface-business-ui/src/themes/business.css`). Never edit it here. Change the
+  theme in its own package, then copy it again:
+
+  ```bash
+  cp packages/bigface-business-ui/src/themes/business.css apps/jun-hermes/assets/business.css
+  ```
+
+- `assets/style.css` is this site's own stylesheet and holds no colours: every value reads a
+  `var(--theme-*)` token. `assets/logo.svg` is drawn from the same palette values.
+
+`bun run tokens:check` proves the copy is current, that no colour is hand-written, that all six
+pages declare the theme, and that the site still ships exactly one script (the OAuth callback's
+own). `bun run build` runs that check first, so a deploy cannot ship stale tokens.
