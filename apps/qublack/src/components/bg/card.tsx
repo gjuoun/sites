@@ -10,11 +10,11 @@ export const bgCardVariants = cva("", {
     tone: {
       none: "",
       plate:
-        "relative block gap-0 overflow-visible rounded-[24px] bg-transparent bg-linear-160/srgb from-bf-border-muted/85 to-bf-border-muted/90 py-0 text-[1rem] text-foreground ring-0 border border-bf-border shadow-[0_24px_60px_-30px_color-mix(in_srgb,var(--bf-border-muted)_90%,transparent)]",
+        "relative block gap-0 overflow-visible rounded-[24px] bg-transparent bg-linear-160/srgb from-card/85 to-card/90 py-0 text-[1rem] text-foreground ring-0 border border-border shadow-[0_24px_60px_-30px_color-mix(in_srgb,var(--card)_90%,transparent)]",
     },
     glow: {
       false: "",
-      true: "before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:p-px before:bg-linear-140/srgb before:from-bf-blue/55 before:via-bf-lime/12 before:via-45% before:to-transparent before:to-70% before:content-[''] before:[mask:linear-gradient(#000_0_0)_content-box,linear-gradient(#000_0_0)] before:[mask-composite:exclude]",
+      true: "before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:p-px before:bg-linear-140/srgb before:from-primary/55 before:via-chart-5/12 before:via-45% before:to-transparent before:to-70% before:content-[''] before:[mask:linear-gradient(black_0_0)_content-box,linear-gradient(black_0_0)] before:[mask-composite:exclude]",
     },
   },
   defaultVariants: { tone: "none", glow: false },

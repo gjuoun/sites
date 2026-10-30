@@ -6,7 +6,7 @@ import BGLookalikeRow from "./lookalike-row.astro";
 <section id="lookalikes" class="scroll-mt-24 py-10">
   <div class="mx-auto w-[min(1180px,100%-2.5rem)] max-[760px]:w-[min(1180px,100%-1.75rem)] transition-[opacity,translate] duration-700 [.js_&]:translate-y-4 [.js_&]:opacity-0 [.js_&.in]:translate-y-0 [.js_&.in]:opacity-100" data-reveal>
     <div class="mb-[1.6rem] max-w-[62ch]">
-      <p class="my-[1em] max-w-[68ch] inline-flex items-center gap-2 font-mono text-[0.72rem] tracking-[0.16em] text-bf-fg-muted uppercase before:size-[6px] before:rounded-full before:bg-bf-blue before:shadow-[0_0_0_4px_color-mix(in_srgb,var(--bf-blue)_16%,transparent)] before:content-['']">
+      <p class="my-[1em] max-w-[68ch] inline-flex items-center gap-2 font-mono text-[0.72rem] tracking-[0.16em] text-foreground/75 uppercase before:size-[6px] before:rounded-full before:bg-primary before:shadow-[0_0_0_4px_color-mix(in_srgb,var(--primary)_16%,transparent)] before:content-['']">
         03 — Lookalikes
       </p>
       <h2 class="mt-2 mb-[0.7rem] text-[clamp(1.7rem,3.2vw,2.4rem)] font-bold leading-[1.08] tracking-[-0.025em] text-balance">Confusables, Latin and Chinese</h2>
@@ -15,7 +15,7 @@ import BGLookalikeRow from "./lookalike-row.astro";
         top, so the same row can be read in the Sans and the Mono face.
       </p>
     </div>
-    <div class="rounded-[18px] border border-bf-border bg-bf-border-muted/70 px-[clamp(1rem,2.5vw,1.6rem)]">
+    <div class="rounded-[18px] border border-border bg-card/70 px-[clamp(1rem,2.5vw,1.6rem)]">
       {LOOKALIKES.map((row) => <BGLookalikeRow row={row} />)}
     </div>
   </div>

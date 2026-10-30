@@ -13,8 +13,8 @@ const { path, code, truncated } = Astro.props;
 
 <BGCard tone="plate" className="overflow-hidden p-[0.4rem]">
   <div class="flex items-center justify-between gap-4 px-2 pt-[0.4rem] pb-2 font-mono text-[0.72rem]">
-    <span class="text-bf-dim">{path}</span>
+    <span class="text-muted-foreground">{path}</span>
     <BGCopyButton value={code} />
   </div>
-  <pre class="m-0 max-h-[420px] overflow-auto rounded-[10px] border border-bf-border bg-bf-border-muted/85 p-4 leading-[1.6] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5]"><code>{code}{truncated ? "\n…" : ""}</code></pre>
+  <pre class="m-0 max-h-[420px] overflow-auto rounded-[10px] border border-border bg-card/85 p-4 leading-[1.6] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5]"><code>{code}{truncated ? "\n…" : ""}</code></pre>
 </BGCard>

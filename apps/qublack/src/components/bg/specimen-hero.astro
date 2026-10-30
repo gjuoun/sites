@@ -47,12 +47,12 @@ const stats = [
         </div>
 
         <dl
-          class="mt-[1.5rem] grid grid-cols-2 gap-px overflow-hidden rounded-[14px] border border-bf-border min-[560px]:grid-cols-4"
+          class="mt-[1.5rem] grid grid-cols-2 gap-px overflow-hidden rounded-[14px] border border-border min-[560px]:grid-cols-4"
         >
           {
             stats.map((stat) => (
-              <div class="bg-bf-border-muted/80 px-[0.8rem] py-[0.65rem]">
-                <dt class="font-mono text-[0.58rem] tracking-[0.08em] text-bf-dim uppercase">
+              <div class="bg-card/80 px-[0.8rem] py-[0.65rem]">
+                <dt class="font-mono text-[0.58rem] tracking-[0.08em] text-muted-foreground uppercase">
                   {stat.label}
                 </dt>
                 <dd class="m-0 font-mono text-[0.95rem] text-foreground">{stat.value}</dd>
@@ -70,7 +70,7 @@ const stats = [
     </div>
 
     <div
-      class="mt-[clamp(1.6rem,4vw,2.6rem)] rounded-[22px] border border-bf-border bg-bf-border-muted/70 p-[clamp(1rem,3vw,2rem)]"
+      class="mt-[clamp(1.6rem,4vw,2.6rem)] rounded-[22px] border border-border bg-card/70 p-[clamp(1rem,3vw,2rem)]"
     >
       <div
         class="mb-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-1"
@@ -80,13 +80,13 @@ const stats = [
              this row past the phone width; below 760px the label tightens its tracking instead of
              wrapping, so the two halves keep one centreline. -->
         <span
-          class="font-mono text-[0.72rem] tracking-[0.14em] text-bf-fg-muted uppercase max-[760px]:tracking-[0.08em]"
+          class="font-mono text-[0.72rem] tracking-[0.14em] text-foreground/75 uppercase max-[760px]:tracking-[0.08em]"
         >
           editable specimen<span class="hidden min-[760px]:inline"
             > — click and type, Enter to commit, Esc to revert</span
           >
         </span>
-        <span id="face-label" class="font-mono text-[0.72rem] text-bf-blue" aria-live="polite"
+        <span id="face-label" class="font-mono text-[0.72rem] text-primary" aria-live="polite"
           >Qu Black Sans Regular</span
         >
       </div>
@@ -100,14 +100,14 @@ const stats = [
         aria-label="Editable specimen"
         aria-multiline="false"
         data-specimen-scale
-        class="max-w-[68ch] m-0 cursor-text leading-[1.25] font-normal outline-none focus-visible:rounded-lg focus-visible:ring-2 focus-visible:ring-bf-blue/60 [--specimen-size:clamp(1.9rem,5vw,3.4rem)] text-[calc(var(--specimen-size)*var(--specimen-scale,1))]"
+        class="max-w-[68ch] m-0 cursor-text leading-[1.25] font-normal outline-none focus-visible:rounded-lg focus-visible:ring-2 focus-visible:ring-primary/60 [--specimen-size:clamp(1.9rem,5vw,3.4rem)] text-[calc(var(--specimen-size)*var(--specimen-scale,1))]"
         >黢黑 Qu Black 中英混排 2:1 grid · 字体 specimen</p
       >
       <p
         id="specimen-sample"
         data-specimen
         data-specimen-scale
-        class="max-w-[68ch] mt-4 mb-0 leading-[1.6] text-bf-fg-muted [--specimen-size:clamp(1rem,2vw,1.35rem)] text-[calc(var(--specimen-size)*var(--specimen-scale,1))]"
+        class="max-w-[68ch] mt-4 mb-0 leading-[1.6] text-foreground/75 [--specimen-size:clamp(1rem,2vw,1.35rem)] text-[calc(var(--specimen-size)*var(--specimen-scale,1))]"
       >
         汉 a 国 b 图 c 一 d 口 e — the mono face keeps 汉字 twice as wide as ASCII, so code blocks,
         tables and terminal output line up across languages.
@@ -121,7 +121,7 @@ const stats = [
       >
         <div class="flex flex-wrap items-center gap-x-4 gap-y-2" data-control-groups>
           <div class="flex items-center gap-2" data-control-group="family">
-            <span class="min-w-[3.25rem] font-mono text-[0.72rem] text-bf-dim uppercase">family</span>
+            <span class="min-w-[3.25rem] font-mono text-[0.72rem] text-muted-foreground uppercase">family</span>
             <BGButton tone="chip" data-control="family" data-value="sans" aria-pressed="true"
               >Sans</BGButton
             >
@@ -130,7 +130,7 @@ const stats = [
             >
           </div>
           <div class="flex items-center gap-2" data-control-group="weight">
-            <span class="min-w-[3.25rem] font-mono text-[0.72rem] text-bf-dim uppercase">weight</span>
+            <span class="min-w-[3.25rem] font-mono text-[0.72rem] text-muted-foreground uppercase">weight</span>
             <BGButton tone="chip" data-control="weight" data-value="regular" aria-pressed="true"
               >Regular</BGButton
             >
@@ -139,13 +139,13 @@ const stats = [
             >
           </div>
           <div class="flex items-center gap-2" data-control-group="style">
-            <span class="min-w-[3.25rem] font-mono text-[0.72rem] text-bf-dim uppercase">style</span>
+            <span class="min-w-[3.25rem] font-mono text-[0.72rem] text-muted-foreground uppercase">style</span>
             <BGButton tone="chip" data-control="italic" data-value="toggle" aria-pressed="false"
               >Italic</BGButton
             >
           </div>
         </div>
-        <span class="ml-auto font-mono text-[0.7rem] text-bf-dim" data-control-metrics>
+        <span class="ml-auto font-mono text-[0.7rem] text-muted-foreground" data-control-metrics>
           keys: B/L bold · M/N mono · S sans · I italic · ↓↑ sections · 1–8 jump
         </span>
       </div>

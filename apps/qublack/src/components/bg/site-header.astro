@@ -7,7 +7,7 @@ interface Props {
 }
 const { base, repo } = Astro.props;
 const link =
-  "rounded-full px-3 py-[0.4rem] text-bf-fg-muted no-underline transition-[color,background] duration-200 hover:bg-bf-border/10 hover:text-foreground max-[520px]:px-2";
+  "rounded-full px-3 py-[0.4rem] text-foreground/75 no-underline transition-[color,background] duration-200 hover:bg-muted/10 hover:text-foreground max-[520px]:px-2";
 // Three items only: the install guide, the download, and the repo. The wordmark on the left is
 // the home link, and every other section is still on the page — it just does not compete here.
 const nav = [
@@ -17,12 +17,12 @@ const nav = [
 ---
 
 <a
-  class="absolute -left-[9999px] focus:top-4 focus:left-4 focus:z-100 focus:rounded-lg focus:bg-bf-cursor-line focus:px-4 focus:py-2"
+  class="absolute -left-[9999px] focus:top-4 focus:left-4 focus:z-100 focus:rounded-lg focus:bg-card focus:px-4 focus:py-2"
   href="#main">Skip to content</a
 >
 <header
   id="site-header"
-  class="sticky top-0 z-40 border-b border-transparent transition-[border-color,background] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] [&.scrolled]:border-bf-border [&.scrolled]:bg-bf-border-muted/92 [&.scrolled]:backdrop-blur-[18px] [&.scrolled]:backdrop-saturate-150"
+  class="sticky top-0 z-40 border-b border-transparent transition-[border-color,background] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] [&.scrolled]:border-border [&.scrolled]:bg-card/92 [&.scrolled]:backdrop-blur-[18px] [&.scrolled]:backdrop-saturate-150"
 >
   <div class="mx-auto w-[min(1180px,100%-2.5rem)] max-[760px]:w-[min(1180px,100%-1.75rem)] flex items-center justify-between gap-4 py-[0.85rem]">
     <a
@@ -30,7 +30,7 @@ const nav = [
       href={`${base}/`}
     >
       <span
-        class="grid size-[34px] place-items-center rounded-[9px] bg-bf-border-muted font-mono text-[1.05rem] text-bf-blue shadow-[0_0_0_1px_var(--bf-selection)] transition-transform duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.06] group-hover:-rotate-6"
+        class="grid size-[34px] place-items-center rounded-[9px] bg-card font-mono text-[1.05rem] text-primary shadow-[0_0_0_1px_var(--ring)] transition-transform duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.06] group-hover:-rotate-6"
         aria-hidden="true">黢</span
       >
       <span class="max-[520px]:sr-only">Qu Black</span>
