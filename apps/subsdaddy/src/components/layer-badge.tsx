@@ -1,4 +1,4 @@
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@gjuoun/bigface-business-ui/components/ui/badge";
 
 /** Every value on the page declares its layer: measured (our usage_logs), or (OpenRouter), or seed. */
 export function LayerBadge({ layer }: { layer: "measured" | "or" | "seed" | "plan" | "window" }) {

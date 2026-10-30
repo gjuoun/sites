@@ -18,6 +18,9 @@ export default defineConfig({
   resolve: {
     alias: { "@": path.resolve(rootDir, "src") },
   },
+  // This app's own port: never the Vite default 3000, never another site's port.
+  server: { port: 4395, strictPort: true },
+  preview: { port: 4395 },
   plugins: [
     tanstackStart({ prerender: { enabled: true, crawlLinks: true } }),
     viteReact(),

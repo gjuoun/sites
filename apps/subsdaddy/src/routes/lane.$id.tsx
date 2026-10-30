@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@gjuoun/bigface-business-ui/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@gjuoun/bigface-business-ui/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@gjuoun/bigface-business-ui/components/ui/table";
 import { LayerBadge } from "@/components/layer-badge";
 import { dataset, fmt, laneById, orEndpointsFor, orModelFor } from "@/lib/dataset";
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { ToggleGroup, ToggleGroupItem } from "@gjuoun/bigface-business-ui/components/ui/toggle-group";
 import { UnifiedTable } from "@/components/unified-table";
 import { CONTEXT_IDS, contextLabel } from "@/data/context";
 import { MEASURED, type Chip, type SummaryTable, type ViewId } from "@/lib/summary";

@@ -12,6 +12,8 @@
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
+    // the theme package imports its own modules with a .ts extension
+    "allowImportingTsExtensions": true,
     "types": [
       "vite/client",
       "bun"
