@@ -1,5 +1,6 @@
 ---
 import { BGButton } from "./button.tsx";
+import BGThemeToggle from "./theme-toggle.astro";
 
 interface Props {
   base: string;
@@ -38,6 +39,7 @@ const nav = [
     <nav aria-label="Main" class="flex items-center gap-[0.4rem] text-[0.9rem] max-[700px]:gap-[0.15rem]">
       {nav.map((item) => <a class={link} href={item.href}>{item.label}</a>)}
       <BGButton tone="nav" href={repo}>GitHub</BGButton>
+      <BGThemeToggle />
     </nav>
   </div>
 </header>
