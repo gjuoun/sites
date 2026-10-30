@@ -65,6 +65,9 @@ export const planSchema = z.object({
   badge: z.enum(["plan_spec", "console"]),
   /** The plan's own page that publishes per-model monthly limits (OpenCode Go); absent when it publishes none. */
   per_model_limit_plan: z.string().nullable().optional(),
+  /** The vendor's published usage allowance per cycle (owner-confirmed); the headline when present. */
+  allowance_published_usd: z.number().positive().nullable().optional(),
+  allowance_published_source: z.string().min(1).nullable().optional(),
   ...provenance,
 });
 export type Plan = z.infer<typeof planSchema>;
@@ -348,6 +351,7 @@ export const laneRecordSchema = z.object({
 }).nullable().optional(),
     allowance_published_usd: z.number().positive().nullable().optional(),
     allowance_vendor_usd: z.number().positive().nullable().optional(),
+    allowance_vendor_used_usd: z.number().positive().nullable().optional(),
     allowance_vendor_reason: z.string().nullable().optional(),
     allowance_derived_usd: z.number().positive().nullable().optional(),
     fee_per_cycle_usd: z.number().positive().nullable().optional(),

@@ -8,6 +8,7 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { LANES } from "../src/data/schema";
+import { chooseAllowance } from "../src/data/derive";
 import { allowanceFileSchema, analyzeWindow, bindingWindow, cycleOf, modelPerB, vendorAllowance, type PriceLookup, type UsageRow, type WindowReading } from "../src/data/allowance";
 import { pooledMix, type RefPrice } from "../src/data/estimate";
 import { perModelAllowance, pageLimitsFor, limitOfUpstream, type PageDoc } from "../src/data/per-model-limit";
@@ -94,6 +95,8 @@ const computed = LANES.map((lane) => {
   const obs = quota.observations.find((o: any) => o.lane === lane);
   const plan = plans.plans.find((p: any) => p.plan_id === lane);
   const fee: number | null = plan?.price_month_usd ?? null;
+  // the vendor's published allowance (owner-confirmed) is the headline; the dashboard reading is kept beside it
+  const published: number | null = plan?.allowance_published_usd ?? null;
   const u = usage.lanes.find((x: any) => x.lane === lane);
   const mix = pooledMix([{ tokens: u.tokens }]);
   const base = {
@@ -106,7 +109,7 @@ const computed = LANES.map((lane) => {
   const cycle = cycleOf(readings);
   const empty = (reason: string, extra: Record<string, unknown> = {}) => ({
     ...base, fee_usd: fee, fee_per_cycle_usd: null, fee_basis: null, cycle_minutes: cycle?.minutes ?? null, cycle_days: cycle ? cycle.minutes / 1440 : null, cycle_billed: cycle?.billed ?? false,
-    allowance_usd_per_cycle: null, allowance_basis: null, allowance_published_usd: null, allowance_vendor_usd: null, allowance_vendor_reason: null, allowance_derived_usd: null,
+    allowance_usd_per_cycle: null, allowance_basis: null, allowance_published_usd: published, allowance_vendor_usd: null, allowance_vendor_used_usd: obs?.vendor_pool?.used_usd ?? null, allowance_vendor_reason: null, allowance_derived_usd: null,
     tokens_per_cycle: null, binding_window: null, binding_coverage: null, binding_unpriced_share: null, binding_assumed_share: null, low_coverage: false, confidence: null,
     list_usd_per_b_effective: null, usd_per_b_measured: null, reason, top_models: [], windows: [], models: [], ...extra,
   });
@@ -172,12 +175,24 @@ const computed = LANES.map((lane) => {
 
   const derived = b.allowance_usd_cycle as number;
   // the published figure is the allowance; else a matching dashboard pool; else the derived figure. All are recorded.
-  const chosen = perModel ? perModel.usd : (vendor.usd ?? derived);
-  const allowanceBasis = perModel ? (perModel.rule === "single_model" ? "vendor_published_per_model" : "vendor_published_weighted") : vendor.usd !== null ? "vendor_reported" : "derived";
-  // a per-model plan: the tokens its allowance buys at the measured blend of the monthly window (r53)
-  const tokensCycle = perModel ? (perModel.usd / perModel.blend_per_token) : (b.tokens_cycle as number);
-  const measuredPerB = feePerCycle !== null ? feePerCycle / (tokensCycle / 1e9) : null;
-  const modelRows = modelRowsFor({ chosen, fee: feePerCycle, basis: allowanceBasis, mix: base.mix });
+  // a per-model plan sets its own published allowance; every other lane follows published > dashboard > derived
+  const picked = perModel ? { usd: perModel.usd, basis: null } : chooseAllowance({ published, vendor: vendor.usd, derived });
+  const chosen = picked.usd;
+  const allowanceBasis = perModel ? (perModel.rule === "single_model" ? "vendor_published_per_model" : "vendor_published_weighted") : picked.basis;
+  // the tokens a headline allowance buys at the lane's own measured blend of the binding window. When the vendor
+  // states a dashboard pool, the vendor's own dollars per token are the basis for its published allowance: the
+  // $80 is capacity at the vendor's rate, not at our list prices (our list figure is kept beside it).
+  const monthlyAnalysis = analyses.find((w) => w.window === "monthly");
+  const vendorBlend = obs?.vendor_pool && monthlyAnalysis && monthlyAnalysis.tokens > 0 ? obs.vendor_pool.used_usd / monthlyAnalysis.tokens : null;
+  const listBlend = b.tokens > 0 ? b.cost_usd / b.tokens : 0;
+  const blendPerToken = perModel
+    ? perModel.blend_per_token
+    : picked.basis === "vendor_published" || picked.basis === "vendor_reported"
+      ? (vendorBlend ?? listBlend)
+      : listBlend;
+  const tokensCycle = chosen !== null && blendPerToken > 0 ? chosen / blendPerToken : null;
+  const measuredPerB = feePerCycle !== null && tokensCycle !== null && tokensCycle > 0 ? feePerCycle / (tokensCycle / 1e9) : null;
+  const modelRows = chosen !== null && allowanceBasis !== null ? modelRowsFor({ chosen, fee: feePerCycle, basis: allowanceBasis, mix: base.mix }) : [];
   return {
     ...base,
     fee_usd: fee,
@@ -189,8 +204,9 @@ const computed = LANES.map((lane) => {
     allowance_usd_per_cycle: chosen,
     allowance_basis: allowanceBasis,
     per_model: perModel ? { rule: perModel.rule, main_model: perModel.main_model, usd: perModel.usd, blend_usd_per_b: perModel.blend_per_token * 1e9, derived_usd: derived, parts: perModel.parts } : null,
-    allowance_published_usd: null,
+    allowance_published_usd: published,
     allowance_vendor_usd: vendor.usd,
+    allowance_vendor_used_usd: obs?.vendor_pool?.used_usd ?? null,
     allowance_vendor_reason: vendor.reason,
     allowance_derived_usd: derived,
     tokens_per_cycle: tokensCycle,

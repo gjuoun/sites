@@ -52,6 +52,13 @@ function MethodologyPage() {
           over the cycle: <code>price × cycle days / 30</code>. A lane whose current windows are all under 2% used keeps its last stable reading
           instead of dividing by a very small number, and says so.
         </p>
+        <p className={NOTE}>
+          The allowance has an order of trust: a figure the vendor publishes is the headline, then the vendor dashboard's own reading, then the
+          figure derived from the windows and list prices. CommandCode publishes $80 a month of usage, so $80 is what its capacity and $/B use;
+          the dashboard reading recorded beside it ($35.02 of $70.00, read 2026-10-30) is there for comparison and never replaces the published
+          figure. At a published allowance the capacity uses the vendor's own dollars per token from that reading, so $80 buys 3.83B tokens at
+          CommandCode's rate rather than at my list prices.
+        </p>
       </section>
 
       <section data-section="models" className={SECTION}>

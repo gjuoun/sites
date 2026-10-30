@@ -74,7 +74,14 @@ for (const l of lanes) {
   for (const m of l.models) if (!(m.tokens_7d > 0)) fail(l.lane + " has a model row with no tokens: " + m.label);
 }
 
-// 3. a lane with no $/B shows N/A in the ranking, not a zero
+// 3. a lane whose allowance is published shows that figure, and the dashboard reading is named as a comparison
+const published = read("lanes.json").lanes.filter((l: { capacity: { allowance_basis: string | null; allowance_published_usd?: number | null } }) => l.capacity.allowance_basis === "vendor_published" && l.capacity.allowance_published_usd);
+for (const l of published as Array<{ lane: string; capacity: { allowance_published_usd: number } }>) {
+  const amount = "$" + l.capacity.allowance_published_usd.toFixed(2);
+  if (!text(main(html.index)).includes("published " + amount)) fail(l.lane + " publishes " + amount + " but the page does not show it");
+}
+
+// 3b. a lane with no $/B shows N/A in the ranking, not a zero
 for (const l of lanes) {
   if (l.usd_per_b !== null) continue;
   const row = (ranking.match(new RegExp('<tr[^>]*data-row="' + l.lane + '"[\\s\\S]*?</tr>')) ?? [""])[0];

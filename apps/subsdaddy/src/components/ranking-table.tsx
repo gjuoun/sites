@@ -1,6 +1,6 @@
 import { UnifiedTable } from "./unified-table";
 import { na, naWith, value } from "@/lib/cells";
-import { formatMs, formatTps, formatTokens, formatUsd, unavailableReason, unavailableShort, type LaneRecord, type QuotaObservation } from "@/lib/own-data";
+import { allowanceTitle, formatMs, formatTps, formatTokens, formatUsd, unavailableReason, unavailableShort, type LaneRecord, type QuotaObservation } from "@/lib/own-data";
 
 /** The four lanes, cheapest measured $/B first. A lane with no $/B keeps its row, with the reason. */
 export function RankingTable({ lanes, observations }: { lanes: readonly LaneRecord[]; observations: readonly QuotaObservation[] }) {
@@ -17,7 +17,7 @@ export function RankingTable({ lanes, observations }: { lanes: readonly LaneReco
         usd:
           l.usd_per_b === null
             ? naWith(unavailableShort(l.usd_per_b_reason ?? l.capacity.reason ?? "no measured $/B"), l.usd_per_b_reason ?? l.capacity.reason ?? "no measured $/B")
-            : value(formatUsd(l.usd_per_b), [l.usd_per_b_basis === "derived" ? "derived" : "measured"]),
+            : value(formatUsd(l.usd_per_b), [l.usd_per_b_basis === "derived" ? "derived" : "measured"], allowanceTitle(l) ?? undefined),
         tokens: l.traffic_7d.tokens === null ? na(l.traffic_7d.reason ?? "no traffic in the recent window") : value(formatTokens(l.traffic_7d.tokens)),
         tps: l.traffic_7d.p50_output_tps === null ? na("no measured output speed") : value(formatTps(l.traffic_7d.p50_output_tps), ["measured"]),
         ttft: l.traffic_7d.p50_ttft_ms === null ? na("no measured time to first token") : value(formatMs(l.traffic_7d.p50_ttft_ms), ["measured"]),

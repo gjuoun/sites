@@ -217,6 +217,7 @@ export const allowanceFileSchema = z.object({
 }).nullable().optional(),
       allowance_published_usd: z.number().positive().nullable().optional(),
       allowance_vendor_usd: z.number().positive().nullable(),
+      allowance_vendor_used_usd: z.number().positive().nullable().optional(),
       allowance_vendor_reason: z.string().nullable(),
       allowance_derived_usd: z.number().positive().nullable(),
       tokens_per_cycle: z.number().positive().nullable(),

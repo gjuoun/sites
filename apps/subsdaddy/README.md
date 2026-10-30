@@ -34,6 +34,9 @@ data/raw/quota/*.json        quota history, appended per run (committed)
 - tokens: `input + cache_creation + cache_read + output`; cache share is `cache_read / (input + cache_creation + cache_read)`.
 - a codexbar window runs from `resets_at − window length` to the reading; usage rows inside it are priced at list.
 - cycle allowance: `cost / used% × (cycle / window)`; the cycle is the monthly window, else the longest one.
+- headline allowance order: a published vendor figure, then the dashboard reading, then the derived figure. CommandCode's $80/mo published
+  allowance wins over its $35.02-of-$70.00 dashboard reading, which is kept in the cell title for comparison; capacity at a published figure
+  uses the vendor's own dollars per token.
 - binding window: the tightest usable one (≥95% log coverage, used > 0, priced tokens); ≤2% used is usable with low confidence.
 - `tokens_per_cycle = allowance / blended list cost per token`; `$/B = fee_per_cycle / (tokens_per_cycle / 1e9)`.
 - fee: the monthly fee; a non-monthly cycle prorates it: `price × cycle_days / 30`.

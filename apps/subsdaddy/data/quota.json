@@ -4,123 +4,131 @@
       "lane": "commandcode-goat",
       "window": "weekly",
       "window_minutes": 10080,
-      "used_pct": 0.059358,
+      "used_pct": 0.05937112514285715,
       "resets_at": "2026-11-04T15:51:20Z",
       "windows": [
         {
+          "window": "5h",
+          "window_minutes": 300,
+          "used_pct": 0.00003281285714285714,
+          "resets_at": "2026-10-30T23:01:33Z",
+          "source": "codexbar quota reading",
+          "measured_at": "2026-10-30T18:27:14.728Z"
+        },
+        {
           "window": "weekly",
           "window_minutes": 10080,
-          "used_pct": 0.059358,
+          "used_pct": 0.05937112514285715,
           "resets_at": "2026-11-04T15:51:20Z",
           "source": "codexbar quota reading",
-          "measured_at": "2026-10-30T17:57:33.377Z"
+          "measured_at": "2026-10-30T18:27:14.728Z"
         },
         {
           "window": "monthly",
           "window_minutes": 43200,
-          "used_pct": 50.03064635757143,
+          "used_pct": 50.030652920142856,
           "resets_at": "2026-11-21T15:49:16Z",
           "source": "codexbar quota reading",
-          "measured_at": "2026-10-30T17:57:33.377Z"
+          "measured_at": "2026-10-30T18:27:14.728Z"
         }
       ],
       "vendor_pool": {
         "used_usd": 35.02,
         "total_usd": 70,
         "source": "codexbar plan line",
-        "measured_at": "2026-10-30T17:57:33.377Z"
+        "measured_at": "2026-10-30T18:27:14.728Z"
       },
-      "measured_at": "2026-10-30T17:57:33.377Z",
+      "measured_at": "2026-10-30T18:27:14.728Z",
       "source": "codexbar quota reading"
     },
     {
       "lane": "opencode-go",
       "window": "weekly",
       "window_minutes": 10080,
-      "used_pct": 80.3915293,
+      "used_pct": 81.0293797,
       "resets_at": "2026-11-01T23:59:59Z",
       "windows": [
         {
           "window": "5h",
           "window_minutes": 300,
-          "used_pct": 7.9746325,
+          "used_pct": 9.5692585,
           "resets_at": "2026-10-30T21:47:02Z",
           "source": "codexbar quota reading",
-          "measured_at": "2026-10-30T17:57:33.377Z"
+          "measured_at": "2026-10-30T18:27:14.728Z"
         },
         {
           "window": "weekly",
           "window_minutes": 10080,
-          "used_pct": 80.3915293,
+          "used_pct": 81.0293797,
           "resets_at": "2026-11-01T23:59:59Z",
           "source": "codexbar quota reading",
-          "measured_at": "2026-10-30T17:57:33.377Z"
+          "measured_at": "2026-10-30T18:27:14.728Z"
         },
         {
           "window": "monthly",
           "window_minutes": 43200,
-          "used_pct": 90.19576465,
+          "used_pct": 90.51468985,
           "resets_at": "2026-11-19T00:27:51Z",
           "source": "codexbar quota reading",
-          "measured_at": "2026-10-30T17:57:33.377Z"
+          "measured_at": "2026-10-30T18:27:14.728Z"
         }
       ],
       "vendor_pool": null,
-      "measured_at": "2026-10-30T17:57:33.377Z",
+      "measured_at": "2026-10-30T18:27:14.728Z",
       "source": "codexbar quota reading"
     },
     {
       "lane": "zai-glm-max",
       "window": "weekly",
       "window_minutes": 10080,
-      "used_pct": 65,
+      "used_pct": 67,
       "resets_at": "2026-11-02T04:43:38Z",
       "plan_level": "max",
       "windows": [
         {
           "window": "5h",
           "window_minutes": 300,
-          "used_pct": 4,
+          "used_pct": 12,
           "resets_at": "2026-10-30T21:03:21Z",
           "source": "codexbar quota reading",
-          "measured_at": "2026-10-30T17:57:33.377Z"
+          "measured_at": "2026-10-30T18:27:14.728Z"
         },
         {
           "window": "weekly",
           "window_minutes": 10080,
-          "used_pct": 65,
+          "used_pct": 67,
           "resets_at": "2026-11-02T04:43:38Z",
           "source": "codexbar quota reading",
-          "measured_at": "2026-10-30T17:57:33.377Z"
+          "measured_at": "2026-10-30T18:27:14.728Z"
         }
       ],
       "vendor_pool": null,
-      "measured_at": "2026-10-30T17:57:33.377Z",
+      "measured_at": "2026-10-30T18:27:14.728Z",
       "source": "codexbar quota reading"
     },
     {
       "lane": "qwen-cloud-token",
       "window": "monthly",
       "window_minutes": 43200,
-      "used_pct": 57.37135147538981,
+      "used_pct": 57.88808478064863,
       "resets_at": "2026-11-24T16:00:00Z",
-      "credits_used": 14629.69,
+      "credits_used": 14761.46,
       "credits_total": 25500,
       "windows": [
         {
           "window": "monthly",
           "window_minutes": 43200,
-          "used_pct": 57.37135147538981,
+          "used_pct": 57.88808478064863,
           "resets_at": "2026-11-24T16:00:00Z",
           "source": "codexbar quota reading",
-          "measured_at": "2026-10-30T17:57:33.377Z"
+          "measured_at": "2026-10-30T18:27:14.728Z"
         }
       ],
       "vendor_pool": null,
-      "measured_at": "2026-10-30T17:57:33.377Z",
+      "measured_at": "2026-10-30T18:27:14.728Z",
       "source": "codexbar quota reading"
     }
   ],
-  "measured_at": "2026-10-30T17:57:33.377Z",
+  "measured_at": "2026-10-30T18:27:14.728Z",
   "source": "codexbar usage (probe-quota)"
 }

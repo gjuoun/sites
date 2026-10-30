@@ -2,7 +2,7 @@ import { Badge } from "./unified-table";
 import { UnifiedTable } from "./unified-table";
 import type { BadgeKind } from "@/lib/cells";
 import { na, value } from "@/lib/cells";
-import { NOTHING, formatMs, formatReset, formatShare, formatTokens, formatTps, formatUsd, limitCell, quotaLine, trafficLine, unavailableReason, usdPerB, type LaneRecord, type QuotaObservation } from "@/lib/own-data";
+import { NOTHING, allowanceTitle, formatMs, formatReset, formatShare, formatTokens, formatTps, formatUsd, limitCell, quotaLine, trafficLine, unavailableReason, usdPerB, type LaneRecord, type QuotaObservation } from "@/lib/own-data";
 
 /** One lane: its plan, its current quota state, its 7-day traffic, its speed, and the models that carried it. */
 export function LaneBlock({ lane, observations }: { lane: LaneRecord; observations: readonly QuotaObservation[] }) {
@@ -16,7 +16,9 @@ export function LaneBlock({ lane, observations }: { lane: LaneRecord; observatio
   const capacity =
     lane.capacity.tokens_per_cycle === null
       ? "no readable quota window"
-      : formatTokens(lane.capacity.tokens_per_cycle) + " per " + lane.capacity.cycle_days + "d · " + (lane.capacity.window ?? "?") + " window";
+      : formatTokens(lane.capacity.tokens_per_cycle) + " per " + lane.capacity.cycle_days + "d · " + (lane.capacity.window ?? "?") + " window" +
+        (lane.capacity.allowance_published_usd !== null && lane.capacity.allowance_published_usd !== undefined ? " · published " + formatUsd(lane.capacity.allowance_published_usd) : "");
+  const capacityTitle = allowanceTitle(lane);
   const speed =
     lane.traffic_7d.p50_output_tps === null || lane.traffic_7d.p50_ttft_ms === null
       ? "no measured speed in the recent window"
@@ -55,11 +57,11 @@ export function LaneBlock({ lane, observations }: { lane: LaneRecord; observatio
       <dl className="grid gap-x-8 gap-y-1 text-sm sm:grid-cols-2">
         <div className="flex justify-between gap-4 sm:block">
           <dt className="text-muted-foreground">Capacity</dt>
-          <dd>{capacity}</dd>
+          <dd data-allowance={lane.capacity.allowance_basis ?? "none"} title={capacityTitle ?? undefined}>{capacity}</dd>
         </div>
         <div className="flex justify-between gap-4 sm:block">
           <dt className="text-muted-foreground">$/B</dt>
-          <dd data-usd={lane.usd_per_b_basis ?? "none"}>{usd.reason === null ? usd.text : "N/A: " + usd.reason}</dd>
+          <dd data-usd={lane.usd_per_b_basis ?? "none"} title={capacityTitle ?? undefined}>{usd.reason === null ? usd.text : "N/A: " + usd.reason}</dd>
         </div>
         <div className="flex justify-between gap-4 sm:block">
           <dt className="text-muted-foreground">Traffic, last {lane.traffic_7d.window_days} days</dt>

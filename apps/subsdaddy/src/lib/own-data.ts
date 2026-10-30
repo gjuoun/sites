@@ -91,6 +91,22 @@ export function quotaLine(lane: { capacity: { window: string | null; windows: Re
   return windows.map((w) => w.window + " " + w.used_pct.toFixed(1) + "%").join(" · ") + " · resets " + formatReset(binding.resets_at);
 }
 
+/** The headline allowance and the reading kept beside it: published first, dashboard second, derived last. */
+export function allowanceTitle(lane: LaneRecord): string | null {
+  const c = lane.capacity;
+  const parts: string[] = [];
+  if (c.allowance_published_usd !== null && c.allowance_published_usd !== undefined) {
+    parts.push("published allowance " + formatUsd(c.allowance_published_usd) + " per cycle (the headline)");
+  }
+  if (c.allowance_vendor_usd !== null && c.allowance_vendor_usd !== undefined) {
+    const used = c.allowance_vendor_used_usd !== null && c.allowance_vendor_used_usd !== undefined ? formatUsd(c.allowance_vendor_used_usd) + " of " : "";
+    parts.push("dashboard reading " + used + formatUsd(c.allowance_vendor_usd) + " used (kept for comparison)");
+  }
+  if (c.allowance_derived_usd !== null && c.allowance_derived_usd !== undefined) parts.push("derived from the quota windows " + formatUsd(c.allowance_derived_usd));
+  if (c.allowance_basis) parts.push("basis: " + c.allowance_basis);
+  return parts.length > 0 ? parts.join(" · ") : null;
+}
+
 /** The lane's traffic line for the recent window. */
 export function trafficLine(t: LaneRecord["traffic_7d"]): string {
   if (t.tokens === null) return t.reason ?? "no traffic in the recent window";

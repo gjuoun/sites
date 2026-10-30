@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { formatMs, formatShare, formatTokens, formatUsd, quotaLine, rankedLanes, unavailableReason, unavailableShort } from "./own-data";
+import { allowanceTitle, formatMs, formatShare, formatTokens, formatUsd, quotaLine, rankedLanes, unavailableReason, unavailableShort } from "./own-data";
 
 describe("own-data formatting", () => {
   test("tokens read in B above a billion, M above a million, K below", () => {
@@ -39,6 +39,16 @@ describe("own-data formatting", () => {
     expect(unavailableReason([], "commandcode-goat")).toBe("no quota reading");
     expect(unavailableShort("Command Code session is invalid or expired. Sign in to commandcode.ai again.")).toBe("session expired, re-login needed");
     expect(unavailableShort("no quota reading")).toBe("no quota reading");
+  });
+
+  test("the allowance title names the published figure first and keeps the dashboard reading beside it", () => {
+    const t = allowanceTitle({
+      capacity: { allowance_published_usd: 80, allowance_vendor_usd: 70, allowance_vendor_used_usd: 35.02, allowance_derived_usd: 32.01, allowance_basis: "vendor_published" },
+    } as never)!;
+    expect(t).toContain("published allowance $80.00 per cycle (the headline)");
+    expect(t).toContain("dashboard reading $35.02 of $70.00 used (kept for comparison)");
+    expect(t).toContain("basis: vendor_published");
+    expect(allowanceTitle({ capacity: { allowance_basis: null } } as never)).toBeNull();
   });
 
   test("lanes rank by $/B ascending, and a lane with no $/B comes last", () => {
