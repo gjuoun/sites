@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { cacheShare, capacityConfidence, elapsedCoverage, presetsFor, resolveDollarPerB, usdPerBOfCycle } from "./derive";
+import { cacheShare, capacityConfidence, chooseAllowance, elapsedCoverage, presetsFor, resolveDollarPerB, usdPerBOfCycle } from "./derive";
 
 describe("$/B from the tokens a cycle buys", () => {
   test("fee over tokens per cycle, per billion tokens", () => {

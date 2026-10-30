@@ -5,16 +5,19 @@
       "label": "CommandCode - GOAT",
       "price_month_usd": 10,
       "badge": "plan_spec",
+      "allowance_published_usd": 80,
+      "allowance_published_source": "owner-confirmed published allowance: GOAT carries $80/mo of usage (2026-10-26, re-confirmed 2026-10-30); the dashboard reading is kept for comparison only",
       "measured_at": "2026-10-26T06:06:22Z",
-      "source": "published plan price: $10/mo (GOAT tier)"
+      "source": "published plan price: $10/mo (GOAT tier); published allowance $80/mo"
     },
     {
       "plan_id": "opencode-go",
       "label": "OpenCode Go",
       "price_month_usd": 10,
       "badge": "plan_spec",
+      "per_model_limit_plan": "Go",
       "measured_at": "2026-10-26T06:06:22Z",
-      "source": "published plan price: Go $10/mo (official docs)"
+      "source": "published plan price: Go $10/mo (official docs); per-model monthly limits from the plan's own page (data/opencode-go.json)"
     },
     {
       "plan_id": "zai-glm-max",

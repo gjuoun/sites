@@ -2,18 +2,22 @@
 /**
  * data/allowance.json: each lane's usage allowance in list dollars per billing cycle (src/data/allowance.ts).
  * Reads quota.json (windows and any vendor-reported pool), the raw usage export (every row of the lane, with
- * model and tokens), usage.json (the lane's measured mix), models.json (list prices, aliases) and catalog.json
- * (annual price, for a plan whose billing period is a year). Writes nothing else.
+ * model and tokens), usage.json (the lane's measured mix), models.json (list prices, aliases), plans.json (fees and
+ * the per-model-limit plan) and opencode-go.json (that plan's published per-model limits). Writes nothing else.
  */
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { LANES } from "../src/data/schema";
+import { chooseAllowance } from "../src/data/derive";
 import { allowanceFileSchema, analyzeWindow, bindingWindow, cycleOf, modelPerB, vendorAllowance, type PriceLookup, type UsageRow, type WindowReading } from "../src/data/allowance";
 import { pooledMix, type RefPrice } from "../src/data/estimate";
 import { perModelAllowance, pageLimitsFor, limitOfUpstream, type PageDoc } from "../src/data/per-model-limit";
 import { averagePrice } from "../src/data/peak-offpeak";
-import { LMC_CONTEXT_LONG, LMC_CONTEXT_SHORT } from "../src/data/context";
 import { nextSnapshot, resolvePublished, snapshotFileSchema, type Stable } from "../src/data/published";
+
+/** The two prompt lengths the model table anchors at; they are display constants, not measurements. */
+const LMC_CONTEXT_SHORT = 100_000;
+const LMC_CONTEXT_LONG = 350_000;
 
 const APP = resolve(import.meta.dir, "..");
 const dataDir = join(APP, "data");
@@ -23,9 +27,8 @@ const quota = read("quota.json");
 const usage = read("usage.json");
 const models = read("models.json");
 const plans = read("plans.json");
-// the official per-model limits of OpenCode Go and Go Plus (scripts/collect-opencode-go.ts), r53
+// the official per-model limits of OpenCode Go and Go Plus, curated from the plan's own page (r53)
 const goDocs = read("opencode-go.json") as PageDoc;
-const catalog = read("catalog.json");
 const rawDir = join(dataDir, "raw", "usage");
 const latest = readdirSync(rawDir).filter((f) => f.endsWith(".json")).sort().at(-1);
 if (!latest) throw new Error("no raw usage export; run collect:usage first");
@@ -38,21 +41,7 @@ if (!Number.isFinite(exportStartMs)) throw new Error("raw usage export " + lates
 const aliases: Record<string, string> = models.model_aliases ?? {};
 const usagePrices: Array<{ openrouter: string; in_per_m: number; out_per_m: number; cache_per_m: number; cache_write_per_m: number | null }> = models.usage_prices ?? [];
 
-const MODEL_LABEL: Record<string, string> = {
-  "deepseek/deepseek-v4.1-flash": "DeepSeek V4.1 Flash",
-  "deepseek-v4.1-flash": "DeepSeek V4.1 Flash",
-  "deepseek/deepseek-v4.1-flash-1017": "DeepSeek V4.1 Flash (1017)",
-  "deepseek-v4.1-flash-1017": "DeepSeek V4.1 Flash (1017)",
-  "deepseek/deepseek-v4.1-flash-fast": "DeepSeek V4.1 Flash (fast, unpriced)",
-  "z-ai/glm-5.3-flash": "GLM-5.3-Flash",
-  "glm-5.3-flash": "GLM-5.3-Flash",
-  "glm-5.3": "GLM-5.3 (no list price)",
-  "xiaomi/mimo-v2.6-flash": "MiMo v2.6 Flash",
-  "mimo-v2.6-flash": "MiMo v2.6 Flash",
-  "qwen3.8-flash": "Qwen3.8 Flash",
-  "qwen3.8-max": "Qwen3.8 Max",
-};
-const labelOf = (m: string) => MODEL_LABEL[m] ?? m;
+import { modelLabel as labelOf } from "../src/lib/model-label";
 
 /** True when the model id resolves to a list price marked as an assumed alias rate. */
 function assumedOf(lane: string, model: string): boolean {
@@ -106,9 +95,8 @@ const computed = LANES.map((lane) => {
   const obs = quota.observations.find((o: any) => o.lane === lane);
   const plan = plans.plans.find((p: any) => p.plan_id === lane);
   const fee: number | null = plan?.price_month_usd ?? null;
-  const catRow = catalog.rows.find((r: any) => r.measured_lane === lane);
-  const annual: number | null = catRow?.price_annual_usd ?? null;
-  const published: number | null = catRow?.published_allowance_usd ?? null;
+  // the vendor's published allowance (owner-confirmed) is the headline; the dashboard reading is kept beside it
+  const published: number | null = plan?.allowance_published_usd ?? null;
   const u = usage.lanes.find((x: any) => x.lane === lane);
   const mix = pooledMix([{ tokens: u.tokens }]);
   const base = {
@@ -121,7 +109,7 @@ const computed = LANES.map((lane) => {
   const cycle = cycleOf(readings);
   const empty = (reason: string, extra: Record<string, unknown> = {}) => ({
     ...base, fee_usd: fee, fee_per_cycle_usd: null, fee_basis: null, cycle_minutes: cycle?.minutes ?? null, cycle_days: cycle ? cycle.minutes / 1440 : null, cycle_billed: cycle?.billed ?? false,
-    allowance_usd_per_cycle: null, allowance_basis: null, allowance_published_usd: null, allowance_vendor_usd: null, allowance_vendor_reason: null, allowance_derived_usd: null,
+    allowance_usd_per_cycle: null, allowance_basis: null, allowance_published_usd: published, allowance_vendor_usd: null, allowance_vendor_used_usd: obs?.vendor_pool?.used_usd ?? null, allowance_vendor_reason: null, allowance_derived_usd: null,
     tokens_per_cycle: null, binding_window: null, binding_coverage: null, binding_unpriced_share: null, binding_assumed_share: null, low_coverage: false, confidence: null,
     list_usd_per_b_effective: null, usd_per_b_measured: null, reason, top_models: [], windows: [], models: [], ...extra,
   });
@@ -150,15 +138,16 @@ const computed = LANES.map((lane) => {
   const b = bindingWindow(analyses);
   const vendor = vendorAllowance(obs?.vendor_pool ?? null, monthly);
 
-  // the fee of one cycle: the monthly fee when the cycle is the monthly window; for a yearly plan, the annual fee prorated to the cycle
-  const feeBasis = cycle.billed ? "monthly fee" : annual !== null ? "annual fee prorated to the cycle (365 days)" : null;
-  const feePerCycle = cycle.billed ? fee : annual !== null ? annual * (cycle.minutes / (365 * 1440)) : null;
+  // the fee of one cycle: the monthly fee when the cycle is the billed month, otherwise the monthly fee prorated over the cycle's days
+  const cycleDays = cycle.minutes / 1440;
+  const feeBasis = cycle.billed ? "monthly fee" : fee !== null ? "monthly fee prorated to the " + Number(cycleDays.toFixed(2)) + "-day cycle" : null;
+  const feePerCycle = fee !== null ? (cycle.billed ? fee : (fee * cycleDays) / 30) : null;
 
   if (!b) return empty("no usable window: " + analyses.map((w) => w.window + " " + w.status).join(", "), { windows, fee_per_cycle_usd: feePerCycle, fee_basis: feeBasis });
 
   // r53: a plan whose monthly limit is set per model (OpenCode Go) takes its allowance from the official limits of the models
   // carrying the tokens in the monthly window. The derived figure from the quota windows is kept only for comparison.
-  const perModelPlan: string | null = catRow?.per_model_limit_plan ?? null;
+  const perModelPlan: string | null = plan?.per_model_limit_plan ?? null;
   let perModel: { rule: "single_model" | "weighted"; main_model: string | null; usd: number; blend_per_token: number; parts: Array<{ model: string; share: number; limit_usd: number | null }> } | null = null;
   if (perModelPlan) {
     if (!monthly || monthly.allowance_usd_cycle === null || monthly.tokens <= 0) {
@@ -186,12 +175,24 @@ const computed = LANES.map((lane) => {
 
   const derived = b.allowance_usd_cycle as number;
   // the published figure is the allowance; else a matching dashboard pool; else the derived figure. All are recorded.
-  const chosen = perModel ? perModel.usd : (published ?? vendor.usd ?? derived);
-  const allowanceBasis = perModel ? (perModel.rule === "single_model" ? "vendor_published_per_model" : "vendor_published_weighted") : published !== null ? "vendor_published" : vendor.usd !== null ? "vendor_reported" : "derived";
-  // a per-model plan: the tokens its allowance buys at the measured blend of the monthly window (r53)
-  const tokensCycle = perModel ? (perModel.usd / perModel.blend_per_token) : (b.tokens_cycle as number);
-  const measuredPerB = feePerCycle !== null ? feePerCycle / (tokensCycle / 1e9) : null;
-  const modelRows = modelRowsFor({ chosen, fee: feePerCycle, basis: allowanceBasis, mix: base.mix });
+  // a per-model plan sets its own published allowance; every other lane follows published > dashboard > derived
+  const picked = perModel ? { usd: perModel.usd, basis: null } : chooseAllowance({ published, vendor: vendor.usd, derived });
+  const chosen = picked.usd;
+  const allowanceBasis = perModel ? (perModel.rule === "single_model" ? "vendor_published_per_model" : "vendor_published_weighted") : picked.basis;
+  // the tokens a headline allowance buys at the lane's own measured blend of the binding window. When the vendor
+  // states a dashboard pool, the vendor's own dollars per token are the basis for its published allowance: the
+  // $80 is capacity at the vendor's rate, not at our list prices (our list figure is kept beside it).
+  const monthlyAnalysis = analyses.find((w) => w.window === "monthly");
+  const vendorBlend = obs?.vendor_pool && monthlyAnalysis && monthlyAnalysis.tokens > 0 ? obs.vendor_pool.used_usd / monthlyAnalysis.tokens : null;
+  const listBlend = b.tokens > 0 ? b.cost_usd / b.tokens : 0;
+  const blendPerToken = perModel
+    ? perModel.blend_per_token
+    : picked.basis === "vendor_published" || picked.basis === "vendor_reported"
+      ? (vendorBlend ?? listBlend)
+      : listBlend;
+  const tokensCycle = chosen !== null && blendPerToken > 0 ? chosen / blendPerToken : null;
+  const measuredPerB = feePerCycle !== null && tokensCycle !== null && tokensCycle > 0 ? feePerCycle / (tokensCycle / 1e9) : null;
+  const modelRows = chosen !== null && allowanceBasis !== null ? modelRowsFor({ chosen, fee: feePerCycle, basis: allowanceBasis, mix: base.mix }) : [];
   return {
     ...base,
     fee_usd: fee,
@@ -205,6 +206,7 @@ const computed = LANES.map((lane) => {
     per_model: perModel ? { rule: perModel.rule, main_model: perModel.main_model, usd: perModel.usd, blend_usd_per_b: perModel.blend_per_token * 1e9, derived_usd: derived, parts: perModel.parts } : null,
     allowance_published_usd: published,
     allowance_vendor_usd: vendor.usd,
+    allowance_vendor_used_usd: obs?.vendor_pool?.used_usd ?? null,
     allowance_vendor_reason: vendor.reason,
     allowance_derived_usd: derived,
     tokens_per_cycle: tokensCycle,

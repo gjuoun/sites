@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { groupByPlan, outputTps, parseUsageRows, percentile, usageSql } from "./usage";
+import { groupByPlan, outputTps, parseUsageRows, percentile, rowsSince, summarizeLane, usageSql } from "./usage";
 
 describe("usage parsing", () => {
   test("accounts map to plans; the metered flag marks the account the quota reading comes from", () => {
@@ -40,6 +40,36 @@ describe("usage parsing", () => {
     expect(sql).not.toContain("3,");
     expect(() => usageSql(0)).toThrow();
     expect(() => usageSql(7.5)).toThrow();
+  });
+});
+
+const ROWS = [
+  "2|deepseek-v4.1-flash|100|0|900|50|0.25|2500|9000|2026-10-20T10:00:00Z",
+  "2|deepseek-v4.1-flash|200|0|800|100|0.5|1500|5000|2026-10-29T10:00:00Z",
+  "2|mimo-v2.6-flash|30|0|70|10|0|3000|4000|2026-10-30T09:00:00Z",
+].join("\n");
+
+describe("the recent window", () => {
+  test("a row is inside the window from its instant onward, and only those rows are summed", () => {
+    const rows = parseUsageRows(ROWS);
+    const cut = Date.parse("2026-10-28T00:00:00Z");
+    const recent = rowsSince(rows, cut);
+    expect(recent.length).toBe(2);
+    const lane = summarizeLane("opencode-go", recent, "2026-10-30T12:00:00Z", "test");
+    expect(lane.rows).toBe(2);
+    expect(lane.tokens.input).toBe(230);
+    expect(lane.tokens.output).toBe(110);
+    expect(lane.models.map((m) => m.upstream_model).sort()).toEqual(["deepseek-v4.1-flash", "mimo-v2.6-flash"]);
+    expect(lane.cache_share).toBeCloseTo(870 / (230 + 870), 6);
+  });
+
+  test("an idle lane keeps rows 0 and null percentiles, never a zero", () => {
+    const lane = summarizeLane("zai-glm-max", [], "2026-10-30T12:00:00Z", "test");
+    expect(lane.rows).toBe(0);
+    expect(lane.p50_ttft_ms).toBeNull();
+    expect(lane.p50_output_tps).toBeNull();
+    expect(lane.cache_share).toBeNull();
+    expect(lane.models).toEqual([]);
   });
 });
 

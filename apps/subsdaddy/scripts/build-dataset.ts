@@ -10,6 +10,8 @@ import { z } from "zod";
 import { LANES, type LaneId, type LaneRecord, lanesFileSchema, plansFileSchema, usageFileSchema } from "../src/data/schema";
 import { allowanceFileSchema } from "../src/data/allowance";
 import { type PricedRow, capacityConfidence, fitPriceVector, mixShares, presetsFor, resolveDollarPerB } from "../src/data/derive";
+import { laneModelRows, trafficOf } from "../src/lib/lane-models";
+import { pageLimitsFor, type PageDoc } from "../src/data/per-model-limit";
 
 const APP = resolve(import.meta.dir, "..");
 const dataDir = join(APP, "data");
@@ -19,6 +21,8 @@ const now = new Date().toISOString();
 const usage = usageFileSchema.parse(read("usage.json"));
 const plans = plansFileSchema.parse(read("plans.json"));
 const allowance = allowanceFileSchema.parse(read("allowance.json"));
+// the plan's own page: the per-model monthly limits of OpenCode Go (nothing is fetched here)
+const goDocs = JSON.parse(readFileSync(join(dataDir, "opencode-go.json"), "utf8")) as PageDoc;
 
 const rawRowSchema = z.object({
   lane: z.enum(LANES),
@@ -48,6 +52,15 @@ const lanes: LaneRecord[] = LANES.map((lane) => {
   if (!u) throw new Error("no usage for " + lane);
   const a = allowance.lanes.find((x) => x.lane === lane);
   if (!a) throw new Error("no allowance for " + lane);
+  const recent = usage.recent.lanes.find((x) => x.lane === lane);
+  if (!recent) throw new Error("no recent usage for " + lane);
+  const limits = plan.per_model_limit_plan ? pageLimitsFor(goDocs, plan.per_model_limit_plan) : null;
+  const models = laneModelRows({
+    usage: recent,
+    limits,
+    measuredAt: now,
+    source: "usage_logs(" + usage.recent.window_days + "d) rows=" + recent.rows,
+  });
   const laneRows = rows.filter((r) => r.lane === lane);
   const priced: PricedRow[] = laneRows.map((r) => ({ tokens: { input: r.input, cache_creation: r.cache_creation, cache_read: r.cache_read, output: r.output }, total_cost: r.total_cost }));
   const fit = fitPriceVector(priced);
@@ -94,6 +107,7 @@ const lanes: LaneRecord[] = LANES.map((lane) => {
       per_model: a.per_model ?? null,
       allowance_published_usd: a.allowance_published_usd,
       allowance_vendor_usd: a.allowance_vendor_usd,
+      allowance_vendor_used_usd: a.allowance_vendor_used_usd ?? null,
       allowance_vendor_reason: a.allowance_vendor_reason,
       allowance_derived_usd: a.allowance_derived_usd,
       fee_per_cycle_usd: a.fee_per_cycle_usd,
@@ -114,6 +128,8 @@ const lanes: LaneRecord[] = LANES.map((lane) => {
     usd_per_b_derived_from: null,
     usd_per_b_source: dollar.basis === "measured" ? "usage logs priced at list, quota windows, published price" : null,
     measured: { p50_ttft_ms: u.p50_ttft_ms, p90_ttft_ms: u.p90_ttft_ms, p50_output_tps: u.p50_output_tps, n: u.rows, measured_at: now, source: "usage_logs(" + usage.window_days + "d) rows=" + u.rows },
+    traffic_7d: trafficOf(recent, usage.recent.window_days),
+    models,
     presets,
     flags,
     measured_at: now,
@@ -138,7 +154,7 @@ for (const l of lanes) {
 writeFileSync(join(dataDir, "lanes.json"), JSON.stringify(lanesFileSchema.parse({ lanes, measured_at: now, source: "build-dataset" }), null, 2) + "\n");
 for (const l of lanes) {
   const cap = l.capacity.tokens_per_cycle === null ? "unavailable:" + l.capacity.reason : (l.capacity.tokens_per_cycle / 1e9).toFixed(3) + "B/" + l.capacity.cycle_days + "d" + (l.capacity.cycle_billed ? "" : " (not billed)");
-  console.log(l.lane.padEnd(18) + " window=" + (l.capacity.window ?? "-") + " cap=" + cap + " usd_per_b=" + (l.usd_per_b === null ? "null" : l.usd_per_b.toFixed(4)) + " basis=" + (l.usd_per_b_basis ?? "-") + " flags=" + (l.flags.join(",") || "-"));
+  console.log(l.lane.padEnd(18) + " window=" + (l.capacity.window ?? "-") + " cap=" + cap + " usd_per_b=" + (l.usd_per_b === null ? "null" : l.usd_per_b.toFixed(4)) + " basis=" + (l.usd_per_b_basis ?? "-") + " models=" + l.models.length + " traffic7d=" + (l.traffic_7d.tokens ?? "none") + " flags=" + (l.flags.join(",") || "-"));
 }
 const ranked = lanes.filter((l) => l.usd_per_b !== null).length;
 console.log("lanes=" + lanes.length + " ranked=" + ranked + " excluded=" + (lanes.length - ranked));

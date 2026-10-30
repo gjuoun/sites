@@ -44,6 +44,22 @@ export function resolveDollarPerB(input: { own: number | null; rate_peer: string
   return { usd_per_b: null, basis: null, derived_from: null };
 }
 
+export type AllowanceChoice = { usd: number | null; basis: "vendor_published" | "vendor_reported" | "derived" | null };
+
+/**
+ * The headline allowance of a lane, in the order the site trusts its sources:
+ *   1. a figure the vendor publishes (owner-confirmed) — the plan spec;
+ *   2. the vendor dashboard's own reading;
+ *   3. the figure derived from the quota windows and list prices.
+ * A lower source never overrides a higher one; a divergence is recorded beside it, not published as the headline.
+ */
+export function chooseAllowance(input: { published: number | null; vendor: number | null; derived: number | null }): AllowanceChoice {
+  if (input.published !== null) return { usd: input.published, basis: "vendor_published" };
+  if (input.vendor !== null) return { usd: input.vendor, basis: "vendor_reported" };
+  if (input.derived !== null) return { usd: input.derived, basis: "derived" };
+  return { usd: null, basis: null };
+}
+
 export type PricedRow = {
   tokens: TokenCounts;
   total_cost: number;

@@ -63,6 +63,11 @@ export const planSchema = z.object({
   label: z.string().min(1),
   price_month_usd: z.number().positive(),
   badge: z.enum(["plan_spec", "console"]),
+  /** The plan's own page that publishes per-model monthly limits (OpenCode Go); absent when it publishes none. */
+  per_model_limit_plan: z.string().nullable().optional(),
+  /** The vendor's published usage allowance per cycle (owner-confirmed); the headline when present. */
+  allowance_published_usd: z.number().positive().nullable().optional(),
+  allowance_published_source: z.string().min(1).nullable().optional(),
   ...provenance,
 });
 export type Plan = z.infer<typeof planSchema>;
@@ -140,6 +145,18 @@ export const laneUsageSchema = z.object({
 });
 export type LaneUsage = z.infer<typeof laneUsageSchema>;
 
+/** One window's roll-up: the full export and the recent slice are the same shape. */
+export const usageWindowSchema = z.object({
+  window_days: z.number().positive(),
+  coverage_start: z.iso.datetime(),
+  coverage_end: z.iso.datetime(),
+  /** The earliest instant the export reaches back to (now minus window_days). A quota window's coverage is measured from here (r52). */
+  export_start: z.iso.datetime().optional(),
+  lanes: z.array(laneUsageSchema).length(LANES.length),
+  ...provenance,
+});
+export type UsageWindow = z.infer<typeof usageWindowSchema>;
+
 export const usageFileSchema = z.object({
   window_days: z.number().positive(),
   coverage_start: z.iso.datetime(),
@@ -147,6 +164,8 @@ export const usageFileSchema = z.object({
   /** The earliest instant the export reaches back to (now minus window_days). A quota window's coverage is measured from here (r52). */
   export_start: z.iso.datetime().optional(),
   lanes: z.array(laneUsageSchema).length(LANES.length),
+  /** The recent slice of the same pull: what each lane ran in the last days, cut in memory. */
+  recent: usageWindowSchema,
   ...provenance,
 });
 export type UsageFile = z.infer<typeof usageFileSchema>;
@@ -283,6 +302,34 @@ export const modelsFileSchema = z.object({
 });
 
 /** The plan record the site renders. */
+/** One lane's traffic in the recent window; an idle lane carries a reason instead of a zero. */
+export const laneTrafficSchema = z.object({
+  window_days: z.number().positive(),
+  tokens: z.number().positive().nullable(),
+  requests: z.number().int().min(0),
+  cache_share: z.number().min(0).max(1).nullable(),
+  p50_ttft_ms: z.number().nullable(),
+  p90_ttft_ms: z.number().nullable(),
+  p50_output_tps: z.number().nullable(),
+  reason: z.string().nullable(),
+  ...provenance,
+});
+
+/** One model a lane actually ran in the recent window. */
+export const laneModelSchema = z.object({
+  upstream_model: z.string().min(1),
+  label: z.string().min(1),
+  tokens_7d: z.number().positive(),
+  share_7d: z.number().min(0).max(1),
+  rows_7d: z.number().int().min(0),
+  cache_share_7d: z.number().min(0).max(1).nullable(),
+  p50_ttft_ms: z.number().nullable(),
+  p50_output_tps: z.number().nullable(),
+  limit_usd_month: z.number().positive().nullable(),
+  limit_reason: z.string().nullable(),
+  ...provenance,
+});
+
 export const laneRecordSchema = z.object({
   lane: laneSchema,
   label: z.string().min(1),
@@ -304,6 +351,7 @@ export const laneRecordSchema = z.object({
 }).nullable().optional(),
     allowance_published_usd: z.number().positive().nullable().optional(),
     allowance_vendor_usd: z.number().positive().nullable().optional(),
+    allowance_vendor_used_usd: z.number().positive().nullable().optional(),
     allowance_vendor_reason: z.string().nullable().optional(),
     allowance_derived_usd: z.number().positive().nullable().optional(),
     fee_per_cycle_usd: z.number().positive().nullable().optional(),
@@ -356,6 +404,9 @@ export const laneRecordSchema = z.object({
     n: z.number().int().min(0),
     ...provenance,
   }),
+  /** The recent slice: what this lane ran in the last days, and the models that carried it. */
+  traffic_7d: laneTrafficSchema,
+  models: z.array(laneModelSchema),
   presets: z.array(
     z.union([
       z.object({ shape: z.enum(["interactive", "agent", "cache_heavy"]), usd_per_b: z.number().positive() }),

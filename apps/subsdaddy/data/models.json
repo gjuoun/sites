@@ -22,7 +22,7 @@
     }
   ],
   "measured_at": "2026-10-28T01:49:57.933Z",
-  "source": "openrouter.ai/api/v1/models, fetched 2026-10-26 (list price, USD per 1M tokens); lane model mapping as before",
+  "source": "list prices of the models the four lanes run: the providers' own price pages and the plan's own page; curated here, never fetched at refresh",
   "reference": [
     {
       "ref": "deepseek-v4.1-flash",
@@ -65,93 +65,6 @@
       "price_note": "Official documentation is authoritative for first-party models; the aggregator listing disagreed and was rejected (listing 0.14 / 0.42 / 0.0042 per M; official 0.18125 / 0.725 / 0.003625 per M)"
     },
     {
-      "ref": "gemini-3.8-flash",
-      "openrouter": "google/gemini-3.8-flash",
-      "in_per_m": 0.825,
-      "out_per_m": 4.125,
-      "cache_per_m": 0.0825,
-      "name": "Gemini 3.8 Flash",
-      "official_status": "not checked",
-      "source_priority": "official > openrouter",
-      "openrouter_listed": {
-        "in_per_m": 0.825,
-        "out_per_m": 4.125,
-        "cache_per_m": 0.0825,
-        "cache_write_per_m": 0.041666667
-      },
-      "cache_write_per_m": 0.041666667,
-      "overrides": [],
-      "price_status": "verified",
-      "price_anomaly": null,
-      "last_verified_at": "2026-10-28T01:49:57.933Z",
-      "source": "openrouter.ai/api/v1/models, 2026-10-28",
-      "price_note": null
-    },
-    {
-      "ref": "claude-haiku-5.5",
-      "openrouter": "anthropic/claude-haiku-5.5",
-      "in_per_m": 0.1,
-      "out_per_m": 0.5,
-      "cache_per_m": 0.01,
-      "name": "Claude Haiku 5.5",
-      "cache_write_per_m": 0.125,
-      "overrides": [
-        {
-          "min_prompt_tokens": 100000,
-          "in_per_m": 0.5,
-          "out_per_m": 2.5,
-          "cache_per_m": 0.05,
-          "cache_write_per_m": 0.625,
-          "source": "openrouter listing"
-        }
-      ],
-      "official_status": "not checked",
-      "source_priority": "official > openrouter",
-      "openrouter_listed": {
-        "in_per_m": 0.1,
-        "out_per_m": 0.5,
-        "cache_per_m": 0.01,
-        "cache_write_per_m": 0.125
-      },
-      "price_status": "verified",
-      "price_anomaly": null,
-      "last_verified_at": "2026-10-28T01:49:57.933Z",
-      "source": "openrouter.ai/api/v1/models, 2026-10-28",
-      "price_note": null
-    },
-    {
-      "ref": "gpt-6-luna",
-      "openrouter": "openai/gpt-6-luna",
-      "in_per_m": 0.1,
-      "out_per_m": 0.5,
-      "cache_per_m": 0.01,
-      "name": "GPT-6 Luna",
-      "cache_write_per_m": 0.125,
-      "overrides": [
-        {
-          "min_prompt_tokens": 272000,
-          "in_per_m": 0.2,
-          "out_per_m": 0.75,
-          "cache_per_m": 0.02,
-          "cache_write_per_m": 0.25,
-          "source": "openrouter listing"
-        }
-      ],
-      "official_status": "not checked",
-      "source_priority": "official > openrouter",
-      "openrouter_listed": {
-        "in_per_m": 0.1,
-        "out_per_m": 0.5,
-        "cache_per_m": 0.01,
-        "cache_write_per_m": 0.125
-      },
-      "price_status": "verified",
-      "price_anomaly": null,
-      "last_verified_at": "2026-10-28T01:49:57.933Z",
-      "source": "openrouter.ai/api/v1/models, 2026-10-28",
-      "price_note": null
-    },
-    {
       "ref": "glm-5.3-flash",
       "openrouter": "z-ai/glm-5.3-flash",
       "in_per_m": 0.15,
@@ -168,10 +81,10 @@
       },
       "cache_write_per_m": null,
       "overrides": [],
-      "price_status": "verified",
+      "price_status": "official",
       "price_anomaly": null,
       "last_verified_at": "2026-10-28T01:49:57.933Z",
-      "source": "openrouter.ai/api/v1/models, 2026-10-28",
+      "source": "z.ai published list price, matching the plan's own page (data/opencode-go.json), 2026-10-28",
       "price_note": null
     }
   ],

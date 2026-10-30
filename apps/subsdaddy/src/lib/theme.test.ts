@@ -36,10 +36,6 @@ describe("the stylesheet is the package theme plus the site font", () => {
       '@import "@gjuoun/bigface-business-ui/styles.css"',
       '@import "@fontsource-variable/geist"',
       '@source "../../../packages/bigface-business-ui/src/components/ui/badge.tsx"',
-      '@source "../../../packages/bigface-business-ui/src/components/ui/card.tsx"',
-      '@source "../../../packages/bigface-business-ui/src/components/ui/table.tsx"',
-      '@source "../../../packages/bigface-business-ui/src/components/ui/toggle.tsx"',
-      '@source "../../../packages/bigface-business-ui/src/components/ui/toggle-group.tsx"',
       "@theme inline",
     ]);
   });

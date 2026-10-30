@@ -1,160 +1,116 @@
 #!/usr/bin/env bun
 /**
- * Reads the prerendered pages in dist/client and checks the public contract.
+ * Reads the prerendered pages in dist/client and checks the own-data contract.
  *
- * Front page (/): one title line, one switch, one table of seven columns (Plan, Fee/mo, Allowance, Capacity, $/B,
- * tok/s, TTFT p50), one footnote linking /methodology. No badges, no OR column, no sections. The first
- * (Measured) view is the one rendered. Speeds are one value with a leading "~". N/A carries no line.
+ * / : one ranking table (Lane, Fee/mo, Quota window, $/B, Tokens 7d, tok/s, TTFT p50) with one row per
+ *     lane, then one [data-lane] block per lane with its model table (eight columns). Nothing from the
+ *     retired comparison product appears: no OpenRouter, no estimates, no Threads, no Shape, no catalog.
+ * /methodology : the six sections that state the formulas, the sources and the limits.
  *
- * /methodology: every detail table: measured lanes, DeepSeek ranking, per-model estimates, official
- * subscriptions, the full catalog. /catalog: the catalog table.
- *
- * Shared: one table style, the one badge style, no em dash, no $0.00, no flag counts, no raw model ids,
- * no session ids, paths or emails, and primary values never truncate.
+ * Shared: every N/A cell carries data-na, no NaN / undefined / bare $0.00 in a value cell, every page
+ * keeps its footer, and the tables agree with data/lanes.json row for row.
  */
 import { existsSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 
 const APP = resolve(import.meta.dir, "..");
 const client = join(APP, "dist", "client");
-const problems: string[] = [];
-const fail = (m: string) => problems.push(m);
 const read = (f: string) => JSON.parse(readFileSync(join(APP, "data", f), "utf8"));
 
-const lanes = read("lanes.json").lanes as Array<{ lane: string; usd_per_b_basis: string | null; measured: { p50_output_tps: number | null; p50_ttft_ms: number | null } }>;
-const catalog = read("catalog.json").rows as Array<{ plan_id: string; status: string; offered_models: string[]; estimate: { status: string; values: Array<{ ref: string; shape: string; usd_per_b: number | null }> } | null }>;
-const official = read("official.json").providers as Array<{ provider: string }>;
-const pages = { index: join(client, "index.html"), methodology: join(client, "methodology", "index.html"), catalog: join(client, "catalog", "index.html") };
+type Lane = {
+  lane: string;
+  label: string;
+  usd_per_b: number | null;
+  models: Array<{ label: string; share_7d: number; tokens_7d: number }>;
+};
+const lanes = read("lanes.json").lanes as Lane[];
+
+const problems: string[] = [];
+const fail = (m: string) => problems.push(m);
+
+const pages = { index: join(client, "index.html"), methodology: join(client, "methodology", "index.html") };
 for (const [k, p] of Object.entries(pages)) if (!existsSync(p)) {
   console.error("verify-site: missing " + k + " at " + p + "; run build first");
   process.exit(2);
 }
-const html = { index: readFileSync(pages.index, "utf8"), methodology: readFileSync(pages.methodology, "utf8"), catalog: readFileSync(pages.catalog, "utf8") };
+if (existsSync(join(client, "catalog"))) fail("a /catalog page is still prerendered");
+
+const html = { index: readFileSync(pages.index, "utf8"), methodology: readFileSync(pages.methodology, "utf8") };
 const main = (h: string) => (h.match(/<main[\s\S]*?<\/main>/) ?? [""])[0];
-const text = (h: string) => h.replace(/<[^>]+>/g, " ").replace(/&amp;/g, "&").replace(/\s+/g, " ").trim();
-const tables = (h: string) => [...h.matchAll(/<table[^>]*data-table="unified"[^>]*>[\s\S]*?<\/table>/g)].map((m) => m[0]);
+const text = (h: string) => h.replace(/<[^>]+>/g, " ").replace(/&amp;/g, "&").replace(/&#x27;/g, "'").replace(/&quot;/g, '"').replace(/\s+/g, " ").trim();
 const cells = (h: string) => [...h.matchAll(/<td[^>]*>[\s\S]*?<\/td>/g)].map((m) => m[0]);
 const tableById = (h: string, id: string) => (h.match(new RegExp('<table[^>]*data-testid="' + id + '"[\\s\\S]*?<\\/table>')) ?? [""])[0];
 const rowsIn = (t: string) => (t.match(/data-row="/g) ?? []).length;
+const heads = (t: string) => [...t.matchAll(/<th[^>]*>([\s\S]*?)<\/th>/g)].map((m) => text(m[1]));
+const laneIds = [...main(html.index).matchAll(/data-lane="([^"]+)"/g)].map((m) => m[1]);
 
-// 1. the front page: one table, eight columns, in order (r54: Threads est)
-const idx = main(html.index);
-const summary = tableById(html.index, "summary");
-if (!summary) fail("front page has no summary table");
-if (tables(html.index).length !== 1) fail("front page has " + tables(html.index).length + " tables, expected 1");
-const heads = [...summary.matchAll(/<th[^>]*>([\s\S]*?)<\/th>/g)].map((m) => text(m[1]));
-const expectedHeads = ["Plan", "Fee/mo", "Allowance", "Capacity", "$/B", "Threads est", "tok/s", "TTFT p50"];
-if (JSON.stringify(heads) !== JSON.stringify(expectedHeads)) fail("front page columns are " + JSON.stringify(heads) + ", expected " + JSON.stringify(expectedHeads));
+// 1. the ranking table: seven columns in order, one row per lane
+const ranking = tableById(html.index, "lanes");
+if (!ranking) fail("the front page has no lanes table");
+const rankHeads = heads(ranking);
+const expectedHeads = ["Lane", "Fee/mo", "Quota window", "$/B", "Tokens 7d", "tok/s", "TTFT p50"];
+if (JSON.stringify(rankHeads) !== JSON.stringify(expectedHeads)) fail("ranking columns are " + JSON.stringify(rankHeads));
+if (rowsIn(ranking) !== lanes.length) fail("ranking has " + rowsIn(ranking) + " rows, expected " + lanes.length);
+if (laneIds.length !== lanes.length) fail("page has " + laneIds.length + " lane blocks, expected " + lanes.length);
+for (const l of lanes) if (!laneIds.includes(l.lane)) fail("lane block missing: " + l.lane);
 
-// 2. the switch: Measured first and selected, the other chips present, no Gemini chip
-const chips = [...html.index.matchAll(/<[^>]*data-chip="([^"]+)"[^>]*>/g)].map((m) => ({ id: m[1], tag: m[0] }));
-if (chips.length !== 5) fail("switch has " + chips.length + " chips, expected 5");
-if (chips[0]?.id !== "measured") fail("first chip is " + chips[0]?.id + ", expected measured");
-if (!/data-state="on"/.test(chips[0]?.tag ?? "")) fail("Measured chip is not selected by default");
-if (chips.some((c) => c.id === "gemini-3.8-flash")) fail("a Gemini chip is shown; no plan offers Gemini 3.8 Flash");
-
-// 3. Measured view rows, one value per speed cell, N/A with no line
-const mRows = rowsIn(summary);
-if (mRows !== lanes.length) fail("Measured view has " + mRows + " rows, expected " + lanes.length);
-for (const c of [...summary.matchAll(/<td[^>]*data-col="(tps|ttft)"[^>]*>[\s\S]*?<\/td>/g)].map((m) => m[0])) {
-  if (/data-na="yes"/.test(c)) continue;
-  const t = text(c);
-  if (!/^~[\d,]+( ms)?$/.test(t)) fail("speed cell is not a single ~ value: " + t.slice(0, 40));
+// 2. every lane block has its model table, one row per model, eight columns
+let modelRows = 0;
+for (const l of lanes) {
+  const t = tableById(html.index, "models-" + l.lane);
+  if (!t) {
+    fail("no model table for " + l.lane);
+    continue;
+  }
+  const h = heads(t);
+  const expected = ["Model", "Share", "Tokens 7d", "Requests", "Cache", "TTFT p50", "tok/s", "Monthly limit"];
+  if (JSON.stringify(h) !== JSON.stringify(expected)) fail(l.lane + " model columns are " + JSON.stringify(h));
+  const n = rowsIn(t);
+  modelRows += n;
+  if (n !== l.models.length) fail(l.lane + " model rows " + n + " != data " + l.models.length);
+  if (n === 0) fail(l.lane + " has traffic but no model row");
+  const shareSum = l.models.reduce((a, m) => a + m.share_7d, 0);
+  if (shareSum > 1.001) fail(l.lane + " model shares sum to " + shareSum.toFixed(4));
+  for (const m of l.models) if (!(m.tokens_7d > 0)) fail(l.lane + " has a model row with no tokens: " + m.label);
 }
-for (const c of cells(summary)) {
-  if (!/data-na="yes"/.test(c)) continue;
-  const lines = [...c.matchAll(/<span[^>]*class="[^"]*text-xs[^"]*"[^>]*>([\s\S]*?)<\/span>/g)].map((m) => text(m[1])).filter(Boolean);
-  if (lines.length > 0) fail("an N/A cell carries a visible reason line: " + lines[0].slice(0, 50));
+
+// 3. a lane whose allowance is published shows that figure, and the dashboard reading is named as a comparison
+const published = read("lanes.json").lanes.filter((l: { capacity: { allowance_basis: string | null; allowance_published_usd?: number | null } }) => l.capacity.allowance_basis === "vendor_published" && l.capacity.allowance_published_usd);
+for (const l of published as Array<{ lane: string; capacity: { allowance_published_usd: number } }>) {
+  const amount = "$" + l.capacity.allowance_published_usd.toFixed(2);
+  if (!text(main(html.index)).includes("published " + amount)) fail(l.lane + " publishes " + amount + " but the page does not show it");
 }
 
-// 4. the front page has no detail: no badges, no OR column, no sections, no footnote table, one footnote link
-// the only badge the front page may carry is low confidence, on a Capacity cell (its third line)
-const badgeValues = [...idx.matchAll(/data-badge="([^"]*)"/g)].map((m) => m[1]);
-if (badgeValues.some((v) => !["low confidence", "stale reading"].includes(v))) fail("front page carries a badge other than low confidence: " + badgeValues.join(", "));
-if (/OR p50|Badges|vs measured|>Basis</.test(idx)) fail("a detail column name is on the front page");
-if (/\b[ABC] · /.test(idx)) fail("a section letter is on the front page");
-if (!/href="\/methodology"/.test(idx)) fail("front page has no link to /methodology");
-if (!/Estimates assume the whole allowance runs one model\. Details, sources and allowances: /.test(text(idx))) fail("the one footnote line is missing or changed");
+// 3b. a lane with no $/B shows N/A in the ranking, not a zero
+for (const l of lanes) {
+  if (l.usd_per_b !== null) continue;
+  const row = (ranking.match(new RegExp('<tr[^>]*data-row="' + l.lane + '"[\\s\\S]*?</tr>')) ?? [""])[0];
+  const usd = (row.match(/<td[^>]*data-col="usd"[^>]*>[\s\S]*?<\/td>/) ?? [""])[0];
+  if (!/data-na="yes"/.test(usd)) fail(l.lane + " has no $/B but does not show N/A");
+}
 
-// 4b. derived $/B: the star appears on exactly the derived Measured rows, with its footnote; the basis line is one line
-const derivedCount = lanes.filter((l) => l.usd_per_b_basis === "derived").length;
-const starred = (summary.match(/<td[^>]*data-col="usd"[^>]*>[\s\S]*?<\/td>/g) ?? []).filter((c) => /<sup[^>]*>\*<\/sup>/.test(c)).length;
-if (starred !== derivedCount) fail("derived star count " + starred + " != derived lanes " + derivedCount);
-if (derivedCount > 0 && text(idx).indexOf("* derived from the same-rate peer plan") < 0) fail("derived footnote missing");
-if (text(idx).indexOf("ours, from usage logs") < 0) fail("Measured basis line missing");
-const basisLines = text(idx).match(/tok\/s and TTFT are OpenRouter p50 weighted by request volume/g) ?? [];
-if (basisLines.length > 0) fail("a model basis line is on the Measured view");
-
-// 4c. the context switch: two standards on the front page; the standard context and both comparison tables on methodology
-const ctxChips = [...html.index.matchAll(/data-context="(short|long)"/g)].map((m) => m[1]);
-if (new Set(ctxChips).size !== 2) fail("context switch has " + new Set(ctxChips).size + " options, expected 2 (short, long)");
-if (!/data-testid="context-distribution"/.test(html.methodology)) fail("methodology has no context distribution table");
-if (!/data-testid="context-compare"/.test(html.methodology)) fail("methodology has no 100K vs 350K comparison table");
-
-// 4d. the switch labels: Model and Context size, each naming its own group
-if (!/aria-labelledby="switch-label-model"/.test(html.index) || !/>Model<\/span>/.test(html.index)) fail("Model label missing on the front page");
-if (!/aria-labelledby="switch-label-context"/.test(html.index) || !/>Context size<\/span>/.test(html.index)) fail("Context size label missing on the front page");
-if (html.index.indexOf(">Model</span>") > html.index.indexOf(">Context size</span>")) fail("Context size label comes before Model");
-
-// 4e. the Shape switch: three shapes, Cache-heavy default
-const shapeOpts = [...html.index.matchAll(/data-shape="([^"]+)"/g)].map((m) => m[1]);
-if (shapeOpts.join(",") !== "cache_heavy,agent,cold") fail("shape switch options are " + shapeOpts.join(",") + ", expected cache_heavy,agent,cold");
-if (html.index.indexOf(">Shape</span>") < 0) fail("Shape label missing on the front page");
-
-// 5. methodology: every detail table, in full
-const meth = main(html.methodology);
-const mt = tables(html.methodology);
-if (rowsIn(tableById(html.methodology, "measured-full")) !== lanes.length) fail("methodology measured table row count is wrong");
-const ds = tableById(html.methodology, "ds-ranking");
-if (!ds) fail("methodology has no DeepSeek ranking table");
-if (rowsIn(tableById(html.methodology, "official")) !== official.length) fail("methodology official table row count is wrong");
-const catalogRows = catalog.length;
-if (rowsIn(tableById(html.methodology, "catalog-full")) !== catalogRows) fail("methodology catalog has the wrong row count");
-if (rowsIn(tableById(html.catalog, "catalog")) !== catalogRows) fail("catalog page has the wrong row count");
-if (mt.length < 8) fail("methodology has " + mt.length + " unified tables, expected at least 8");
-
-// 6. one table style across every table on all pages
-const styleOf = (t: string) => {
-  const th = (t.match(/<thead>[\s\S]*?<tr class="([^"]+)"/) ?? [])[1] ?? "";
-  const td = (t.match(/<td class="([^"]+)"/) ?? [])[1] ?? "";
-  return th + "|" + td;
-};
-const all = [...tables(html.index), ...tables(html.methodology), ...tables(html.catalog)];
-if (new Set(all.map(styleOf)).size !== 1) fail("tables use more than one style set");
-
-// 7. shared text rules on every page
-for (const [name, h] of Object.entries({ index: idx, methodology: meth, catalog: main(html.catalog) })) {
+// 4. nothing from the retired comparison product, on any page
+const RETIRED = ["OpenRouter", "Est.", "Threads", "Context size", "Plans catalog", "Copilot", "Claude Max", "Cursor", "ChatGPT Plus"];
+for (const [name, h] of Object.entries({ index: main(html.index), methodology: main(html.methodology) })) {
+  for (const word of RETIRED) if (text(h).includes(word)) fail(name + " still mentions " + word);
+  if (h.indexOf('data-footer="links"') < 0) fail(name + " has no footer");
   for (const c of cells(h)) {
     const t = text(c);
-    // the hover panel carries prose (the wide-error-bar sentence); the rule is about the visible value, so the panel is cut off first
-    const visible = text(c.slice(0, Math.max(0, c.indexOf("role=\"tooltip\"") < 0 ? c.length : c.indexOf("role=\"tooltip\""))));
-    if (visible.indexOf("\u2014") >= 0) fail(name + " shows an em dash in a cell");
-    if (t.length === 0 && !/data-flags="yes"/.test(c)) fail(name + " has an empty cell");
-    if (/\$0\.00(?!\d)/.test(t) && !/data-na="yes"/.test(c)) fail(name + " prints $0.00 in a value cell");
-    if (/\bNaN\b/.test(t)) fail(name + " prints NaN");
-    if (/\b\d+ flags?\b/.test(t)) fail(name + " shows a flag count");
-    if (/\b(deepseek|google|anthropic|openai|z-ai|qwen)\/[a-z0-9.-]+/.test(t)) fail(name + " shows a raw model id in a cell");
+    const na = /data-na="yes"/.test(c);
+    if (!t && !/data-flags="yes"/.test(c)) fail(name + " has an empty cell");
+    if (/\bNaN\b|\bundefined\b/.test(t)) fail(name + " prints NaN or undefined");
+    if (/\$0\.00(?!\d)/.test(t) && !na) fail(name + " prints $0.00 in a value cell");
+    if (t === "N/A" && !na) fail(name + " shows N/A without the data-na marker");
   }
-  const PRIVATE = [/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}/, /\/Users\//, /@[a-z0-9.-]+\.[a-z]{2,}/i, /\.jsonl/, /sessionId|session_id/];
+  const PRIVATE = [/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}/, /\/Users\//, /@[a-z0-9.-]+\.[a-z]{2,}/i, /sessionId|session_id|account_id/];
   for (const re of PRIVATE) if (re.test(h)) fail(name + " renders a private identifier matching " + String(re));
-  if (h.indexOf('data-footer="links"') < 0) fail(name + " has no footer");
 }
 
-// 8. primary values never truncate: only the description columns clip
-const CLIP_COLS = ["basis", "allowance", "cli"];
-for (const [name, h] of Object.entries({ index: idx, methodology: meth })) {
-  for (const m of h.matchAll(/<td[^>]*data-col="([^"]+)"[^>]*><span[^>]*><span class="([^"]*)"/g)) {
-    if (CLIP_COLS.indexOf(m[1]) < 0 && m[2].indexOf("truncate") >= 0) fail(name + " truncates the primary value of column " + m[1]);
-  }
-}
+// 5. the methodology names its sections
+const sections = [...html.methodology.matchAll(/data-section="([^"]+)"/g)].map((m) => m[1]);
+if (sections.length !== 6) fail("methodology has " + sections.length + " sections, expected 6");
 
-// 9. the Official section is aggregates only, and the catalog page is unchanged in kind
-if (!/data-testid="catalog"/.test(html.catalog)) fail("catalog page has no catalog table");
-
-console.log(
-  "pages=3 front_columns=" + heads.length + " chips=" + chips.length + " measured_rows=" + mRows +
-    " methodology_tables=" + mt.length + " catalog_rows=" + catalogRows + " official_rows=" + official.length + " styles=" + new Set(all.map(styleOf)).size + " zeroed=0",
-);
+console.log("pages=2 lanes=" + laneIds.length + " model_rows=" + modelRows + " third_party=0 problems=" + problems.length);
 if (problems.length) {
   for (const p of problems) console.error("FAIL " + p);
   process.exit(1);

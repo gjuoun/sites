@@ -1,8 +1,9 @@
 #!/usr/bin/env bun
 /**
- * One-command refresh: collect → quota → derive → openrouter → build → verify:site → verify:all.
+ * One-command refresh: collect → quota → allowance → dataset → build → verify:site → verify:visual → verify:all.
  * Every stage echoes one line; the chain stops at the first non-zero exit; the full log goes to
  * /tmp/jun/subsdaddy/refresh.log. The run start is exported so the freshness gate can compare it.
+ * No web fetch: the two reads are the gateway (read-only SQL) and codexbar.
  */
 import { mkdirSync, appendFileSync, writeFileSync, readFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
@@ -18,21 +19,13 @@ process.env.SUBSDADDY_REFRESH_START = started;
 
 const stages: Array<[string, string[]]> = [
   ["collect:usage", ["bun", "run", "scripts/collect-usage.ts"]],
-  ["collect:context", ["bun", "run", "scripts/collect-session-context.ts"]],
-  ["collect:prices", ["bun", "run", "scripts/collect-prices.ts"]],
-  ["collect:catalog", ["bun", "run", "scripts/collect-catalog.ts"]],
-  ["collect:opencode-go", ["bun", "run", "scripts/collect-opencode-go.ts"]],
   // the probe stage gets ZAI_API_KEY from 1Password into the child env only; nothing is written to disk
   ["probe:quota", ["opk", "get", "ZAI_API_KEY", "--", "bun", "run", "scripts/collect-quota.ts"]],
   ["build:allowance", ["bun", "run", "scripts/build-allowance.ts"]],
-  ["derive:credit-value", ["bun", "run", "scripts/derive-credit-value.ts"]],
   ["build:dataset", ["bun", "run", "scripts/build-dataset.ts"]],
-  ["build:third-party", ["bun", "run", "scripts/build-third-party.ts"]],
-  ["estimate:catalog", ["bun", "run", "scripts/estimate-catalog.ts"]],
-  ["collect:openrouter", ["bun", "run", "scripts/collect-openrouter.ts"]],
-  ["collect:official", ["bun", "run", "scripts/collect-official.ts"]],
   ["build", ["bun", "run", "build"]],
   ["verify:site", ["bun", "run", "scripts/verify-site.ts"]],
+  ["verify:visual", ["bun", "run", "scripts/verify-visual.ts"]],
   ["verify:data", ["bun", "run", "scripts/verify-data.ts"]],
   ["verify:public", ["bun", "run", "scripts/verify-public.ts"]],
 ];
