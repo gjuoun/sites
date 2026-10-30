@@ -32,7 +32,7 @@
         "stale": null,
         "badge": null,
         "windows": [],
-        "measured_at": "2026-10-30T17:21:50.018Z",
+        "measured_at": "2026-10-30T17:25:45.407Z",
         "source": "quota windows (codexbar) x usage_logs priced at list; allowance.json"
       },
       "usd_per_b": null,
@@ -44,7 +44,7 @@
         "p90_ttft_ms": 8441,
         "p50_output_tps": 201.41116100064144,
         "n": 11743,
-        "measured_at": "2026-10-30T17:21:50.018Z",
+        "measured_at": "2026-10-30T17:25:45.407Z",
         "source": "usage_logs(31d) rows=11743"
       },
       "traffic_7d": {
@@ -71,7 +71,7 @@
           "p50_output_tps": 226.15219721329044,
           "limit_usd_month": null,
           "limit_reason": "this plan publishes no per-model limit",
-          "measured_at": "2026-10-30T17:21:50.018Z",
+          "measured_at": "2026-10-30T17:25:45.407Z",
           "source": "usage_logs(7d) rows=3147"
         },
         {
@@ -85,7 +85,7 @@
           "p50_output_tps": 185.60460652591172,
           "limit_usd_month": null,
           "limit_reason": "this plan publishes no per-model limit",
-          "measured_at": "2026-10-30T17:21:50.018Z",
+          "measured_at": "2026-10-30T17:25:45.407Z",
           "source": "usage_logs(7d) rows=3147"
         },
         {
@@ -99,7 +99,7 @@
           "p50_output_tps": 42.97994269340974,
           "limit_usd_month": null,
           "limit_reason": "this plan publishes no per-model limit",
-          "measured_at": "2026-10-30T17:21:50.018Z",
+          "measured_at": "2026-10-30T17:25:45.407Z",
           "source": "usage_logs(7d) rows=3147"
         },
         {
@@ -113,7 +113,7 @@
           "p50_output_tps": null,
           "limit_usd_month": null,
           "limit_reason": "pooled row: each model is under 1% of the lane's tokens, so it has no single p50",
-          "measured_at": "2026-10-30T17:21:50.018Z",
+          "measured_at": "2026-10-30T17:25:45.407Z",
           "source": "usage_logs(7d) rows=3147"
         }
       ],
@@ -136,7 +136,7 @@
         "low_priced_share",
         "excluded_from_ranking"
       ],
-      "measured_at": "2026-10-30T17:21:50.018Z",
+      "measured_at": "2026-10-30T17:25:45.407Z",
       "source": "usage_logs(31d) + quota windows + published price"
     },
     {
@@ -252,7 +252,7 @@
             "confidence": "normal"
           }
         ],
-        "measured_at": "2026-10-30T17:21:50.018Z",
+        "measured_at": "2026-10-30T17:25:45.407Z",
         "source": "quota windows (codexbar) x usage_logs priced at list; allowance.json"
       },
       "usd_per_b": 4.834326416676377,
@@ -264,7 +264,7 @@
         "p90_ttft_ms": 7727,
         "p50_output_tps": 178.13333333333333,
         "n": 27701,
-        "measured_at": "2026-10-30T17:21:50.018Z",
+        "measured_at": "2026-10-30T17:25:45.407Z",
         "source": "usage_logs(31d) rows=27701"
       },
       "traffic_7d": {
@@ -291,7 +291,7 @@
           "p50_output_tps": 165.1705565529623,
           "limit_usd_month": 80,
           "limit_reason": null,
-          "measured_at": "2026-10-30T17:21:50.018Z",
+          "measured_at": "2026-10-30T17:25:45.407Z",
           "source": "usage_logs(7d) rows=10310"
         },
         {
@@ -305,7 +305,7 @@
           "p50_output_tps": 77.26204465334901,
           "limit_usd_month": 60,
           "limit_reason": null,
-          "measured_at": "2026-10-30T17:21:50.018Z",
+          "measured_at": "2026-10-30T17:25:45.407Z",
           "source": "usage_logs(7d) rows=10310"
         }
       ],
@@ -326,7 +326,7 @@
       "flags": [
         "low_fit"
       ],
-      "measured_at": "2026-10-30T17:21:50.018Z",
+      "measured_at": "2026-10-30T17:25:45.407Z",
       "source": "usage_logs(31d) + quota windows + published price"
     },
     {
@@ -346,7 +346,7 @@
         "allowance_vendor_reason": "no vendor-reported pool",
         "allowance_derived_usd": 69.77592349999999,
         "fee_per_cycle_usd": 12.887671232876713,
-        "fee_basis": "annual fee prorated to the cycle (365 days)",
+        "fee_basis": "monthly fee prorated to the 7-day cycle",
         "assumed_share": 0,
         "tokens_per_cycle": 2063779400,
         "allowance_usd_per_cycle": 106.66143899999997,
@@ -427,7 +427,7 @@
             "confidence": "low"
           }
         ],
-        "measured_at": "2026-10-30T17:21:50.018Z",
+        "measured_at": "2026-10-30T17:25:45.407Z",
         "source": "quota windows (codexbar) x usage_logs priced at list; allowance.json"
       },
       "usd_per_b": 6.244694192061764,
@@ -439,7 +439,7 @@
         "p90_ttft_ms": 10087,
         "p50_output_tps": 75.18007202881152,
         "n": 4639,
-        "measured_at": "2026-10-30T17:21:50.018Z",
+        "measured_at": "2026-10-30T17:25:45.407Z",
         "source": "usage_logs(31d) rows=4639"
       },
       "traffic_7d": {
@@ -466,7 +466,7 @@
           "p50_output_tps": 79.48476280238769,
           "limit_usd_month": null,
           "limit_reason": "this plan publishes no per-model limit",
-          "measured_at": "2026-10-30T17:21:50.018Z",
+          "measured_at": "2026-10-30T17:25:45.407Z",
           "source": "usage_logs(7d) rows=4639"
         },
         {
@@ -480,7 +480,7 @@
           "p50_output_tps": 53.5079662979675,
           "limit_usd_month": null,
           "limit_reason": "this plan publishes no per-model limit",
-          "measured_at": "2026-10-30T17:21:50.018Z",
+          "measured_at": "2026-10-30T17:25:45.407Z",
           "source": "usage_logs(7d) rows=4639"
         }
       ],
@@ -501,7 +501,7 @@
       "flags": [
         "no_fit:negative_price"
       ],
-      "measured_at": "2026-10-30T17:21:50.018Z",
+      "measured_at": "2026-10-30T17:25:45.407Z",
       "source": "usage_logs(31d) + quota windows + published price"
     },
     {
@@ -570,7 +570,7 @@
             "confidence": "normal"
           }
         ],
-        "measured_at": "2026-10-30T17:21:50.018Z",
+        "measured_at": "2026-10-30T17:25:45.407Z",
         "source": "quota windows (codexbar) x usage_logs priced at list; allowance.json"
       },
       "usd_per_b": 28.506257113098325,
@@ -582,7 +582,7 @@
         "p90_ttft_ms": 9473,
         "p50_output_tps": 146.8235294117647,
         "n": 2577,
-        "measured_at": "2026-10-30T17:21:50.018Z",
+        "measured_at": "2026-10-30T17:25:45.407Z",
         "source": "usage_logs(31d) rows=2577"
       },
       "traffic_7d": {
@@ -609,7 +609,7 @@
           "p50_output_tps": 152.2683655593195,
           "limit_usd_month": null,
           "limit_reason": "this plan publishes no per-model limit",
-          "measured_at": "2026-10-30T17:21:50.018Z",
+          "measured_at": "2026-10-30T17:25:45.407Z",
           "source": "usage_logs(7d) rows=2577"
         },
         {
@@ -623,7 +623,7 @@
           "p50_output_tps": 155.1246537396122,
           "limit_usd_month": null,
           "limit_reason": "this plan publishes no per-model limit",
-          "measured_at": "2026-10-30T17:21:50.018Z",
+          "measured_at": "2026-10-30T17:25:45.407Z",
           "source": "usage_logs(7d) rows=2577"
         },
         {
@@ -637,7 +637,7 @@
           "p50_output_tps": 71.59931068986603,
           "limit_usd_month": null,
           "limit_reason": "this plan publishes no per-model limit",
-          "measured_at": "2026-10-30T17:21:50.018Z",
+          "measured_at": "2026-10-30T17:25:45.407Z",
           "source": "usage_logs(7d) rows=2577"
         },
         {
@@ -651,7 +651,7 @@
           "p50_output_tps": 39.768215614602674,
           "limit_usd_month": null,
           "limit_reason": "this plan publishes no per-model limit",
-          "measured_at": "2026-10-30T17:21:50.018Z",
+          "measured_at": "2026-10-30T17:25:45.407Z",
           "source": "usage_logs(7d) rows=2577"
         }
       ],
@@ -672,10 +672,10 @@
       "flags": [
         "low_fit"
       ],
-      "measured_at": "2026-10-30T17:21:50.018Z",
+      "measured_at": "2026-10-30T17:25:45.407Z",
       "source": "usage_logs(31d) + quota windows + published price"
     }
   ],
-  "measured_at": "2026-10-30T17:21:50.018Z",
+  "measured_at": "2026-10-30T17:25:45.407Z",
   "source": "build-dataset"
 }

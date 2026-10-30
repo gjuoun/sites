@@ -2,8 +2,8 @@
 /**
  * data/allowance.json: each lane's usage allowance in list dollars per billing cycle (src/data/allowance.ts).
  * Reads quota.json (windows and any vendor-reported pool), the raw usage export (every row of the lane, with
- * model and tokens), usage.json (the lane's measured mix), models.json (list prices, aliases) and catalog.json
- * (annual price, for a plan whose billing period is a year). Writes nothing else.
+ * model and tokens), usage.json (the lane's measured mix), models.json (list prices, aliases), plans.json (fees and
+ * the per-model-limit plan) and opencode-go.json (that plan's published per-model limits). Writes nothing else.
  */
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -12,8 +12,11 @@ import { allowanceFileSchema, analyzeWindow, bindingWindow, cycleOf, modelPerB, 
 import { pooledMix, type RefPrice } from "../src/data/estimate";
 import { perModelAllowance, pageLimitsFor, limitOfUpstream, type PageDoc } from "../src/data/per-model-limit";
 import { averagePrice } from "../src/data/peak-offpeak";
-import { LMC_CONTEXT_LONG, LMC_CONTEXT_SHORT } from "../src/data/context";
 import { nextSnapshot, resolvePublished, snapshotFileSchema, type Stable } from "../src/data/published";
+
+/** The two prompt lengths the model table anchors at; they are display constants, not measurements. */
+const LMC_CONTEXT_SHORT = 100_000;
+const LMC_CONTEXT_LONG = 350_000;
 
 const APP = resolve(import.meta.dir, "..");
 const dataDir = join(APP, "data");
@@ -23,9 +26,8 @@ const quota = read("quota.json");
 const usage = read("usage.json");
 const models = read("models.json");
 const plans = read("plans.json");
-// the official per-model limits of OpenCode Go and Go Plus (scripts/collect-opencode-go.ts), r53
+// the official per-model limits of OpenCode Go and Go Plus, curated from the plan's own page (r53)
 const goDocs = read("opencode-go.json") as PageDoc;
-const catalog = read("catalog.json");
 const rawDir = join(dataDir, "raw", "usage");
 const latest = readdirSync(rawDir).filter((f) => f.endsWith(".json")).sort().at(-1);
 if (!latest) throw new Error("no raw usage export; run collect:usage first");
@@ -92,9 +94,6 @@ const computed = LANES.map((lane) => {
   const obs = quota.observations.find((o: any) => o.lane === lane);
   const plan = plans.plans.find((p: any) => p.plan_id === lane);
   const fee: number | null = plan?.price_month_usd ?? null;
-  const catRow = catalog.rows.find((r: any) => r.measured_lane === lane);
-  const annual: number | null = catRow?.price_annual_usd ?? null;
-  const published: number | null = catRow?.published_allowance_usd ?? null;
   const u = usage.lanes.find((x: any) => x.lane === lane);
   const mix = pooledMix([{ tokens: u.tokens }]);
   const base = {
@@ -136,15 +135,16 @@ const computed = LANES.map((lane) => {
   const b = bindingWindow(analyses);
   const vendor = vendorAllowance(obs?.vendor_pool ?? null, monthly);
 
-  // the fee of one cycle: the monthly fee when the cycle is the monthly window; for a yearly plan, the annual fee prorated to the cycle
-  const feeBasis = cycle.billed ? "monthly fee" : annual !== null ? "annual fee prorated to the cycle (365 days)" : null;
-  const feePerCycle = cycle.billed ? fee : annual !== null ? annual * (cycle.minutes / (365 * 1440)) : null;
+  // the fee of one cycle: the monthly fee when the cycle is the billed month, otherwise the monthly fee prorated over the cycle's days
+  const cycleDays = cycle.minutes / 1440;
+  const feeBasis = cycle.billed ? "monthly fee" : fee !== null ? "monthly fee prorated to the " + Number(cycleDays.toFixed(2)) + "-day cycle" : null;
+  const feePerCycle = fee !== null ? (cycle.billed ? fee : (fee * cycleDays) / 30) : null;
 
   if (!b) return empty("no usable window: " + analyses.map((w) => w.window + " " + w.status).join(", "), { windows, fee_per_cycle_usd: feePerCycle, fee_basis: feeBasis });
 
   // r53: a plan whose monthly limit is set per model (OpenCode Go) takes its allowance from the official limits of the models
   // carrying the tokens in the monthly window. The derived figure from the quota windows is kept only for comparison.
-  const perModelPlan: string | null = catRow?.per_model_limit_plan ?? null;
+  const perModelPlan: string | null = plan?.per_model_limit_plan ?? null;
   let perModel: { rule: "single_model" | "weighted"; main_model: string | null; usd: number; blend_per_token: number; parts: Array<{ model: string; share: number; limit_usd: number | null }> } | null = null;
   if (perModelPlan) {
     if (!monthly || monthly.allowance_usd_cycle === null || monthly.tokens <= 0) {
@@ -172,8 +172,8 @@ const computed = LANES.map((lane) => {
 
   const derived = b.allowance_usd_cycle as number;
   // the published figure is the allowance; else a matching dashboard pool; else the derived figure. All are recorded.
-  const chosen = perModel ? perModel.usd : (published ?? vendor.usd ?? derived);
-  const allowanceBasis = perModel ? (perModel.rule === "single_model" ? "vendor_published_per_model" : "vendor_published_weighted") : published !== null ? "vendor_published" : vendor.usd !== null ? "vendor_reported" : "derived";
+  const chosen = perModel ? perModel.usd : (vendor.usd ?? derived);
+  const allowanceBasis = perModel ? (perModel.rule === "single_model" ? "vendor_published_per_model" : "vendor_published_weighted") : vendor.usd !== null ? "vendor_reported" : "derived";
   // a per-model plan: the tokens its allowance buys at the measured blend of the monthly window (r53)
   const tokensCycle = perModel ? (perModel.usd / perModel.blend_per_token) : (b.tokens_cycle as number);
   const measuredPerB = feePerCycle !== null ? feePerCycle / (tokensCycle / 1e9) : null;
@@ -189,7 +189,7 @@ const computed = LANES.map((lane) => {
     allowance_usd_per_cycle: chosen,
     allowance_basis: allowanceBasis,
     per_model: perModel ? { rule: perModel.rule, main_model: perModel.main_model, usd: perModel.usd, blend_usd_per_b: perModel.blend_per_token * 1e9, derived_usd: derived, parts: perModel.parts } : null,
-    allowance_published_usd: published,
+    allowance_published_usd: null,
     allowance_vendor_usd: vendor.usd,
     allowance_vendor_reason: vendor.reason,
     allowance_derived_usd: derived,
