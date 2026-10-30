@@ -20,8 +20,8 @@ const installLinux = `mkdir -p ~/.local/share/fonts && unzip -o ${ZIP_NAME} -d ~
       </p>
       <h2 class="mt-2 mb-[0.7rem] text-[clamp(1.7rem,3.2vw,2.4rem)] font-bold leading-[1.08] tracking-[-0.025em] text-balance">Eight faces, one zip</h2>
       <p class="my-[1em] max-w-[56ch] text-[clamp(1.05rem,1.7vw,1.3rem)] text-foreground/75">
-        Qu Black Mono and Qu Black Sans, four styles each, plus <code class="font-mono border border-border bg-[color-mix(in_srgb,var(--border)_8%,transparent)] px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-chart-3">OFL.txt</code>,
-        <code class="font-mono border border-border bg-[color-mix(in_srgb,var(--border)_8%,transparent)] px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-chart-3">NOTICE.md</code> and a README. Free for commercial use; redistribution
+        Qu Black Mono and Qu Black Sans, four styles each, plus <code class="font-mono border border-border bg-[color-mix(in_srgb,var(--border)_8%,transparent)] px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-yellow">OFL.txt</code>,
+        <code class="font-mono border border-border bg-[color-mix(in_srgb,var(--border)_8%,transparent)] px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-yellow">NOTICE.md</code> and a README. Free for commercial use; redistribution
         keeps the licence.
       </p>
     </div>
@@ -42,18 +42,18 @@ const installLinux = `mkdir -p ~/.local/share/fonts && unzip -o ${ZIP_NAME} -d ~
           <ul class="m-0 grid list-none gap-[0.35rem] p-0 text-[0.8rem] text-foreground/75">
             <li>
               <strong class="font-mono text-[0.78rem] text-foreground">TTF</strong> — system install
-              (macOS <code class="font-mono border border-border bg-[color-mix(in_srgb,var(--border)_8%,transparent)] px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-chart-3">~/Library/Fonts</code>, Windows double-click, Linux
-              <code class="font-mono border border-border bg-[color-mix(in_srgb,var(--border)_8%,transparent)] px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-chart-3">fc-cache</code>)
+              (macOS <code class="font-mono border border-border bg-[color-mix(in_srgb,var(--border)_8%,transparent)] px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-yellow">~/Library/Fonts</code>, Windows double-click, Linux
+              <code class="font-mono border border-border bg-[color-mix(in_srgb,var(--border)_8%,transparent)] px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-yellow">fc-cache</code>)
             </li>
             <li>
               <strong class="font-mono text-[0.78rem] text-foreground">TTC</strong> —
-              <code class="font-mono border border-border bg-[color-mix(in_srgb,var(--border)_8%,transparent)] px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-chart-3">QuBlackMono.ttc</code> / <code class="font-mono border border-border bg-[color-mix(in_srgb,var(--border)_8%,transparent)] px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-chart-3">QuBlackSans.ttc</code>:
+              <code class="font-mono border border-border bg-[color-mix(in_srgb,var(--border)_8%,transparent)] px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-yellow">QuBlackMono.ttc</code> / <code class="font-mono border border-border bg-[color-mix(in_srgb,var(--border)_8%,transparent)] px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-yellow">QuBlackSans.ttc</code>:
               four faces per file, the smaller bundle
             </li>
             <li>
               <strong class="font-mono text-[0.78rem] text-foreground">WOFF2</strong> —
-              <code class="font-mono border border-border bg-[color-mix(in_srgb,var(--border)_8%,transparent)] px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-chart-3">@font-face</code> self-hosting; WOFF2 only, no WOFF1 and no OTF
-              (the outlines are <code class="font-mono border border-border bg-[color-mix(in_srgb,var(--border)_8%,transparent)] px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-chart-3">glyf</code>)
+              <code class="font-mono border border-border bg-[color-mix(in_srgb,var(--border)_8%,transparent)] px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-yellow">@font-face</code> self-hosting; WOFF2 only, no WOFF1 and no OTF
+              (the outlines are <code class="font-mono border border-border bg-[color-mix(in_srgb,var(--border)_8%,transparent)] px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-yellow">glyf</code>)
             </li>
           </ul>
         </div>

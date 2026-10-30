@@ -159,10 +159,75 @@ describe("the app keeps no stock copy and no theme of its own", () => {
     expect(base).toContain("themeInitScript");
   });
 
+  test("the inline highlight is painted with the theme's one yellow", () => {
+    const chips: string[] = [];
+    for (const file of codeFiles) {
+      for (const match of read(file).matchAll(/<code\b[^>]*class="([^"]*)"/g)) chips.push(match[1] as string);
+    }
+    expect(chips.length).toBeGreaterThan(10);
+    for (const classes of chips) {
+      // No chip takes its ink from a chart-ramp colour any more.
+      expect(classes).not.toContain("text-chart-");
+      // The block command lines keep the foreground ink; every inline highlight is the theme's yellow.
+      if (!classes.includes("text-foreground")) expect(classes).toContain("text-yellow");
+    }
+  });
+
   test("the theme package is a workspace dependency", () => {
     const pkg = JSON.parse(read(join(srcRoot, "../package.json"))) as {
       dependencies?: Record<string, string>;
     };
     expect(pkg.dependencies?.[PACKAGE]).toStartWith("workspace:");
+  });
+});
+
+// Declared exception, 2026-10-30: the inline-code ink is the theme's yellow. On the dark canvas it is
+// 11.8:1, but on the light paper the theme's yellow is 1.12:1 — far below AA. The site is dark by
+// default and light is a reader's choice; the number is pinned here (and in the pull request) instead of
+// quietly swapping the colour, so any palette move shows up as a red test.
+describe("the yellow inline ink, and its declared light-mode contrast exception", () => {
+  const themeCss = read(
+    join(srcRoot, "../../../packages/bigface-business-ui/src/themes/business.css"),
+  );
+  const tokens = (selector: string) => {
+    const at = themeCss.indexOf(selector + " {");
+    const body = at < 0 ? "" : themeCss.slice(at + selector.length + 2).split("}")[0] || "";
+    return Object.fromEntries(
+      [...body.matchAll(/(--theme-[\w]+):\s*(#[0-9a-fA-F]{3,8})/g)].map((match) => [match[1], match[2] as string]),
+    ) as Record<string, string>;
+  };
+  const luminance = (colour: string) => {
+    const channels = [1, 3, 5].map((i) => Number.parseInt(colour.slice(i, i + 2), 16) / 255);
+    const linear = channels.map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
+    return 0.2126 * (linear[0] as number) + 0.7152 * (linear[1] as number) + 0.0722 * (linear[2] as number);
+  };
+  const ratio = (a: string, b: string) => {
+    const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x) as [number, number];
+    return (hi + 0.05) / (lo + 0.05);
+  };
+  // The chip backdrop: 8% of the border colour over the page.
+  const chip = (theme: Record<string, string>) => {
+    const channels = [1, 3, 5].map((i) => {
+      const border = Number.parseInt((theme["--theme-border"] as string).slice(i, i + 2), 16) / 255;
+      const bg = Number.parseInt((theme["--theme-bg"] as string).slice(i, i + 2), 16) / 255;
+      return Math.round((border * 0.08 + bg * 0.92) * 255)
+        .toString(16)
+        .padStart(2, "0");
+    });
+    return "#" + channels.join("");
+  };
+
+  test("dark: the yellow ink clears AA on the chip", () => {
+    const theme = tokens('[data-mode="dark"]');
+    expect(theme["--theme-yellow"]).toBe("#ffeb3b");
+    expect(ratio(theme["--theme-yellow"] as string, chip(theme))).toBeGreaterThan(7);
+  });
+
+  test("light: the declared exception — 1.12:1 on the paper chip, pinned", () => {
+    const theme = tokens(':root, [data-mode="light"]');
+    expect(theme["--theme-yellow"]).toBe("#ffeb3b");
+    const measured = ratio(theme["--theme-yellow"] as string, chip(theme));
+    expect(measured).toBeLessThan(4.5);
+    expect(measured).toBeCloseTo(1.12, 2);
   });
 });

@@ -21,6 +21,9 @@ const files = walk(srcRoot)
   .filter((file) => !EXEMPT.has(file.rel));
 
 // Tailwind's own palette: with the theme in charge, none of these names is a colour on the page.
+// The one exception is the theme's own yellow role (palette #ffeb3b), which happens to share Tailwind's
+// scale name; it is a theme token, so it stays allowed.
+const THEME_TOKENS = new Set(["yellow"]);
 const DEFAULT_PALETTE = new Set([
   "red", "orange", "amber", "yellow", "lime", "green", "emerald", "teal", "cyan", "sky",
   "blue", "indigo", "violet", "purple", "fuchsia", "pink", "rose",
@@ -52,7 +55,8 @@ describe("colour utilities speak the theme's names", () => {
     for (const file of files) {
       const text = readFileSync(file.path, "utf8");
       for (const match of text.matchAll(COLOUR_UTILITY)) {
-        if (DEFAULT_PALETTE.has(match[1] as string)) offenders.push(file.rel + ": " + match[0]);
+        const name = match[1] as string;
+        if (DEFAULT_PALETTE.has(name) && !THEME_TOKENS.has(name)) offenders.push(file.rel + ": " + match[0]);
       }
     }
     expect(offenders).toEqual([]);
