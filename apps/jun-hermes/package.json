@@ -6,6 +6,8 @@
   "description": "The jun-hermes OAuth verification site: static pages, served as written",
   "scripts": {
     "tokens:check": "bun run scripts/check-tokens.mjs",
-    "build": "bun run tokens:check && bun run scripts/build.mjs"
+    "probe": "bun run scripts/probe.mjs",
+    "build": "bun run tokens:check && bun run scripts/build.mjs",
+    "test": "bun run build && bun run probe"
   }
 }
