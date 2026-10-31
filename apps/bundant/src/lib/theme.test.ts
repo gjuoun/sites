@@ -142,7 +142,7 @@ describe("both shells carry the theme contract", () => {
     expect(base).toContain('data-theme="bigface"');
     expect(base).toContain('data-mode="dark"');
     expect(base).toContain("themeInitScript");
-    expect(read(join(srcRoot, "components/Nav.astro"))).toContain("ThemeToggle");
+    expect(read(join(srcRoot, "components/Nav.tsx"))).toContain("BGThemeToggle");
   });
 
   test("the docs shell pins the theme, the mode and color-scheme before first paint", () => {
@@ -157,7 +157,8 @@ describe("both shells carry the theme contract", () => {
   });
 
   test("the toggle writes the package's mode key and follows data-mode", () => {
-    const toggle = read(join(srcRoot, "components/ThemeToggle.astro"));
+    // The toggle is the family's: apps/bigface owns it, this app mounts it as an island.
+    const toggle = read(join(srcRoot, "../../bigface/src/components/bg/theme-toggle.tsx"));
     expect(toggle).toContain("MODE_STORAGE_KEY");
     expect(toggle).toContain('id="theme-toggle"');
     expect(toggle).toContain("aria-pressed");

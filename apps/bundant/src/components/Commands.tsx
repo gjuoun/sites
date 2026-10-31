@@ -1,0 +1,57 @@
+import type { ComponentProps } from "react";
+import { ArrowUpRight, Search } from "lucide-react";
+import { CommandExplorer } from "@/components/CommandExplorer";
+import { commandStats } from "@/lib/command-stats";
+import { LABEL, PAGE } from "@/lib/layout";
+import { withBase } from "@/lib/utils";
+
+// The explorer is an island, so it receives markup, not a grammar: the highlighted snippets are
+// computed once at build in the page and handed in.
+type ExplorerCommands = ComponentProps<typeof CommandExplorer>["commands"];
+
+export interface BGCommandsProps {
+  commands: ExplorerCommands;
+  highlighted: Record<string, { usage: string; example: string }>;
+}
+
+export function BGCommands({ commands, highlighted }: BGCommandsProps) {
+  const { commands: commandCount, flags: flagCount } = commandStats(commands as Parameters<typeof commandStats>[0]);
+  return (
+    <section id="commands" className="border-b border-border py-16 md:py-24">
+      <div className={PAGE}>
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div className="max-w-2xl">
+            <p className={LABEL}>Commands</p>
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
+              Every command.
+              <br className="hidden sm:block" />
+              Every flag.
+            </h2>
+            <p className="mt-4 text-muted-foreground">
+              {commandCount} commands, {flagCount} flags, one binary. Search the list, open a command and read its full
+              usage, every flag and a runnable example.
+            </p>
+          </div>
+          <a
+            href={withBase("docs/cli/")}
+            className="inline-flex min-h-11 items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+          >
+            Full CLI reference
+            <ArrowUpRight className="size-4" />
+          </a>
+        </div>
+
+        <CommandExplorer commands={commands} highlighted={highlighted} />
+
+        <p className="mt-6 flex items-start gap-2 font-mono text-[11px] leading-relaxed text-muted-foreground">
+          <Search className="mt-px size-3.5 shrink-0" />
+          <span>
+            Captured from <span className="text-foreground">bundant --help</span> and
+            <span className="text-foreground"> bundant &lt;command&gt; --help</span> by
+            <span className="text-foreground"> scripts/capture-commands.mjs</span>. Nothing on this page is written by hand.
+          </span>
+        </p>
+      </div>
+    </section>
+  );
+}
