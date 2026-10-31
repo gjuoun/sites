@@ -1,4 +1,5 @@
 import { MONO, SANS } from "../../data/metrics.ts";
+import { BGHighlightCode } from "@sites/bigface/components/bg/highlight-code";
 
 // The claim this family exists for, rendered as a comparison rather than asserted as a number.
 const HAN = "汉国图一永口";
@@ -14,7 +15,7 @@ export function BGGridProof() {
           </p>
           <h2 className="mt-2 mb-[0.7rem] text-[clamp(1.7rem,3.2vw,2.4rem)] font-bold leading-[1.08] tracking-[-0.025em] text-balance">One hanzi is two ASCII cells</h2>
           <p className="my-[1em] max-w-[56ch] text-[clamp(1.05rem,1.7vw,1.3rem)] text-foreground/75">
-            Qu Black Mono is built on a 1000-unit Sarasa cell with <code className="font-mono border border-yellow/30 bg-yellow/22 px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-foreground">unitsPerEm</code> set to 833:
+            Qu Black Mono is built on a 1000-unit Sarasa cell with <BGHighlightCode>unitsPerEm</BGHighlightCode> set to 833:
             glyphs never move, the em shrinks, and the 1000-unit hanzi cell reads as 1.200em while the 500-unit ASCII cell
             reads as 0.600em.
           </p>
@@ -52,8 +53,8 @@ export function BGGridProof() {
               Qu Black Sans — proportional
             </p>
             <div className="text-[clamp(1.15rem,2.6vw,1.5rem)] leading-[1.6]">
-              中英混排时，比例家族让正文更自然：<code className="font-mono border border-yellow/30 bg-yellow/22 px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-foreground">className</code> 与{" "}
-              <code className="font-mono border border-yellow/30 bg-yellow/22 px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-foreground">app.pak</code> 仍然留在等宽家族里。
+              中英混排时，比例家族让正文更自然：<BGHighlightCode>className</BGHighlightCode> 与{" "}
+              <BGHighlightCode>app.pak</BGHighlightCode> 仍然留在等宽家族里。
             </div>
             <dl className="mt-4 mb-4 grid grid-cols-2 gap-px overflow-hidden rounded-[12px] border border-border" data-stat-grid>
               <div className="bg-card/80 px-3 py-2">
