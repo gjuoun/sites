@@ -30,7 +30,7 @@ export function BGThemeToggle({ defaultDark = true }: { defaultDark?: boolean })
     <button
       type="button"
       id="theme-toggle"
-      className="group inline-flex min-h-7 min-w-7 cursor-pointer items-center justify-center border border-border bg-card p-1 text-foreground hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-foreground"
+      className="group inline-flex min-h-7 min-w-7 cursor-pointer items-center justify-center text-foreground/75 transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-foreground"
       aria-label="Dark mode"
       aria-pressed={dark}
       onClick={() => {

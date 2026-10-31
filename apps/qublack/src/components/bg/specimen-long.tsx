@@ -1,5 +1,6 @@
 import { BGCopyButton } from "@sites/bigface/components/bg/copy-button";
 import { BGHighlightCode } from "@sites/bigface/components/bg/highlight-code";
+
 const SAMPLE = [
   "// one grid, two families",
   'import { render, surface } from "pocketjs";',
@@ -41,14 +42,16 @@ export function BGSpecimenLong() {
             </p>
           </div>
 
-          <div className="overflow-hidden rounded-[18px] border border-border bg-card/85">
-            <div className="flex items-center justify-between gap-4 px-3 pt-2 pb-2 font-mono text-[0.7rem]">
+          <div className="grid grid-rows-[min-content_1fr] overflow-hidden rounded-[20px] border border-border bg-card/85">
+            <div className="grid grid-flow-col grid-cols-[1fr_min-content] items-center gap-4 px-3 pt-2 pb-2 font-mono text-[0.7rem]">
               <span className="text-muted-foreground">counter.tsx</span>
               <BGCopyButton value={SAMPLE} />
             </div>
-            <pre className="m-0 overflow-x-auto rounded-[10px] border border-border bg-[color-mix(in_srgb,var(--card)_72%,transparent)] p-3 font-mono text-[0.82rem] leading-[1.7] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5]">
+
+            <pre className="overflow-x-auto border-t  border-border bg-[color-mix(in_srgb,var(--card)_72%,transparent)] p-3 font-mono text-[0.82rem] leading-[1.7] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5]">
               <code>{SAMPLE}</code>
             </pre>
+
           </div>
         </div>
       </div>

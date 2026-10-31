@@ -60,17 +60,17 @@ export function BGDownload({ sha256 }: BGDownloadProps) {
             <div className="grid gap-2">
               <div className="flex items-center gap-2 overflow-hidden rounded-[10px] border border-ring/40 bg-card/85 py-2 pr-2 pl-3">
                 <span className="font-mono text-[0.68rem] text-muted-foreground">macOS</span>
-                <BGHighlightCode className="min-w-0 flex-1 overflow-x-auto text-[0.72rem] whitespace-nowrap text-foreground">{installMac}</BGHighlightCode>
+                <BGHighlightCode className="min-w-0 flex-1 overflow-x-auto text-[0.72rem] whitespace-nowrap">{installMac}</BGHighlightCode>
                 <BGCopyButton value={installMac} aria-label="Copy the macOS install command" />
               </div>
               <div className="flex items-center gap-2 overflow-hidden rounded-[10px] border border-ring/40 bg-card/85 py-2 pr-2 pl-3">
                 <span className="font-mono text-[0.68rem] text-muted-foreground">Linux</span>
-                <BGHighlightCode className="min-w-0 flex-1 overflow-x-auto text-[0.72rem] whitespace-nowrap text-foreground">{installLinux}</BGHighlightCode>
+                <BGHighlightCode className="min-w-0 flex-1 overflow-x-auto text-[0.72rem] whitespace-nowrap">{installLinux}</BGHighlightCode>
                 <BGCopyButton value={installLinux} aria-label="Copy the Linux install command" />
               </div>
             </div>
             <p className="max-w-[68ch] mt-4 mb-1 font-mono text-[0.7rem] tracking-[0.12em] text-muted-foreground uppercase">sha256</p>
-            <BGHighlightCode className="block overflow-x-auto text-[0.68rem] break-all text-foreground/75">{sha256}</BGHighlightCode>
+            <BGHighlightCode className="inline overflow-x-auto text-[0.68rem] break-all">{sha256}</BGHighlightCode>
             <div className="mt-auto flex flex-wrap gap-2 pt-4">
               <BGButton tone="glow" href={RELEASE_URL}>Download v{VERSION}</BGButton>
               <BGButton tone="ghost" href="https://github.com/gjuoun/qublack">Source</BGButton>
