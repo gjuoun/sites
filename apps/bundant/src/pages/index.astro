@@ -1,25 +1,42 @@
 ---
 import Base from '@/layouts/Base.astro';
-import Nav from '@/components/Nav.astro';
-import Hero from '@/components/Hero.astro';
-import WhyAndHow from '@/components/WhyAndHow.astro';
-import Features from '@/components/Features.astro';
-import Commands from '@/components/Commands.astro';
-import Faq from '@/components/Faq.astro';
-import Footer from '@/components/Footer.astro';
+import { BGNav } from '@/components/Nav.tsx';
+import { BGHero } from '@/components/Hero.tsx';
+import { BGWhyAndHow } from '@/components/WhyAndHow.tsx';
+import { BGFeatures } from '@/components/Features.tsx';
+import { BGCommands } from '@/components/Commands.tsx';
+import { BGFaq } from '@/components/Faq.tsx';
+import { BGFooter } from '@/components/Footer.tsx';
+import commands from '@/data/commands.json';
+import { installCommands } from '@/lib/features';
+import { highlightHtml } from '@/lib/highlight';
+
+// Highlighted once at build: the islands receive markup, not a grammar, so Shiki never reaches
+// the client bundle. Both blocks are computed here because a React component cannot await.
+const highlighted: Record<string, { usage: string; example: string }> = {};
+for (const command of commands) {
+  highlighted[command.name] = {
+    usage: await highlightHtml(command.usage, 'bash'),
+    example: await highlightHtml(command.example, 'bash'),
+  };
+}
+const installHtml = await Promise.all(installCommands.map((command) => highlightHtml(command.command, 'bash')));
 ---
 
 <Base
   title="bundant — zero-downtime releases over SSH"
   description="Ship containers to any SSH host with docker or podman. Health-gated, zero-downtime swaps through kamal-proxy. No Kubernetes, no registry required."
 >
-  <Nav />
+  <!-- The interactive sections are islands; their leaves (the theme toggle, the explorer, the
+       terminal, the copy row, the FAQ list) are inside them, so one directive per section is the
+       smallest boundary this shape allows. -->
+  <BGNav client:load />
   <main>
-    <Hero />
-    <WhyAndHow />
-    <Features />
-    <Commands />
-    <Faq />
+    <BGHero client:load installCommands={installCommands} installHtml={installHtml} />
+    <BGWhyAndHow />
+    <BGFeatures />
+    <BGCommands client:load commands={commands} highlighted={highlighted} />
+    <BGFaq client:load />
   </main>
-  <Footer />
+  <BGFooter />
 </Base>

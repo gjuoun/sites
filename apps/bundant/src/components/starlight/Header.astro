@@ -1,7 +1,7 @@
 ---
 import Search from '@astrojs/starlight/components/Search.astro';
 import { asset } from "@/lib/assets";
-import ThemeToggle from '@/components/ThemeToggle.astro';
+import { BGThemeToggle } from '@sites/bigface/components/bg/theme-toggle';
 import { PAGE } from '@/lib/layout';
 
 const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
@@ -42,7 +42,7 @@ const links = [
 
     <div class="ms-auto flex min-w-0 items-center gap-2 md:shrink-0">
       <div class="flex min-w-0 [&>site-search]:contents"><Search /></div>
-      <ThemeToggle />
+      <BGThemeToggle client:load />
       <button
         type="button"
         class="group inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-border bg-card p-0 text-foreground hover:bg-muted aria-expanded:border-primary aria-expanded:text-primary md:hidden"
