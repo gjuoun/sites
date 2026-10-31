@@ -22,7 +22,7 @@ export function ThemeToggle() {
 			<button
 				type="button"
 				id="theme-toggle"
-				className="group inline-flex min-h-7 min-w-7 cursor-pointer items-center justify-center gap-[0.35rem] border border-border bg-card p-[0.3rem] text-foreground aria-pressed:bg-muted focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-solid focus-visible:outline-foreground max-[23.5rem]:px-[0.4rem] max-[23.5rem]:py-[0.15rem] max-[23.5rem]:text-xs"
+				className="group inline-flex min-h-7 min-w-7 cursor-pointer items-center justify-center gap-[0.35rem] text-foreground/75 transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-solid focus-visible:outline-foreground max-[23.5rem]:px-[0.4rem] max-[23.5rem]:py-[0.15rem] max-[23.5rem]:text-xs"
 				aria-pressed="false"
 				aria-label="Dark mode"
 			>
