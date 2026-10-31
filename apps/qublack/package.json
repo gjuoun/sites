@@ -13,7 +13,8 @@
     "fonts:web:check": "bash scripts/fetch-fonts.sh --check"
   },
   "dependencies": {
-    "@astrojs/react": "7.1.1",
+    "@astrojs/react": "7.1.2",
+    "@sites/bigface": "workspace:*",
     "@gjuoun/bigface-shadcn-ui": "workspace:*",
     "@tailwindcss/vite": "4.3.3",
     "@types/react": "19.3.0",

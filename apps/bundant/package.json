@@ -15,12 +15,13 @@
     "test": "bun test src"
   },
   "dependencies": {
-    "@astrojs/react": "4.4.2",
-    "@astrojs/starlight": "0.37.7",
+    "@astrojs/markdown-remark": "^7.3.0",
+    "@astrojs/react": "7.1.2",
+    "@astrojs/starlight": "0.42.8",
     "@gjuoun/bigface-shadcn-ui": "workspace:*",
     "@gjuoun/bigface-highlighter": "workspace:*",
     "@tailwindcss/vite": "4.3.3",
-    "astro": "5.18.2",
+    "astro": "7.4.2",
     "class-variance-authority": "0.7.1",
     "cn": "0.5.0",
     "lucide-react": "0.577.0",
@@ -31,9 +32,21 @@
     "rehype-mermaid": "3.0.0",
     "tailwindcss": "4.3.3"
   },
+"optionalDependencies": {
+    "@bruits/satteri-darwin-arm64": "0.10.5",
+    "@bruits/satteri-darwin-x64": "0.10.5",
+    "@bruits/satteri-linux-arm64-gnu": "0.10.5",
+    "@bruits/satteri-linux-arm64-musl": "0.10.5",
+    "@bruits/satteri-linux-x64-gnu": "0.10.5",
+    "@bruits/satteri-linux-x64-musl": "0.10.5",
+    "@bruits/satteri-win32-arm64-msvc": "0.10.5",
+    "@bruits/satteri-win32-x64-msvc": "0.10.5",
+    "@bruits/satteri-wasm32-wasi": "0.10.5"
+  },
   "devDependencies": {
-    "@astrojs/check": "0.9.11",
+    "@astrojs/check": "0.9.12",
     "@gjuoun/bigface-tokens": "workspace:*",
+    "@sites/bigface": "workspace:*",
     "@types/jsdom": "30.0.0",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
