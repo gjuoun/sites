@@ -1,6 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@gjuoun/bigface-shadcn-ui/components/ui/tabs";
 import type { HowToCard, HowToTab } from "../../data/how-to";
-import { BGButton } from "./button.tsx";
+import { BGButton } from "@sites/bigface/components/bg/button";
 
 // The pill row borrows bigface's install-tabs styling. Radix marks the selected trigger with
 // data-state="active" (not a bare data-active attribute), so the selected look keys off that.

@@ -11,6 +11,10 @@
 @source "../../../../packages/bigface-shadcn-ui/src/components/ui/card.tsx";
 @source "../../../../packages/bigface-shadcn-ui/src/components/ui/tabs.tsx";
 
+/* The BG family lives in apps/bigface and arrives through @sites/bigface, so its classes have to be
+   scanned from there — node_modules is skipped and this package link resolves into the sibling app. */
+@source "../../../bigface/src/components/bg";
+
 @theme inline {
   --font-sans: "Qu Black Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "Qu Black Mono", ui-monospace, "SF Mono", Menlo, monospace;
