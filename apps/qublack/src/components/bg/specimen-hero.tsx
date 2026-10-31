@@ -21,7 +21,7 @@ export function BGSpecimenHero({ version }: BGSpecimenHeroProps) {
       <div className="mx-auto w-[min(1180px,100%-2.5rem)] max-[760px]:w-[min(1180px,100%-1.75rem)] transition-[opacity,translate] duration-700 [.js_&]:translate-y-4 [.js_&]:opacity-0 [.js_&.in]:translate-y-0 [.js_&.in]:opacity-100" data-reveal>
         <div className="grid grid-cols-1 gap-4 min-[1180px]:grid-cols-2" data-two-column>
           <div>
-            <BGEyebrow>A modern font for your agent · v{version}</BGEyebrow>
+            <BGEyebrow className="my-[1em]">A modern font for your agent · v{version}</BGEyebrow>
 
             <h1 className="mt-[0.6rem] mb-[0.4rem] text-[clamp(3.2rem,7vw,5.2rem)] font-extrabold tracking-[-0.035em] leading-[1.08] text-balance">
               <span className="bg-linear-100/srgb from-chart-3 via-primary to-chart-2 [background-size:220%_100%] bg-clip-text text-transparent animate-hue">黢黑</span>
@@ -44,7 +44,7 @@ export function BGSpecimenHero({ version }: BGSpecimenHeroProps) {
               </BGButton>
             </div>
 
-            <dl className="mt-[1.5rem] mb-4 grid grid-cols-2 gap-px overflow-hidden rounded-[14px] border border-border min-[560px]:grid-cols-4">
+            <dl className="mt-6  grid grid-cols-2 gap-px overflow-hidden rounded-[14px] border border-border min-[560px]:grid-cols-4">
               {STATS.map((stat) => (
                 <div key={stat.label} className="bg-card/80 px-[0.8rem] py-[0.65rem]">
                   <dt className="font-mono text-[0.58rem] tracking-[0.08em] text-muted-foreground uppercase">{stat.label}</dt>
