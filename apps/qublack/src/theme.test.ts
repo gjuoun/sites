@@ -18,6 +18,10 @@ const walk = (dir: string): string[] =>
 const allFiles = walk(srcRoot);
 const isTest = (file: string) => /\.test\.(tsx?|css)$/.test(file);
 const codeFiles = allFiles.filter((file) => /\.(astro|tsx?|css)$/.test(file) && !isTest(file));
+// The BG family moved to apps/bigface and arrives through @sites/bigface. Its markup is compiled by
+// this app, so it counts as this app's source for the two checks below that look at what renders.
+const familyDir = join(srcRoot, "../../bigface/src/components/bg");
+const familyFiles = walk(familyDir).filter((file) => /\.tsx$/.test(file) && !isTest(file));
 const rel = (file: string) => file.slice(srcRoot.length + 1);
 const read = (file: string) => readFileSync(file, "utf8");
 
@@ -69,6 +73,7 @@ describe("the stylesheet is the package theme plus the site's fonts and motions"
       '@source "../../../../packages/bigface-shadcn-ui/src/components/ui/badge.tsx"',
       '@source "../../../../packages/bigface-shadcn-ui/src/components/ui/card.tsx"',
       '@source "../../../../packages/bigface-shadcn-ui/src/components/ui/tabs.tsx"',
+      '@source "../../../bigface/src/components/bg"',
       "@theme inline",
     ]);
   });
@@ -100,7 +105,7 @@ describe("the stylesheet is the package theme plus the site's fonts and motions"
 
 describe("every @source is real and matches what the site renders", () => {
   test("each @source path resolves from the stylesheet's own directory", () => {
-    expect(sourceLines.length).toBe(4);
+    expect(sourceLines.length).toBe(5);
     for (const line of sourceLines) expect(existsSync(join(stylesDir, line)), line).toBe(true);
   });
 
@@ -110,7 +115,7 @@ describe("every @source is real and matches what the site renders", () => {
       "../../../packages/bigface-shadcn-ui/src/components/ui",
     );
     const used = new Set<string>();
-    for (const file of codeFiles) {
+    for (const file of [...codeFiles, ...familyFiles]) {
       for (const match of read(file).matchAll(
         new RegExp(PACKAGE.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "/components/ui/([\\w-]+)", "g"),
       ))
@@ -128,7 +133,10 @@ describe("every @source is real and matches what the site renders", () => {
       ))
         queue.push(match[1] as string);
     }
-    const pinned = sourceLines.map((line) => (line.split("/").pop() as string).replace(/\.tsx$/, ""));
+    // The directory source scans the shared BG family; only the per-component lines pin the closure.
+    const pinned = sourceLines
+      .filter((line) => line.endsWith(".tsx"))
+      .map((line) => (line.split("/").pop() as string).replace(/\.tsx$/, ""));
     expect(pinned.sort()).toEqual([...closure].sort());
   });
 });
@@ -161,8 +169,8 @@ describe("the app keeps no stock copy and no theme of its own", () => {
 
   test("the inline highlight is painted with the theme's one yellow", () => {
     const chips: string[] = [];
-    for (const file of codeFiles) {
-      for (const match of read(file).matchAll(/<code\b[^>]*class="([^"]*)"/g)) chips.push(match[1] as string);
+    for (const file of [...codeFiles, ...familyFiles]) {
+      for (const match of read(file).matchAll(/<code\b[^>]*class(?:Name)?="([^"]*)"/g)) chips.push(match[1] as string);
     }
     expect(chips.length).toBeGreaterThan(10);
     for (const classes of chips) {
