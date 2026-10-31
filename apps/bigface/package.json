@@ -3,6 +3,9 @@
   "private": true,
   "type": "module",
   "version": "0.1.0",
+  "exports": {
+    "./components/bg/*": "./src/components/bg/*.tsx"
+  },
   "scripts": {
     "dev": "bun run scripts/sync-assets.ts && astro dev",
     "build": "bun run scripts/sync-assets.ts && astro build",
@@ -11,7 +14,7 @@
     "test": "bun test src"
   },
   "dependencies": {
-    "@astrojs/react": "7.1.0",
+    "@astrojs/react": "7.1.2",
     "@base-ui/react": "1.9.0",
     "@gjuoun/bigface-shadcn-ui": "workspace:*",
     "@gjuoun/bigface-tokens": "workspace:*",
@@ -19,7 +22,7 @@
     "@tailwindcss/vite": "4.3.3",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
-    "astro": "7.4.0",
+    "astro": "7.4.2",
     "class-variance-authority": "0.7.1",
     "cmdk": "1.1.1",
     "cn": "0.5.0",
@@ -42,7 +45,7 @@
     "vaul": "1.1.2"
   },
   "devDependencies": {
-    "@astrojs/check": "0.9.11",
+    "@astrojs/check": "0.9.12",
     "typescript": "5.9.3"
   }
 }
