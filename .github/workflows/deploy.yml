@@ -132,8 +132,8 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy apps/subsdaddy/dist/client --project-name subsdaddy --branch main
 
-  # Pages project jun-blog. Preview branch first (Question 3 = A): every deploy lands as a preview
-  # deployment, so production stays untouched until Jun approves; then change --branch to main.
+  # Pages project jun-blog. Deploys go to production: the preview-only phase ended 2026-10-31, and
+  # a preview deployment leaves jun.qqntt.com serving whatever production last received.
   gjuoun:
     needs: prep
     if: contains(needs.prep.outputs.apps, '"gjuoun"')
@@ -152,7 +152,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy apps/gjuoun/dist --project-name jun-blog --branch preview
+          command: pages deploy apps/gjuoun/dist --project-name jun-blog --branch main
 
   qublack:
     needs: prep
