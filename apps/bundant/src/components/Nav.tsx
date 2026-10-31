@@ -3,6 +3,7 @@ import { Github, Menu } from "lucide-react";
 import { withBase } from "@/lib/utils";
 import { asset } from "@/lib/assets";
 import { BGThemeToggle } from "@sites/bigface/components/bg/theme-toggle";
+import { BGGithubLink } from "@sites/bigface/components/bg/github-link";
 import { PAGE } from "@/lib/layout";
 
 const LINKS = [
@@ -49,15 +50,12 @@ export function BGNav() {
 
         <div className="flex items-center gap-1">
           <BGThemeToggle />
-          <a
+          <BGGithubLink
             href="https://github.com/gjuoun/bundant"
             target="_blank"
             rel="noreferrer"
-            className="hidden h-11 items-center gap-2 rounded-lg border border-border px-3 text-[0.8125rem] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground sm:inline-flex"
-          >
-            <Github className="size-4" />
-            <span>GitHub</span>
-          </a>
+            className="hidden sm:inline-flex"
+          />
           <button
             type="button"
             aria-label="Open menu"
