@@ -74,6 +74,7 @@ describe("the stylesheet is the package theme plus the site's fonts and motions"
       '@source "../../../../packages/bigface-shadcn-ui/src/components/ui/card.tsx"',
       '@source "../../../../packages/bigface-shadcn-ui/src/components/ui/tabs.tsx"',
       '@source "../../../bigface/src/components/bg"',
+      "@utility font-code",
       "@theme inline",
     ]);
   });
@@ -83,7 +84,10 @@ describe("the stylesheet is the package theme plus the site's fonts and motions"
   });
 
   test("no local layer, utility, variant, colour or shadow lives in the stylesheet", () => {
-    expect(css).not.toMatch(/@layer|@utility|@custom-variant/);
+    // One utility: font-code, because the shared BG family is set in it and Tailwind does not
+    // resolve a utility the consuming app never defines.
+    expect([...css.matchAll(/@utility\s+(\S+)/g)].map((m) => m[1])).toEqual(["font-code"]);
+    expect(css).not.toMatch(/@layer|@custom-variant/);
     expect(css).not.toMatch(/#[0-9a-fA-F]{3,8}\b|\b(rgb|hsl|oklch)\(/);
     expect(css).not.toContain("--color-");
   });
@@ -94,6 +98,7 @@ describe("the stylesheet is the package theme plus the site's fonts and motions"
     expect(keys.sort()).toEqual([
       "--animate-drift",
       "--animate-hue",
+      "--ease-bf",
       "--font-display",
       "--font-mono",
       "--font-sans",

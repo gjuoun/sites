@@ -2,16 +2,11 @@
 import "../styles/tailwind.css";
 import "../styles/qublack-fonts.css";
 import { DEFAULT_THEME, themeInitScript } from "@gjuoun/bigface-shadcn-ui/lib/themes";
-import { BGSiteFooter } from "@sites/bigface/components/bg/site-footer";
-import { BGSiteHeader } from "@sites/bigface/components/bg/site-header";
 import { BGAtmosphere } from "@sites/bigface/components/bg/atmosphere";
 import { BGToast } from "@sites/bigface/components/bg/toast";
-
-// The shell is the family's; only the nav labels are this site's.
-const NAV = [
-  { href: "/#howto", label: "How to use" },
-  { href: "/#download", label: "Download" },
-];
+import { BGThemeToggle } from "@sites/bigface/components/bg/theme-toggle";
+import { QuBlackHeader } from "../components/site-header.tsx";
+import { QuBlackFooter } from "../components/site-footer.tsx";
 import { REPO } from "../data/site.ts";
 
 interface Props {
@@ -57,20 +52,14 @@ const origin = Astro.site ? new URL(Astro.site).origin : "";
     class="m-0 flex min-h-screen flex-col relative isolate overflow-x-hidden bg-transparent text-foreground [&_button]:leading-normal [&_input]:leading-normal [&_select]:leading-normal [&_textarea]:leading-normal"
   >
     <BGAtmosphere />
-    <BGSiteHeader base={base} repo={REPO} links={NAV} brand="Qu Black" mark="黢" />
+    <QuBlackHeader base={base} repo={REPO}>
+      <BGThemeToggle client:load />
+    </QuBlackHeader>
     <main
       id="main"
       class="mx-auto w-[min(1180px,100%-2.5rem)] max-[760px]:w-[min(1180px,100%-1.75rem)] flex-1 pt-10 pb-24 max-[760px]:pt-6"
     ><slot /></main>
-    <BGSiteFooter
-      base={base}
-      repo={REPO}
-      ports={8}
-      links={[]}
-      brand="黢黑 Qu Black"
-      mark="黢"
-      pitch="Hanzi from Source Han Sans via Sarasa, Latin from Recursive Linear · SIL OFL 1.1 · GitHub"
-    />
+    <QuBlackFooter repo={REPO} />
     <BGToast />
 
     <script>

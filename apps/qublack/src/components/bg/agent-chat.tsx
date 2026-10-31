@@ -69,7 +69,7 @@ export function BGAgentChat() {
             )}
             data-message={message.role}
           >
-            <p className="max-w-[68ch] m-0 mb-[0.3rem] font-mono text-[0.62rem] tracking-[0.06em] text-foreground/75 uppercase">
+            <p className="max-w-[68ch] m-0 mb-[0.3rem] font-mono text-xs tracking-[0.06em] text-foreground/75 uppercase">
               {message.meta}
             </p>
             <div className={MD} data-message-body dangerouslySetInnerHTML={{ __html: renderMarkdown(message.markdown) }} />
@@ -86,11 +86,11 @@ export function BGAgentChat() {
           name="message"
           autoComplete="off"
           placeholder="问点什么 — try “fix the 断行”"
-          className="min-w-0 flex-1 rounded-full border border-ring/40 bg-background/60 px-[0.75rem] py-[0.46rem] font-mono text-[0.84rem] text-foreground placeholder:text-foreground/75 focus:border-primary focus:outline-none"
+          className="min-w-0 flex-1 rounded-full border border-ring/40 bg-background/60 px-[0.75rem] py-[0.46rem] font-mono text-xs text-foreground placeholder:text-foreground/75 focus:border-primary focus:outline-none"
         />
         <button
           type="submit"
-          className="cursor-pointer rounded-full border border-ring/40 bg-muted/10 px-[0.7rem] py-[0.4rem] font-mono text-[0.72rem] text-foreground/75 transition-colors duration-200 hover:border-primary hover:text-primary"
+          className="cursor-pointer rounded-full border border-ring/40 bg-muted/10 px-[0.7rem] py-[0.4rem] font-mono text-xs text-foreground/75 transition-colors duration-200 hover:border-primary hover:text-primary"
         >
           send
         </button>

@@ -15,6 +15,12 @@
    scanned from there — node_modules is skipped and this package link resolves into the sibling app. */
 @source "../../../bigface/src/components/bg";
 
+/* The family's eyebrow and command pill are set in font-code. This app defines the utility once, on
+   its own mono face, so a shared component keeps its typography wherever it is rendered. */
+@utility font-code {
+  font-family: var(--font-mono);
+}
+
 @theme inline {
   --font-sans: "Qu Black Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "Qu Black Mono", ui-monospace, "SF Mono", Menlo, monospace;
@@ -23,6 +29,8 @@
   /* The two motions the site keeps: the headline sweep and the drifting glows. */
   --animate-hue: bf-hue 12s cubic-bezier(0.22, 1, 0.36, 1) infinite alternate;
   --animate-drift: bf-drift 26s cubic-bezier(0.22, 1, 0.36, 1) infinite alternate;
+  /* The family's shared components transition on this ease; define it once here. */
+  --ease-bf: cubic-bezier(0.22, 1, 0.36, 1);
 
   @keyframes bf-hue {
     from {
