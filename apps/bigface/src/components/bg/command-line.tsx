@@ -1,0 +1,19 @@
+import { BGCopyButton } from "./copy-button.tsx";
+
+// The pill-shaped one-line command with a prompt sigil and a copy button.
+export interface BGCommandLineProps {
+  command: string;
+  copyLabel?: string;
+}
+
+export function BGCommandLine({ command, copyLabel }: BGCommandLineProps) {
+  return (
+    <div className="flex max-w-full items-center gap-3 overflow-hidden rounded-full border border-border bg-border/75 py-[0.6rem] pr-[0.7rem] pl-4 font-code text-[0.82rem]">
+      <span className="text-chart-5">❯</span>
+      <span className="min-w-0 flex-1 overflow-x-auto text-[0.72rem] leading-[1.4] whitespace-nowrap text-foreground [scrollbar-width:none] max-[1100px]:whitespace-normal [&::-webkit-scrollbar]:hidden">
+        {command}
+      </span>
+      <BGCopyButton value={command} aria-label={copyLabel} className="flex-none px-[0.72rem] py-[0.32rem]" />
+    </div>
+  );
+}
