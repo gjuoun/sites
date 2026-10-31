@@ -5,11 +5,12 @@
 	"version": "0.1.0",
 	"scripts": {
 		"dev": "astro dev",
-		"build": "astro build",
+		"build": "astro build && bun run scripts/publish.ts",
 		"preview": "astro preview",
 		"typecheck": "astro check",
 		"lint": "biome check $(find src scripts -type f \\( -name '*.ts' -o -name '*.tsx' \\))",
-		"test": "bun test src"
+		"test": "bun test src",
+		"publish": "bun run scripts/publish.ts"
 	},
 	"dependencies": {
 		"@astrojs/react": "7.1.2",
