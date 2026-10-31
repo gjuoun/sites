@@ -1,15 +1,14 @@
 ---
 import { BGBadge } from "../../components/bg/badge.tsx";
 import { BGInstallTabs } from "../../components/bg/install-tabs.tsx";
-import BGAppHero from "../../components/bg/app-hero.astro";
-import BGBreadcrumbs from "../../components/bg/breadcrumbs.astro";
-import BGCodeCard from "../../components/bg/code-card.astro";
-import BGDownloadCard from "../../components/bg/download-card.astro";
-import BGManualSteps from "../../components/bg/manual-steps.astro";
-import BGMarketCard from "../../components/bg/market-card.astro";
-import BGNextCard from "../../components/bg/next-card.astro";
-import BGSplit from "../../components/bg/split.astro";
-import BGSyntaxPreview from "../../components/bg/syntax-preview.astro";
+import { BGAppHero } from "../../components/bg/app-hero.tsx";
+import { BGBreadcrumbs } from "../../components/bg/breadcrumbs.tsx";
+import { BGCodeCard } from "../../components/bg/code-card.tsx";
+import { BGDownloadCard } from "../../components/bg/download-card.tsx";
+import { BGManualSteps } from "../../components/bg/manual-steps.tsx";
+import { BGMarketCard } from "../../components/bg/market-card.tsx";
+import { BGNextCard } from "../../components/bg/next-card.tsx";
+import { BGSyntaxPreview } from "../../components/bg/syntax-preview.tsx";
 import { installCommand, REPO, rawUrl, type Target, targets } from "../../data/targets.ts";
 import { themeFile } from "../../data/themes.ts";
 import Base from "../../layouts/Base.astro";
@@ -53,8 +52,14 @@ const installTabs = [
 
   <BGAppHero target={target} index={index} total={targets.length} levelLabel={levelLabel} />
 
-  <BGSplit split={Boolean(target.screenshot)}>
-    <section slot="media" class="mt-[1.8rem]" data-reveal>
+  <div
+    data-layout={target.screenshot ? "split" : "stack"}
+    class:list={[
+      Boolean(target.screenshot) && "lg:grid lg:grid-cols-[minmax(340px,45fr)_minmax(0,55fr)] lg:items-start lg:gap-8",
+    ]}
+  >
+    <div class:list={["min-w-0", Boolean(target.screenshot) && "lg:order-2"]} data-split="media">
+    <section class="mt-[1.8rem]" data-reveal>
       {target.screenshot ? (
         <figure class="m-0">
           <img
@@ -73,6 +78,14 @@ const installTabs = [
         <BGSyntaxPreview terminal={target.terminalPreview} />
       )}
     </section>
+    </div>
+    <div
+      class:list={[
+        "min-w-0",
+        Boolean(target.screenshot) && "lg:order-1 lg:[&>:first-child]:mt-[1.8rem] lg:[&>:first-child>h2:first-child]:mt-0",
+      ]}
+      data-split="aside"
+    >
 
     {target.market && <BGMarketCard label={target.market.label} url={target.market.url} name={target.name} />}
 
@@ -107,14 +120,15 @@ const installTabs = [
               href={`${base}/themes/${target.id}/${f.path}`}
               label={f.label}
               detail="download the file"
-              class="flex-1"
+              className="flex-1"
             />
             <a class="text-[0.75rem] whitespace-nowrap text-muted-foreground hover:text-primary" href={rawUrl(target.id, f.path)}>raw on GitHub</a>
           </li>
         ))}
       </ul>
     </section>
-  </BGSplit>
+    </div>
+  </div>
 
   <section data-reveal>
     <h2>What was checked</h2>

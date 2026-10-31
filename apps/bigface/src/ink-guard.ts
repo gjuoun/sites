@@ -43,7 +43,13 @@ export function findInklessBrightPlates(html: string): string[] {
     // An empty phrasing element paints no text: the status dot in a card, the traffic lights in the
     // fake window. It cannot carry an ink, so it is exempt. A dot that holds text still needs one.
     if (emptyPhrasing(html, at)) continue;
-    const tokens = (m[1] as string).split(/\s+/).filter(Boolean).map(splitVariant);
+    // React's serializer escapes quotes in an attribute value, so the same class string arrives as
+    // before:content-[&#x27;&#x27;] instead of before:content-['']. Decode before tokenizing: the rule
+    // is about the utilities, not about which renderer wrote the tag.
+    const tokens = decodeEntities(m[1] as string)
+      .split(/\s+/)
+      .filter(Boolean)
+      .map(splitVariant);
     // A fill and its ink share the same variant string. A stock dark: fill (dark:data-checked:bg-primary)
     // repeats a light fill in dark mode, so the ink of the same variant without dark: covers it.
     const inks = new Set(tokens.filter(([, u]) => INK.has(u)).map(([v]) => v));
@@ -62,6 +68,10 @@ export function findInklessBrightPlates(html: string): string[] {
   }
   return offenders;
 }
+
+const ENTITIES: Record<string, string> = { "&#x27;": "'", "&quot;": '"', "&#39;": "'", "&amp;": "&" };
+const decodeEntities = (value: string): string =>
+  value.replace(/&#x27;|&quot;|&#39;|&amp;/g, (entity) => ENTITIES[entity] as string);
 
 /** True for an <i>/<span> with nothing between its tags: a decorative dot, not a plate. */
 const emptyPhrasing = (html: string, at: number): boolean => {

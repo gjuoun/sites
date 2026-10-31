@@ -1,0 +1,40 @@
+import type * as React from "react";
+import { type Color, inkOn, sourceLabel } from "../../data/palette.ts";
+
+// A palette card: the colour plate (hex, the contrast its ink reaches, a "copy" hint) over the name
+// and where it comes from. Click copies the hex (data-copy → Base.astro's handler). The plate itself
+// is specimen data: the palette hex arrives inline, not as a theme role.
+export interface BGSwatchProps {
+  name: string;
+  color: Color;
+}
+
+export function BGSwatch({ name, color }: BGSwatchProps) {
+  // Whichever palette ink actually contrasts on this chip, and how much.
+  const { ink, ratio } = inkOn(color.hex);
+  const source = sourceLabel(color);
+  return (
+    <button
+      type="button"
+      className="group/sw flex h-full w-full cursor-pointer flex-col overflow-hidden rounded-[14px] border border-border bg-border/72 p-0 text-left leading-[inherit] text-inherit transition-[transform,border-color,box-shadow] duration-300 ease-bf hover:-translate-y-[3px] hover:border-primary/40 hover:shadow-[0_22px_40px_-30px_color-mix(in_srgb,var(--primary)_90%,transparent)]"
+      data-copy={color.hex}
+      data-swap="off"
+      aria-label={"Copy " + name + " " + color.hex}
+    >
+      <span
+        className="relative flex h-[82px] flex-[0_0_82px] items-end justify-between bg-(--c) px-[0.65rem] py-2 font-code text-[0.72rem] font-semibold text-(--ink)"
+        style={{ "--c": color.hex, "--ink": ink } as React.CSSProperties}
+      >
+        <span>{color.hex}</span>
+        <span className="ml-auto font-medium tracking-[0.02em] opacity-78">{ratio}:1</span>
+        <span className="text-[0.6rem] font-normal tracking-[0.08em] uppercase opacity-0 transition-opacity duration-200 group-hover/sw:opacity-70">
+          copy
+        </span>
+      </span>
+      <span className="flex flex-[1_1_auto] flex-col justify-center gap-[0.1rem] px-[0.65rem] pt-[0.55rem] pb-[0.6rem] text-[0.85rem]">
+        <strong className="font-semibold tracking-[-0.01em]">{name}</strong>
+        {source && <span className="font-code text-[0.64rem] leading-[1.4] break-all text-muted-foreground">{source}</span>}
+      </span>
+    </button>
+  );
+}
