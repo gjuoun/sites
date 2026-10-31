@@ -1,0 +1,26 @@
+---
+import { DEFAULT_THEME } from "@gjuoun/bigface-shadcn-ui/lib/themes";
+import "../styles/tailwind.css";
+
+interface Props {
+	title?: string;
+}
+const { title = "Web tools" } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+---
+
+<!doctype html>
+<html lang="en" data-theme={DEFAULT_THEME} data-mode="dark">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="description" content="web-tool metrics — every web.search and web.fetch call" />
+		<link rel="icon" href={`${base}/favicon.svg`} />
+		<title>{title}</title>
+	</head>
+	<body class="min-h-dvh bg-background text-foreground antialiased">
+		<div class="mx-auto flex w-[min(1180px,100%-2.5rem)] flex-col gap-6 py-8">
+			<slot />
+		</div>
+	</body>
+</html>

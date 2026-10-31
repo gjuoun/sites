@@ -1,0 +1,11 @@
+/* One stylesheet: Tailwind, the bigface component styles, and the sources the
+   scanner must see. Colours come from the business theme, never from this file. */
+@import "tailwindcss" source("../");
+@import "@gjuoun/bigface-shadcn-ui/styles.css";
+
+@source "../../../../packages/bigface-shadcn-ui/src/components/ui/button.tsx";
+@source "../../../../packages/bigface-shadcn-ui/src/components/ui/badge.tsx";
+@source "../../../../packages/bigface-shadcn-ui/src/components/ui/card.tsx";
+@source "../../../../packages/bigface-shadcn-ui/src/components/ui/table.tsx";
+@source "../../../../packages/bigface-shadcn-ui/src/components/ui/select.tsx";
+@source "../../../../packages/bigface-shadcn-ui/src/components/ui/chart.tsx";
