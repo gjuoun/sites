@@ -11,7 +11,7 @@ export const bgButtonVariants = cva("", {
   variants: {
     tone: {
       none: "",
-      glow: "h-auto bg-transparent px-[1.15rem] py-[0.7rem] text-[0.94rem] font-semibold no-underline bg-linear-135/srgb from-primary to-chart-2 text-primary-foreground shadow-[0_8px_26px_color-mix(in_srgb,var(--primary)_30%,transparent),inset_0_1px_0_color-mix(in_srgb,var(--foreground)_50%,transparent)] hover:-translate-y-0.5 hover:bg-transparent hover:from-chart-2 hover:to-chart-3 hover:text-primary-foreground hover:shadow-[0_14px_34px_color-mix(in_srgb,var(--primary)_40%,transparent),inset_0_1px_0_color-mix(in_srgb,var(--foreground)_60%,transparent)]",
+      glow: "h-auto bg-transparent px-[1.15rem] py-[0.7rem] text-[0.94rem] font-semibold no-underline bg-linear-135/srgb from-primary to-chart-2 text-primary-foreground shadow-[0_8px_26px_color-mix(in_srgb,var(--primary)_30%,transparent),inset_0_1px_0_color-mix(in_srgb,var(--background)_50%,transparent)] hover:-translate-y-0.5 hover:bg-transparent hover:from-chart-2 hover:to-chart-3 hover:text-primary-foreground hover:shadow-[0_14px_34px_color-mix(in_srgb,var(--primary)_40%,transparent),inset_0_1px_0_color-mix(in_srgb,var(--background)_60%,transparent)]",
       ghost:
         "h-auto border-border bg-muted/6 px-[1.15rem] py-[0.7rem] text-[0.94rem] font-semibold text-foreground no-underline hover:border-primary hover:bg-primary/8 hover:text-primary",
       copy: "h-auto cursor-pointer gap-1.5 rounded-full border-border bg-muted/8 px-[0.6rem] py-[0.35rem] font-code text-[0.72rem] font-normal tracking-[0.04em] text-muted-foreground hover:border-primary hover:bg-primary/12 hover:text-foreground [&.done]:border-chart-5 [&.done]:text-chart-5",

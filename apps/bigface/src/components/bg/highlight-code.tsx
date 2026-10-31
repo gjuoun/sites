@@ -13,7 +13,7 @@ export function BGHighlightCode({ className, children, ...props }: BGHighlightCo
   return (
     <code
       className={cn(
-        "font-mono bg-[light-dark(var(--foreground),var(--muted))] px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-yellow",
+        "font-mono bg-[light-dark(var(--foreground),var(--muted))]/80 px-[0.5em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-yellow",
         className,
       )}
       {...props}
