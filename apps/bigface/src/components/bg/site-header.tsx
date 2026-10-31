@@ -1,4 +1,4 @@
-import { BGButton } from "./button.tsx";
+import { BGGithubLink } from "./github-link.tsx";
 
 // Site header: skip link, brand, main nav. Sits on the page background at rest; the scroll script in
 // Base.astro adds .scrolled once the page moves, which gives it a hairline and a surface. Below 520px
@@ -26,7 +26,6 @@ export interface BGSiteHeaderProps {
   brand?: string;
   /** A text mark in place of the avatar image, for a site whose brand is a glyph. */
   mark?: string;
-  repoLabel?: string;
 }
 
 export function BGSiteHeader({
@@ -35,7 +34,6 @@ export function BGSiteHeader({
   links = DEFAULT_LINKS,
   brand = "Bigface",
   mark,
-  repoLabel = "GitHub",
 }: BGSiteHeaderProps) {
   return (
     <>
@@ -73,9 +71,7 @@ export function BGSiteHeader({
                 {link.label}
               </a>
             ))}
-            <BGButton tone="nav" href={repo} className="max-[520px]:px-2">
-              {repoLabel}
-            </BGButton>
+            <BGGithubLink href={repo} />
           </nav>
         </div>
       </header>
