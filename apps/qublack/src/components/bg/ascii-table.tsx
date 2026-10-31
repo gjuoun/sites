@@ -13,7 +13,7 @@ export function BGAsciiTable() {
           <h2 className="mt-2 mb-[0.7rem] text-[clamp(1.7rem,3.2vw,2.4rem)] font-bold leading-[1.08] tracking-[-0.025em] text-balance">Ninety-five cells, one width</h2>
           <p className="my-[1em] max-w-[56ch] text-[clamp(1.05rem,1.7vw,1.3rem)] text-foreground/75">
             Every printable ASCII codepoint at the mono face's 0.600em advance. Punctuation sits on the same cell as{" "}
-            <code className="font-mono border border-border bg-[color-mix(in_srgb,var(--border)_8%,transparent)] px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-yellow">M</code>, which is what keeps columns straight.
+            <code className="font-mono border border-yellow/30 bg-yellow/22 px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-foreground">M</code>, which is what keeps columns straight.
           </p>
         </div>
 

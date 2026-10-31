@@ -28,14 +28,14 @@ export function BGSpecimenLong() {
           <div className="rounded-[18px] border border-border bg-card/70 p-[clamp(1.1rem,2.5vw,1.7rem)]" data-specimen>
             <p className="max-w-[68ch] m-0 text-[1.02rem] leading-[1.78]">
               编译产物不是「打包好的 CSS + compiled JS + 一个 HTML」，而是一个{" "}
-              <code className="font-mono border border-border bg-[color-mix(in_srgb,var(--border)_8%,transparent)] px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-yellow">app.js</code> 加一个二进制的{" "}
-              <code className="font-mono border border-border bg-[color-mix(in_srgb,var(--border)_8%,transparent)] px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-yellow">app.pak</code>。TSX 走 MicroTS 编到 JS，交给 QuickJS
+              <code className="font-mono border border-yellow/30 bg-yellow/22 px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-foreground">app.js</code> 加一个二进制的{" "}
+              <code className="font-mono border border-yellow/30 bg-yellow/22 px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-foreground">app.pak</code>。TSX 走 MicroTS 编到 JS，交给 QuickJS
               执行；Tailwind 的类名在构建期换成二进制样式表，运行时只查表。
             </p>
             <p className="max-w-[68ch] mt-4 mb-0 text-[1.02rem] leading-[1.78]">
               Typesetting note: Chinese line height should not copy Latin's 1.5 — 1.78 reads better, and identifiers such as{" "}
-              <code className="font-mono border border-border bg-[color-mix(in_srgb,var(--border)_8%,transparent)] px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-yellow">className</code> or <code className="font-mono border border-border bg-[color-mix(in_srgb,var(--border)_8%,transparent)] px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-yellow">web-compat</code> must stay in the
-              mono family, or <code className="font-mono border border-border bg-[color-mix(in_srgb,var(--border)_8%,transparent)] px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-yellow">i</code> and <code className="font-mono border border-border bg-[color-mix(in_srgb,var(--border)_8%,transparent)] px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-yellow">l</code> collapse into each
+              <code className="font-mono border border-yellow/30 bg-yellow/22 px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-foreground">className</code> or <code className="font-mono border border-yellow/30 bg-yellow/22 px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-foreground">web-compat</code> must stay in the
+              mono family, or <code className="font-mono border border-yellow/30 bg-yellow/22 px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-foreground">i</code> and <code className="font-mono border border-yellow/30 bg-yellow/22 px-[0.1em] py-[0.04em] rounded-[6px] [font-variation-settings:'MONO'_1,'CASL'_0,'CRSV'_0.5] text-[0.88em] text-foreground">l</code> collapse into each
               other.
             </p>
           </div>
