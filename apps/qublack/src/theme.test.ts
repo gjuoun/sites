@@ -172,18 +172,18 @@ describe("the app keeps no stock copy and no theme of its own", () => {
     expect(base).toContain("themeInitScript");
   });
 
-  test("the inline highlight is painted with the theme's one yellow", () => {
-    const chips: string[] = [];
-    for (const file of [...codeFiles, ...familyFiles]) {
-      for (const match of read(file).matchAll(/<code\b[^>]*class(?:Name)?="([^"]*)"/g)) chips.push(match[1] as string);
-    }
-    expect(chips.length).toBeGreaterThan(10);
-    for (const classes of chips) {
-      // No chip takes its ink from a chart-ramp colour any more.
-      expect(classes).not.toContain("text-chart-");
-      // The block command lines keep the foreground ink; every inline highlight is the theme's yellow.
-      if (!classes.includes("text-foreground")) expect(classes).toContain("text-yellow");
-    }
+  test("the inline highlight is one component: yellow ink on a plate that is dark in both modes", () => {
+    // The chip is the family's now, so the contract lives in one file: the theme's one yellow as ink,
+    // and light-dark() picking a dark neutral in either block (yellow on paper measures 1.14:1).
+    const chip = read(join(familyDir, "highlight-code.tsx"));
+    expect(chip).toContain("text-yellow");
+    expect(chip).toContain("light-dark(var(--muted-foreground),var(--border))");
+    const uses = [...codeFiles, ...familyFiles].flatMap((file) => [
+      ...read(file).matchAll(/<BGHighlightCode\b/g),
+    ]);
+    expect(uses.length).toBeGreaterThan(10);
+    // No page hand-rolls the chip any more.
+    for (const file of codeFiles) expect(read(file), rel(file)).not.toMatch(/<code\b[^>]*text-yellow/);
   });
 
   test("the document carries no descendant display rule that out-specifies a component", () => {
