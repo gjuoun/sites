@@ -177,7 +177,7 @@ describe("the app keeps no stock copy and no theme of its own", () => {
     // and light-dark() picking a dark neutral in either block (yellow on paper measures 1.14:1).
     const chip = read(join(familyDir, "highlight-code.tsx"));
     expect(chip).toContain("text-yellow");
-    expect(chip).toContain("light-dark(var(--muted-foreground),var(--border))");
+    expect(chip).toContain("light-dark(var(--foreground),var(--muted))");
     const uses = [...codeFiles, ...familyFiles].flatMap((file) => [
       ...read(file).matchAll(/<BGHighlightCode\b/g),
     ]);
